@@ -1,0 +1,307 @@
+<!-- ============================================================
+  [BLOG POST METADATA - Blogspot ?¤ì •ì°?ë³µì‚¬??
+  Title: [WebTranslator ê°œë°œê¸?#02] ?¨ì¶•??Alt+A) ?°í? ?ˆì´??ì»¨ë””???´ê²°ê³??¤í† ë¦¬ì? ë¶„ë¦¬
+  Labels (Tags): WebTranslator, ChromeExtension, ?¬ë¡¬?•ì¥?„ë¡œê·¸ë¨, ?ˆì´?¤ì»¨?”ì…˜, AbortController, ChromeStorage
+  Meta Description: ?¬ë¡¬ ?•ì¥ ?„ë¡œê·¸ë¨ ê°œë°œê¸?2?? Alt+A ?¨ì¶•???°í? ??ë°œìƒ?˜ëŠ” ë¹„ë™ê¸??ˆì´??ì»¨ë””?˜ì„ AbortControllerë¡?ë°©ì–´?˜ê³ , 100KB ì¿¼í„° ?œë„ê°€ ?ˆëŠ” sync ?¤í† ë¦¬ì??€ ?€?©ëŸ‰ local ?¤í† ë¦¬ì?ë¥?ë¶„ë¦¬ ?¤ê³„??ê³¼ì •??ê³µìœ ?©ë‹ˆ??
+  Slug: webtranslator-02-shortcut-race-condition-and-storage-split
+  Primary Keyword: ?ë°”?¤í¬ë¦½íŠ¸ ë¹„ë™ê¸??ˆì´??ì»¨ë””??  Secondary Keywords: ?¬ë¡¬ ?•ì¥ ?„ë¡œê·¸ë¨ ?¤í† ë¦¬ì?, AbortController ?¬ìš©ë²? Chrome MV3 ë¹„ë™ê¸??œì–´, chrome storage sync local ì°¨ì´
+  Related Entities: AbortController, AbortSignal, chrome.storage.sync, chrome.storage.local, State Machine
+  Knowledge Source: Knowledge/webtranslator-02-race-condition-and-storage/Troubleshooting/webtranslator-02-race-condition-and-storage-2026-08-15.md
+  Generated Date: 2026-08-15
+  Estimated Read Time: 6ë¶?  ============================================================ -->
+
+<!-- [ë¸”ë¡œê·¸ìŠ¤???„ìš© ?„ë“œ ë³µì‚¬??- ê°?ì¤„ì„ ë³µì‚¬?˜ì—¬ ë¸”ë¡œê·¸ìŠ¤???…ë ¥?€??ë¶™ì—¬?£ê¸°] -->
+<!-- BLOG_TITLE: [WebTranslator ê°œë°œê¸?#02] ?¨ì¶•??Alt+A) ?°í? ?ˆì´??ì»¨ë””???´ê²°ê³??¤í† ë¦¬ì? ë¶„ë¦¬ -->
+<!-- BLOG_LABELS: WebTranslator, ChromeExtension, ?¬ë¡¬?•ì¥?„ë¡œê·¸ë¨, ?ˆì´?¤ì»¨?”ì…˜, AbortController, ChromeStorage -->
+<!-- META_DESCRIPTION: ?¬ë¡¬ ?•ì¥ ?„ë¡œê·¸ë¨ ê°œë°œê¸?2?? Alt+A ?¨ì¶•???°í? ??ë°œìƒ?˜ëŠ” ë¹„ë™ê¸??ˆì´??ì»¨ë””?˜ì„ AbortControllerë¡?ë°©ì–´?˜ê³ , 100KB ì¿¼í„° ?œë„ê°€ ?ˆëŠ” sync ?¤í† ë¦¬ì??€ ?€?©ëŸ‰ local ?¤í† ë¦¬ì?ë¥?ë¶„ë¦¬ ?¤ê³„??ê³¼ì •??ê³µìœ ?©ë‹ˆ?? -->
+
+<article>
+
+  <!-- ?´ë?ì§€ ?¬ë¡¯ 1: ?€???´ë?ì§€ -->
+  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-08/webtranslator-02-shortcut-race-condition-and-storage-split-img1.jpg" alt="?¨ì¶•??ë¹„ë™ê¸?ì·¨ì†Œ ?íƒœ ë¨¸ì‹  ë°?Chrome Storage ë¶„ë¦¬ ?„í‚¤?ì²˜ ?¤ì´?´ê·¸??
+       style="width:100%; max-width:800px; height:auto; border-radius:8px; margin:1em 0; display:block;">
+
+  <p>
+    ?ì„  1?¸ì—?œëŠ” Background Service Workerë¥?ì¤‘ê³„ ê³„ì¸µ?¼ë¡œ ?œìš©?˜ì—¬ Chrome Manifest V3??ê°•ë ¥??CSP(Content Security Policy) ?¤íŠ¸?Œí¬ ì°¨ë‹¨???´ê²°?˜ê³ , ?ë³¸ ?¹í˜?´ì????ˆì´?„ì›ƒ???¼ì†?˜ì? ?ŠëŠ” ë¹„íŒŒê´´ì  ë²ˆì—­ ?Œì´?„ë¼?¸ì˜ ì²??¨ì¶”ë¥?ê¿°ì—ˆ?µë‹ˆ??
+  </p>
+
+  <p>
+    ?˜ì?ë§??„ì„±??ë²ˆì—­ê¸°ë? ?¤ì œ ???œí•‘ ?˜ê²½?ì„œ ?ŒìŠ¤?¸í•˜??ì¤??ˆìƒì¹?ëª»í•œ ì¹˜ëª…?ì¸ ë¬¸ì œê°€ ?œëŸ¬?¬ìŠµ?ˆë‹¤. ?¬ìš©?ê? <code>Alt+A</code> ?¨ì¶•?¤ë? ?ŒëŸ¬ ë²ˆì—­???”ì²­??ì§í›„ ë§ˆìŒ??ë°”ë€Œì–´ ?¤ì‹œ ?¨ì¶•?¤ë? ?Œë????? ë¨¼ì? ë³´ë‚¸ ë²ˆì—­ ?”ì²­???‘ë‹µ???¤ëŠ¦ê²??„ì°©?˜ë©´???ë³¸?¼ë¡œ ë³µêµ¬???”ë©´ ?„ì— ë²ˆì—­ë¬¸ì„ ê°•ì œë¡??§ì”Œ?°ëŠ” <strong>ë¹„ë™ê¸??ˆì´??ì»¨ë””??Race Condition)</strong>??ë°œìƒ??ê²ƒì…?ˆë‹¤.
+  </p>
+
+  <p>
+    ?´ë²ˆ ê¸€?ì„œ???ë°”?¤í¬ë¦½íŠ¸??<strong>AbortController</strong>ë¥??„ì…?˜ì—¬ ì§„í–‰ ì¤‘ì¸ ë¹„ë™ê¸??¤íŠ¸?Œí¬ ?”ì²­??ì¦‰ê° ë¬¼ë¦¬?ìœ¼ë¡?ì·¨ì†Œ?˜ëŠ” ?íƒœ ë¨¸ì‹ ??êµ¬ì¶•?˜ê³ , ì¿¼í„° ?œí•œ???ˆëŠ” ?¬ë¡¬ ?¤í† ë¦¬ì?ë¥??©ë„??ë§ê²Œ <strong>Sync?€ Localë¡?ë¶„ë¦¬ ?¤ê³„</strong>???¸ëŸ¬ë¸”ìŠˆ??ê³¼ì •???•ë¦¬??ë³´ê³ ???©ë‹ˆ??
+  </p>
+
+  <h2 id="race-condition-symptom">
+    1. ?¨ì¶•??? ê? ê¸°ëŠ¥ê³?ë¹„ë™ê¸??ˆì´??ì»¨ë””?˜ì˜ ë°œìƒ
+  </h2>
+
+  <p>
+    WebTranslator???µì‹¬ UX ì¤??˜ë‚˜??ë§ˆìš°??ì¡°ì‘ ?†ì´ ?¤ë³´???¨ì¶•??<code>Alt+A</code>) ??ë²ˆìœ¼ë¡?ë²ˆì—­ë¬¸ì„ ?œì‹œ?˜ê³ , ?¤ì‹œ ?„ë¥´ë©?ì¦‰ì‹œ ?ë³¸ ?íƒœë¡?ê¹¨ë—?˜ê²Œ ë³µì›?˜ëŠ” <strong>? ê?(Toggle) ë©”ì»¤?ˆì¦˜</strong>?…ë‹ˆ??
+  </p>
+
+  <p>
+    ê·¸ëŸ¬???¤íŠ¸?Œí¬ ?µì‹ ?€ ?„ì—°?ìœ¼ë¡?ì§€???œê°„(Latency)???™ë°˜?©ë‹ˆ?? ?¬ìš©?ê? ë²ˆì—­???”ì²­?˜ê³  ?‘ë‹µ???¤ê¸°ê¹Œì? 1~2ì´ˆê? ?Œìš”?˜ëŠ” ?„ì¤‘ ?¨ì¶•?¤ë? ?¤ì‹œ ?„ë¥´ë©??¤ìŒê³?ê°™ì? ?Œê´´?ì¸ ?œë‚˜ë¦¬ì˜¤ê°€ ë°œìƒ?ˆìŠµ?ˆë‹¤:
+  </p>
+
+  <ol class="step">
+    <li><strong>1ì°??¨ì¶•???…ë ¥:</strong> <code>Alt+A</code> ?…ë ¥ $\rightarrow$ ?¹í˜?´ì? ?ìŠ¤?¸ë? ?˜ì§‘?˜ì—¬ Backgroundë¡?ë¹„ë™ê¸?ë²ˆì—­ API ?”ì²­ ë°œì†¡.</li>
+    <li><strong>2ì°??¨ì¶•???…ë ¥ (?¬ìš©??ì·¨ì†Œ):</strong> ë²ˆì—­ ?„ì¤‘ ?¬ìš©?ê? ?¤ì‹œ <code>Alt+A</code> ?…ë ¥ $\rightarrow$ ?”ë©´???ë³¸ ?ìŠ¤?¸ë¡œ ì¦‰ê° ë¡¤ë°±.</li>
+    <li><strong>?¤ëŠ¦?€ ?‘ë‹µ ?„ì°©:</strong> 1ì°??”ì²­??ë²ˆì—­ ê²°ê³¼ê°€ 1.5ì´????„ì°© $\rightarrow$ ?´ë? ?ë³¸?¼ë¡œ ë³µì›??DOM ?„ì— ë²ˆì—­ ?œê·¸ë¥?ê°•ì œë¡??½ì… $\rightarrow$ <strong>?ë¬¸ê³?ë²ˆì—­ë¬¸ì´ ?¤ì„?´ë©° ?”ë©´ ë¶•ê´´.</strong></li>
+  </ol>
+
+  <div class="note wr">
+    <strong>? ï¸ ì¦ìƒ ?”ì•½:</strong> ?¬ìš©?ê? ëª…ì‹œ?ìœ¼ë¡?ë²ˆì—­??ì·¨ì†Œ?ˆìŒ?ë„ ë¶ˆêµ¬?˜ê³ , ?´ë? ë°œì†¡??ë¹„ë™ê¸?Fetch ?„ë¡œë¯¸ìŠ¤ê°€ ?´ì•„?¨ì•„ ?¤ëŠ¦ê²?DOM??ì¹¨ë²”?˜ëŠ” ?íƒœ ê¼¬ì„(Inconsistent State)??ë°œìƒ?ˆìŠµ?ˆë‹¤.
+  </div>
+
+  <h2 id="initial-flag-failure">
+    2. AI???¨ìˆœ ?Œë˜ê·??œì–´ ?¤íŒ¨?€ ?¤í† ë¦¬ì? ì¿¼í„° ?„í—˜
+  </h2>
+
+  <p>
+    ??ë¬¸ì œë¥??´ê²°?˜ê¸° ?„í•´ AI ?´ì‹œ?¤í„´?¸ì—ê²?ë¹„ë™ê¸?ì·¨ì†Œ ?œì–´?€ ?¬ìš©???¤ì •/ìºì‹œ ?€?¥ì„ ì§€?œí–ˆ?µë‹ˆ??
+  </p>
+
+  <div class="pre custom" data-text="AI ì§€?œë¬¸">
+    <button aria-label="Copy code">Copy</button>
+    <pre>Alt+A ?¨ì¶•?¤ë? ?°í??´ë„ DOM??ê¹¨ì?ì§€ ?Šë„ë¡??íƒœ ë¨¸ì‹ ??ë§Œë“¤ê³? ?¤ì •ê°’ê³¼ ìºì‹œë¥?Chrome Storage???€?¥í•˜?„ë¡ êµ¬í˜„?´ë¼.</pre>
+  </div>
+
+  <p>
+    ì§€?œë? ë°›ì? AI???„ë˜?€ ê°™ì´ ?¨ìˆœ boolean ?Œë˜ê·?ë³€?˜ë? ? ê??˜ëŠ” ì½”ë“œë¥??‘ì„±?´ì™”?µë‹ˆ??
+  </p>
+
+  <!-- ì½”ë“œ ë¸”ë¡: AI ?¤ë¥˜ ì½”ë“œ -->
+  <div class="pre custom" data-text="JavaScript (content.js - ?¤ë¥˜ ì½”ë“œ)">
+    <button aria-label="Copy code">Copy</button>
+    <pre>// content.js: ?¨ìˆœ boolean ?Œë˜ê·¸ë? ?µí•œ ?íƒœ ?œì–´ ?œë„ (?¤ë¥˜ ì½”ë“œ)
+let isTranslating = false;
+
+async function toggleTranslation() {
+  if (isTranslating) {
+    isTranslating = false; // ?Œë˜ê·¸ë? êº¼ë„ ?´ë? ì§„í–‰ ì¤‘ì¸ Promise ì²´ì¸??ë§‰ì? ëª»í•¨!
+    revertTranslation();
+    return;
+  }
+
+  isTranslating = true;
+  const texts = collectTextNodes();
+  
+  // ë¹„ë™ê¸??”ì²­ ?œì‘
+  const result = await chrome.runtime.sendMessage({ action: "translate", payload: texts });
+  
+  // ?¤ëŠ¦ê²??„ì°©???‘ë‹µ??DOM??ê·¸ë?ë¡??Œë”ë§ë¨
+  renderTranslation(result);
+  isTranslating = false;
+}</pre>
+  </div>
+
+  <h3 id="cause-analysis">
+    ë¬¸ì œ ?ì¸ ë¶„ì„
+  </h3>
+
+  <ul>
+    <li><strong>Promise ë¹„ë™ê¸?ì²´ì¸??ë¬´ë°©ë¹„ì„±:</strong> ?ë°”?¤í¬ë¦½íŠ¸?ì„œ ?¨ìˆœ ë³€??ê°’ì„ ë³€ê²½í•˜??ê²ƒë§Œ?¼ë¡œ??ë°±ê·¸?¼ìš´?œì—???´ë? ?¤í–‰ ì¤‘ì¸ HTTP ?¤íŠ¸?Œí¬ ?”ì²­?´ë‚˜ ?Œì‹± ?‘ì—…??ì¤‘ë‹¨?œí‚¬ ???†ìŠµ?ˆë‹¤. ë¹„ë™ê¸??‘ì—…???„ë£Œ?˜ë©´ <code>await</code> ?´í›„??<code>renderTranslation()</code>??ë¬´ì¡°ê±??¤í–‰?©ë‹ˆ??</li>
+    <li><strong>?¤í† ë¦¬ì? ì¿¼í„° ì´ˆê³¼ ?„í—˜ (QuotaExceededError):</strong> AIê°€ ë²ˆì—­??ë¬¸ë‹¨ ìºì‹œ ?°ì´?°ê¹Œì§€ ê¸°ê¸°ê°??™ê¸°???¤í† ë¦¬ì???<code>chrome.storage.sync</code>??ë¬´ì°¨ë³„ì ?¼ë¡œ ?€?¥í•˜?„ë¡ ?‘ì„±?ˆìŠµ?ˆë‹¤. <code>sync</code> ?¤í† ë¦¬ì????„ì²´ ?©ëŸ‰??100KB??ë¶ˆê³¼?˜ì—¬ ê¸??¹í˜?´ì? ëª?ê°œë§Œ ë²ˆì—­?´ë„ ì¦‰ì‹œ ì¿¼í„° ì´ˆê³¼ ?ëŸ¬ê°€ ë°œìƒ???„í—˜???ˆì—ˆ?µë‹ˆ??</li>
+  </ul>
+
+  <h2 id="abort-controller-solution">
+    3. ?´ê²°ì±?1: AbortController ê¸°ë°˜ ë¬¼ë¦¬ ì·¨ì†Œ ë°?3?¨ê³„ ?íƒœ ë¨¸ì‹ 
+  </h2>
+
+  <p>
+    ë¹„ë™ê¸??ë¦„??ê·¼ë³¸?ìœ¼ë¡??œì–´?˜ê¸° ?„í•´ <strong>AbortController</strong>ë¥??„ì…?˜ê³ , <code>document.body</code>???°ì´?°ì…‹???¨ì¼ ì§„ì‹¤ ê³µê¸‰??SSOT)?¼ë¡œ ?¼ëŠ” 3?¨ê³„ ?íƒœ ë¨¸ì‹ ??êµ¬ì¶•?˜ë„ë¡?ì§€?œë? ?˜ì •?ˆìŠµ?ˆë‹¤.
+  </p>
+
+  <div class="pre custom" data-text="AI ì§€???˜ì •">
+    <button aria-label="Copy code">Copy</button>
+    <pre>?¨ìˆœ boolean ë³€?˜ë¡œ ?Œìš°ì§€ ë§ˆë¼. AbortControllerë¥??„ì…?˜ì—¬ ?¨ì¶•?¤ê? ?¤ì‹œ ?Œë¦¬??ì¦‰ì‹œ ì§„í–‰ ì¤‘ì¸ fetch ? í˜¸ë¥?ê°•ì œ abort()?œí‚¤ê³? document.body???°ì´?°ì…‹(data-wt-status)?¼ë¡œ ?„ì¬ ?íƒœ(idle, translating, translated)ë¥??„ê²©???µì œ?´ë¼.</pre>
+  </div>
+
+  <div class="table w100 withBg">
+    <table>
+      <thead>
+        <tr>
+          <th>?íƒœ (data-wt-status)</th>
+          <th>?¤ëª…</th>
+          <th>?¨ì¶•??Alt+A) ?…ë ¥ ???™ì‘</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>idle</strong></td>
+          <td>ë²ˆì—­???ìš©?˜ì? ?Šì? ê¸°ë³¸ ?ë³¸ ?íƒœ</td>
+          <td><code>AbortController</code> ?ì„± $\rightarrow$ <code>translating</code> ?„ì´ ë°?ë²ˆì—­ ?”ì²­</td>
+        </tr>
+        <tr>
+          <td><strong>translating</strong></td>
+          <td>?¤íŠ¸?Œí¬ ?µì‹  ë°?DOM ?Œì‹± ì§„í–‰ ì¤?/td>
+          <td><code>controller.abort()</code> ì¦‰ì‹œ ?¸ì¶œ $\rightarrow$ ë¡¤ë°± ??<code>idle</code> ?„ì´</td>
+        </tr>
+        <tr>
+          <td><strong>translated</strong></td>
+          <td>ë²ˆì—­ë¬??Œë”ë§ì´ ?„ë£Œ???íƒœ</td>
+          <td>ë²ˆì—­ ì»¨í…Œ?´ë„ˆ ?œê±° $\rightarrow$ <code>idle</code> ?„ì´ (?ë³¸ ë³µì›)</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3 id="refactored-code">
+    ë¦¬íŒ©?°ë§???íƒœ ?œì–´ êµ¬í˜„
+  </h3>
+
+  <div class="pre custom" data-text="JavaScript (src/content/index.js)">
+    <button aria-label="Copy code">Copy</button>
+    <pre>// src/content/index.js: AbortController ê¸°ë°˜ ?¨ì¶•??? ê? ?íƒœ ë¨¸ì‹ 
+let currentAbortController = null;
+
+export async function toggleTranslation() {
+  const body = document.body;
+  const state = body.dataset.wtStatus || "idle";
+
+  // 1. ë²ˆì—­ ì§„í–‰ ì¤??¬ì…?? ì¦‰ê° ì·¨ì†Œ ë°?ë¡¤ë°±
+  if (state === "translating") {
+    if (currentAbortController) {
+      currentAbortController.abort(); // ?¤íŠ¸?Œí¬ ë°?ë¹„ë™ê¸??‘ì—… ë¬¼ë¦¬ ì·¨ì†Œ
+    }
+    body.dataset.wtStatus = "idle";
+    revertTranslation();
+    return;
+  }
+
+  // 2. ?´ë? ë²ˆì—­???íƒœ?ì„œ ?¬ì…?? ?ë³¸ ë³µì›
+  if (state === "translated") {
+    revertTranslation();
+    body.dataset.wtStatus = "idle";
+    return;
+  }
+
+  // 3. idle ?íƒœ?ì„œ ?…ë ¥: ë²ˆì—­ ?„ë¡œ?¸ìŠ¤ ê°œì‹œ
+  body.dataset.wtStatus = "translating";
+  currentAbortController = new AbortController();
+
+  try {
+    const texts = collectTextNodes();
+    const translated = await requestTranslation(texts, currentAbortController.signal);
+    
+    // ?”ì²­??ì·¨ì†Œ?˜ì? ?Šê³  ?•ìƒ ?„ë£Œ??ê²½ìš°?ë§Œ ?Œë”ë§?    renderTranslation(translated);
+    body.dataset.wtStatus = "translated";
+  } catch (err) {
+    if (err.name === "AbortError") {
+      // ?¬ìš©?ê? ?˜ë„?ìœ¼ë¡?ì·¨ì†Œ??ê²½ìš°???•ìƒ ?ë¦„?¼ë¡œ ê°„ì£¼?˜ê³  ë¬´ì‹œ
+      return;
+    }
+    console.error("[WebTranslator] ë²ˆì—­ ì²˜ë¦¬ ì¤??¤ë¥˜ ë°œìƒ:", err);
+    body.dataset.wtStatus = "idle";
+    revertTranslation();
+  }
+}</pre>
+  </div>
+
+  <div class="note">
+    <strong>?’¡ ??</strong> <code>AbortController.abort()</code>ê°€ ?¸ì¶œ?˜ë©´ ?°ê²°??Fetch ?”ì²­?€ ì¦‰ì‹œ <code>AbortError</code> ?ˆì™¸ë¥?ë°œìƒ?œí‚µ?ˆë‹¤. <code>catch</code> ë¸”ë¡?ì„œ <code>err.name === 'AbortError'</code>ë¥??ë³„?˜ì—¬ ?ëŸ¬ ë¡œê·¸ë¥??¨ê¸°ì§€ ?Šê³  ì¡°ìš©??ë¦¬í„´?œí‚¤??ê²ƒì´ ì¤‘ìš”?©ë‹ˆ??
+  </div>
+
+  <h2 id="storage-architecture">
+    4. ?´ê²°ì±?2: Chrome Storage ?´ì›???¤ê³„ (Sync vs Local)
+  </h2>
+
+  <p>
+    ?•ì¥ ?„ë¡œê·¸ë¨???¤ë£¨???°ì´?°ì˜ ?±ê²©ê³??¬ê¸°???°ë¼ ?€?¥ì†Œë¥?ëª…í™•??ë¶„ë¦¬?˜ì—¬ ì¿¼í„° ?ëŸ¬ë¥?ë°©ì??ˆìŠµ?ˆë‹¤.
+  </p>
+
+  <div class="table w100 withBg">
+    <table>
+      <thead>
+        <tr>
+          <th>êµ¬ë¶„</th>
+          <th>chrome.storage.sync</th>
+          <th>chrome.storage.local</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>?€???€??/strong></td>
+          <td>API Key, ê¸°ë³¸ ?€ê¹??¸ì–´, ?Œë§ˆ ?¤ì •</td>
+          <td>ë²ˆì—­ ë¬¸ë‹¨ ìºì‹œ, ?€?©ëŸ‰ ?¬ìš©??ì»¤ìŠ¤?€ ?¬ì „</td>
+        </tr>
+        <tr>
+          <td><strong>?©ëŸ‰ ?œë„</strong></td>
+          <td>?„ì²´ <strong>100KB</strong> (??ª©??8KB)</td>
+          <td>ê¸°ë³¸ <strong>10MB</strong> (unlimitedStorage ê°€??</td>
+        </tr>
+        <tr>
+          <td><strong>?™ê¸°???¬ë?</strong></td>
+          <td>êµ¬ê? ê³„ì • ê¸°ë°˜ ê¸°ê¸°ê°??ë™ ?™ê¸°??/td>
+          <td>?´ë‹¹ PC ë¸Œë¼?°ì? ë¡œì»¬ ?„ìš©</td>
+        </tr>
+        <tr>
+          <td><strong>? íƒ ?´ìœ </strong></td>
+          <td>PCë¥?ë³€ê²½í•´???¤ì •ê°’ì´ ? ì??˜ì–´????/td>
+          <td>?€?©ëŸ‰ ?ìŠ¤??ìºì‹œë¡??¸í•œ ì¿¼í„° ??°œ ë°©ì?</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pre custom" data-text="JavaScript (src/utils/storage.js)">
+    <button aria-label="Copy code">Copy</button>
+    <pre>// src/utils/storage.js: ?¤í† ë¦¬ì? ?ˆì´??ë¶„ë¦¬ ?¸í„°?˜ì´??export const SettingsStorage = {
+  // ?¬ìš©???˜ê²½?¤ì •?€ sync ?¤í† ë¦¬ì? ?œìš© (ê¸°ê¸° ê°??™ê¸°??
+  async get() {
+    return await chrome.storage.sync.get({ apiKey: "", targetLang: "ko" });
+  },
+  async set(settings) {
+    return await chrome.storage.sync.set(settings);
+  }
+};
+
+export const CacheStorage = {
+  // ?€?©ëŸ‰ ë²ˆì—­ ìºì‹œ??local ?¤í† ë¦¬ì?ë¡??„ì „ ê²©ë¦¬
+  async getCache(hashKey) {
+    const data = await chrome.storage.local.get(hashKey);
+    return data[hashKey] || null;
+  },
+  async setCache(hashKey, translatedText) {
+    return await chrome.storage.local.set({ [hashKey]: translatedText });
+  }
+};</pre>
+  </div>
+
+  <h2 id="takeaway">
+    5. ê²€ì¦?ê²°ê³¼ ë°?êµí›ˆ
+  </h2>
+
+  <p>
+    <code>AbortController</code>?€ ?íƒœ ë¨¸ì‹ ??ê²°í•©??ê²°ê³¼, <code>Alt+A</code>ë¥?1ì´ˆì— 5ë²??´ìƒ ë¹ ë¥´ê²??°í??˜ê±°???¤íŠ¸?Œí¬ ?‘ë‹µ??ê·¹ë„ë¡?ì§€?°ë˜???˜ê²½?ì„œ???´ì „ ?”ì²­??ì¦‰ê° ì¤‘ë‹¨?˜ì–´ <strong>????ë²ˆì˜ DOM ì¶©ëŒ?´ë‚˜ ?ˆì´?„ì›ƒ ê¹¨ì§??ë°œìƒ?˜ì? ?Šì•˜?µë‹ˆ??</strong>
+  </p>
+
+  <ol class="step">
+    <li><strong>?„ë¡ ?¸ì—”??ë¹„ë™ê¸??œì–´???„ìˆ˜ ?„êµ¬:</strong> ë¹„ë™ê¸?UI?ì„œ???¨ìˆœ ?Œë˜ê·?? ê????„ë‹Œ, ?¤íŠ¸?Œí¬ ?˜ì???ì·¨ì†Œ ?œì–´(AbortSignal)ê°€ ?„ìˆ˜?ì…?ˆë‹¤.</li>
+    <li><strong>?•ì¥ ?„ë¡œê·¸ë¨ ?¤í† ë¦¬ì????œê³„ ?´í•´:</strong> <code>chrome.storage.sync</code>???¸ë¦¬?˜ì?ë§??©ëŸ‰??ë§¤ìš° ?‘ìœ¼ë¯€ë¡? ?¤ì •(Metadata)ê³??°ì´??Payload)ë¥?ë¬¼ë¦¬?ìœ¼ë¡?ë¶„ë¦¬?˜ëŠ” ?¤ê³„ê°€ ?„ìˆ˜?ì…?ˆë‹¤.</li>
+  </ol>
+
+  <h2 id="summary">
+    ë§ˆë¬´ë¦¬í•˜ë©?  </h2>
+
+  <p>
+    ?¨ì¶•?¤ì? ?¤í† ë¦¬ì? ê¸°ë³¸ê¸°ë? ?¤ì?ê³?v0.1 ?¤ëƒ…?·ì„ ?ê??˜ë˜ ì¤? ?¬ìš©?ê? ì§ì ‘ ?±ë¡??<strong>'?¨ì–´ ?¬ìš©???¬ì „(Custom Dictionary)'??ë²ˆì—­ ê²°ê³¼???„í? ë°˜ì˜?˜ì? ?Šê³  ?¹íˆ???¬ê°??ë²ˆì—­ ?„ë½ ë²„ê·¸</strong>ê°€ ë°œê²¬?˜ì—ˆ?µë‹ˆ??
+  </p>
+
+  <p>
+    ?¤ìŒ ê¸€?ì„œ???¬ìš©???¬ì „??ë¬´ì‹œ?˜ì—ˆ???Œì´?„ë¼?¸ì˜ êµ¬ì¡°???ì¸??ë¶„ì„?˜ê³ , ?„ì²˜ë¦?? ì¹˜??ë°©ì‹???œê³„ë¥?ê·¹ë³µ???¸ëŸ¬ë¸”ìŠˆ??ê³¼ì •???¤ë£¨??ë³´ê² ?µë‹ˆ??
+  </p>
+
+</article>
+
+<!-- ============================================================
+  [PUBLISHING CHECKLIST - ë°œí–‰ ??ì²´í¬ë¦¬ìŠ¤??
+  ??BLOG_TITLE ?´ìš© ë³µì‚¬ ??Blogspot ?ë‹¨ '?œëª©' ?…ë ¥?€??ë¶™ì—¬?£ê¸°
+  ??BLOG_LABELS ?´ìš© ë³µì‚¬ ??Blogspot ?°ì¸¡ ?¬ì´?œë°” '?¼ë²¨' ì¹¸ì— ë¶™ì—¬?£ê¸°
+  ??META_DESCRIPTION ?´ìš© ë³µì‚¬ ??Blogspot ?°ì¸¡ 'ê²€???¤ëª…'?€??ë¶™ì—¬?£ê¸°
+  ??Blogspot ë³¸ë¬¸ ?ë””?°ë? "HTML ë³´ê¸°"ë¡??„í™˜ ????<article> ?ŒìŠ¤ ?„ì²´ ë¶™ì—¬?£ê¸°
+  ???´ë?ì§€ ?¬ë¡¯ ì£¼ì„ ?„ì¹˜???¤ì œ ?´ë?ì§€ ?½ì…
+  ???ˆì•½ ë°œí–‰ ?ëŠ” ì¦‰ì‹œ ë°œí–‰
+  ============================================================ -->
