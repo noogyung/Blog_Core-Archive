@@ -934,9 +934,6 @@ article img {
   margin-top: 4px !important;
   opacity: 0.55 !important;
 }
-.iTrans .inn .trans-caption::before {
-  content: attr(data-text) !important;
-}
 
 /* Hide Google Translate elements */
 .goog-te-banner-frame.skiptranslate, .goog-te-banner-frame { display: none !important; }
