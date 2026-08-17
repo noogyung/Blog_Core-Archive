@@ -10,9 +10,9 @@ last_modified: 2026-08-18
 language: KR
 tags: [Antigravity, 블로그-자동화, 분산-아키텍처, Control-Plane, Data-Plane, Skill-시스템, Rule-가드레일, 슬래시-커맨드, 멀티-블로그, 시리즈-네비게이션, 하네스-경량화]
 sources_count: 6
-blog_draft_path: null
-blog_draft_date: null
-blog_id: null
+blog_draft_path: Blog_Posts/2026-08/antigravity-blog-automation-workflow-v3.html
+blog_draft_date: 2026-08-18
+blog_id: core-archive
 blog_published: false
 series_id: antigravity-blog-automation
 series_title: Antigravity 블로그 포스팅 자동화 구축기
