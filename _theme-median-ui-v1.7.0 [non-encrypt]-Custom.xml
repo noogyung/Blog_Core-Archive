@@ -1448,12 +1448,32 @@ error: &quot;<div class='j e button' expr:aria-label='data:messages.loadMorePost
             var targetCount = relatedPostConfig.numPosts || 4;
             var currentPath = window.location.pathname;
 
-            // 블로그 대표 대분류/시리즈 카테고리 우선순위 목록
-            var priorityCategories = [
-              "WebTranslator", "Homelab", "Antigravity", 
-              "Unity", "Unreal", "Shader", 
-              "Blog", "Server", "PersonalDev", "Review", "AI", "ChromeExtension"
-            ];
+            // 1. 현재 HTML 본문 주석(BLOG_LABELS)에서 작성자가 지정한 원본 라벨 순서 추출
+            var getOriginalLabelsFromDOM = function() {
+              try {
+                var iterator = document.createNodeIterator(document.body, NodeFilter.SHOW_COMMENT, null, false);
+                var node;
+                while (node = iterator.nextNode()) {
+                  var val = node.nodeValue || '';
+                  var m = val.match(/BLOG_LABELS:\s*([^\n\r->]+)/i) || val.match(/Labels \(Tags\):\s*([^\n\r->]+)/i);
+                  if (m && m[1]) {
+                    var parsed = m[1].split(',').map(function(s) { return s.trim(); }).filter(Boolean);
+                    if (parsed.length > 0) return parsed;
+                  }
+                }
+              } catch (e) {}
+              return null;
+            };
+
+            // 2. 피드 엔트리 본문에서 해당 글의 1순위 원본 라벨 추출
+            var getOriginalLabelsFromContent = function(contentHtml) {
+              if (!contentHtml) return [];
+              var m = contentHtml.match(/BLOG_LABELS:\s*([^\n\r->]+)/i) || contentHtml.match(/Labels \(Tags\):\s*([^\n\r->]+)/i);
+              if (m && m[1]) {
+                return m[1].split(',').map(function(s) { return s.trim(); }).filter(Boolean);
+              }
+              return [];
+            };
 
             var decodeLabel = function(str) {
               var el = document.createElement('textarea');
@@ -1461,15 +1481,13 @@ error: &quot;<div class='j e button' expr:aria-label='data:messages.loadMorePost
               return el.value;
             };
 
-            var rawLabels = (Array.isArray(labelArray) ? labelArray : []).map(decodeLabel).filter(Boolean);
-            
-            // Blogger의 알파벳순 라벨 정렬을 보정하여 대표 카테고리를 1순위/2순위로 선정
-            var matchedPriority = priorityCategories.filter(function(p) { return rawLabels.indexOf(p) !== -1; });
-            var remainingLabels = rawLabels.filter(function(r) { return priorityCategories.indexOf(r) === -1; });
-            var sortedLabels = matchedPriority.concat(remainingLabels);
+            // 파일 내부의 BLOG_LABELS 순서를 우선 적용 (없을 시 Blogger 기본 labelArray 사용)
+            var fileLabels = getOriginalLabelsFromDOM();
+            var fallbackLabels = (Array.isArray(labelArray) ? labelArray : []).map(decodeLabel).filter(Boolean);
+            var activeLabels = (fileLabels && fileLabels.length > 0) ? fileLabels : fallbackLabels;
 
-            var label1 = sortedLabels[0] || null;
-            var label2 = sortedLabels[1] || null;
+            var label1 = activeLabels[0] || null;
+            var label2 = activeLabels[1] || null;
 
             var collectedPosts = [];
             var seenUrls = new Set();
@@ -1513,18 +1531,9 @@ error: &quot;<div class='j e button' expr:aria-label='data:messages.loadMorePost
                 var mm = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
                 var MM = mm[parseInt(M, 10) - 1] || '';
 
-                // 카드의 대표 라벨 태그 결정 (우선순위 카테고리 매칭)
-                var postCats = (entry.category || []).map(function(c) { return c.term; }).filter(Boolean);
-                var cardCat = null;
-                for (var pi = 0; pi < priorityCategories.length; pi++) {
-                  if (postCats.indexOf(priorityCategories[pi]) !== -1) {
-                    cardCat = priorityCategories[pi];
-                    break;
-                  }
-                }
-                if (!cardCat) {
-                  cardCat = (postCats.length > 0) ? postCats[0] : (label1 || '');
-                }
+                // 카드의 대표 라벨 태그: 해당 글 본문(BLOG_LABELS)의 1순위 라벨을 직접 추출
+                var postFileLabels = getOriginalLabelsFromContent(content);
+                var cardCat = (postFileLabels.length > 0) ? postFileLabels[0] : (entry.category && entry.category.length ? entry.category[0].term : (label1 || ''));
 
                 var summary = '';
                 if (entry.summary && entry.summary.$t) {
@@ -1575,7 +1584,7 @@ error: &quot;<div class='j e button' expr:aria-label='data:messages.loadMorePost
 
             var p = Promise.resolve();
 
-            // 1단계: 1순위 대표 라벨 관련 글 수집 (/feeds/posts/default 피드)
+            // 1단계: 작성자가 지정한 1순위 라벨 관련 글 수집
             if (label1) {
               p = p.then(function() {
                 return fetchFeed(home + '/feeds/posts/default/-/' + encodeURIComponent(label1) + '?alt=json&start-index=1&max-results=10')
@@ -1583,7 +1592,7 @@ error: &quot;<div class='j e button' expr:aria-label='data:messages.loadMorePost
               });
             }
 
-            // 2단계: 개수 부족 시 2순위 대표 라벨 관련 글 수집
+            // 2단계: 개수 부족 시 작성자가 지정한 2순위 라벨 관련 글 수집
             if (label2) {
               p = p.then(function() {
                 if (collectedPosts.length < targetCount) {
