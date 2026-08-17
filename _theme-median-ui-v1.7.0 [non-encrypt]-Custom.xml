@@ -1695,38 +1695,41 @@ error: &quot;<div class='j e button' expr:aria-label='data:messages.loadMorePost
   }
 
   var curCookie = getTransCookie();
-  var curLang = 'ko';
+  var curLang = localStorage.getItem('user_lang') || 'ko';
   if (curCookie.indexOf('/en') !== -1) curLang = 'en';
   else if (curCookie.indexOf('/ja') !== -1) curLang = 'ja';
+  else if (curCookie === '' || curCookie === '/ko/ko') {
+    curLang = localStorage.getItem('user_lang') || 'ko';
+  }
 
   transBtns.forEach(function(btn) {
+    btn.classList.remove('active');
     if (btn.getAttribute('data-lang') === curLang) {
       btn.classList.add('active');
     }
     btn.addEventListener('click', function() {
       var targetLang = this.getAttribute('data-lang');
+      localStorage.setItem('user_lang', targetLang);
       setTransCookie(targetLang);
       window.location.reload();
     });
   });
 
-  // Load Google Translate API element if translated
-  if (curLang !== 'ko' || true) {
-    window.googleTranslateElementInit = function() {
-      new google.translate.TranslateElement({
-        pageLanguage: 'ko',
-        includedLanguages: 'ko,en,ja',
-        autoDisplay: false
-      }, 'google_translate_element');
-    };
-    var gtDiv = d.createElement('div');
-    gtDiv.id = 'google_translate_element';
-    d.body.appendChild(gtDiv);
-    var gtScript = d.createElement('script');
-    gtScript.src = 'https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
-    gtScript.async = true;
-    d.head.appendChild(gtScript);
-  }
+  // Load Google Translate API element
+  window.googleTranslateElementInit = function() {
+    new google.translate.TranslateElement({
+      pageLanguage: 'ko',
+      includedLanguages: 'ko,en,ja',
+      autoDisplay: false
+    }, 'google_translate_element');
+  };
+  var gtDiv = d.createElement('div');
+  gtDiv.id = 'google_translate_element';
+  d.body.appendChild(gtDiv);
+  var gtScript = d.createElement('script');
+  gtScript.src = 'https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
+  gtScript.async = true;
+  d.head.appendChild(gtScript);
 })();
 /*]]>*/</script>
       </b:includable>
@@ -3133,7 +3136,7 @@ class TableOfContents { constructor({ from, to }) { this.fromElement = from; thi
                     </b:if>
                   </label>
                   <div class='inn flex fontS'>
-                    <span aria-label='한국어' class='fontM trans-card active' data-lang='ko' data-text='한국어' role='button'>
+                    <span aria-label='한국어' class='fontM trans-card' data-lang='ko' data-text='한국어' role='button'>
                       <span class='i flex trans-preview'>
                         <span class='tr-badge'>KO</span>
                       </span>
