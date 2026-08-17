@@ -1744,22 +1744,13 @@ error: &quot;<div class='j e button' expr:aria-label='data:messages.loadMorePost
               </b:loop>
               
               <b:else/>
-              <b:with value='[ &quot;WebTranslator&quot;, &quot;Homelab&quot;, &quot;Antigravity&quot;, &quot;PersonalDev&quot;, &quot;Review&quot;, &quot;Blog&quot;, &quot;Server&quot;, &quot;AI&quot;, &quot;Unity&quot;, &quot;Unreal&quot;, &quot;Shader&quot;, &quot;ChromeExtension&quot;, &quot;Gemini&quot; ]' var='priorityOrder'>
-                <b:loop values='data:priorityOrder' var='catName'>
-                  <b:loop values='data:post.labels' var='label'>
-                    <b:if cond='data:label.name == data:catName'>
-                      <a expr:aria-label='data:label.name' expr:data-text='data:label.name' expr:href='data:label.url' rel='tag'/>
-                    </b:if>
-                  </b:loop>
-                </b:loop>
-                <b:if cond='data:post.labels none (l =&gt; l.name in data:priorityOrder)'>
-                  <b:loop index='i' values='data:post.labels' var='label'>
-                    <b:if cond='data:i &lt;= 1'>
-                      <a expr:aria-label='data:label.name' expr:data-text='data:label.name' expr:href='data:label.url' rel='tag'/>
-                    </b:if>
-                  </b:loop>
+              <b:loop index='i' values='data:post.labels' var='label'>
+                <b:if cond='data:post.labels none (label =&gt; label.name in [ &quot;Product&quot;, &quot;Discount10&quot;, &quot;Discount20&quot;, &quot;Discount30&quot;, &quot;Discount40&quot;, &quot;Discount50&quot;, &quot;Discount60&quot;, &quot;Discount70&quot;, &quot;Discount80&quot;, &quot;Discount90&quot; ])'>
+                  <b:if cond='data:i &lt;= 1'>
+                    <a expr:aria-label='data:label.name' expr:data-text='data:label.name' expr:href='data:label.url' rel='tag'/>
+                  </b:if>
                 </b:if>
-              </b:with>
+              </b:loop>
             </b:if>
           </div>
         </b:if>
@@ -3465,22 +3456,13 @@ class TableOfContents { constructor({ from, to }) { this.fromElement = from; thi
                                 </b:loop>
               
                                 <b:else/>
-                                <b:with value='[ &quot;WebTranslator&quot;, &quot;Homelab&quot;, &quot;Antigravity&quot;, &quot;PersonalDev&quot;, &quot;Review&quot;, &quot;Blog&quot;, &quot;Server&quot;, &quot;AI&quot;, &quot;Unity&quot;, &quot;Unreal&quot;, &quot;Shader&quot;, &quot;ChromeExtension&quot;, &quot;Gemini&quot; ]' var='priorityOrder'>
-                                  <b:loop values='data:priorityOrder' var='catName'>
-                                    <b:loop values='data:post.labels' var='label'>
-                                      <b:if cond='data:label.name == data:catName'>
-                                        <a expr:aria-label='data:label.name' expr:data-text='data:label.name' expr:href='data:label.url' rel='tag'/>
-                                      </b:if>
-                                    </b:loop>
-                                  </b:loop>
-                                  <b:if cond='data:post.labels none (l =&gt; l.name in data:priorityOrder)'>
-                                    <b:loop index='i' values='data:post.labels' var='label'>
-                                      <b:if cond='data:i &lt;= 1'>
-                                        <a expr:aria-label='data:label.name' expr:data-text='data:label.name' expr:href='data:label.url' rel='tag'/>
-                                      </b:if>
-                                    </b:loop>
+                                <b:loop index='i' values='data:post.labels' var='label'>
+                                  <b:if cond='data:post.labels none (label =&gt; label.name in [ &quot;Product&quot;, &quot;Discount10&quot;, &quot;Discount20&quot;, &quot;Discount30&quot;, &quot;Discount40&quot;, &quot;Discount50&quot;, &quot;Discount60&quot;, &quot;Discount70&quot;, &quot;Discount80&quot;, &quot;Discount90&quot; ])'>
+                                    <b:if cond='data:i &lt;= 1'>
+                                      <a expr:aria-label='data:label.name' expr:data-text='data:label.name' expr:href='data:label.url' rel='tag'/>
+                                    </b:if>
                                   </b:if>
-                                </b:with>
+                                </b:loop>
                               </b:if>
                             </div>
                           </b:if>
@@ -4405,22 +4387,13 @@ class TableOfContents { constructor({ from, to }) { this.fromElement = from; thi
                                 </b:loop>
                                 
                                 <b:else/>
-                                <b:with value='[ &quot;WebTranslator&quot;, &quot;Homelab&quot;, &quot;Antigravity&quot;, &quot;PersonalDev&quot;, &quot;Review&quot;, &quot;Blog&quot;, &quot;Server&quot;, &quot;AI&quot;, &quot;Unity&quot;, &quot;Unreal&quot;, &quot;Shader&quot;, &quot;ChromeExtension&quot;, &quot;Gemini&quot; ]' var='priorityOrder'>
-                                  <b:loop values='data:priorityOrder' var='catName'>
-                                    <b:loop values='data:post.labels' var='label'>
-                                      <b:if cond='data:label.name == data:catName'>
-                                        <a expr:aria-label='data:label.name' expr:data-text='data:label.name' expr:href='data:label.url' rel='tag'/>
-                                      </b:if>
-                                    </b:loop>
-                                  </b:loop>
-                                  <b:if cond='data:post.labels none (l =&gt; l.name in data:priorityOrder)'>
-                                    <b:loop index='i' values='data:post.labels' var='label'>
-                                      <b:if cond='data:i &lt;= 1'>
-                                        <a expr:aria-label='data:label.name' expr:data-text='data:label.name' expr:href='data:label.url' rel='tag'/>
-                                      </b:if>
-                                    </b:loop>
+                                <b:loop index='i' values='data:post.labels' var='label'>
+                                  <b:if cond='data:post.labels none (label =&gt; label.name in [ &quot;Product&quot;, &quot;Discount10&quot;, &quot;Discount20&quot;, &quot;Discount30&quot;, &quot;Discount40&quot;, &quot;Discount50&quot;, &quot;Discount60&quot;, &quot;Discount70&quot;, &quot;Discount80&quot;, &quot;Discount90&quot; ])'>
+                                    <b:if cond='data:i &lt;= 1'>
+                                      <a expr:aria-label='data:label.name' expr:data-text='data:label.name' expr:href='data:label.url' rel='tag'/>
+                                    </b:if>
                                   </b:if>
-                                </b:with>
+                                </b:loop>
                               </b:if>
                             </div>
                           </b:if>
@@ -4863,22 +4836,13 @@ class TableOfContents { constructor({ from, to }) { this.fromElement = from; thi
               
                                   <b:else/>
       
-                                  <b:with value='[ &quot;WebTranslator&quot;, &quot;Homelab&quot;, &quot;Antigravity&quot;, &quot;PersonalDev&quot;, &quot;Review&quot;, &quot;Blog&quot;, &quot;Server&quot;, &quot;AI&quot;, &quot;Unity&quot;, &quot;Unreal&quot;, &quot;Shader&quot;, &quot;ChromeExtension&quot;, &quot;Gemini&quot; ]' var='priorityOrder'>
-                                    <b:loop values='data:priorityOrder' var='catName'>
-                                      <b:loop values='data:post.labels' var='label'>
-                                        <b:if cond='data:label.name == data:catName'>
-                                          <a expr:aria-label='data:label.name' expr:data-text='data:label.name' expr:href='data:label.url' rel='tag'/>
-                                        </b:if>
-                                      </b:loop>
-                                    </b:loop>
-                                    <b:if cond='data:post.labels none (l =&gt; l.name in data:priorityOrder)'>
-                                      <b:loop index='i' values='data:post.labels' var='label'>
-                                        <b:if cond='data:i &lt;= 1'>
-                                          <a expr:aria-label='data:label.name' expr:data-text='data:label.name' expr:href='data:label.url' rel='tag'/>
-                                        </b:if>
-                                      </b:loop>
+                                  <b:loop index='i' values='data:post.labels' var='label'>
+                                    <b:if cond='data:post.labels none (label =&gt; label.name in [ &quot;Product&quot;, &quot;Discount10&quot;, &quot;Discount20&quot;, &quot;Discount30&quot;, &quot;Discount40&quot;, &quot;Discount50&quot;, &quot;Discount60&quot;, &quot;Discount70&quot;, &quot;Discount80&quot;, &quot;Discount90&quot; ])'>
+                                      <b:if cond='data:i &lt;= 1'>
+                                        <a expr:aria-label='data:label.name' expr:data-text='data:label.name' expr:href='data:label.url' rel='tag'/>
+                                      </b:if>
                                     </b:if>
-                                  </b:with>
+                                  </b:loop>
                                 </b:if>
                               </div>
                             </b:if>
