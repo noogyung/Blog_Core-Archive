@@ -1079,18 +1079,18 @@
                 </b:if>
               </b:loop>
               
-              <b:loop index='i' values='data:post.labels' var='label'>
-                <b:if cond='data:post.labels none (label =&gt; label.name in [ &quot;Product&quot;, &quot;Discount10&quot;, &quot;Discount20&quot;, &quot;Discount30&quot;, &quot;Discount40&quot;, &quot;Discount50&quot;, &quot;Discount60&quot;, &quot;Discount70&quot;, &quot;Discount80&quot;, &quot;Discount90&quot; ])'>
-                  <b:if cond='data:i &lt;= 0'>
-                    <b:tag class='tab flexIn shrink noWrap' itemprop='itemListElement' itemscope='itemscope' itemtype='https://schema.org/ListItem' name='div'>
-                      <a class='n flexIn ellips fontM' expr:aria-label='data:label.name' expr:data-text='data:label.name' expr:href='data:label.url' itemprop='item'>
-                        <span itemprop='name'><data:label.name/></span>
-                      </a>
-                      <meta expr:content='data:i+2' itemprop='position'/>
-                    </b:tag>
-                  </b:if>
+              <b:with value='data:post.labels filter (l =&gt; l.name in {&quot;WebTranslator&quot;, &quot;Homelab&quot;, &quot;PersonalDev&quot;, &quot;Blog&quot;, &quot;Server&quot;, &quot;Unity&quot;, &quot;Unreal&quot;, &quot;Shader&quot;, &quot;Review&quot;})' var='primaryCats'>
+              <b:with value='data:primaryCats.length &gt; 0 ? data:primaryCats.first : data:post.labels.first' var='catLabel'>
+                <b:if cond='data:catLabel'>
+                  <b:tag class='tab flexIn shrink noWrap' itemprop='itemListElement' itemscope='itemscope' itemtype='https://schema.org/ListItem' name='div'>
+                    <a class='n flexIn ellips fontM' expr:aria-label='data:catLabel.name' expr:data-text='data:catLabel.name' expr:href='data:catLabel.url' itemprop='item'>
+                      <span itemprop='name'><data:catLabel.name/></span>
+                    </a>
+                    <meta content='2' itemprop='position'/>
+                  </b:tag>
                 </b:if>
-              </b:loop>
+              </b:with>
+              </b:with>
               
               <b:elseif cond='data:view.isPost'/>
               <div class='tab flexIn noWrap'>
@@ -1744,13 +1744,20 @@ error: &quot;<div class='j e button' expr:aria-label='data:messages.loadMorePost
               </b:loop>
               
               <b:else/>
-              <b:loop index='i' values='data:post.labels' var='label'>
-                <b:if cond='data:post.labels none (label =&gt; label.name in [ &quot;Product&quot;, &quot;Discount10&quot;, &quot;Discount20&quot;, &quot;Discount30&quot;, &quot;Discount40&quot;, &quot;Discount50&quot;, &quot;Discount60&quot;, &quot;Discount70&quot;, &quot;Discount80&quot;, &quot;Discount90&quot; ])'>
-                  <b:if cond='data:i &lt;= 1'>
-                    <a expr:aria-label='data:label.name' expr:data-text='data:label.name' expr:href='data:label.url' rel='tag'/>
-                  </b:if>
+              <b:with value='data:post.labels filter (l =&gt; l.name in {&quot;WebTranslator&quot;, &quot;Homelab&quot;, &quot;PersonalDev&quot;, &quot;Blog&quot;, &quot;Server&quot;, &quot;Unity&quot;, &quot;Unreal&quot;, &quot;Shader&quot;, &quot;Review&quot;})' var='primaryCats'>
+              <b:with value='data:primaryCats.length &gt; 0 ? data:primaryCats.first : data:post.labels.first' var='catLabel'>
+                <b:if cond='data:catLabel'>
+                  <a expr:aria-label='data:catLabel.name' expr:data-text='data:catLabel.name' expr:href='data:catLabel.url' rel='tag'/>
+                  <b:with value='data:post.labels filter (l =&gt; l.name != data:catLabel.name and !(l.name in {&quot;429Error&quot;, &quot;트러블슈팅&quot;, &quot;상태관리&quot;, &quot;상태충돌&quot;, &quot;사용자사전&quot;, &quot;레이스컨디션&quot;, &quot;어댑터패턴&quot;, &quot;웹번역&quot;, &quot;정규식&quot;, &quot;지식관리&quot;, &quot;개발환경&quot;, &quot;멀티에이전트&quot;, &quot;렌더링&quot;, &quot;DOM&quot;, &quot;CSS&quot;, &quot;UX&quot;, &quot;LLM&quot;, &quot;CSP&quot;, &quot;Troubleshooting&quot;, &quot;Serverless&quot;, &quot;Vercel&quot;, &quot;Waline&quot;, &quot;Product&quot;, &quot;Sponsored&quot;, &quot;SelectionAPI&quot;, &quot;ChromeStorage&quot;, &quot;AbortController&quot;, &quot;DNS설정&quot;, &quot;커스텀도메인&quot;}))' var='cleanSubCats'>
+                  <b:with value='data:cleanSubCats.length &gt; 0 ? data:cleanSubCats.first : (data:post.labels filter (l =&gt; l.name != data:catLabel.name and !(l.name in {&quot;Sponsored&quot;, &quot;Product&quot;}))).first' var='subLabel'>
+                    <b:if cond='data:subLabel'>
+                      <a expr:aria-label='data:subLabel.name' expr:data-text='data:subLabel.name' expr:href='data:subLabel.url' rel='tag'/>
+                    </b:if>
+                  </b:with>
+                  </b:with>
                 </b:if>
-              </b:loop>
+              </b:with>
+              </b:with>
             </b:if>
           </div>
         </b:if>
@@ -3456,13 +3463,20 @@ class TableOfContents { constructor({ from, to }) { this.fromElement = from; thi
                                 </b:loop>
               
                                 <b:else/>
-                                <b:loop index='i' values='data:post.labels' var='label'>
-                                  <b:if cond='data:post.labels none (label =&gt; label.name in [ &quot;Product&quot;, &quot;Discount10&quot;, &quot;Discount20&quot;, &quot;Discount30&quot;, &quot;Discount40&quot;, &quot;Discount50&quot;, &quot;Discount60&quot;, &quot;Discount70&quot;, &quot;Discount80&quot;, &quot;Discount90&quot; ])'>
-                                    <b:if cond='data:i &lt;= 1'>
-                                      <a expr:aria-label='data:label.name' expr:data-text='data:label.name' expr:href='data:label.url' rel='tag'/>
-                                    </b:if>
+                                <b:with value='data:post.labels filter (l =&gt; l.name in {&quot;WebTranslator&quot;, &quot;Homelab&quot;, &quot;PersonalDev&quot;, &quot;Blog&quot;, &quot;Server&quot;, &quot;Unity&quot;, &quot;Unreal&quot;, &quot;Shader&quot;, &quot;Review&quot;})' var='primaryCats'>
+                                <b:with value='data:primaryCats.length &gt; 0 ? data:primaryCats.first : data:post.labels.first' var='catLabel'>
+                                  <b:if cond='data:catLabel'>
+                                    <a expr:aria-label='data:catLabel.name' expr:data-text='data:catLabel.name' expr:href='data:catLabel.url' rel='tag'/>
+                                    <b:with value='data:post.labels filter (l =&gt; l.name != data:catLabel.name and !(l.name in {&quot;429Error&quot;, &quot;트러블슈팅&quot;, &quot;상태관리&quot;, &quot;상태충돌&quot;, &quot;사용자사전&quot;, &quot;레이스컨디션&quot;, &quot;어댑터패턴&quot;, &quot;웹번역&quot;, &quot;정규식&quot;, &quot;지식관리&quot;, &quot;개발환경&quot;, &quot;멀티에이전트&quot;, &quot;렌더링&quot;, &quot;DOM&quot;, &quot;CSS&quot;, &quot;UX&quot;, &quot;LLM&quot;, &quot;CSP&quot;, &quot;Troubleshooting&quot;, &quot;Serverless&quot;, &quot;Vercel&quot;, &quot;Waline&quot;, &quot;Product&quot;, &quot;Sponsored&quot;, &quot;SelectionAPI&quot;, &quot;ChromeStorage&quot;, &quot;AbortController&quot;, &quot;DNS설정&quot;, &quot;커스텀도메인&quot;}))' var='cleanSubCats'>
+                                    <b:with value='data:cleanSubCats.length &gt; 0 ? data:cleanSubCats.first : (data:post.labels filter (l =&gt; l.name != data:catLabel.name and !(l.name in {&quot;Sponsored&quot;, &quot;Product&quot;}))).first' var='subLabel'>
+                                      <b:if cond='data:subLabel'>
+                                        <a expr:aria-label='data:subLabel.name' expr:data-text='data:subLabel.name' expr:href='data:subLabel.url' rel='tag'/>
+                                      </b:if>
+                                    </b:with>
+                                    </b:with>
                                   </b:if>
-                                </b:loop>
+                                </b:with>
+                                </b:with>
                               </b:if>
                             </div>
                           </b:if>
@@ -4387,13 +4401,20 @@ class TableOfContents { constructor({ from, to }) { this.fromElement = from; thi
                                 </b:loop>
                                 
                                 <b:else/>
-                                <b:loop index='i' values='data:post.labels' var='label'>
-                                  <b:if cond='data:post.labels none (label =&gt; label.name in [ &quot;Product&quot;, &quot;Discount10&quot;, &quot;Discount20&quot;, &quot;Discount30&quot;, &quot;Discount40&quot;, &quot;Discount50&quot;, &quot;Discount60&quot;, &quot;Discount70&quot;, &quot;Discount80&quot;, &quot;Discount90&quot; ])'>
-                                    <b:if cond='data:i &lt;= 1'>
-                                      <a expr:aria-label='data:label.name' expr:data-text='data:label.name' expr:href='data:label.url' rel='tag'/>
-                                    </b:if>
+                                <b:with value='data:post.labels filter (l =&gt; l.name in {&quot;WebTranslator&quot;, &quot;Homelab&quot;, &quot;PersonalDev&quot;, &quot;Blog&quot;, &quot;Server&quot;, &quot;Unity&quot;, &quot;Unreal&quot;, &quot;Shader&quot;, &quot;Review&quot;})' var='primaryCats'>
+                                <b:with value='data:primaryCats.length &gt; 0 ? data:primaryCats.first : data:post.labels.first' var='catLabel'>
+                                  <b:if cond='data:catLabel'>
+                                    <a expr:aria-label='data:catLabel.name' expr:data-text='data:catLabel.name' expr:href='data:catLabel.url' rel='tag'/>
+                                    <b:with value='data:post.labels filter (l =&gt; l.name != data:catLabel.name and !(l.name in {&quot;429Error&quot;, &quot;트러블슈팅&quot;, &quot;상태관리&quot;, &quot;상태충돌&quot;, &quot;사용자사전&quot;, &quot;레이스컨디션&quot;, &quot;어댑터패턴&quot;, &quot;웹번역&quot;, &quot;정규식&quot;, &quot;지식관리&quot;, &quot;개발환경&quot;, &quot;멀티에이전트&quot;, &quot;렌더링&quot;, &quot;DOM&quot;, &quot;CSS&quot;, &quot;UX&quot;, &quot;LLM&quot;, &quot;CSP&quot;, &quot;Troubleshooting&quot;, &quot;Serverless&quot;, &quot;Vercel&quot;, &quot;Waline&quot;, &quot;Product&quot;, &quot;Sponsored&quot;, &quot;SelectionAPI&quot;, &quot;ChromeStorage&quot;, &quot;AbortController&quot;, &quot;DNS설정&quot;, &quot;커스텀도메인&quot;}))' var='cleanSubCats'>
+                                    <b:with value='data:cleanSubCats.length &gt; 0 ? data:cleanSubCats.first : (data:post.labels filter (l =&gt; l.name != data:catLabel.name and !(l.name in {&quot;Sponsored&quot;, &quot;Product&quot;}))).first' var='subLabel'>
+                                      <b:if cond='data:subLabel'>
+                                        <a expr:aria-label='data:subLabel.name' expr:data-text='data:subLabel.name' expr:href='data:subLabel.url' rel='tag'/>
+                                      </b:if>
+                                    </b:with>
+                                    </b:with>
                                   </b:if>
-                                </b:loop>
+                                </b:with>
+                                </b:with>
                               </b:if>
                             </div>
                           </b:if>
@@ -4836,13 +4857,20 @@ class TableOfContents { constructor({ from, to }) { this.fromElement = from; thi
               
                                   <b:else/>
       
-                                  <b:loop index='i' values='data:post.labels' var='label'>
-                                    <b:if cond='data:post.labels none (label =&gt; label.name in [ &quot;Product&quot;, &quot;Discount10&quot;, &quot;Discount20&quot;, &quot;Discount30&quot;, &quot;Discount40&quot;, &quot;Discount50&quot;, &quot;Discount60&quot;, &quot;Discount70&quot;, &quot;Discount80&quot;, &quot;Discount90&quot; ])'>
-                                      <b:if cond='data:i &lt;= 1'>
-                                        <a expr:aria-label='data:label.name' expr:data-text='data:label.name' expr:href='data:label.url' rel='tag'/>
-                                      </b:if>
+                                  <b:with value='data:post.labels filter (l =&gt; l.name in {&quot;WebTranslator&quot;, &quot;Homelab&quot;, &quot;PersonalDev&quot;, &quot;Blog&quot;, &quot;Server&quot;, &quot;Unity&quot;, &quot;Unreal&quot;, &quot;Shader&quot;, &quot;Review&quot;})' var='primaryCats'>
+                                  <b:with value='data:primaryCats.length &gt; 0 ? data:primaryCats.first : data:post.labels.first' var='catLabel'>
+                                    <b:if cond='data:catLabel'>
+                                      <a expr:aria-label='data:catLabel.name' expr:data-text='data:catLabel.name' expr:href='data:catLabel.url' rel='tag'/>
+                                      <b:with value='data:post.labels filter (l =&gt; l.name != data:catLabel.name and !(l.name in {&quot;429Error&quot;, &quot;트러블슈팅&quot;, &quot;상태관리&quot;, &quot;상태충돌&quot;, &quot;사용자사전&quot;, &quot;레이스컨디션&quot;, &quot;어댑터패턴&quot;, &quot;웹번역&quot;, &quot;정규식&quot;, &quot;지식관리&quot;, &quot;개발환경&quot;, &quot;멀티에이전트&quot;, &quot;렌더링&quot;, &quot;DOM&quot;, &quot;CSS&quot;, &quot;UX&quot;, &quot;LLM&quot;, &quot;CSP&quot;, &quot;Troubleshooting&quot;, &quot;Serverless&quot;, &quot;Vercel&quot;, &quot;Waline&quot;, &quot;Product&quot;, &quot;Sponsored&quot;, &quot;SelectionAPI&quot;, &quot;ChromeStorage&quot;, &quot;AbortController&quot;, &quot;DNS설정&quot;, &quot;커스텀도메인&quot;}))' var='cleanSubCats'>
+                                      <b:with value='data:cleanSubCats.length &gt; 0 ? data:cleanSubCats.first : (data:post.labels filter (l =&gt; l.name != data:catLabel.name and !(l.name in {&quot;Sponsored&quot;, &quot;Product&quot;}))).first' var='subLabel'>
+                                        <b:if cond='data:subLabel'>
+                                          <a expr:aria-label='data:subLabel.name' expr:data-text='data:subLabel.name' expr:href='data:subLabel.url' rel='tag'/>
+                                        </b:if>
+                                      </b:with>
+                                      </b:with>
                                     </b:if>
-                                  </b:loop>
+                                  </b:with>
+                                  </b:with>
                                 </b:if>
                               </div>
                             </b:if>
@@ -5586,88 +5614,6 @@ document.addEventListener("DOMContentLoaded", function() {
 // ]]>
 </script>
 
-<!--[ Sync Card & Post Labels with Original Metadata Order (1st: Category, 2nd: Relevance) ]-->
-<script type='text/javascript'>
-// <![CDATA[
-document.addEventListener("DOMContentLoaded", function() {
-  var home = window.location.origin;
 
-  // 1. 단일 포스트 페이지 본문 헤더 라벨 동기화 (본문 DOM 주석 직접 파싱)
-  try {
-    var it = document.createNodeIterator(document.body, NodeFilter.SHOW_COMMENT, null, false);
-    var n;
-    while (n = it.nextNode()) {
-      var val = n.nodeValue || '';
-      var m = val.match(/(?:BLOG_LABELS|Labels \(Tags\)):\s*([^\r\n]+)/i);
-      if (m && m[1]) {
-        var clean = m[1].replace(/-->.*$/, '').trim();
-        var parsed = clean.split(',').map(function(s) { return s.trim(); }).filter(Boolean);
-        if (parsed.length > 0) {
-          var headerLabel = document.querySelector('.postI .pH.info .label') || document.querySelector('article.item .pH.info .label');
-          if (headerLabel) {
-            var hHtml = '<a aria-label="' + parsed[0] + '" data-text="' + parsed[0] + '" href="' + home + '/search/label/' + encodeURIComponent(parsed[0]) + '" rel="tag"></a>';
-            if (parsed.length > 1) {
-              hHtml += '<a aria-label="' + parsed[1] + '" data-text="' + parsed[1] + '" href="' + home + '/search/label/' + encodeURIComponent(parsed[1]) + '" rel="tag"></a>';
-            }
-            headerLabel.innerHTML = hHtml;
-          }
-          break;
-        }
-      }
-    }
-  } catch (e) {}
-
-  // 2. 전체 카드(홈 피드, 검색/라벨 피드, 인기글 위젯)의 라벨을 본문 원본 순서(1번 카테고리, 2번 관련도)로 동기화
-  fetch(home + '/feeds/posts/default?alt=json&max-results=50')
-    .then(function(r) { return r.ok ? r.json() : null; })
-    .then(function(json) {
-      if (!json || !json.feed || !json.feed.entry) return;
-      var entries = json.feed.entry;
-      var labelMap = {};
-
-      for (var i = 0; i < entries.length; i++) {
-        var e = entries[i];
-        var altLink = (e.link || []).find(function(l) { return l.rel === 'alternate'; });
-        if (!altLink || !altLink.href) continue;
-        
-        var path = new URL(altLink.href, home).pathname;
-        var content = (e.content && e.content.$t) ? e.content.$t : '';
-        var m = content.match(/(?:BLOG_LABELS|Labels \(Tags\)):\s*([^\r\n]+)/i);
-        
-        if (m && m[1]) {
-          var cleanLine = m[1].replace(/-->.*$/, '').trim();
-          var labels = cleanLine.split(',').map(function(s) { return s.trim(); }).filter(Boolean);
-          if (labels.length > 0) {
-            labelMap[path] = labels;
-          }
-        }
-      }
-
-      var articles = document.querySelectorAll('article:not(.item)');
-      for (var a = 0; a < articles.length; a++) {
-        var art = articles[a];
-        var link = art.querySelector('a[href*=".html"]');
-        if (!link) continue;
-        
-        var artPath = new URL(link.href, home).pathname;
-        var originalLabels = labelMap[artPath];
-        if (!originalLabels || originalLabels.length === 0) continue;
-
-        var labelContainer = art.querySelector('.pH.info .label');
-        if (labelContainer) {
-          var l1 = originalLabels[0];
-          var l2 = originalLabels[1] || null;
-          var newHtml = '<a aria-label="' + l1 + '" data-text="' + l1 + '" href="' + home + '/search/label/' + encodeURIComponent(l1) + '" rel="tag"></a>';
-          if (l2) {
-            newHtml += '<a aria-label="' + l2 + '" data-text="' + l2 + '" href="' + home + '/search/label/' + encodeURIComponent(l2) + '" rel="tag"></a>';
-          }
-          labelContainer.innerHTML = newHtml;
-        }
-      }
-    })
-    .catch(function() {});
-});
-// ]]>
-</script>
 </body><b:if cond='!data:view.isPreview'>--&gt;&lt;/body&gt;</b:if>
 </html>
