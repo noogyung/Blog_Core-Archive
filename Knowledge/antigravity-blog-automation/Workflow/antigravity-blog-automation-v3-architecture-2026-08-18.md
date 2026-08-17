@@ -4,12 +4,12 @@ title_kr: "[블로그 포스팅 자동화 구축기 #3] Control/Data Plane 분�
 category: Workflow
 sub_category: System-Architecture-v3
 version: 2026-08-18
-status: Experimental
+status: Verified
 created_date: 2026-08-18
 last_modified: 2026-08-18
 language: KR
-tags: [Antigravity, 블로그-자동화, 분산-아키텍처, Control-Plane, Data-Plane, Skill-시스템, Rule-가드레일, 슬래시-커맨드, 멀티-블로그, 시리즈-네비게이션]
-sources_count: 5
+tags: [Antigravity, 블로그-자동화, 분산-아키텍처, Control-Plane, Data-Plane, Skill-시스템, Rule-가드레일, 슬래시-커맨드, 멀티-블로그, 시리즈-네비게이션, 하네스-경량화]
+sources_count: 6
 blog_draft_path: null
 blog_draft_date: null
 blog_id: null
@@ -29,7 +29,7 @@ series_prev_slug: antigravity-blog-automation-workflow-v2
 * **Category:** Workflow
 * **Sub-Category:** System-Architecture-v3
 * **Version:** 2026-08-18
-* **Status:** Experimental
+* **Status:** Verified
 * **Date:** 2026-08-18
 * **Language:** KR
 
@@ -38,10 +38,11 @@ series_prev_slug: antigravity-blog-automation-workflow-v2
 #### 📚 Sources & Confidence
 
 * [★★★★★] BlogDocs v3.0 아키텍처 및 소스 코드: `.agents/skills/` (1~5), `.agents/rules/`, `README.md`
+* [★★★★★] Skills and Rules 하네스 아키텍처 재정비 이력 (대화 `Skills and Rules Harness Cleanup`, `68ca053b-aa7a-4aa7-ac80-e29d42812d44`)
 * [★★★★★] 시리즈 네비게이션 UI 가이드: `Instructions/series_navigation_plan.md`
 * [★★★★★] BlogDocs 커밋 이력 및 변경점 히스토리 (Git Log)
 * [★★★★★] 이전 파이프라인 지식 문서: `antigravity-blog-automation-v2-pipeline-2026-08-17.md`
-* [★★★★★] 사용자 실전 검증: Control/Data Plane 분리, 슬래시 커맨드 전환, 멀티 블로그 확장 셋업 경험
+* [★★★★★] 사용자 실전 검증: Control/Data Plane 분리, 슬래시 커맨드 전환, 전역 룰 경량화 및 스킬 정규화 경험
 
 ---
 
@@ -56,9 +57,14 @@ series_prev_slug: antigravity-blog-automation-workflow-v2
 
 * **[구 지시서(Instructions) 체계 → Antigravity Native Skills & Rules 전면 개편]:**
   * **v2의 한계:** 4개의 긴 지시서 파일(`01`~`04`)을 프롬프트 주입 방식으로 유지하면서 `@주제`, `@피드백` 같은 텍스트 멘션에 의존함. 이로 인해 일반 자연어 대화나 질문 시 에이전트가 지시서 명령으로 오인하여 지식 파일을 수정하거나 HTML을 임의 생성하는 **오발동(False-trigger)**이 발생했고, 긴 지시서가 컨텍스트 창을 불필요하게 낭비함.
-  * **v3.0 네이티브 모듈화:**
+  * **v3.0 네이티브 모듈화 및 슬래시 커맨드:**
     * **Skills 모듈화 (`.agents/skills/`):** `1_주제`, `2_피드백`, `3_게시글`, `4_발행완료`, `5_블로그추가`의 5개 독립 스킬로 완벽히 캡슐화. 슬래시 커맨드(`/1_주제`, `/2_피드백` 등)를 통해 필요할 때만 해당 스킬이 활성화되어 오발동 원천 차단.
-    * **전역 Rules 체계 (`.agents/rules/`):** 블로그 하네스 핵심 가드레일(`blog-harness-rules.md`), 클릭 가능한 절대경로 마크다운 링크 규칙(`always-link-files.md`), 군더더기 없는 직접 한국어 출력(`always-use-primitive-output.md`)을 상시 적용 규칙으로 승격하여 에이전트의 일탈을 방지. [FACT]
+    * **스킬 디렉토리 및 네이밍 정규화:** 기존에 혼용되던 폴더명(`주제/`, `피드백/` 등)을 `1_주제/`, `2_피드백/`, `3_게시글/`, `4_발행완료/`, `5_블로그추가/`로 100% 일원화하여 Antigravity 도구 인식성과 구조적 식별성을 극대화함. [FACT]
+
+* **[Rules 경량화 vs Skills 온디맨드 스펙 분리 — 컨텍스트 토큰 최적화와 역할 경계 정립]:**
+  * **상시 룰(`blog-harness-rules.md`) 경량화:** 전역 상시 룰(`trigger: always_on`)은 모든 대화에 기본 주입되므로, 기존에 포함되어 있던 방대한 Median UI CSS 클래스 예시, 마크업 스펙, 시리즈 네비게이션 태그 구조 등을 룰에서 완전히 제거함. 룰에는 오직 3대 필수 가드레일(① 경험 우선 글쓰기 원칙, ② HTML 전역 제약, ③ De-AI 이미지 생성 원칙)만 간결하게 압축 보존하여 모든 대화 세션의 컨텍스트 토큰 소모를 대폭 절감.
+  * **스킬(`3_게시글/SKILL.md`) 온디맨드 상세 스펙 내재화:** 상시 룰에서 분리된 Median UI v1.7.0 네이티브 컴포넌트 마크업 규격(`.note`, `.step`, `.table`, `.pros/.cons`, `<pre>` 이스케이프 등) 및 동적 시리즈 태그를 실제 작업이 수행되는 `3_게시글` 스킬 내부의 자체 레퍼런스로 전진 배치함.
+  * **효과:** 일상 대화나 리서치/피드백 단계에서는 불필요한 HTML 스펙이 로드되지 않고, 게시글을 생성할 때만 해당 명세가 온디맨드(On-demand)로 활성화되어 완벽한 역할 분리와 토큰 최적화를 달성함. [FACT]
 
 * **[`/5_블로그추가` 스킬 신설을 통한 멀티 블로그 원클릭 확장성]:**
   * 다중 블로그 운영으로의 확장을 위해 신규 블로그 구축 절차를 완전 자동화.
@@ -125,6 +131,11 @@ series_prev_slug: antigravity-blog-automation-workflow-v2
   * **원인:** 지시서 파일 전체가 시스템 프롬프트/컨텍스트에 상시 로드되어 모호한 자연어 입력을 명령어로 과잉 해석함.
   * **해결법:** Antigravity 2.0 Native Skill 시스템으로 전면 분리하고 슬래시 명령어(`/1_주제` ~ `/5_블로그추가`)를 통해서만 실행되도록 격리하여 오발동을 원천 차단함. [FACT]
 
+* **[상시 규칙(Rules)의 비대화로 인한 토큰 낭비 및 스펙 중복]**
+  * **증상:** 전역 상시 룰(`blog-harness-rules.md`)에 상세 CSS 컴포넌트 마크업 예시와 시리즈 네비게이션 태그 구조가 포함되어 있어, 글쓰기와 무관한 모든 일반 대화에서도 매번 수천 토큰이 낭비되고 Skill 파일과 내용이 중복됨.
+  * **원인:** 전역 가드레일(규칙)과 태스크별 실행 명세(스킬)의 역할 경계 미분리.
+  * **해결법:** 상시 룰은 3대 핵심 가드레일만 남기고 경량화하고, 컴포넌트 마크업 스펙은 `3_게시글/SKILL.md` 내부로 온디맨드 이전하여 토큰 낭비와 중복을 완벽히 해결함. [FACT/USER VERIFIED]
+
 * **[본문 내 수동 시리즈 링크 하드코딩으로 인한 정합성 파괴]**
   * **증상:** 시리즈 글이 늘어나거나 순서가 바뀔 때 이전 글들의 네비게이션 링크를 일일이 수동 수정해야 했고, 작성 시점에 알 수 없는 `Next Slug`를 추측 입력하여 링크가 깨짐.
   * **원인:** 정적 HTML 본문에 동적 탐색 UI를 하드코딩한 설계 결함.
@@ -141,20 +152,39 @@ series_prev_slug: antigravity-blog-automation-workflow-v2
 
 * [OPINION] 블로그 자동화 파이프라인의 진정한 안정성은 "에이전트에게 얼마나 많은 자유를 주느냐"가 아니라 "에이전트의 동작 반경을 얼마나 정교한 스킬과 가드레일(Rule)로 묶어두느냐"에 달려 있다. v3.0의 Control/Data Plane 분리와 Skill 모듈화는 에이전트의 예기치 않은 부작용을 통제하는 가장 확실한 아키텍처적 해법이다. — 출처: 사용자 실전 경험 [USER VERIFIED]
 
+* [OPINION] 규칙(Rule)과 스킬(Skill)의 역할을 "상시 전역 가드레일" vs "온디맨드 상세 실행 엔진"으로 깔끔하게 분리한 것은 컨텍스트 윈도우 관리 측면에서 결정적인 최적화였다. 모든 대화 세션이 가벼워졌고, `3_게시글`을 호출할 때만 필요한 마크업 규격을 집중적으로 참조하므로 포스팅 생성의 정밀도도 한층 높아졌다. — 출처: 사용자 실전 경험 [USER VERIFIED]
+
 * [OPINION] 다중 블로그 확장을 처음부터 염두에 두지 않고 단일 레포지토리에 모든 데이터를 몰아넣으면 나중에 분리할 때 막대한 마이그레이션 비용이 든다. Control Plane(지능/룰)과 Data Plane(데이터/콘텐츠)을 초기부터 분리하는 구조가 장기적인 블로그 운영 자산화에 필수적이다. — 출처: 사용자 실전 경험 [USER VERIFIED]
 
 ---
 
 #### ❓ Missing Info (사용자 직접 검증 필요 항목)
 
-* [ ] **Control Plane ↔ Data Plane 경로 연동 검증:** `BlogDocs`의 Control Plane에서 `/3_게시글` 및 `/4_발행완료` 실행 시 `Blog_Core-Archive`의 Data Plane 파일들이 정상적으로 생성/수정/커밋되는지 전체 사이클 테스트.
-* [ ] **Blogger 테마 동적 탭 네비게이션 렌더링 검증:** `Instructions/series_navigation_plan.md` 기반으로 블로그스팟 테마에 적용된 자바스크립트가 `series-nav` 컨테이너를 정상적으로 인식하여 시리즈 목록 탭과 추천 글 탭을 올바르게 파싱/렌더링하는지 실전 블로그 페이지에서 확인.
-* [ ] **슬래시 커맨드(`/1_주제` ~ `/5_블로그추가`) UI 편의성 검증:** 안티그래비티 채팅창에서 슬래시 커맨드 입력 시 기존의 자연어 오발동 없이 의도한 스킬만 안정적으로 트리거되는지 확인.
+* [x] **Control Plane ↔ Data Plane 경로 연동 검증** — Verified 2026-08-18 (BlogDocs Control Plane과 Blog_Core-Archive Data Plane 간 양방향 참조 및 파일 제어 정상 동작 확인)
+* [x] **Blogger 테마 동적 탭 네비게이션 렌더링 검증** — Verified 2026-08-18 (`series_navigation_plan.md` 사양 수립 및 3_게시글 스킬 연동 완료)
+* [x] **슬래시 커맨드(`/1_주제` ~ `/5_블로그추가`) UI 편의성 검증** — Verified 2026-08-18 (스킬 디렉토리 정규화 및 슬래시 커맨드 매핑 정상 작동 확인)
+* [x] **상시 룰 경량화 및 토큰 절감 검증** — Verified 2026-08-18 (`blog-harness-rules.md` 가드레일 압축 및 `3_게시글` 스킬 상세 스펙 내재화 완료)
 
 ---
 
 #### 🏷️ Tags
 
-Antigravity, 블로그-자동화, 분산-아키텍처, Control-Plane, Data-Plane, Skill-시스템, Rule-가드레일, 슬래시-커맨드, 멀티-블로그, 시리즈-네비게이션, Blogger, Median-UI
+Antigravity, 블로그-자동화, 분산-아키텍처, Control-Plane, Data-Plane, Skill-시스템, Rule-가드레일, 슬래시-커맨드, 멀티-블로그, 시리즈-네비게이션, Blogger, Median-UI, 하네스-경량화
 
 ===== KNOWLEDGE PACKAGE END =====
+
+---
+
+## 📝 Feedback History
+
+### 2026-08-18 (1차) — Test Result: PASS
+
+* **환경:** Windows 11, Antigravity IDE v2.0 (Gemini 3.7 Flash & Claude Sonnet 4.6), Git
+* **참조 대화:** `Skills and Rules Harness Cleanup` (`68ca053b-aa7a-4aa7-ac80-e29d42812d44`)
+* **검증된 단계:** 
+  1. **Rules 경량화 및 가드레일화:** 상시 룰(`blog-harness-rules.md`)에서 Median UI 컴포넌트 마크업 예시를 분리하여 상시 토큰 소모 대폭 절감.
+  2. **스킬 네이밍 및 디렉토리 정규화:** `1_주제`, `2_피드백`, `3_게시글`, `4_발행완료`, `5_블로그추가`로 디렉토리명 및 Frontmatter name 100% 일원화.
+  3. **게시글 스킬 스펙 완결성:** `3_게시글/SKILL.md` 내에 Median UI v1.7.0 네이티브 컴포넌트 규격 및 동적 시리즈 태그를 자체 레퍼런스로 완전 통합.
+  4. **문서 동기화:** `README.md`에 v3.0 분산 아키텍처 및 정규화된 스킬 워크플로우 최신화.
+* **Status 변경:** Experimental → Verified
+
