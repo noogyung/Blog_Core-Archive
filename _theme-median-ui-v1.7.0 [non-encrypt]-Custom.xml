@@ -5915,5 +5915,5 @@ class TableOfContents { constructor({ from, to }) { this.fromElement = from; thi
   
 
 
-</body><b:if cond='!data:view.isPreview'>--&gt;&lt;/body&gt;</b:if>
+</body>
 </html>
