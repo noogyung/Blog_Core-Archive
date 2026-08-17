@@ -2979,248 +2979,210 @@ class TableOfContents { constructor({ from, to }) { this.fromElement = from; thi
               <div class='leftN'>
               
                 <b:section class='leftM' id='Left-menu' maxwidgets='2' showaddelement='false'>
-                  <b:widget id='HTML000' locked='true' title='Main Menu' type='HTML' version='2' visible='true'>
+                  <b:widget id='HTML000' locked='true' title='Main Menu (Deprecated Hardcoded)' type='HTML' version='2' visible='false'>
                     <b:widget-settings>
-                      <b:widget-setting name='content'><![CDATA[<!--[ You can only edit this widget from HTML theme ]-->]]></b:widget-setting>
+                      <b:widget-setting name='content'><![CDATA[<!--[ Switch to LinkList000 for GUI management ]-->]]></b:widget-setting>
                     </b:widget-settings>
                     <b:includable id='main'>
-                      <ul class='leftNav flex column noList' itemscope='itemscope' itemtype='https://schema.org/SiteNavigationElement'>
-                        <b:class cond='data:blog.languageDirection == &quot;rtl&quot;' name='r'/>
-                        
-                        <!--[ Homepage menu ]-->
-                        <li class='leftC'>
-                          <b:tag class='a flex op i20' expr:name='!data:view.isHomepage ? &quot;a&quot; : &quot;div&quot;'>
-                            <b:class cond='data:view.isHomepage' name='home'/>
-                            <b:attr cond='!data:view.isHomepage' expr:value='data:messages.home' name='aria-label'/>
-                            <b:attr cond='!data:view.isHomepage' expr:value='data:blog.homepageUrl.canonical' name='href'/>
-                            <b:attr cond='!data:view.isHomepage' name='itemprop' value='url'/>
-                              
-                            <!--[ icon ]-->
-                            <b:include name='home-icon'/>
-                            
-                            <!--[ name ]-->
-                            <div class='n text'>
-                              <span>
-                                <b:attr cond='!data:view.isHomepage' name='itemprop' value='name'/>
-                                
-                                <b:comment><!--[ Replace <data:messages.home/> tag with the text you want ]--></b:comment>
-                                <data:messages.home/>
-                              </span>
-                            </div>
-                          </b:tag>
-                        </li>
-                      
-                        <!--[ Dropdown: 게임개발 ]-->
-                        <li class='leftC dr'>
-                          <b:comment><!--[ Add open='' attribute to keep the menu open ]--></b:comment>
-                          <b:tag name='details'>
-                            <b:tag aria-label='게임개발' class='a flex noWrap op i20' name='summary'>
-                              <!--[ icon ]-->
-                              <b:include name='category-2-icon'/>
-                          
-                              <!--[ name ]-->
-                              <b:tag class='flexIn center grow text' name='span'>
-                                <span>게임개발</span>
-                                <b:include name='arrow-down-1-icon'/>
-                              </b:tag>
-                              <span class='pTip'>게임개발</span>
-                            </b:tag>
-                            
-                            <ul class='n'>
-                              <li itemprop='name'>
-                                <a href='/search/label/Unity' itemprop='url'>
-                                  <span>Unity</span>
-                                </a>
-                              </li>
-                              <li itemprop='name'>
-                                <a href='/search/label/Unreal' itemprop='url'>
-                                  <span>Unreal</span>
-                                </a>
-                              </li>
-                              <li itemprop='name'>
-                                <a href='/search/label/Shader' itemprop='url'>
-                                  <span>Shader</span>
-                                </a>
-                              </li>
-                            </ul>
-                            
-                          </b:tag>
-                        </li>
-                      
-                        <!--[ Dropdown: 취미 ]-->
-                        <li class='leftC dr br'>
-                          <b:comment><!--[ Add open='' attribute to keep the menu open ]--></b:comment>
-                          <b:tag name='details'>
-                            <b:tag aria-label='취미' class='a flex noWrap op i20' name='summary'>
-                              <!--[ icon ]-->
-                              <b:include name='folder-2-icon'/>
-                          
-                              <!--[ name ]-->
-                              <b:tag class='flexIn center grow text' name='span'>
-                                <span>취미</span>
-                                <b:include name='arrow-down-1-icon'/>
-                              </b:tag>
-                              <span class='pTip'>취미</span>
-                            </b:tag>
-                            
-                            <ul class='n'>
-                              <li itemprop='name'>
-                                <a href='/search/label/Blog' itemprop='url'>
-                                  <span>블로그</span>
-                                </a>
-                              </li>
-                              <li itemprop='name'>
-                                <a href='/search/label/Server' itemprop='url'>
-                                  <span>서버</span>
-                                </a>
-                              </li>
-                              <li itemprop='name'>
-                                <a href='/search/label/PersonalDev' itemprop='url'>
-                                  <span>개인 개발</span>
-                                </a>
-                              </li>
-                              <li itemprop='name'>
-                                <a href='/search/label/Review' itemprop='url'>
-                                  <span>리뷰</span>
-                                </a>
-                              </li>
-                            </ul>
-                            
-                          </b:tag>
-                        </li>
-                          
-                        <!--[ Standar menu: About ]-->
-                        <li class='leftC'>
-                          <a aria-label='About' class='a flex op i20' href='/p/about.html' itemprop='url'>
-                            <!--[ icon ]-->
-                            <b:include name='profile-2user-icon'/>
-                            
-                            <!--[ name ]-->
-                            <div class='n text'>
-                              <span itemprop='name'>About</span>
-                            </div>
-                          </a>
-                        </li>
-                          
-                        <!--[ Standar menu: Contact (Guestbook) ]-->
-                        <li class='leftC br'>
-                          <a aria-label='Contact' class='a flex op i20' href='/p/guestbook.html' itemprop='url'>
-                            <!--[ icon ]-->
-                            <b:include name='sms-edit-icon'/>
-                            
-                            <!--[ name ]-->
-                            <div class='n text'>
-                              <span itemprop='name'>Contact</span>
-                            </div>
-                          </a>
-                        </li>
-                          
-                        <!--[ Dropdown: 시리즈 (Custom menu) ]-->
-                        <li class='leftC dr'>
-                          <b:tag name='details'>
-                            <b:tag aria-label='시리즈' class='a flex noWrap op i20' name='summary'>
-                              <!--[ icon ]-->
-                              <b:include name='document-icon'/>
-                          
-                              <!--[ name ]-->
-                              <b:tag class='flexIn center grow text' name='span'>
-                                <span>시리즈</span>
-                                <b:include name='arrow-down-1-icon'/>
-                              </b:tag>
-                              <span class='pTip'>시리즈</span>
-                            </b:tag>
-                            
-                            <ul class='n'>
-                              <li itemprop='name'>
-                                <a href='/search/label/WebTranslator' itemprop='url'>
-                                  <span>Web Translator</span>
-                                </a>
-                              </li>
-                              <li itemprop='name'>
-                                <a href='/search/label/Homelab' itemprop='url'>
-                                  <span>Homelab</span>
-                                </a>
-                              </li>
-                            </ul>
-                          </b:tag>
-                        </li>
-                      </ul>
+                      <!-- Disabled in favor of LinkList000 -->
                     </b:includable>
                   </b:widget>
-                  <b:widget id='LinkList000' locked='true' title='Main Menu (alternative)' type='LinkList' version='2' visible='false'>
+                  <b:widget id='LinkList000' locked='true' title='Main Menu' type='LinkList' version='2' visible='true'>
                     <b:widget-settings>
-                      <b:widget-setting name='link-3'>#</b:widget-setting>
                       <b:widget-setting name='sorting'>NONE</b:widget-setting>
-                      <b:widget-setting name='text-1'>About</b:widget-setting>
-                      <b:widget-setting name='link-1'>#</b:widget-setting>
                       <b:widget-setting name='text-0'>Home</b:widget-setting>
-                      <b:widget-setting name='link-2'>#</b:widget-setting>
-                      <b:widget-setting name='text-3'>Custom menu</b:widget-setting>
-                      <b:widget-setting name='link-0'>custom_text</b:widget-setting>
-                      <b:widget-setting name='text-2'>Contact</b:widget-setting>
+                      <b:widget-setting name='link-0'>/</b:widget-setting>
+                      <b:widget-setting name='text-1'>게임개발</b:widget-setting>
+                      <b:widget-setting name='link-1'>_</b:widget-setting>
+                      <b:widget-setting name='text-2'>_Unity</b:widget-setting>
+                      <b:widget-setting name='link-2'>/search/label/Unity</b:widget-setting>
+                      <b:widget-setting name='text-3'>_Unreal</b:widget-setting>
+                      <b:widget-setting name='link-3'>/search/label/Unreal</b:widget-setting>
+                      <b:widget-setting name='text-4'>_Shader</b:widget-setting>
+                      <b:widget-setting name='link-4'>/search/label/Shader</b:widget-setting>
+                      <b:widget-setting name='text-5'>취미</b:widget-setting>
+                      <b:widget-setting name='link-5'>_</b:widget-setting>
+                      <b:widget-setting name='text-6'>_블로그</b:widget-setting>
+                      <b:widget-setting name='link-6'>/search/label/Blog</b:widget-setting>
+                      <b:widget-setting name='text-7'>_서버</b:widget-setting>
+                      <b:widget-setting name='link-7'>/search/label/Server</b:widget-setting>
+                      <b:widget-setting name='text-8'>_개인 개발</b:widget-setting>
+                      <b:widget-setting name='link-8'>/search/label/PersonalDev</b:widget-setting>
+                      <b:widget-setting name='text-9'>_리뷰</b:widget-setting>
+                      <b:widget-setting name='link-9'>/search/label/Review</b:widget-setting>
+                      <b:widget-setting name='text-10'>About</b:widget-setting>
+                      <b:widget-setting name='link-10'>/p/about.html</b:widget-setting>
+                      <b:widget-setting name='text-11'>Contact</b:widget-setting>
+                      <b:widget-setting name='link-11'>/p/guestbook.html</b:widget-setting>
+                      <b:widget-setting name='text-12'>시리즈</b:widget-setting>
+                      <b:widget-setting name='link-12'>_</b:widget-setting>
+                      <b:widget-setting name='text-13'>_Web Translator</b:widget-setting>
+                      <b:widget-setting name='link-13'>/search/label/WebTranslator</b:widget-setting>
+                      <b:widget-setting name='text-14'>_Homelab</b:widget-setting>
+                      <b:widget-setting name='link-14'>/search/label/Homelab</b:widget-setting>
+                      <b:widget-setting name='text-15'>_Antigravity</b:widget-setting>
+                      <b:widget-setting name='link-15'>/search/label/Antigravity</b:widget-setting>
                     </b:widget-settings>
                     <b:includable id='main'>
                       <b:include name='content'/>
                     </b:includable>
                     <b:includable id='content'>
-                      <ul class='leftNav flex column noList' itemscope='itemscope' itemtype='https://schema.org/SiteNavigationElement'>
+                      <ul class='leftNav flex column noList' id='leftNavigation' itemscope='itemscope' itemtype='https://schema.org/SiteNavigationElement'>
                         <b:class cond='data:blog.languageDirection == &quot;rtl&quot;' name='r'/>
-                        
-                        <b:loop values='data:links' var='link'>
-                          <b:if cond='data:link.name == &quot;Home&quot;'>
-                            <!--[ Homepage menu ]-->
-                            <li class='leftC'>
-                              <b:tag class='a flex op i20' expr:name='!data:view.isHomepage ? &quot;a&quot; : &quot;div&quot;'>
-                                <b:class cond='data:view.isHomepage' name='home'/>
-                                <b:attr cond='!data:view.isHomepage' expr:value='data:messages.home' name='aria-label'/>
-                                <b:attr cond='!data:view.isHomepage' expr:value='data:blog.homepageUrl.canonical' name='href'/>
-                                <b:attr cond='!data:view.isHomepage' name='itemprop' value='url'/>
-                              
-                                <!--[ icon ]-->
-                                <b:include name='home-icon'/>
-                            
-                                <!--[ name ]-->
-                                <div class='n text'>
-                                  <span>
-                                    <b:attr cond='!data:view.isHomepage' name='itemprop' value='name'/>
-                                
-                                    <b:if cond='data:link.target != &quot;#&quot; and data:link.target != &quot;custom_text&quot;'>
-                                      <data:link.target/>
-                                      <b:else/>
-                                      <data:link.name/>
-                                    </b:if>
-                                  </span>
-                                </div>
-                              </b:tag>
-                            </li>
-                          </b:if>
-                        </b:loop>
-                        
-                        <b:loop values='data:links' var='link'>
-                          <b:if cond='data:link.name != &quot;Home&quot;'>
-                            <li class='leftC'>
-                              <a aria-label='About' class='a flex op i20' expr:href='data:link.target' itemprop='url'>
-                                <!--[ icon ]-->
-                                <b:if cond='data:link.name == &quot;About&quot;'>
-                                  <b:include name='profile-2user-icon'/>
-                                  
-                                  <b:elseif cond='data:link.name == &quot;Contact&quot;'/>
-                                  <b:include name='sms-edit-icon'/>
-                                  
-                                  <b:else/>
-                                  <b:include name='folder-2-icon'/>
-                                </b:if>
-                            
-                                <!--[ name ]-->
-                                <div class='n text'>
-                                  <span itemprop='name'><data:link.name/></span>
-                                </div>
-                              </a>
-                            </li>
-                          </b:if>
-                        </b:loop>
-                        
+                        <script>
+                          var rawNavLinks = [<b:loop values='data:links' var='link'>{ name: &quot;<data:link.name/>&quot;, target: &quot;<data:link.target/>&quot; }<b:if cond='data:link.isLast != &quot;true&quot;'>,</b:if></b:loop>];
+                          var isHomePage = <data:view.isHomepage/>;
+                          var homepageUrl = &quot;<data:blog.homepageUrl.canonical/>&quot;;
+                          var homeText = &quot;<data:messages.home/>&quot;;
+                        </script>
                       </ul>
+                      <div id='navIconsTpl' style='display:none'>
+                        <span data-icon='home'><b:include name='home-icon'/></span>
+                        <span data-icon='category'><b:include name='category-2-icon'/></span>
+                        <span data-icon='folder'><b:include name='folder-2-icon'/></span>
+                        <span data-icon='document'><b:include name='document-icon'/></span>
+                        <span data-icon='about'><b:include name='profile-2user-icon'/></span>
+                        <span data-icon='contact'><b:include name='sms-edit-icon'/></span>
+                        <span data-icon='tag'><b:include name='tag-icon'/></span>
+                        <span data-icon='arrow-down'><b:include name='arrow-down-1-icon'/></span>
+                      </div>
+                      <script>/*<![CDATA[*/
+                      (function() {
+                        var navUl = document.getElementById('leftNavigation');
+                        if (!navUl || !Array.isArray(rawNavLinks)) return;
+                        
+                        var getIconSvg = function(iconType) {
+                          var tpl = document.getElementById('navIconsTpl');
+                          if (!tpl) return '';
+                          var el = tpl.querySelector('[data-icon="' + iconType + '"]');
+                          return el ? el.innerHTML : (tpl.querySelector('[data-icon="folder"]') ? tpl.querySelector('[data-icon="folder"]').innerHTML : '');
+                        };
+                        
+                        var resolveIcon = function(name, isDropdown) {
+                          var n = name.toLowerCase();
+                          if (n === 'home' || n === '홈') return 'home';
+                          if (n === 'about' || n === '소개') return 'about';
+                          if (n === 'contact' || n === '방명록' || n === 'guestbook') return 'contact';
+                          if (n.indexOf('시리즈') !== -1 || n.indexOf('series') !== -1) return 'document';
+                          if (n.indexOf('개발') !== -1 || n.indexOf('game') !== -1 || n.indexOf('게임') !== -1) return 'category';
+                          if (isDropdown) return 'category';
+                          return 'folder';
+                        };
+
+                        var items = [];
+                        var currentParent = null;
+
+                        for (var i = 0; i < rawNavLinks.length; i++) {
+                          var raw = rawNavLinks[i];
+                          var rawName = (raw.name || '').trim();
+                          var rawTarget = (raw.target || '').trim();
+
+                          var customIcon = null;
+                          var iconMatch = rawName.match(/^\[(?:icon:)?([a-zA-Z0-9_-]+)\]\s*(.*)$/);
+                          if (iconMatch) {
+                            customIcon = iconMatch[1];
+                            rawName = iconMatch[2].trim();
+                          }
+
+                          var isSub = rawName.startsWith('_');
+                          var cleanName = isSub ? rawName.substring(1).trim() : rawName;
+
+                          if (isSub && currentParent) {
+                            currentParent.subItems.push({
+                              name: cleanName,
+                              target: rawTarget
+                            });
+                          } else {
+                            var isDropdown = (rawTarget === '_' || rawTarget === '#');
+                            if (i + 1 < rawNavLinks.length && (rawNavLinks[i + 1].name || '').trim().startsWith('_')) {
+                              isDropdown = true;
+                            }
+
+                            var parentObj = {
+                              name: cleanName,
+                              target: rawTarget,
+                              icon: customIcon || resolveIcon(cleanName, isDropdown),
+                              isDropdown: isDropdown,
+                              subItems: []
+                            };
+                            items.push(parentObj);
+                            if (isDropdown) {
+                              currentParent = parentObj;
+                            } else {
+                              currentParent = null;
+                            }
+                          }
+                        }
+
+                        var html = '';
+                        for (var j = 0; j < items.length; j++) {
+                          var it = items[j];
+                          var iconSvg = getIconSvg(it.icon);
+                          var arrowSvg = getIconSvg('arrow-down');
+
+                          if (it.name.toLowerCase() === 'home' || it.name.toLowerCase() === '홈') {
+                            if (isHomePage) {
+                              html += '<li class="leftC">' +
+                                '<div class="a flex op i20 home" aria-label="' + homeText + '">' +
+                                  iconSvg +
+                                  '<div class="n text"><span itemprop="name">' + it.name + '</span></div>' +
+                                '</div></li>';
+                            } else {
+                              html += '<li class="leftC">' +
+                                '<a class="a flex op i20" aria-label="' + homeText + '" href="' + (it.target !== '_' && it.target !== '#' ? it.target : homepageUrl) + '" itemprop="url">' +
+                                  iconSvg +
+                                  '<div class="n text"><span itemprop="name">' + it.name + '</span></div>' +
+                                '</a></li>';
+                            }
+                          } else if (it.isDropdown && it.subItems.length > 0) {
+                            var subHtml = '';
+                            for (var s = 0; s < it.subItems.length; s++) {
+                              var sub = it.subItems[s];
+                              subHtml += '<li itemprop="name"><a href="' + sub.target + '" itemprop="url"><span>' + sub.name + '</span></a></li>';
+                            }
+
+                            html += '<li class="leftC dr">' +
+                              '<details>' +
+                                '<summary aria-label="' + it.name + '" class="a flex noWrap op i20">' +
+                                  iconSvg +
+                                  '<span class="flexIn center grow text"><span>' + it.name + '</span>' + arrowSvg + '</span>' +
+                                  '<span class="pTip">' + it.name + '</span>' +
+                                '</summary>' +
+                                '<ul class="n">' + subHtml + '</ul>' +
+                              '</details>' +
+                            '</li>';
+                          } else {
+                            var isBorder = (it.name === 'Contact' || it.name === 'About') ? ' br' : '';
+                            html += '<li class="leftC' + isBorder + '">' +
+                              '<a aria-label="' + it.name + '" class="a flex op i20" href="' + it.target + '" itemprop="url">' +
+                                iconSvg +
+                                '<div class="n text"><span itemprop="name">' + it.name + '</span></div>' +
+                              '</a></li>';
+                          }
+                        }
+
+                        navUl.innerHTML = html;
+
+                        try {
+                          var leftNavDetails = navUl.querySelectorAll('details');
+                          if (leftNavDetails.length > 0) {
+                            var savedSub = {};
+                            try { savedSub = JSON.parse(localStorage.getItem('sidenav_submenus') || '{}'); } catch(e) {}
+                            leftNavDetails.forEach(function(dt, idx) {
+                              var sm = dt.querySelector('summary');
+                              var k = (sm && (sm.getAttribute('aria-label') || sm.querySelector('.flexIn span, span')?.innerText.trim())) || ('sub_' + idx);
+                              if (savedSub[k] !== undefined) {
+                                dt.open = !!savedSub[k];
+                              }
+                              dt.addEventListener('toggle', function() {
+                                savedSub[k] = this.open;
+                                localStorage.setItem('sidenav_submenus', JSON.stringify(savedSub));
+                              });
+                            });
+                          }
+                        } catch(e) {}
+                      })();
+                      /*]]>*/</script>
                     </b:includable>
                   </b:widget>
                 </b:section>
