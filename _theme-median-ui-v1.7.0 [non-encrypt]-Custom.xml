@@ -1080,10 +1080,2127 @@
               </b:loop>
               
               <b:loop values='data:post.labels' var='label'>
-  <b:if cond='data:label.name in {"Blog", "AI", "����ȯ��", "Server", "PersonalDev", "Review", "Unity", "Unreal", "Shader", "WebTranslator", "Homelab"}'>
-    <a expr:href='data:label.url' expr:aria-label='data:label.name' expr:data-text='data:label.name' rel='tag'></a>
+                                    <b:if cond='data:label.name in {&quot;Unity&quot;, &quot;Unreal&quot;, &quot;Shader&quot;, &quot;Blog&quot;, &quot;Server&quot;, &quot;PersonalDev&quot;, &quot;Review&quot;, &quot;WebTranslator&quot;, &quot;Homelab&quot;}'>
+                                      <a expr:href='data:label.url' expr:aria-label='data:label.name' expr:data-text='data:label.name' rel='tag'></a>
+                                    </b:if>
+                                  </b:loop>
+              
+              <b:elseif cond='data:view.isPost'/>
+              <div class='tab flexIn noWrap'>
+                <span class='n name flexIn ellips fontM'>
+                  <b:comment><!--[ Change expr:value='data:messages.posts' below with value='your_text' to replace [Posts] with your special text ]--></b:comment>
+                  <b:attr expr:value='data:messages.posts' name='data-text'/>
+                </span>
+              </div>
+            </b:if>
+            
+            <b:comment>Change data:view.isPage to data:view.isSingleItem if you want to show post title in breadcrumbs</b:comment>
+            <b:if cond='data:view.isPage'>
+              <div class='tab flexIn noWrap'>
+                <span class='n name flexIn ellips fontM' expr:data-text='data:post.title'/>
+              </div>
+            </b:if>
+          </b:if>
+        </b:loop>
+      </b:includable>
+      
+      <!--[ Post Thumbnail ]-->
+      <b:includable id='postThumbnail'>
+        <b:comment>If there is a youtube video in the post</b:comment>
+        <b:if cond='data:post.featuredImage.isYoutube'>
+          <b:if cond='!data:view.isPreview'>
+            <img class='img lazy' expr:alt='data:post.title ? data:post.title : data:messages.image' expr:data-src='data:post.featuredImage.youtubeMaxResDefaultUrl.isResizable ? resizeImage(data:post.featuredImage.youtubeMaxResDefaultUrl, 480, &quot;16:9&quot;) : data:post.featuredImage.youtubeMaxResDefaultUrl' src='data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs='/>
+            <b:else/>
+            <img class='img' expr:alt='data:post.title ? data:post.title : data:messages.image' expr:src='data:post.featuredImage.youtubeMaxResDefaultUrl.isResizable ? resizeImage(data:post.featuredImage.youtubeMaxResDefaultUrl, 480, &quot;16:9&quot;) : data:post.featuredImage.youtubeMaxResDefaultUrl'/>
+          </b:if>
+          <noscript><img class='img' expr:alt='data:post.title ? data:post.title : data:messages.image' expr:src='data:post.featuredImage.youtubeMaxResDefaultUrl.isResizable ? resizeImage(data:post.featuredImage.youtubeMaxResDefaultUrl, 480, &quot;16:9&quot;) : data:post.featuredImage.youtubeMaxResDefaultUrl'/></noscript>
+          <b:else/>
+          
+          <b:comment>Otherwise, the first picture will be taken</b:comment>
+          <b:if cond='!data:view.isPreview'>
+            <img class='img lazy' expr:alt='data:post.title ? data:post.title : data:messages.image' expr:data-src='data:post.featuredImage.isResizable ? resizeImage(data:post.featuredImage, 480, &quot;16:9&quot;) : data:post.featuredImage' src='data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs='/>
+            <b:else/>
+            <img class='img' expr:alt='data:post.title ? data:post.title : data:messages.image' expr:src='data:post.featuredImage.isResizable ? resizeImage(data:post.featuredImage, 480, &quot;16:9&quot;) : data:post.featuredImage'/>
+          </b:if>
+          <noscript><img class='img' expr:alt='data:post.title ? data:post.title : data:messages.image' expr:src='data:post.featuredImage.isResizable ? resizeImage(data:post.featuredImage, 480, &quot;16:9&quot;) : data:post.featuredImage'/></noscript>
+        </b:if>
+      </b:includable>
+      
+      <!--[ Post author image ]-->
+      <b:includable id='postAuthorImage'>
+        <b:if cond='data:post.author.authorPhoto.image'>
+          <b:if cond='!data:view.isPost'>
+            <div class='avatar im flex center bgAlt' expr:data-style='&quot;background-image: url(&quot; + resizeImage(data:post.author.authorPhoto.image,20,&quot;1:1&quot;) + &quot;)&quot;'>
+              <b:class cond='!data:view.isPreview' name='lazy'/>
+              <b:attr cond='data:view.isPreview' expr:value='&quot;background-image: url(&quot; + resizeImage(data:post.author.authorPhoto.image,20,&quot;1:1&quot;) + &quot;)&quot;' name='style'/>
+            </div>
+            <noscript><div class='avatar im flex center bgAlt' expr:style='&quot;background-image: url(&quot; + resizeImage(data:post.author.authorPhoto.image,20,&quot;1:1&quot;) + &quot;)&quot;'/></noscript>
+            <b:else/>
+            <div class='avatar im flex center bgAlt' expr:data-style='&quot;background-image: url(&quot; + resizeImage(data:post.author.authorPhoto.image,40,&quot;1:1&quot;) + &quot;)&quot;'>
+              <b:class cond='!data:view.isPreview' name='lazy'/>
+              <b:attr cond='data:view.isPreview' expr:value='&quot;background-image: url(&quot; + resizeImage(data:post.author.authorPhoto.image,20,&quot;1:1&quot;) + &quot;)&quot;' name='style'/>
+            </div>
+            <noscript><div class='avatar im flex center bgAlt' expr:style='&quot;background-image: url(&quot; + resizeImage(data:post.author.authorPhoto.image,40,&quot;1:1&quot;) + &quot;)&quot;'/></noscript>
+          </b:if>
+          <b:elseif cond='!data:view.isMultipleItems'/>
+          <div class='avatar im flex center bgAlt'><b:include name='profile-circle-icon'/></div>
+        </b:if>
+      </b:includable>
+      
+      <!--[ Post author name ]-->
+      <b:includable id='postAuthorName'>
+        <span class='m' expr:data-text='data:post.author.name' expr:data-write='data:widgets.Blog.first.allBylineItems.author.label'/>
+        
+        <b:comment>Replace the code above with this if you want to add a custom link to the author name</b:comment>
+        <!--<a class='m' expr:data-text='data:post.author.name' expr:data-write='data:widgets.Blog.first.allBylineItems.author.label'>
+          <b:attr expr:value='data:post.author.name' name='aria-label'/>
+          
+          <b:comment>change # with your url</b:comment>
+          <b:attr name='href' value='#'/>
+          <b:attr name='rel' value='author noreferrer'/>
+          <b:attr name='target' value='_blank'/>
+        </a>-->
+      </b:includable>
+      
+      <!--[ Post info ]-->
+      <b:includable id='postInfo'>
+        <b:if cond='data:widgets.Blog.first.allBylineItems.timestamp or data:widgets.Blog.first.allBylineItems.labels'>
+          <b:tag class='pH info flex fontM' name='div'>
+            
+            <b:comment>Show label or Sponsored</b:comment>
+            <b:include cond='data:post.labels' name='postLabels'/>
+          </b:tag>
+        </b:if>
+      </b:includable>
+      
+      <!--[ Post timestamps ]-->
+      <b:includable id='postTimestamps'>
+        <b:if cond='data:widgets.Blog.first.allBylineItems.timestamp'>
+          <time class='time ellips opacity' expr:data-text='data:widget.type == &quot;PopularPosts&quot; ? format(data:post.date, &quot;MMM d&quot;) : (!data:view.isSingleItem ? format(data:post.date, &quot;MMM d, YYYY&quot;) : format(data:post.date, &quot;MMMM d, YYYY&quot;))' expr:datetime='data:post.date.iso8601' expr:title='&quot;Published on: &quot; + data:post.date format &quot;MMMM d, YYYY&quot;'>
+            <b:class name='publish'/>
+            <b:class cond='data:widget.type != &quot;PopularPosts&quot; and (data:widgets.Blog.first.allBylineItems.timestamp.label == &quot;timeAgo&quot; or data:widgets.Blog.first.allBylineItems.timestamp.label == &quot;Update and timeAgo&quot;)' name='timeAgo noJava'/>
+            <b:class cond='data:widget.type != &quot;PopularPosts&quot; and (data:widgets.Blog.first.allBylineItems.timestamp.label == &quot;Custom&quot;)' name='custom'/>
+            <b:class cond='data:widget.type == &quot;PopularPosts&quot;' name='shrink'/>
+            
+            <b:comment>Custom format</b:comment>
+            <b:attr cond='data:widgets.Blog.first.allBylineItems.timestamp.label == &quot;Custom&quot;' expr:value='data:post.date' name='data-text'/>
+          </time>
+        </b:if>
+      </b:includable>
+      
+      <!--[ Post timeReading ]-->
+      <b:includable id='postTimeread'>
+        <bdi class='reading ellips opacity noJava' id='timeRead'/>
+      </b:includable>
+      
+      <!--[ Post label ]-->
+      <b:includable id='postLabel'>
+        <div class='labels'>
+          <b:tag class='li hidden' cond='data:post.labels.length &gt; (2 + 1)' id='forLabel' name='input' type='checkbox'/>
+          
+          <div class='flex fontSm cInherit'>
+            <b:if cond='data:post.labels'>
+              <b:loop index='i' values='data:post.labels' var='label'>
+                <b:comment>Show only 3 labels</b:comment>
+                <a expr:aria-label='data:label.name' expr:href='data:label.url' rel='tag'>
+                  <b:class cond='data:i &lt;= 2' name='s'/>
+                </a>
+              </b:loop>
+            </b:if>
+            
+            <b:tag aria-label='Show all labels' class='s' cond='data:post.labels.length &gt; (2 + 1)' expr:data-hide='data:messages.showLess' expr:data-show='&quot;+&quot; + (data:post.labels.length - (2 + 1)) + &quot; &quot; + data:messages.moreEllipsis' for='forLabel' name='label' role='button'/>
+          </div>
+        </div>
+      </b:includable>
+      
+      <!--[ Share button ]-->
+      <b:includable id='postShareButton'>
+        <label aria-label='Share' class='flex center opacity i20' expr:data-text='data:messages.share' for='forShare'><b:class cond='data:post.labels any (label =&gt; label.name in [ &quot;Product&quot;, &quot;Sponsored&quot; ])' name='nt'/><b:include name='share-icon'/></label>
+      </b:includable>
+      
+      <!--[ Share custom ]-->
+      <b:includable id='postShare'>
+        <div class='shared'>
+          <input class='popI hidden' id='forShare' type='checkbox'/>
+        
+          <div class='shareB popUp'>
+            <div class='popIn n'>
+              <div class='popC'>
+                <div class='popH flex'>
+                  <span class='t' expr:data-text='data:messages.shareToOtherApps'/>
+                  <label aria-label='Close' class='c' for='forShare'>
+                    <b:class cond='data:blog.languageDirection == &quot;rtl&quot;' name='r'/>
+                  </label>
+                </div>
+              
+                <div class='shareI flex column'>
+                  <b:comment>Share link to other apps</b:comment>
+                  <div class='shareL cInherit fontSm'>
+                    <div data-text='Facebook'>
+                      <a aria-label='Facebook' class='flex center op' expr:href='&quot;https://www.facebook.com/sharer.php?u=&quot; + data:blog.url.canonical' rel='noopener' role='button' target='_blank' title='Share on Facebook'>
+                        <b:include name='facebook-i-icon'/>
+                      </a>
+                    </div>
+                    <div data-text='Whatsapp'>
+                      <a aria-label='Whatsapp' class='flex center op' expr:href='&quot;https://api.whatsapp.com/send?text=&quot; + data:blog.url.canonical' rel='noopener' role='button' target='_blank' title='Share on Whatsapp'>
+                        <b:include name='whatsapp-i-icon'/>
+                      </a>
+                    </div>
+                    <div data-text='Twitter'>
+                      <a aria-label='Twitter' class='flex center op' expr:href='&quot;https://twitter.com/share?url=&quot; + data:blog.url.canonical' rel='noopener' role='button' target='_blank' title='Share on Twitter'>
+                        <b:include name='twitter-i-icon'/>
+                      </a>
+                    </div>
+                    <div data-text='Telegram'>
+                      <a aria-label='Telegram' class='flex center op' expr:href='&quot;https://t.me/share/url?url=&quot; + data:blog.url.canonical' rel='noopener' target='_blank' title='Telegram'>
+                        <b:include name='telegram-i-icon'/>
+                      </a>
+                    </div>
+                    <div data-text='Pinterest'>
+                      <a aria-label='Pinterest' class='flex center op' data-pin-config='beside' expr:href='&quot;https://pinterest.com/pin/create/button/?url=&quot; + data:blog.url.canonical + &quot;&amp;media=&quot; + resizeImage(data:blog.postImageUrl, 1600)' rel='noopener' target='_blank' title='Pinterest'>
+                        <b:include name='pinterest-i-icon'/>
+                      </a>
+                    </div>
+                    <div data-text='LinkedIn'>
+                      <a aria-label='LinkedIn' class='flex center op' expr:href='&quot;https://www.linkedin.com/sharing/share-offsite/?url=&quot; + data:blog.url.canonical' rel='noopener' role='button' target='_blank' title='Share on LinkedIn'>
+                        <b:include name='linkedin-i-icon'/>
+                      </a>
+                    </div>
+                    <div data-text='Tumblr'>
+                      <a aria-label='Tumblr' class='flex center op' data-text='Tumblr' expr:href='&quot;https://www.tumblr.com/share/link?url=&quot; + data:blog.url.canonical' rel='nofollow noreferrer' target='_blank' title='Tumblr'>
+                        <b:include name='tumblr-i-icon'/>
+                      </a>
+                    </div>
+                    <div data-text='Line'>
+                      <a aria-label='Line' class='flex center op' expr:href='&quot;https://timeline.line.me/social-plugin/share?url=&quot; + data:blog.url.canonical' rel='noopener' target='_blank' title='Line'>
+                        <b:include name='line-i-icon'/>
+                      </a>
+                    </div>
+                    <div data-text='Email'>
+                      <a aria-label='Email' class='flex center op' expr:href='&quot;mailto:?body=&quot; + data:blog.url.canonical' expr:title='data:messages.emailPost' target='_blank'>
+                        <b:include name='sms-edit-icon'/>
+                      </a>
+                    </div>
+                  </div>
+                
+                  <b:comment>Copy link to clipboard</b:comment>
+                  <div class='shareC noJava' expr:data-text='data:messages.copyToClipboard'>
+                    <div class='copy flex op i18'>
+                      <b:comment>text input</b:comment>
+                      <input expr:value='data:blog.url.canonical' id='getLink' onclick='this.select()' readonly='readonly'/>
+                      <label aria-label='Copy link' for='getLink' onclick='copyLink()'><data:messages.copy/></label>
+                    </div>
+                  
+                    <script>const dc = document, copyLink = () =&gt; { dc.getElementById(&quot;getLink&quot;).select(), dc.execCommand(&quot;copy&quot;), dc.getElementById(&quot;copied&quot;).innerHTML = &quot;<span class='fixN'><data:messages.linkCopiedToClipboard/></span>&quot; };</script>
+                  </div>
+                </div>
+              </div>
+            </div>
+          
+            <label class='fc' for='forShare'/>
+          </div>
+          
+          <div class='noJava' id='copied'/>
+        </div>
+      </b:includable>
+   
+      <!--[ Comment button ]-->
+      <b:includable id='commentButton'>
+        <div class='cmButton'>
+          <label class='button' for='forComments'>
+            <b:comment>Delete tag bellow to change button style</b:comment>
+            <b:class name='ln'/>
+            
+            <b:include name='chat-icon'/>
+            <span expr:data-title='data:messages.comments'>
+              <b:attr cond='data:post.numberOfComments &gt; 0' expr:value='data:messages.comments + &quot; (&quot; + data:post.numberOfComments + &quot;)&quot;' name='data-title'/>
+              <b:if cond='data:post.numberOfComments &gt; 0'>
+                <b:attr expr:value='data:messages.joinTheConversation + &quot; (&quot; + data:post.numberOfComments + &quot;)&quot;' name='data-comment'/>
+                <b:else/>
+                <b:attr expr:value='data:messages.postAComment' name='data-comment'/>
+              </b:if>
+            </span>
+          </label>
+        </div>
+      </b:includable>
+      
+      <!--[ Comment count ]-->
+      <b:includable id='commentCount'>
+        <b:if cond='data:post.allowComments and data:post.numberOfComments &gt; 0'>
+          <a class='flex center op i16' expr:aria-label='data:messages.comments' expr:data-text='data:post.numberOfComments' expr:href='data:post.url.canonical fragment &quot;comment&quot;' role='button'>
+            <b:include name='chat-icon'/>
+          </a>
+        </b:if>
+      </b:includable>
+      
+      <!--[ Comment iframe ]-->
+      <b:includable id='commentIframe'>
+        <b:include data='post' name='commentFormIframeSrc'/>
+                        
+        <iframe class='blogger-iframe-colorize blogger-comment-from-post lazy' expr:data-src='data:post.commentFormIframeSrc appendParams {skin: &quot;contempo&quot;}' id='comment-editor' name='comment-editor' title='Blogger comment'/>
+                      
+        <script src='https://www.blogger.com/static/v1/jsbin/157798655-comment_from_post_iframe.js'/>
+        <script>BLOG_CMT_createIframe(&#39;<data:post.appRpcRelayPath/>&#39;);</script>
+      </b:includable>
+   
+      <!--[ Comment Disqus ]-->
+      <b:includable id='commentDisqus'>
+        <div class='cmButton cmDisqus' id='disqus_thread'>
+          <b:tag class='button' id='disqusshow' name='div' onclick='load_Comments()'>
+            <b:comment>Delete tag bellow to change button style</b:comment>
+            <b:class name='ln'/>
+            
+            <b:include name='chat-icon'/>
+            <span><data:messages.joinTheConversation/></span>
+          </b:tag>
+        </div>
+        
+        <script>/*<![CDATA[*/ var disqus_shortname = "jagodesain"; !function(){var e=document.createElement("script");e.defer=!0,e.src="//"+disqus_shortname+".disqus.com/blogger_item.js",(document.getElementsByTagName("head")[0]||document.getElementsByTagName("body")[0]).appendChild(e)}(); function load_Comments(){var e=document.getElementById("disqusshow");e.style.display="none";var t="jagodesain";!function(){var e=document.createElement("script");e.defer=!0,e.src="https://"+t+".disqus.com/embed.js",(document.getElementsByTagName("head")[0]||document.getElementsByTagName("body")[0]).appendChild(e)}()}; var uri = window.location.toString(); /* to remove ?m=1 in mobile */ if (uri.indexOf("?m=1","?m=1") > 0) {var clean_uri = uri.substring(0, uri.indexOf("?m=1"));window.history.replaceState({}, document.title, clean_uri); }; /*]]>*/</script>
+      </b:includable>
+   
+      <!--[ Comment Disqus on-scroll ]-->
+      <b:includable id='commentDisqusScroll'>
+        <div class='cmButton cmDisqus' id='disqus_thread'>
+          <div id='disqus_empty'/>
+        </div>
+        
+        <!--[ Disqus script by bungfrangki.com, change 'jagodesain' with your disqus_shortname ]-->
+        <script>var disqus_blogger_current_url = &quot;<data:blog.canonicalUrl/>&quot;; if (!disqus_blogger_current_url.length) {disqus_blogger_current_url = &quot;<data:blog.url/>&quot;;} var disqus_blogger_homepage_url = &quot;<data:blog.canonicalHomepageUrl/>&quot;; var disqus_blogger_canonical_homepage_url = &quot;<data:blog.canonicalHomepageUrl/>&quot;;</script>
+        <script>/*<![CDATA[*/ function load_disqus( disqus_shortname ) {var y = document.getElementById('disqus_empty'), t = document.getElementById('disqus_thread'), e = document.createElement('script'), d = document.createElement('script'), h = (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]); if( t && y ) {e.async = true; e.src = '//' + disqus_shortname + '.disqus.com/embed.js'; h.appendChild(e); d.async = !0; d.src = '//' + disqus_shortname + '.disqus.com/blogger_item.js'; h.appendChild(d); y.remove(); } }; window.addEventListener('scroll', function(e) {var currentScroll = document.scrollingElement.scrollTop; var t = document.getElementById('disqus_thread'); if( t && (currentScroll > t.getBoundingClientRect().top - 150) ) {load_disqus('jagodesain'); console.log('Disqus loaded.'); }}, false); var uri = window.location.toString(); /* to remove ?m=1 in mobile */ if (uri.indexOf("?m=1","?m=1") > 0) {var clean_uri = uri.substring(0, uri.indexOf("?m=1"));window.history.replaceState({}, document.title, clean_uri); }; /*]]>*/</script>
+      </b:includable>
+   
+      <!--[ Comment FB ]-->
+      <b:includable id='commentFB'>
+        <div id='fb-root'/>
+        <script src='http://connect.facebook.net/en_US/all.js#xfbml=1' type='deferjs'/>
+        <div id='commentFB'><fb:comments expr:href='data:post.url' num_posts='10' width='650'/></div>
+        <script>/*<![CDATA[*/ /* to remove ?m=1 in mobile */ var uri = window.location.toString(); if (uri.indexOf("?m=1","?m=1") > 0) {var clean_uri = uri.substring(0, uri.indexOf("?m=1"));window.history.replaceState({}, document.title, clean_uri); }; /*]]>*/</script>
+      </b:includable>
+      
+      <!--[ Loadmore pagination ]-->
+      <b:includable id='postPaginationMore'>
+        <script> /*! Simple AJAX infinite scroll by Taufik Nurrohman dte.web.id */ !function(t,e){t.InfiniteScroll=function(n){function r(t,n){return n=n||e,n.querySelectorAll(t)}function o(t){return void 0!==t}function a(t){return&quot;function&quot;==typeof t}function i(t,e){t=t||{};for(var n in e)t[n]=&quot;object&quot;==typeof e[n]?i(t[n],e[n]):e[n];return t}function s(t,e,n){return o(t)?o(e)?void(o(n)?g[t][n]=e:g[t].push(e)):g[t]:g}function d(t,e){o(e)?delete g[t][e]:g[t]=[]}function l(t,e){if(o(g[t]))for(var n in g[t])g[t][n](e)}function c(){return L.innerHTML=p.text.loading,v=!0,M?(y.classList.add(p.state.loading),l(&quot;loading&quot;,[p]),void u(M,function(t,n){y.className=x+&quot; &quot;+p.state.load,h=e.createElement(&quot;div&quot;),h.innerHTML=t;var o=r(&quot;title&quot;,h),a=r(p.target.post,h),i=r(p.target.anchors+&quot; &quot;+p.target.anchor,h),s=r(p.target.post,H);if(o=o&amp;&amp;o[0]?o[0].innerHTML:&quot;&quot;,a.length&amp;&amp;s.length){var d=s[s.length-1];e.title=o,d.insertAdjacentHTML(&quot;afterend&quot;,&quot; &quot;),h=e.createElement(&quot;div&quot;);for(var c=0,u=a.length;u&gt;c;++c)h.appendChild(a[c]);d.insertAdjacentHTML(&quot;afterend&quot;,h.innerHTML),f(),M=i.length?i[0].href:!1,v=!1,q++,l(&quot;load&quot;,[p,t,n])}},function(t,e){y.classList.add(p.state.error),v=!1,f(1),l(&quot;error&quot;,[p,t,e])})):(y.classList.add(p.state.loaded),L.innerHTML=p.text.loaded,l(&quot;loaded&quot;,[p]))}function f(t){if(L.innerHTML=&quot;&quot;,T){h.innerHTML=p.text[t?&quot;error&quot;:&quot;load&quot;];var e=h.firstChild;e.onclick=function(){return 2===p.type&amp;&amp;(T=!1),c(),!1},L.appendChild(e)}}var u=&quot;infinite-scroll-state-&quot;,p={target:{posts:&quot;.posts&quot;,post:&quot;.post&quot;,anchors:&quot;.anchors&quot;,anchor:&quot;.anchor&quot;},text:{load:&quot;%s&quot;,loading:&quot;%s&quot;,loaded:&quot;%s&quot;,error:&quot;%s&quot;},state:{load:u+&quot;load&quot;,loading:u+&quot;loading&quot;,loaded:u+&quot;loaded&quot;,error:u+&quot;error&quot;}},g={load:[],loading:[],loaded:[],error:[]};p=i(p,n||{}),p.on=s,p.off=d;var h=null,u=function(e,n,r){if(t.XMLHttpRequest){var o=new XMLHttpRequest;o.onreadystatechange=function(){if(4===o.readyState){if(200!==o.status)return void(r&amp;&amp;a(r)&amp;&amp;r(o.responseText,o));n&amp;&amp;a(n)&amp;&amp;n(o.responseText,o)}},o.open(&quot;GET&quot;,e),o.send()}},T=1!==p.type,v=!1,H=r(p.target.posts)[0],L=r(p.target.anchors)[0],M=r(p.target.anchor,L),m=e.body,y=e.documentElement,x=y.className||&quot;&quot;,E=H.offsetTop+H.offsetHeight,j=t.innerHeight,A=0,b=null,q=1;if(M.length){M=M[0].href,H.insertAdjacentHTML(&quot;afterbegin&quot;,&quot; &quot;),h=e.createElement(&quot;div&quot;),f();var w=function(){E=H.offsetTop+H.offsetHeight,j=t.innerHeight,A=m.scrollTop||y.scrollTop,v||E&gt;A+j||c()};w(),0!==p.type&amp;&amp;t.addEventListener(&quot;scroll&quot;,function(){T||(b&amp;&amp;t.clearTimeout(b),b=t.setTimeout(w,200))},!1)}return p}}(window,document);
+if(typeof InfiniteScroll !== &quot;undefined&quot;) { var infinite_scroll = new InfiniteScroll ({ type: 0,
+target: { posts: &quot;.blogP&quot;, post: &quot;article.p&quot;, anchors: &quot;.blogN&quot;, anchor: &quot;.np&quot;},
+text: {
+load: &quot;<div class='j button' expr:aria-label='data:messages.loadMorePosts' expr:data-text='data:messages.loadMorePosts' role='button'/>&quot;,
+loading: &quot;<div class='j m button' expr:data-text='data:messages.loading'><svg viewBox='0 0 50 50' x='0px' y='0px'><path d='M25.251,6.461c-10.318,0-18.683,8.365-18.683,18.683h4.068c0-8.071,6.543-14.615,14.615-14.615V6.461z'><animateTransform attributeName='transform' attributeType='xml' dur='0.6s' from='0 25 25' repeatCount='indefinite' to='360 25 25' type='rotate'/></path></svg></div>&quot;,
+loaded: &quot;<div class='j m n button' expr:data-text='data:messages.noResultsFound'/>&quot;,
+error: &quot;<div class='j e button' expr:aria-label='data:messages.loadMorePosts' expr:data-text='data:messages.moreEllipsis' role='button'/>&quot;} }); }</script>
+      </b:includable>
+        
+      <!--[ All javascript ]-->
+      <b:includable id='allJavascript'>
+        <script>/*<![CDATA[*/ /* Remove .nJs */ document.getElementsByClassName("nB")[0].classList.remove("nJs");
+/* Input Filled */ var inputs = document.querySelectorAll(".widget input[type=search], .widget input[type=text], .widget input[type=email], .widget textarea"); for (var i = 0; i < inputs.length; i++) { var input = inputs[i]; input.addEventListener("input", function() {var bg = this.value ? "true" : "false"; this.setAttribute("data-filled",bg);}); };
+/* Header Sticky */ window.onscroll = function() {const nav = document.querySelector(".mainH").classList; if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {nav.add("s")} else {nav.remove("s")} };
+/* lazy youtube */ ( function() {var youtube = document.querySelectorAll(".lazyYt"); for (var i = 0; i < youtube.length; i++) {var source = "https://img.youtube.com/vi/"+ youtube[i].dataset.embed +"/sddefault.jpg"; var image = new Image(); image.setAttribute("class", "lazy"); image.setAttribute("data-src",source); image.setAttribute("src","data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="); image.setAttribute("alt","Youtube video"); image.addEventListener( "load", function() {youtube[ i ].appendChild( image );}( i ) ); youtube[i].addEventListener( "click", function() {var iframe = document.createElement( "iframe" ); iframe.setAttribute( "frameborder", "0" ); iframe.setAttribute( "allowfullscreen", "" ); iframe.setAttribute( "src", "https://www.youtube.com/embed/"+ this.dataset.embed +"?rel=0&showinfo=0&autoplay=1" ); this.innerHTML = ""; this.appendChild( iframe ); }); }; })();
+/* Defer image */ Defer.dom(".lazy", 100, "loaded", null, {rootMargin:"1px"}),"undefined"!=typeof infinite_scroll&&infinite_scroll.on("load",function(){Defer.dom(".lazy", 100, "loaded", null, {rootMargin:"1px"}) });
+/* Doc Height */ const docHeight = () => {const doc = document.querySelector(".nB"); doc.style.setProperty("--vHeight", `${window.innerHeight}px`)}; window.addEventListener("resize", docHeight); docHeight(); 
+/* Dark mode */ const d = document, l = localStorage, b = d.querySelector(".nB"), m = d.querySelector("meta[name=theme-color]"), mM = d.querySelector("meta[name=msapplication-navbutton-color]"), mA = d.querySelector("meta[name=apple-mobile-web-app-status-bar-style]"), c = m.getAttribute("content"), cM = mM.getAttribute("content"), cA = mA.getAttribute("content"), iniTheme = "default", setTheme = (theme) => {b.setAttribute("data-theme", theme); if (theme === "dark") {m.setAttribute("content", "#1e1e1e"); mM.setAttribute("content", "#1e1e1e"); mA.setAttribute("content", "#1e1e1e")} else {m.setAttribute("content", c); mM.setAttribute("content", cM); mA.setAttribute("content", cA)} switch (theme) {case "default": l.setItem("theme", "default"); break; case "dark": l.setItem("theme", "dark"); break; case "light": l.setItem("theme", "light"); break}; }, setThemeOn = () => {saveTheme = l.getItem("theme"); saveTheme ? b.setAttribute("data-theme", saveTheme) : setTheme(iniTheme); if (saveTheme === "dark") {m.setAttribute("content", "#1e1e1e"); mM.setAttribute("content", "#1e1e1e"); mA.setAttribute("content", "#1e1e1e")} else {m.setAttribute("content", c); mM.setAttribute("content", cM); mA.setAttribute("content", cA)} }; setThemeOn();
+/*]]>*/</script>
+      </b:includable>
+        
+      <!--[ CopyCode javascript ]-->
+      <b:includable id='copyCodeToClipboard'>
+        <script> const cCopy = &quot;<data:messages.copyToClipboard/>&quot;; /*<![CDATA[*/ let box = document.querySelectorAll(".pre:not(.tb)"); box.forEach((block) => {if (navigator.clipboard) {let button = document.createElement("button"); button.innerText = cCopy; block.appendChild(button); button.addEventListener("click", async () => {await cCode(block, button);}); } }); async function cCode(block, button) {let code = block.querySelector("pre"), text = code.innerText; await navigator.clipboard.writeText(text); button.innerHTML = cCopy + "<span class='fixN copied'></span>"; setTimeout(() => {button.innerText = cCopy;}, 2200);} /*]]>*/</script>
+      </b:includable>
+      
+      <!--[ bookmarkLoad ]-->
+      <b:includable id='bookmarkLoad'>
+        <script>/*<![CDATA[*/ /* Bookmark With Browser Local Storage, Created by: igniel.com, Source code: https://www.igniel.com/2022/12/widget-bookmark-blog.html */ function bookmarkLoad(){ const bookmarks = {
+    maxWidget: 5,
+    maxAll: 100,
+    emptyText: '<span class="fontM">No bookmarks found</span>',
+    moreText: 'Show all',
+    currentText: '<span class="fontM">You are currently on Bookmarks page</span>',
+    morePage: '/p/bookmark.html',
+    deleteText: '<svg class="line" viewBox="0 0 24 24"><path d="M21 5.97998C17.67 5.64998 14.32 5.47998 10.98 5.47998C9 5.47998 7.02 5.57998 5.04 5.77998L3 5.97998"/><path d="M8.5 4.97L8.72 3.66C8.88 2.71 9 2 10.69 2H13.31C15 2 15.13 2.75 15.28 3.67L15.5 4.97"/><path d="M18.85 9.14001L18.2 19.21C18.09 20.78 18 22 15.21 22H8.79002C6.00002 22 5.91002 20.78 5.80002 19.21L5.15002 9.14001"/><!--<path d="M10.33 16.5H13.66"/><path d="M9.5 12.5H14.5"/>--></svg>'
+
+}; /* DO NOT EDIT */ !function(d) {let ignielbookmark = JSON.parse(localStorage.getItem("ignielBookmark")) || []; d.querySelector(".ignielBookmark").querySelector("label.bc").setAttribute("data-text", ignielbookmark.length); const bmCek = () => {if (ignielbookmark.length > 0) {ignielbookmark.forEach((e) => {if (d.getElementById("bm-" + e.id)) {d.getElementById("bm-" + e.id).checked = true;} }); } }; const bmRender = () => {localStorage.setItem("ignielBookmark", JSON.stringify(ignielbookmark)); d.querySelector(".ignielBookmark").querySelector("label.bc").setAttribute("data-text", ignielbookmark.length); let bmContainer = d.querySelector(".bookmark-inner"), bmContainerAll = d.querySelector(".ignielBookmarks"), bmBuild = ""; if (ignielbookmark.length > 0) {let max = bookmarks.maxWidget, more = false; if (d.location.pathname == bookmarks.morePage) {max = bookmarks.maxAll;} else {max = bookmarks.maxWidget; if (ignielbookmark.length > max) {more = true;} } ignielbookmark.slice(0, max).forEach((e) => {bmBuild += '<div class="flex" data-id="' + e.id + '"><div class="bm-thumb shrink"><a href="' + e.url + '"><img class="bm-im" loading="lazy" alt="' + e.title + '" src="' + e.img + '"></a></div><div class="bm-title grow"><a class="clamp" href="' + e.url + '" title="' + e.title + '">' + e.title + '</a></div><div class="bm-delete flex center shrink op i18" role="button">' + bookmarks.deleteText + "</div></div>"; }); bmContainer.innerHTML += "</div>"; if (d.location.pathname == bookmarks.morePage) {bmContainer.innerHTML = bookmarks.currentText; if (bmContainerAll) bmContainerAll.innerHTML = "<div class='book all flex wrap'>" + bmBuild + "</div>";} else {bmContainer.innerHTML = "<div class='book flex column'>" + bmBuild; if (more) {bmContainer.innerHTML += '<div class="more fontS"><a href="' + bookmarks.morePage + '" title="' + bookmarks.moreText + '"><span>' + bookmarks.moreText + "</span><span class='fontSm opacity'>(+" + (ignielbookmark.length - max) + ")</span></a></div>";} } } else {bmContainer && (bmContainer.innerHTML = bookmarks.emptyText); bmContainerAll && (bmContainerAll.innerHTML = bookmarks.emptyText); } bmDel(); }; const bmAdd = (a) => {ignielbookmark.push(a); bmRender();}; const bmRem = (id) => {ignielbookmark = ignielbookmark.filter((obj) => obj.id !== id); bmRender(); if (d.getElementById("bm-" + id)) {d.getElementById("bm-" + id).checked = false;} }; const bmDel = () => {const a = d.querySelectorAll(".bm-delete"); if (a.length > 0) {a.forEach((e) => {const dId = e.parentNode.getAttribute("data-id"); e.addEventListener("click", () => {bmRem(dId); }); }); } }; const ignielBookmark = () => {const a = d.querySelectorAll(".ignielBookmarkPost input"); if (a.length > 0) {a.forEach((e) => {e.addEventListener("change", () => {const bmId = e.id.split("-")[1], bmParent = e.parentNode, bookmarkItem = {id: bmId, img: bmParent.querySelector("label").getAttribute("data-img"), title: bmParent.querySelector("label").getAttribute("data-title"), url: bmParent.querySelector("label").getAttribute("data-url") }; if (ignielbookmark) {const findId = ignielbookmark.find((obj) => obj.id === bmId); if (findId) {bmRem(bmId);} else {bmAdd(bookmarkItem);} } else {bmAdd(bookmarkItem);} }); }); } }; d.location.pathname == bookmarks.morePage && bmRender(); d.querySelector(".ignielBookmark").addEventListener("click", () => {bmRender();}); d.addEventListener("scroll", () => {bmCek; ignielBookmark}); ignielBookmark(); bmCek(); }(document);} bookmarkLoad(); "undefined" != typeof infinite_scroll && infinite_scroll.on("load", function(){ bookmarkLoad(); }); /*]]>*/</script>
+      </b:includable>
+      
+      <!--[ Post related ]-->
+      <b:includable id='postRelated'>
+        <div class='relatedP noJava' id='relatedPost'>
+          <script>
+            var labelArray = [<b:if cond='data:post.labels'><b:loop values='data:post.labels' var='label'>&quot;<data:label.name/>&quot;<b:if cond='data:label.isLast != &quot;true&quot;'>,</b:if></b:loop></b:if>];
+            var relatedPostConfig = {
+              homePage: &quot;<data:blog.homepageUrl.canonical/>&quot;,
+            
+              // Replace <data:messages.youMayLikeThesePosts/> to change Related Posts title
+              widgetTitle: &quot;<h2 class='title'><b:if cond='data:post.labels none (label =&gt; label.name in [ &quot;Product&quot; ])'><data:messages.youMayLikeThesePosts/><b:else/>You might like these products</b:if></h2>&quot;,
+            
+              // Change the related post style, there are 4 styles available
+              widgetStyle: 1,
+            
+              numPosts: 6,
+              summaryLength: 200,
+              titleLength: &quot;auto&quot;,
+              thumbnailSize: 300,
+              noImage: &quot;data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=&quot;,
+              containerId: &quot;relatedPost&quot;,
+              newTabLink: !1,
+              moreText: &quot;Read more&quot;,
+            
+              callBack:function(){}
+            }
+          </script>
+          <script>/*<![CDATA[*/ /*! Related Post Widget for Blogger by Taufik Nurrohman <https://github.com/taufik-nurrohman> */
+!function(e,t,a){if("object"==typeof labelArray&&labelArray.length)for(var l=t.createElement("em"),i=0,s=labelArray.length;i<s;++i)l.innerHTML=labelArray[i],labelArray[i]=l.textContent;var n=(new Date).getTime(),r={widgetTitle:"<h3 class='title'>Related Posts</h3>",widgetStyle:1,homePage:"//www.jagodesain.com",numPosts:6,summaryLength:180,titleLength:"auto",thumbnailSize:300,noImage:"data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=",containerId:"relatedPost",newTabLink:!1,moreText:"Read more",callBack:function(){}};if("object"==typeof relatedPostConfig)for(var i in relatedPostConfig)r[i]=relatedPostConfig[i];r.homePage=r.homePage.replace(/\/?\?m=\d+(\&|$)|\/+$/,"");var o=function(e){var l=t.createElement("script");l.src=e,a.appendChild(l)},m=function(e){var t,a,l=e.length;if(0===l)return!1;for(;--l;)t=Math.floor(Math.random()*(l+1)),a=e[l],e[l]=e[t],e[t]=a;return e},h="object"==typeof labelArray&&labelArray.length?"/-/"+encodeURIComponent(m(labelArray)[0]):"";e["do_related_post_"+n]=function(e){var a,l,i,s,n,ct,dt,Y,M,D,MM,o=t.getElementById(r.containerId),h=m(e.feed.entry),c=r.widgetStyle,d=r.widgetTitle+'<div class="itemR type-'+c+' flex wrap scrlH" role="feed">',u=r.newTabLink?' target="_blank"':"",mm=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];if(o){for(var p=h.length,A=0;A<r.numPosts&&A!==p;A++){l=h[A].title.$t,i="auto"!==r.titleLength&&r.titleLength<l.length?l.substring(0,r.titleLength)+"&hellip;":l,s="media$thumbnail"in h[A]&&!1!==r.thumbnailSize?h[A].media$thumbnail.url.replace(/\/s\d+(\-c)?\//,"/s"+r.thumbnailSize+"/"):r.noImage,n="summary"in h[A]&&r.summaryLength>0?h[A].summary.$t.replace(/<br *\/?>/gi," ").replace(/<.*?>/g,"").replace(/[<>]/g,"").substring(0,r.summaryLength)+"&hellip;":"",ct=h[A].category[0].term,dt=h[A].published.$t.substring(0, 29),Y=dt.substring(0,4),M=dt.substring(5,7),D=dt.substring(8,10),MM=mm[parseInt(M-1)];for(var f=0,y=h[A].link.length;f<y;f++)if("alternate"==h[A].link[f].rel){a=h[A].link[f].href;break}d+=2==c||3==c?'<article class="flex column"><div class="pI shrink"><a aria-label="Thumbnail" class="image" href="'+a+'"'+u+'><div class="mi lazy" data-style="background-image:url('+s+')"></div></a></div><div class="pC grow flex column"><div class="pH info flex fontM"><time class="time ellips opacity shrink" data-text="'+MM+' '+D+'" datetime="'+dt+'" title="Published on: '+MM+' '+D+', '+Y+'"></time><div class="label ellips cInherit"><a aria-label="Tag" data-text="'+ct+'" href="'+r.homePage+'/search/label/'+ct+'" rel="tag"></a></div></div><div class="pT cInherit"><h4 class="name"><a class="clamp" href="'+a+'"'+u+">"+i+"</a></h4></div></div></article>":4==c?'<article class="flex column shrink"><div class="pI shrink"><a aria-label="Thumbnail" class="image" href="'+a+'"'+u+'><div class="mi lazy" data-style="background-image:url('+s+')"></div></a></div><div class="pC grow flex column"><div class="pH info flex fontM"><time class="time ellips opacity shrink" data-text="'+MM+' '+D+'" datetime="'+dt+'" title="Published on: '+MM+' '+D+', '+Y+'"></time><div class="label ellips cInherit"><a aria-label="Tag" data-text="'+ct+'" href="'+r.homePage+'/search/label/'+ct+'" rel="tag"></a></div></div><div class="pT cInherit"><h4 class="name"><a class="clamp" href="'+a+'"'+u+'>'+i+'</a></h4></div><div class="pS fontM"><div class="snippet clamp opacity">'+n+"</div></div></div></article>":'<article class="flex"><div class="pI shrink"><a aria-label="Thumbnail" class="image" href="'+a+'"'+u+'><div class="mi lazy" data-style="background-image:url('+s+')"></div></a></div><div class="pC grow"><div class="pH info flex fontM"><time class="time ellips opacity shrink" data-text="'+MM+' '+D+'" datetime="'+dt+'" title="Published on: '+MM+' '+D+', '+Y+'"></time><div class="label ellips cInherit"><a aria-label="Tag" data-text="'+ct+'" href="'+r.homePage+'/search/label/'+ct+'" rel="tag"></a></div></div><div class="pT cInherit"><h4 class="name"><a class="clamp" href="'+a+'"'+u+">"+i+"</a></h4></div></div></article>"}o.innerHTML=d+="</div>",r.callBack(e)}},e["do_related_post_start_"+n]=function(e){var t,a,l=e.feed.openSearch$totalResults.$t-r.numPosts,i=(t=1,a=l>0?l:1,Math.floor(Math.random()*(a-t+1))+t);o(r.homePage+"/feeds/posts/summary"+h+"?alt=json-in-script&orderby=updated&start-index="+i+"&max-results="+r.numPosts+"&callback=do_related_post_"+n)},o(r.homePage+"/feeds/posts/summary?alt=json-in-script&orderby=updated&max-results=0&callback=do_related_post_start_"+n)}(window,document,document.getElementsByTagName("head")[0]); /*]]>*/</script>
+        </div>
+      </b:includable>
+      
+      <!--[ Post fullpage ]-->
+      <b:includable id='postFullpage'>
+        <script>/*<![CDATA[*/ document.getElementsByClassName('mainB')[0].classList.add('full'); /*]]>*/</script>
+      </b:includable>
+    </b:defaultmarkup>
+    <b:defaultmarkup type='Blog, AdSense'>
+      <b:includable id='defaultAdUnit'>
+        <b:comment>Clear out style (needs to be a non-empty string)</b:comment>
+        <b:with value='&quot;/* Done in css. */&quot;' var='style'>
+          <b:include name='super.defaultAdUnit'/>
+        </b:with>
+      </b:includable>
+    </b:defaultmarkup>
+    <b:defaultmarkup type='Blog, FeaturedPost, PopularPosts'>
+      <!--[ Thumbnails ]-->
+      <b:includable id='snippetedPostThumbnail'>
+        <div class='pI cInherit'>
+          <b:class cond='(data:view.isMultipleItems and data:widget.type == &quot;Blog&quot;) or data:widget.type == &quot;FeaturedPost&quot; or data:widget.type == &quot;PopularPosts&quot;' name='shrink'/>
+          <b:class cond='data:post.featuredImage.isYoutube' name='youtube'/>
+          <b:class cond='!data:post.featuredImage' name='noImage'/>
+
+          <b:tag class='thumbnail' expr:name='data:post.featuredImage ? &quot;a&quot; : &quot;div&quot;'>
+            <b:attr cond='data:post.featuredImage' expr:value='data:post.url' name='href'/>
+            <b:if cond='data:post.featuredImage'>
+              <b:include name='postThumbnail'/>
+              <b:else/>
+              <b:comment>If there is no thumbnail, an empty block will be displayed</b:comment>
+              <span class='img null noWrap opacity'/>
+            </b:if>
+          </b:tag>
+
+          <div class='bar flexIn'>
+            <b:class cond='data:blog.languageDirection == &quot;rtl&quot;' name='r'/>
+          
+            <b:if cond='data:widget.type != &quot;PopularPosts&quot;'>
+              <b:comment>Add to bookmark</b:comment>
+              <div class='ignielBookmarkPost tag addl'>
+                <input class='hidden addb' expr:id='&quot;bm-&quot; + data:post.id' name='bookmark' type='checkbox'/>
+                <label aria-label='Add bookmark' class='flex center op i16' expr:data-img='data:post.featuredImage ? resizeImage(data:post.featuredImage, 80, &quot;1:1&quot;) :  &quot;data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=&quot;' expr:data-title='data:post.title' expr:data-url='data:post.url' expr:for='&quot;bm-&quot; + data:post.id' title='Add to bookmark'>
+                  <b:include name='archive-add-icon'/>
+                  <b:include name='archive-tick-icon'/>
+                </label>
+              </div>
+            </b:if>
+            
+            <b:comment>Comment count</b:comment>
+            <b:if cond='(data:post.allowComments and data:post.numberOfComments &gt; 0) and data:post.labels none (label =&gt; label.name in [ &quot;Product&quot; ])'>
+              <b:if cond='data:widgets.Blog.first.allBylineItems.comments'>
+                <b:include name='commentCount'/>
+              </b:if>
+            </b:if>
+          
+            <b:comment>Product icon</b:comment>
+            <b:if cond='data:post.labels any (label =&gt; label.name in [ &quot;Product&quot; ])'>
+              <b:class name='product'/>
+              <span class='flex center op i16 tag'><b:include name='tag-icon'/></span>
+              
+              <b:if cond='data:post.labels any (label =&gt; label.name in [ &quot;Discount10&quot;, &quot;Discount20&quot;, &quot;Discount30&quot;, &quot;Discount40&quot;, &quot;Discount50&quot;, &quot;Discount60&quot;, &quot;Discount70&quot;, &quot;Discount80&quot;, &quot;Discount90&quot; ])'>
+                <span class='flex center discount'>
+                  <b:attr cond='data:post.labels any (label =&gt; label.name in [ &quot;Discount10&quot; ])' name='data-text' value='-10%'/>
+                  <b:attr cond='data:post.labels any (label =&gt; label.name in [ &quot;Discount20&quot; ])' name='data-text' value='-20%'/>
+                  <b:attr cond='data:post.labels any (label =&gt; label.name in [ &quot;Discount30&quot; ])' name='data-text' value='-30%'/>
+                  <b:attr cond='data:post.labels any (label =&gt; label.name in [ &quot;Discount40&quot; ])' name='data-text' value='-40%'/>
+                  <b:attr cond='data:post.labels any (label =&gt; label.name in [ &quot;Discount50&quot; ])' name='data-text' value='-50%'/>
+                  <b:attr cond='data:post.labels any (label =&gt; label.name in [ &quot;Discount60&quot; ])' name='data-text' value='-60%'/>
+                  <b:attr cond='data:post.labels any (label =&gt; label.name in [ &quot;Discount70&quot; ])' name='data-text' value='-70%'/>
+                  <b:attr cond='data:post.labels any (label =&gt; label.name in [ &quot;Discount80&quot; ])' name='data-text' value='-80%'/>
+                  <b:attr cond='data:post.labels any (label =&gt; label.name in [ &quot;Discount90&quot; ])' name='data-text' value='-90%'/>
+                </span>
+              </b:if>
+            </b:if>
+          </div>
+          
+        </div>
+      </b:includable>
+      
+      <!--[ Snippets ]-->
+      <b:includable id='postSnippet'>
+        <div class='pS fontM'>
+          <b:class cond='!data:post.featuredImage' name='noImage'/>
+          <b:class cond='data:post.title.length lt 25' name='show'/>
+          
+          <div class='snippet clamp'>
+            <b:class cond='data:post.labels none (label =&gt; label.name in [ &quot;Product&quot; ])' name='opacity'/>
+            <b:class cond='data:post.labels any (label =&gt; label.name in [ &quot;Product&quot; ])' name='prices'/>
+            
+            <b:if cond='data:post.labels none (label =&gt; label.name in [ &quot;Product&quot; ])'>
+              <b:eval expr='snippet(data:post.snippets.long, {length: 150, links: false, linebreaks: false})'/>
+            
+              <b:else/>
+              <b:comment>Use this to hide image captions in article snippets</b:comment>
+              <b:eval expr='snippet(data:post.body, {length: 150, links: false, linebreaks: false})'/>
+            </b:if>
+          </div>
+        </div>
+      </b:includable>
+      
+      <!--[ Post labels ]-->
+      <b:includable id='postLabels'>
+        <b:if cond='data:widgets.Blog.first.allBylineItems.labels'>
+          <div class='label ellips cInherit'>
+            <b:attr cond='data:post.labels' expr:value='data:widgets.Blog.first.allBylineItems.labels.label' name='data-text'/>
+            <b:class cond='data:post.labels any (label =&gt; label.name in [ &quot;Sponsored&quot; ])' name='opacity sponsor'/>
+      
+            <b:if cond='data:post.labels any (label =&gt; label.name in [ &quot;Sponsored&quot; ])'>
+              <b:loop values='data:post.labels' var='label'>
+                <b:if cond='data:label.name == &quot;Sponsored&quot;'>
+                  <b:tag class='extL' expr:data-text='data:label.name' name='span'/>
+                </b:if>
+              </b:loop>
+              
+              <b:else/>
+              <b:loop values='data:post.labels' var='label'>
+                <b:if cond='data:label.name == &quot;Product&quot;'>
+                  <b:tag cond='data:widget.type != &quot;PopularPosts&quot;' name='span'>
+                    <b:tag expr:data-text='data:label.name' expr:name='data:blog.url != data:label.url ? &quot;a&quot; : &quot;span&quot;'>
+                      <b:attr cond='data:blog.url != data:label.url' expr:value='data:label.url' name='href'/>
+                      <b:attr cond='data:blog.url != data:label.url' name='rel' value='tag'/>
+                      <b:attr cond='data:blog.url != data:label.url' expr:value='data:label.name' name='aria-label'/>
+                    </b:tag>
+                  </b:tag>
+                </b:if>
+              </b:loop>
+      
+              <b:loop values='data:post.labels' var='label'>
+                                    <b:if cond='data:label.name in {&quot;Unity&quot;, &quot;Unreal&quot;, &quot;Shader&quot;, &quot;Blog&quot;, &quot;Server&quot;, &quot;PersonalDev&quot;, &quot;Review&quot;, &quot;WebTranslator&quot;, &quot;Homelab&quot;}'>
+                                      <a expr:href='data:label.url' expr:aria-label='data:label.name' expr:data-text='data:label.name' rel='tag'></a>
+                                    </b:if>
+                                  </b:loop>
+            </b:if>
+          </div>
+        </b:if>
+      </b:includable>
+      
+      <!--[ Post title ]-->
+      <b:includable id='postTitle' var='post'>
+        <b:if cond='data:post.title != &quot;&quot;'>
+          <div class='pT cInherit'>
+            <b:tag class='name' expr:name='data:post.link or (data:post.url and data:view.url != data:post.url) ? &quot;h2&quot; : &quot;h1&quot;'>
+              <b:class cond='data:view.isSingleItem' name='item'/>
+              <b:attr cond='data:view.isSingleItem and data:widget.type == &quot;Blog&quot;' name='id' value='postT'/>
+
+              <b:if cond='data:post.link or (data:post.url and data:view.url != data:post.url)'>
+                <a class='clamp' expr:href='data:post.link ?: data:post.url'><data:post.title/></a>
+                <b:else/>
+                <data:post.title/>
+              </b:if>
+            </b:tag>
+          </div>
+        </b:if>
+      </b:includable>
+    </b:defaultmarkup>
+    <b:defaultmarkup type='Blog'>
+      <!--[ Post description ]-->
+      <b:includable id='postDescription'>
+        <b:if cond='data:blog.metaDescription'>
+          <div class='pD opacity'><data:blog.metaDescription/></div>
+        </b:if>
+      </b:includable>
+      
+      <!--[ Post header ]-->
+      <b:includable id='postHeader' var='post'>
+        <div class='pH flex space-between cInherit fontM noPrint'>
+          <b:class cond='data:post.labels any (label =&gt; label.name in [ &quot;Product&quot;, &quot;Sponsored&quot; ])' name='tag'/>
+          <b:if cond='data:post.labels none (label =&gt; label.name in [ &quot;Product&quot; ])'>
+            <b:if cond='data:post.labels none (label =&gt; label.name in [ &quot;Sponsored&quot; ])'>
+              <b:comment>Author photo</b:comment>
+              <b:if cond='data:widgets.Blog.first.allBylineItems.author'>
+                <b:tag class='byline img flex center shrink' cond='data:post.author.authorPhoto.image' name='div'>
+                  <b:include name='postAuthorImage'/>
+                </b:tag>
+              </b:if>
+            </b:if>
+            <div class='byline item grow'>
+              <b:if cond='data:widgets.Blog.first.allBylineItems.author and data:post.labels none (label =&gt; label.name in [ &quot;Sponsored&quot; ])'>
+                <b:include name='postAuthorName'/>
+              </b:if>
+                
+              <b:tag class='date' cond='data:widgets.Blog.first.allBylineItems.timestamp' name='span'>
+                <b:include name='postTimestamps'/>
+            
+                <b:comment>Estimated/calculated reading time of posts</b:comment>
+                <b:include name='postTimeread'/>
+              </b:tag>
+            </div>
+          </b:if>
+          
+          <b:comment>Share button and bookmark</b:comment>
+          <div class='byline share flex shrink'>
+            <div class='ignielBookmarkPost'>
+              <input class='hidden addb' expr:id='&quot;bm-&quot; + data:post.id' name='bookmark' type='checkbox'/>
+              <label aria-label='Add bookmark' class='flex center opacity i20' expr:data-img='data:post.featuredImage ? resizeImage(data:post.featuredImage, 100, &quot;1:1&quot;) :  &quot;data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=&quot;' expr:data-title='data:post.title' expr:data-url='data:post.url' expr:for='&quot;bm-&quot; + data:post.id' title='Add to bookmark'>
+                <b:include name='archive-add-icon'/>
+                <b:include name='archive-tick-icon'/>
+              </label>
+            </div>
+            
+            <!--<b:if cond='data:post.shareUrl and data:widgets.Blog.first.allBylineItems.share'>-->
+              <b:include name='postShareButton'/>
+            <!--</b:if>-->
+          </div>
+        </div>
+      </b:includable>
+      
+      <!--[ Post authors ]-->
+      <b:includable id='aboutPostAuthor'>
+        <div class='authors flex fontM'>
+          <div class='img shrink'>
+            <b:include name='postAuthorImage'/>
+          </div>
+          <div class='name'>
+            <b:tag class='namei hidden' cond='data:post.author.aboutMe.length &gt; 200' id='forAuthor' name='input' type='checkbox'/>
+            
+            <bdi class='m cInherit' expr:data-text='data:post.author.name' expr:data-write='data:messages.postedBy'/>
+            <div class='d flex'>
+              <div class='clamp'><b:eval expr='data:post.author.aboutMe snippet {links: true, linebreaks: true}'/></div>
+              <b:tag aria-label='Show description' class='shrink' expr:data-text='data:messages.showAll' for='forAuthor' name='label'/>
+            </div>
+            
+          </div>
+        </div>
+      </b:includable>
+      
+      <!--[ Post empty ]-->
+      <b:includable id='noContentPlaceholder'>
+        <b:if cond='data:posts.empty'>
+          <b:comment>You can replace <data:messages.noResultsFound/> with <data:messages.theresNothingHere/></b:comment>
+          <div class='n'><data:messages.noResultsFound/>...</div>
+        </b:if>
+      </b:includable>
+    </b:defaultmarkup>
+    <b:defaultmarkup type='Blog, FeaturedPost'>
+      <!--[ Meta rich results ]-->
+      <b:includable id='postMeta' var='post'>
+        <b:include data='post' name='postMetadataJSON'/>
+      </b:includable>
+      <b:includable id='postMetadataJSON'>
+        <script type='application/ld+json'>
+          {
+            &quot;@context&quot;: &quot;http://schema.org&quot;,
+            &quot;@type&quot;: &quot;BlogPosting&quot;,
+            &quot;mainEntityOfPage&quot;: {
+              &quot;@type&quot;: &quot;WebPage&quot;,
+              &quot;@id&quot;: &quot;<data:post.url.canonical.jsonEscaped/>&quot;
+            },
+            &quot;headline&quot;: &quot;<data:post.title.jsonEscaped/>&quot;,
+            &quot;description&quot;: &quot;<b:eval expr='snippet(data:post.snippets.long, {length: 250, links: false, linebreaks: false, ellipsis: true }).jsonEscaped'/>&quot;,
+            <b:if cond='data:view.isSingleItem'>&quot;articleBody&quot;: &quot;<b:eval expr='snippet(data:post.body, {links: false, linebreaks: false, ellipsis: true}).jsonEscaped'/>&quot;,</b:if>
+            &quot;datePublished&quot;: &quot;<data:post.date.iso8601.jsonEscaped/>&quot;,
+            &quot;dateModified&quot;: &quot;<data:post.lastUpdated.iso8601.jsonEscaped/>&quot;,
+            <b:include data='post' name='postMetadataJSONImage'/><b:include data='post' name='postMetadataJSONPublisher'/>
+            &quot;author&quot;: {
+              &quot;@type&quot;: &quot;Person&quot;,
+              &quot;name&quot;: &quot;<data:post.author.name.jsonEscaped/>&quot;,
+          
+              /* Get Blogger profile url, otherwise homepage url will be shown */
+              &quot;url&quot;: &quot;<b:if cond='data:post.author.profileUrl'><data:post.author.profileUrl.jsonEscaped/><b:else/><data:blog.homepageUrl.jsonEscaped/></b:if>&quot;,
+          
+              /* Get Blogger profile photo, otherwise Blogger logo will be shown */
+              &quot;image&quot;: &quot;<b:if cond='data:post.author.authorPhoto.image'><data:post.author.authorPhoto.image.jsonEscaped/><b:else/>https://www.blogger.com/img/blogger_logo_round_35.png</b:if>&quot;
+            }
+          }
+        </script>
+      </b:includable>
+      <b:includable id='postMetadataJSONImage'>
+        &quot;image&quot;: {
+          &quot;@type&quot;: &quot;ImageObject&quot;,
+        
+          /* Get the first image, otherwise no default image will be shown */
+          &quot;url&quot;: &quot;<b:eval expr='(data:post.featuredImage ? resizeImage(data:post.featuredImage, 1200, &quot;1200:630&quot;) : (data:blog.postImageUrl ? resizeImage(data:blog.postImageUrl, 1200, &quot;1200:630&quot;) : &quot;&quot;))'/>&quot;,
+          &quot;height&quot;: <b:eval expr='data:post.featuredImage ? 630 : 420'/>,
+          &quot;width&quot;: 1200
+        },
+      </b:includable>
+      <b:includable id='postMetadataJSONPublisher'>
+        &quot;publisher&quot;: {
+          &quot;@type&quot;: &quot;Organization&quot;,
+          &quot;name&quot;: &quot;<data:blog.title.escaped/>&quot;,
+          &quot;logo&quot;: {
+            &quot;@type&quot;: &quot;ImageObject&quot;,
+            &quot;url&quot;: &quot;<b:eval expr='data:blog.blogspotFaviconUrl ? data:blog.blogspotFaviconUrl : &quot;https://www.blogger.com/img/blogger_logo_round_35.png&quot;'/>&quot;,
+            &quot;width&quot;: 60,
+            &quot;height&quot;: 60
+          }
+        }
+      </b:includable>
+    </b:defaultmarkup>
+    <b:defaultmarkup type='FeaturedPost, PopularPosts'>
+      <b:includable id='blogThisShare'/>
+      <b:includable id='bylineByName' var='byline'/>
+      <b:includable id='bylineRegion' var='regionItems'/>
+      <b:includable id='commentsLink'/>
+      <b:includable id='commentsLinkIframe'/>
+      <b:includable id='emailPostIcon'/>
+      <b:includable id='facebookShare'/>
+      <b:includable id='footerBylines'/>
+      <b:includable id='googlePlusShare'/>
+      <b:includable id='headerByline'/>
+      <b:includable id='linkShare'/>
+      <b:includable id='otherSharingButton'/>
+      <b:includable id='platformShare'/>
+      <b:includable id='postAuthor'/>
+      <b:includable id='postCommentsLink'/>
+      <b:includable id='postLocation'/>
+      <b:includable id='postReactions'/>
+      <b:includable id='postShareButtons'/>
+      <b:includable id='postTimestamp'/>
+      <b:includable id='sharingButton'/>
+      <b:includable id='sharingButtonContent'/>
+      <b:includable id='sharingButtons'/>
+      <b:includable id='sharingButtonsMenu'/>
+      <b:includable id='sharingPlatformIcon'/>
+      <b:includable id='snippetedPostByline'/>
+      <b:includable id='snippetedPostTitle'>
+        <!--[ Post title ]-->
+        <b:include data='post' name='postTitle'/>
+      </b:includable>
+    </b:defaultmarkup>
+    <b:defaultmarkup type='FeaturedPost'>
+      <b:includable id='main' var='this'>
+        <b:if cond='data:title != &quot;&quot;'>
+          <h2 class='title'><data:title/></h2>
+        </b:if>
+        <b:include name='snippetedPosts'/>
+      </b:includable>
+      <b:includable id='postFooter' var='post'>
+        <b:tag class='pF items flex space-between fontM cInherit' name='div'>
+          <b:class cond='data:post.labels any (label =&gt; label.name in [ &quot;Sponsored&quot; ])' name='sponsor'/>
+          
+          <b:comment>post Footer in MultipleItems page</b:comment>
+          <b:include cond='data:post.labels none (label =&gt; label.name in [&quot;Sponsored&quot; ])' name='postTimestamps'/>
+            
+          <b:comment><!--[ Jumplink / read more link ]--></b:comment>
+          <b:include data='post' name='postJumpLink'/>
+          
+        </b:tag>
+      </b:includable>
+      <b:includable id='postJumpLink' var='post'>
+        <a class='jump jumpLink shrink' expr:aria-label='data:blog.jumpLinkMessage' expr:data-text='data:blog.jumpLinkMessage' expr:href='data:post.url'>
+          <b:class cond='data:post.labels any (label =&gt; label.name in [ &quot;Sponsored&quot; ])' name='sponsor'/>
+        </a>
+      </b:includable>
+      <b:includable id='snippetedPostContent'>
+        <!--[ Post thumbnails ]-->
+        <b:include cond='data:this.postDisplay.showFeaturedImage and data:post.featuredImage' name='snippetedPostThumbnail'/>
+        
+        <!--[ Post content (title, body, etc.) ]-->
+        <b:tag class='pC grow' name='div'>
+          <b:class name='flex column'/>
+          
+          <b:include name='postInfo'/>
+          <b:include cond='data:this.postDisplay.showTitle' name='snippetedPostTitle'/>
+          <b:include cond='data:this.postDisplay.showSnippet' data='post' name='postSnippet'/>
+          
+          <!--[ Post footer ]-->
+          <b:include cond='data:post.labels none (label =&gt; label.name in [ &quot;Product&quot; ])' data='post' name='postFooter'/>
+          
+          <!--[ Meta rich results ]-->
+          <b:include data='post' name='postMeta'/>
+        </b:tag>
+      </b:includable>
+      <b:includable id='snippetedPosts'>
+        <div class='itemP featured' role='feed'>
+          <!-- Don't render the post that we're currently already looking at. -->
+          <b:loop values='data:posts filter (p =&gt; p.id != data:view.postId)' var='post'>
+            <article class='i flex wrap'>
+              <b:class cond='data:view.isMultipleItems and !data:post.featuredImage' name='noImage'/>
+              <b:class cond='!data:widgets.Blog.first.allBylineItems.timestamp' name='noTime'/>
+              <b:class cond='data:blog.languageDirection == &quot;rtl&quot;' name='r'/>
+              <b:class cond='data:post.labels any (label =&gt; label.name in [ &quot;Sponsored&quot; ])' name='sponsor'/>
+              <b:class cond='data:post.labels any (label =&gt; label.name in [ &quot;Product&quot; ])' name='shop'/>
+              
+              <b:include name='snippetedPostContent'/>
+            </article>
+          </b:loop>
+        </div>
+      </b:includable>
+    </b:defaultmarkup>
+    <b:defaultmarkup type='PopularPosts'>
+      <b:includable id='main' var='this'>
+        <b:include name='widget-title'/>
+        <b:include name='snippetedPosts'/>
+      </b:includable>
+      <b:includable id='postJumpLink' var='post'/>
+      <b:includable id='postHeaders' var='post'>
+        <b:tag class='pH info flex cInherit fontM' name='div'>
+          <b:include cond='data:post.labels none (label =&gt; label.name in [ &quot;Sponsored&quot; ])' name='postTimestamps'/>
+                              
+          <b:comment>Show label or Sponsored</b:comment>
+          <b:include cond='data:post.labels' name='postLabels'/>
+        </b:tag>
+      </b:includable>
+      <b:includable id='snippetedPostContent'>
+        <div class='pC flex'>
+          <div class='pB'>
+            <!--[ Post header ]-->
+            <b:include data='post' name='postHeaders'/>
+            
+            <!--[ Post thumbnails ]-->
+            <b:include cond='data:i == 0 and (data:this.postDisplay.showFeaturedImage and data:post.featuredImage)' name='snippetedPostThumbnail'/>
+            
+            <b:include cond='data:this.postDisplay.showTitle' name='snippetedPostTitle'/>
+            <b:include cond='data:this.postDisplay.showSnippet and data:i == 0' data='post' name='postSnippet'/>
+          </div>
+        </div>
+      </b:includable>
+      <b:includable id='snippetedPosts'>
+        <div class='itemP popular flex column' role='feed'>
+          <!-- Don't render the post that we're currently already looking at. -->
+          <b:loop index='i' values='data:posts filter (p =&gt; p.id != data:view.postId)' var='post'>
+            <article class='i'>
+              <b:class cond='data:i == 0 and (data:this.postDisplay.showFeaturedImage and !data:post.featuredImage)' name='noImage'/>
+              <b:class cond='data:i == 0 and (data:this.postDisplay.showFeaturedImage and data:post.featuredImage)' name='most flex column'/>
+              <b:class cond='!data:widgets.Blog.first.allBylineItems.timestamp' name='noTime'/>
+              <b:class cond='data:blog.languageDirection == &quot;rtl&quot;' name='r'/>
+              <b:class cond='data:post.labels any (label =&gt; label.name in [ &quot;Sponsored&quot; ])' name='sponsor'/>
+              <b:class cond='data:post.labels any (label =&gt; label.name in [ &quot;Product&quot; ])' name='shop'/>
+              
+              <b:include name='snippetedPostContent'/>
+            </article>
+          </b:loop>
+        </div>
+      </b:includable>
+    </b:defaultmarkup>
+    <b:defaultmarkup type='Label'>
+      <b:includable id='cloud'>
+        <b:if cond='data:this.showFreqNumbers'>
+          <span class='count fontSm shrink' expr:data-text='&quot;(&quot; + data:label.count + &quot;)&quot;'/>
+        </b:if>
+      </b:includable>
+      <b:includable id='content'>
+        <div class='itemL cInherit fontS'>
+          <b:class expr:name='data:this.display'/>
+          <b:tag class='labi hidden' cond='data:labels.length &gt; (7 + 1)' expr:id='data:widget.instanceId + &quot;-in&quot;' name='input' type='checkbox'/>
+          
+          <b:tag class='lab flex wrap' name='div'>
+            <b:class cond='data:this.display == &quot;list&quot;' name='list'/>
+            <b:loop index='list' values='data:labels' var='label'>
+              <b:if cond='data:label.name != &quot;Discount10&quot; and data:label.name != &quot;Discount20&quot; and data:label.name != &quot;Discount30&quot; and data:label.name != &quot;Discount40&quot; and data:label.name != &quot;Discount50&quot; and data:label.name != &quot;Discount60&quot; and data:label.name != &quot;Discount70&quot; and data:label.name != &quot;Discount80&quot; and data:label.name != &quot;Discount90&quot;'>
+                <div>
+                  <b:class cond='data:this.display != &quot;list&quot;' expr:name='&quot;s-&quot; + data:label.cssSize'/>
+                
+                  <b:comment>Showing only 8 lists</b:comment>
+                  <b:class cond='data:list &lt;= 7' name='s'/>
+      
+                  <b:tag class='link flex space-between' expr:name='data:blog.url != data:label.url ? &quot;a&quot; : &quot;div&quot;'>
+                    <b:attr cond='data:blog.url != data:label.url' expr:value='data:label.url' name='href'/>
+                    <b:attr cond='data:blog.url != data:label.url' expr:value='data:label.name' name='aria-label'/>
+                    <b:class cond='data:this.display != &quot;list&quot;' name='c'/>
+            
+                    <b:comment>Activate to remove background color</b:comment>
+                    <b:class cond='data:this.display == &quot;list&quot;' name='noBg'/>
+                        
+                    <span class='name ellips'><data:label.name/></span>
+                  
+                    <b:if cond='data:this.display == &quot;list&quot;'>
+                      <b:include name='list'/>
+                      <b:else/>
+                      <b:include name='cloud'/>
+                    </b:if>
+                  
+                  </b:tag>
+                
+                </div>
+              </b:if>
+            </b:loop>
+          </b:tag>
+          
+          <b:comment>Show/hide label</b:comment>
+          <b:tag aria-label='Show all labels' class='flexIn baseline' cond='data:labels.length &gt; (7 + 1)' expr:data-hide='data:messages.showLess' expr:data-length='&quot;(+&quot; + (data:labels.length - (7 + 1)) + &quot;)&quot;' expr:data-show='data:messages.showAll' expr:for='data:widget.instanceId + &quot;-in&quot;' name='label' role='button'/>
+          
+        </div>
+      </b:includable>
+      <b:includable id='list'>
+        <span class='count fontSm flexIn center shrink op i16'>
+          <b:attr cond='data:this.showFreqNumbers' expr:value='data:label.count' name='data-text'/>
+          <b:include name='tag-right-icon'/>
+        </span>
+      </b:includable>
+    </b:defaultmarkup>
+  </b:defaultmarkups>
+ 
+  <b:if cond='!data:view.isError'>
+    <b:if cond='data:view.isPost'>
+      <script>/*<![CDATA[*/ /* Table of Content, Credit: blustemy.io/creating-a-table-of-contents-in-javascript */
+class TableOfContents { constructor({ from, to }) { this.fromElement = from; this.toElement = to; this.headingElements = this.fromElement.querySelectorAll("h1, h2, h3, h4, h5, h6"); this.tocElement = document.createElement("div"); }; getMostImportantHeadingLevel() { let mostImportantHeadingLevel = 6; for (let i = 0; i < this.headingElements.length; i++) { let headingLevel = TableOfContents.getHeadingLevel(this.headingElements[i]); mostImportantHeadingLevel = (headingLevel < mostImportantHeadingLevel) ? headingLevel : mostImportantHeadingLevel; } return mostImportantHeadingLevel; }; static generateId(headingElement) { return headingElement.textContent.replace(/\s+/g, "_"); }; static getHeadingLevel(headingElement) { switch (headingElement.tagName.toLowerCase()) { case "h1": return 1; case "h2": return 2; case "h3": return 3; case "h4": return 4; case "h5": return 5; case "h6": return 6; default: return 1; } }; generateToc() { let currentLevel = this.getMostImportantHeadingLevel() - 1, currentElement = this.tocElement; for (let i = 0; i < this.headingElements.length; i++) { let headingElement = this.headingElements[i], headingLevel = TableOfContents.getHeadingLevel(headingElement), headingLevelDifference = headingLevel - currentLevel, linkElement = document.createElement("a"); if (!headingElement.id) { headingElement.id = TableOfContents.generateId(headingElement); } linkElement.href = `#${headingElement.id}`; linkElement.textContent = headingElement.textContent; if (headingLevelDifference > 0) { for (let j = 0; j < headingLevelDifference; j++) { let listElement = document.createElement("ol"), listItemElement = document.createElement("li"); listElement.appendChild(listItemElement); currentElement.appendChild(listElement); currentElement = listItemElement; } currentElement.appendChild(linkElement); } else { for (let j = 0; j < -headingLevelDifference; j++) { currentElement = currentElement.parentNode.parentNode; } let listItemElement = document.createElement("li"); listItemElement.appendChild(linkElement); currentElement.parentNode.appendChild(listItemElement); currentElement = listItemElement; } currentLevel = headingLevel; } this.toElement.appendChild(this.tocElement.firstChild); } } /*]]>*/</script>
+    </b:if>
+    <b:if cond='data:blog.analyticsAccountNumber'>
+      <!-- Google tag (gtag.js) -->
+      <script async='async' expr:src='&quot;https://www.googletagmanager.com/gtag/js?id=&quot; + data:blog.analyticsAccountNumber'/>
+      <script>window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag(&#39;js&#39;, new Date()); gtag(&#39;config&#39;, &#39;<data:blog.analyticsAccountNumber/>&#39;);</script>
+    </b:if>
   </b:if>
-</b:loop>
+  
+  <script type='application/ld+json'>
+  {
+    &quot;@context&quot;: &quot;https://schema.org&quot;,
+    &quot;@type&quot;: &quot;WebSite&quot;,
+    &quot;url&quot;: &quot;<data:blog.homepageUrl.canonical/>&quot;,
+    &quot;name&quot;: &quot;<data:blog.title/>&quot;,
+    &quot;alternateName&quot;: &quot;<data:blog.title/>&quot;,
+    &quot;potentialAction&quot;: {
+      &quot;@type&quot;: &quot;SearchAction&quot;,
+      &quot;target&quot;: &quot;<data:blog.homepageUrl.canonical/>search?q={search_term_string}&quot;,
+      &quot;query-input&quot;: &quot;required name=search_term_string&quot;
+    }
+  }
+  </script>
+  
+  <!--[ </head> close ]-->
+  &lt;!--<head/><b:if cond='!data:blog.adsenseClientId'>--&gt;&lt;/head&gt;</b:if>
+
+  <!--[ <body> open ]-->
+  <body>
+    <b:attr name='id' value='nB'/>
+    <b:attr name='data-theme' value='default'/>
+    <b:class name='nJs'/>
+    
+    <b:class name='nB'/>
+    <b:class cond='data:view.url == data:blog.homepageUrl.canonical path &quot;search&quot;' name='blog'/>
+    <b:class cond='data:blog.languageDirection == &quot;rtl&quot;' name='r'/>
+    <b:class cond='data:view.isMultipleItems' name='index'/>
+    <b:class cond='data:view.isMultipleItems != data:view.isHomepage' name='multi'/>
+    <b:class cond='data:view.isHomepage' name='home'/>
+    <b:class cond='data:view.isSingleItem' name='item'/>
+    <b:class cond='data:view.isPage' name='page'/>
+    <b:class cond='data:view.isPost' name='post'/>
+    <b:class cond='data:view.isError' name='error'/>
+    <b:class cond='data:view.isPreview' name='preview'/>
+    
+    <b:comment><!--[ Activate the tag below so that the menu is always open ]--></b:comment>
+    <!--<b:class name='openMenu'/>-->
+    
+    <b:comment><!--[ Show only one grid column in Mobile ]--></b:comment>
+    <!--<b:class cond='data:view.isMultipleItems' name='oneGrid'/>-->
+    
+    <b:comment><!--[ Header sticky in mobile ]--></b:comment>
+    <!--<b:class name='stickyHeader'/>-->
+      
+    <b:if cond='!data:view.isError'>      
+      <b:comment><!--[ to activate the function ]--></b:comment>
+      <input class='navi hidden' id='forNav' type='checkbox'/>
+      
+      <!--[ Wrapper ]-->
+      <b:tag class='mainW' name='div'>
+        
+        <!--[ Header ]-->
+        <header class='mainH flex cInherit noPrint'>
+          
+          <div class='headL flex shrink'>
+            
+            <b:if cond='!data:view.isLayoutMode'>
+              <b:comment>Menu button</b:comment>
+              <div class='headi menu flex center'>
+                <label aria-label='Open menu' class='mc fc ic op i20' for='forNav'><b:include name='menu-2-icon'/></label>
+              </div>
+            </b:if>
+            
+            <b:comment>Header widget</b:comment>
+            <b:section class='headT notranslate' id='header-title' maxwidgets='1' showaddelement='false'>
+              <b:widget id='Header1' locked='true' title='Median UI [Dev] (Header)' type='Header' version='2' visible='true'>
+                <b:widget-settings>
+                  <b:widget-setting name='displayUrl'/>
+                  <b:widget-setting name='displayHeight'>0</b:widget-setting>
+                  <b:widget-setting name='sectionWidth'>-1</b:widget-setting>
+                  <b:widget-setting name='useImage'>false</b:widget-setting>
+                  <b:widget-setting name='shrinkToFit'>false</b:widget-setting>
+                  <b:widget-setting name='imagePlacement'>BEHIND</b:widget-setting>
+                  <b:widget-setting name='displayWidth'>0</b:widget-setting>
+                </b:widget-settings>
+                <b:includable id='main' var='this'>
+                  <b:include cond='data:imagePlacement in {&quot;REPLACE&quot;, &quot;BEFORE_DESCRIPTION&quot;}' name='image'/>
+                  <b:include cond='data:imagePlacement not in {&quot;REPLACE&quot;, &quot;BEFORE_DESCRIPTION&quot;}' name='title'/>
+                  <b:include cond='data:imagePlacement != &quot;REPLACE&quot;' name='description'/>
+                  <b:include cond='data:imagePlacement == &quot;BEHIND&quot;' name='behindImageStyle'/>
+                </b:includable>
+                <b:includable id='behindImageStyle'>
+                  <b:if cond='data:sourceUrl'>
+                    <b:include cond='data:this.image' data='{image: data:this.image, selector: &quot;.Header&quot;}' name='responsiveImageStyle'/>
+                  </b:if>
+                </b:includable>
+                <b:includable id='description'>
+                  <b:if cond='data:this.description'>
+                    <div class='headD hidden'><data:this.description/></div>
+                  </b:if>
+                </b:includable>
+                <b:includable id='image'>
+                  <!-- Header image -->
+                  <a expr:href='data:blog.homepageUrl'>
+                    <img class='lazy' expr:alt='data:title' expr:data-src='resizeImage(data:sourceUrl, 200)' expr:height='data:height' expr:width='data:width' src='data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs='/>
+                  </a>
+                  <b:include cond='data:this.imagePlacement == &quot;REPLACE&quot;' name='title'/>
+                </b:includable>
+                <b:includable id='title'>
+                  <!-- Header title -->
+                  <div class='headI'>
+                    <b:class cond='data:this.imagePlacement == &quot;REPLACE&quot;' name='hidden'/>
+                    <b:tag class='headN' expr:name='!data:view.isSingleItem ? &quot;h1&quot; : &quot;h2&quot;'>
+                      <b:class cond='data:this.description' name='d'/>
+                        
+                      <b:tag class='headt ellips' expr:name='!data:view.isHomepage ? &quot;a&quot; : &quot;span&quot;'>
+                        <b:attr cond='!data:view.isHomepage' expr:value='data:blog.homepageUrl' name='href'/>
+                        <data:title/>
+                      </b:tag>
+                    </b:tag>
+                  </div>
+                </b:includable>
+              </b:widget>
+            </b:section>
+          </div>
+          
+          <div class='headR flex shrink'>
+            
+            <b:comment>Search input</b:comment>
+            <b:section class='headS' id='header-search' maxwidgets='2' showaddelement='false'>
+              <b:widget id='BlogSearch1' locked='true' title='e.g. Typography' type='BlogSearch' version='2' visible='true'>
+                <b:includable id='main'>
+                      <b:include name='content'/>
+                    </b:includable>
+                <b:includable id='content'>
+                  <b:include name='searchForm'/>
+                </b:includable>
+                <b:includable id='searchForm'>
+                  <form class='srh fontM' expr:action='data:blog.searchUrl'>
+                    <b:attr cond='!data:view.isPreview' name='target' value='_top'/>
+                    <b:include name='urlParamsAsFormInput'/>
+                      
+                    <input autocomplete='off' class='shI bgInherit fontBa ellips' expr:aria-label='data:messages.searchThisBlog' expr:placeholder='data:view.search.query ? data:view.search.query.escaped : data:title' id='forSearch' minlength='3' name='q' required='required' type='search'/>
+                    
+                    <b:include name='searchSubmit'/>
+                    
+                    <b:comment>Clear button</b:comment>
+                    <button aria-label='Clear' class='b bu bgInherit flex center invisible' data-text='Clear' type='reset'>
+                      <b:class cond='data:blog.languageDirection == &quot;rtl&quot;' name='r'/>
+                    </button>
+                  </form>
+                </b:includable>
+                <b:includable id='searchSubmit'>
+                  <label class='b ba bgInherit flex center op i18' for='forSearch'>
+                    <b:class cond='data:blog.languageDirection == &quot;rtl&quot;' name='r'/>
+                    <b:include name='search-icon'/>
+                  </label>
+                </b:includable>
+              </b:widget>
+            </b:section>
+            
+            <b:comment>Header icon</b:comment>
+            <div class='headB'>
+              <b:if cond='!data:view.isLayoutMode'>
+                <b:comment>important to activate the function</b:comment>
+                <b:tag class='setI hidden' id='forSettings' name='input' type='checkbox'/>
+                <b:tag class='proI hidden' id='forUsers' name='input' type='checkbox'/>
+                <b:tag class='darkI hidden' id='forDark' name='input' type='checkbox'/>
+                <input class='bookI hidden' id='forBook' type='checkbox'/>
+              </b:if>
+              
+              <b:section id='header-icon' maxwidgets='3' showaddelement='false'>
+                <b:widget id='TextList00' locked='true' title='Header icon' type='TextList' version='2' visible='true'>
+                  <b:widget-settings>
+                    <b:widget-setting name='shownum'/>
+                    <b:widget-setting name='sorting'>NONE</b:widget-setting>
+                    <b:widget-setting name='item-2'>Bookmark</b:widget-setting>
+                    <b:widget-setting name='item-1'>Dark</b:widget-setting>
+                    <b:widget-setting name='item-0'>Search</b:widget-setting>
+                  </b:widget-settings>
+                  <b:includable id='main'>
+                    <div class='headi flex'>
+                      <b:include name='content'/>
+                    </div>
+                  </b:includable>
+                  <b:includable id='content'>
+                    <b:loop values='data:items' var='item'>
+                      <!--[ Search button(mobile) ]-->
+                      <b:if cond='data:item == &quot;Search&quot;'>
+                        <label class='sc ic op i20' expr:aria-label='data:item' for='forSearch'>
+                          <b:include name='search-icon'/>
+                        </label>
+                      </b:if>
+                    </b:loop>
+                  
+                    <b:loop index='icon' values='data:items' var='item'>
+                      
+                      <!--[ Dark ]-->
+                      <b:if cond='data:item == &quot;Dark&quot;'>
+                        <label class='dc fc ic op i20 noJava' expr:aria-label='data:item' for='forDark'>
+                          <b:include name='moon-n-sun-2-icon'/>
+                        </label>
+                        
+                        <!--[ Bookmark ]-->
+                        <b:elseif cond='data:item == &quot;Bookmark&quot;'/>
+                        <!-- Web Blog Bookmark With Browser Local Storage, Created by: igniel.com, Source code: https://www.igniel.com/2022/12/widget-bookmark-blog.html -->
+                        <div class='ignielBookmark ibook'>
+                          <label class='bc fc ic op i20 noJava' data-text='0' expr:aria-label='data:item' for='forBook'>
+                            <b:include name='frame-icon'/>
+                          </label>
+                        </div>
+                        
+                        <!--[ Bag/Cart ]-->
+                        <b:elseif cond='data:item == &quot;Cart&quot;'/>
+                        <div class='cc ic op i20 noJava' expr:aria-label='data:item'>
+                          <b:include name='bag-icon'/>
+                        </div>
+                        
+                        <!--[ Translate ]-->
+                        <b:elseif cond='data:item == &quot;Translate&quot;'/>
+                        <div class='tc ic op i20 noJava' expr:aria-label='data:item'>
+                          <b:include name='translate-icon'/>
+                        </div>
+                        
+                      </b:if>
+                      
+                    </b:loop>
+                    
+                    <b:loop values='data:items' var='item'>
+                      <!--[ Settings ]-->
+                      <b:if cond='data:item == &quot;Settings&quot;'>
+                        <label class='st fc ic op i20' expr:aria-label='data:item' for='forSettings'>
+                          <b:include name='category-2-icon'/>
+                        </label>
+                      </b:if>
+                    </b:loop>
+                    
+                    <b:loop values='data:items' var='item'>
+                      <!--[ Profile ]-->
+                      <b:if cond='data:item == &quot;Profile&quot;'>
+                        <label class='pc fc ic op i20' expr:aria-label='data:item' for='forUsers'>
+                          <b:include name='profile-circle-icon'/>
+                        </label>
+                      </b:if>
+                    </b:loop>
+                  </b:includable>
+                </b:widget>
+              </b:section>
+              
+              <b:comment>Settings</b:comment>
+              <div class='settB'>
+                <b:section id='settings-id' showaddelement='true'>
+                  <b:widget id='TextList11' locked='true' title='Setting icon' type='TextList' version='2' visible='false'>
+                    <b:widget-settings>
+                      <b:widget-setting name='shownum'/>
+                      <b:widget-setting name='sorting'>NONE</b:widget-setting>
+                      <b:widget-setting name='item-1'>Bookmark</b:widget-setting>
+                      <b:widget-setting name='item-0'>Dark</b:widget-setting>
+                    </b:widget-settings>
+                    <b:includable id='main'>
+                      <div class='iSett ipopUp invisible'>
+                        <b:class cond='data:blog.languageDirection == &quot;rtl&quot;' name='r'/>
+                        
+                        <div class='setti flex'>
+                          <b:include name='content'/>
+                        </div>
+                      </div>
+                    </b:includable>
+                    <b:includable id='content'>                  
+                      <b:loop index='setting' values='data:items' var='item'>
+                      <div>
+                        <!--[ Dark ]-->
+                        <b:if cond='data:item == &quot;Dark&quot;'>
+                          <label class='dc ic op i20 noJava' expr:aria-label='data:item' for='forDark'>
+                            <b:include name='moon-n-sun-2-icon'/>
+                          </label>
+                        
+                          <!--[ Bookmark ]-->
+                          <b:elseif cond='data:item == &quot;Bookmark&quot;'/>
+                          <div class='ignielBookmark ibook'>
+                            <label class='bc fc ic op i20 noJava' data-text='0' expr:aria-label='data:item' for='forBook'>
+                              <b:include name='frame-icon'/>
+                            </label>
+                          </div>
+                        
+                          <!--[ Bag/Cart ]-->
+                          <b:elseif cond='data:item == &quot;Cart&quot;'/>
+                          <div class='ic op i20 noJava' expr:aria-label='data:item'>
+                            <b:include name='bag-icon'/>
+                          </div>
+                        
+                          <!--[ Translate ]-->
+                          <b:elseif cond='data:item == &quot;Translate&quot;'/>
+                          <div class='ic op i20 noJava' expr:aria-label='data:item'>
+                            <b:include name='translate-icon'/>
+                          </div>
+                        
+                          <b:comment>Your custome setting is here</b:comment>
+                        </b:if>
+                        </div>
+                      </b:loop>
+                    </b:includable>
+                  </b:widget>
+                  <b:widget id='LinkList00' locked='true' title='Appearance' type='LinkList' version='2' visible='true'>
+                    <b:widget-settings>
+                      <b:widget-setting name='shownum'>4</b:widget-setting>
+                      <b:widget-setting name='link-3'>Setting applies to this browser only</b:widget-setting>
+                      <b:widget-setting name='sorting'>NONE</b:widget-setting>
+                      <b:widget-setting name='text-1'>Dark</b:widget-setting>
+                      <b:widget-setting name='link-1'>custom_text</b:widget-setting>
+                      <b:widget-setting name='text-0'>System</b:widget-setting>
+                      <b:widget-setting name='link-2'>custom_text</b:widget-setting>
+                      <b:widget-setting name='text-3'>Text</b:widget-setting>
+                      <b:widget-setting name='link-0'>custom_text</b:widget-setting>
+                      <b:widget-setting name='text-2'>Light</b:widget-setting>
+                    </b:widget-settings>
+                    <b:includable id='main'>
+                      <b:include name='content'/>
+                    </b:includable>
+                    <b:includable id='content'>
+                      <div class='iTheme ipopUp flex column invisible noJava'>
+                        <b:class cond='data:blog.languageDirection == &quot;rtl&quot;' name='r'/>
+                      
+                        <b:comment>Heading</b:comment>
+                        <label class='h flexIn fontS opacity i14' expr:aria-label='data:title' expr:data-text='data:title' for='forDark'>
+                          <b:if cond='data:blog.languageDirection != &quot;rtl&quot;'>
+                            <b:include name='arrow-left-1-icon'/>
+                            <b:else/>
+                            <b:include name='arrow-right-1-icon'/>
+                          </b:if>
+                        </label>
+                      
+                        <div class='inn flex fontS'>
+                          <b:loop index='theme' values='data:links' var='link'>
+                            <b:if cond='data:theme &lt;= 3'>
+                              <span class='fontM' expr:data-text='data:link.name'>
+                                <b:class cond='data:link.name == &quot;Dark&quot;' name='D'/>
+                                <b:class cond='data:link.name == &quot;Light&quot;' name='L'/>
+                                <b:class cond='data:link.name == &quot;System&quot;' name='A'/>
+                                <b:class cond='data:link.name == &quot;Text&quot;' name='opacity'/>
+                                <b:attr cond='data:link.name == &quot;Dark&quot;' name='onclick' value='setTheme(&apos;dark&apos;)'/>
+                                <b:attr cond='data:link.name == &quot;Light&quot;' name='onclick' value='setTheme(&apos;light&apos;)'/>
+                                <b:attr cond='data:link.name == &quot;System&quot;' name='onclick' value='setTheme(&apos;default&apos;)'/>
+                                <b:attr cond='data:link.name != &quot;Text&quot;' name='role' value='button'/>
+                                <b:attr cond='data:link.name != &quot;Text&quot;' expr:value='data:link.name' name='aria-label'/>
+                                <b:attr cond='data:link.target != &quot;#&quot; and data:link.target != &quot;custom_text&quot;' expr:value='data:link.target' name='data-text'/>
+                                
+                                <b:if cond='data:link.name == &quot;System&quot;'>
+                                  <span class='i flex a'>
+                                    <span class='c'>
+                                      <span class='k flex column'>
+                                        <b:class cond='data:blog.languageDirection == &quot;rtl&quot;' name='r'/>
+                                        <i class='t flex'/>
+                                        <i class='p flex column'/>
+                                      </span>
+                                    </span>
+                                    <span class='c rev'>
+                                      <span class='k flex column'>
+                                        <b:class cond='data:blog.languageDirection == &quot;rtl&quot;' name='r'/>
+                                        <i class='t flex'/>
+                                        <i class='p flex column'/>
+                                      </span>
+                                    </span>
+                                  </span>
+                              
+                                  <b:elseif cond='data:link.name == &quot;Dark&quot;'/>
+                                  <span class='i rev flex d'>
+                                    <span class='c'>
+                                      <span class='k flex column'>
+                                        <b:class cond='data:blog.languageDirection == &quot;rtl&quot;' name='r'/>
+                                        <i class='t flex'/>
+                                        <i class='p flex column'/>
+                                      </span>
+                                    </span>
+                                  </span>
+                              
+                                  <b:elseif cond='data:link.name == &quot;Light&quot;'/>
+                                  <span class='i flex l'>
+                                    <span class='c'>
+                                      <span class='k flex column'>
+                                        <b:class cond='data:blog.languageDirection == &quot;rtl&quot;' name='r'/>
+                                        <i class='t flex'/>
+                                        <i class='p flex column'/>
+                                      </span>
+                                    </span>
+                                  </span>
+                                </b:if>
+                              </span>
+                            </b:if>
+                          </b:loop>
+                        </div>
+                      </div>
+                    </b:includable>
+                  </b:widget>
+                  <b:widget id='TextList22' locked='true' title='Bookmark' type='TextList' version='2' visible='true'>
+                    <b:widget-settings>
+                      <b:widget-setting name='shownum'/>
+                      <b:widget-setting name='sorting'>NONE</b:widget-setting>
+                      <b:widget-setting name='item-0'>Your bookmarks</b:widget-setting>
+                    </b:widget-settings>
+                    <b:includable id='main'>
+                      <b:include name='content'/>
+                    </b:includable>
+                    <b:includable id='content'>
+                      <b:loop index='i' values='data:items' var='item'>
+                        <b:if cond='data:i &lt;= 0'>
+                          <div class='iBook ipopUp flex column invisible noJava'>
+                            <b:class cond='data:blog.languageDirection == &quot;rtl&quot;' name='r'/>
+                      
+                            <b:comment>Heading</b:comment>
+                            <label class='h flexIn fontS opacity i14' expr:aria-label='data:item' expr:data-text='data:item' for='forBook'>
+                              <b:if cond='data:blog.languageDirection != &quot;rtl&quot;'>
+                                <b:include name='arrow-left-1-icon'/>
+                                <b:else/>
+                                <b:include name='arrow-right-1-icon'/>
+                              </b:if>
+                            </label>
+                        
+                            <div class='bookmark-inner flex column'>
+                              <b:comment>Load bookmark list</b:comment>
+                              <div class='loading flex center fontM opacity i18' expr:data-text='data:messages.loading'>
+                                <svg viewBox='0 0 50 50' x='0px' y='0px'><path d='M25.251,6.461c-10.318,0-18.683,8.365-18.683,18.683h4.068c0-8.071,6.543-14.615,14.615-14.615V6.461z'><animateTransform attributeName='transform' attributeType='xml' dur='0.6s' from='0 25 25' repeatCount='indefinite' to='360 25 25' type='rotate'/></path></svg>
+                              </div>
+                            </div>
+                      
+                          </div>
+                        </b:if>
+                      </b:loop>
+                    </b:includable>
+                  </b:widget>
+                </b:section>
+              </div>
+            </div>
+            
+          </div>
+          
+        </header>
+          
+        <div class='mainN flex'>
+          <!--[ Nav ]-->
+          <div class='mainL noPrint shrink'>
+            <b:class cond='data:blog.languageDirection == &quot;rtl&quot;' name='r'/>
+            <div class='leftW flex cInherit'>
+              <b:class cond='data:blog.languageDirection == &quot;rtl&quot;' name='r'/>
+              <div class='leftN'>
+              
+                <b:section class='leftM' id='Left-menu' maxwidgets='2' showaddelement='false'>
+                  <b:widget id='HTML000' locked='true' title='Main Menu' type='HTML' version='2' visible='true'>
+                    <b:widget-settings>
+                      <b:widget-setting name='content'><![CDATA[<!--[ You can only edit this widget from HTML theme ]-->]]></b:widget-setting>
+                    </b:widget-settings>
+                    <b:includable id='main'>
+                      <ul class='leftNav flex column noList' itemscope='itemscope' itemtype='https://schema.org/SiteNavigationElement'>
+                        <b:class cond='data:blog.languageDirection == &quot;rtl&quot;' name='r'/>
+                        
+                        <!--[ Homepage menu ]-->
+                        <li class='leftC'>
+                          <b:tag class='a flex op i20' expr:name='!data:view.isHomepage ? &quot;a&quot; : &quot;div&quot;'>
+                            <b:class cond='data:view.isHomepage' name='home'/>
+                            <b:attr cond='!data:view.isHomepage' expr:value='data:messages.home' name='aria-label'/>
+                            <b:attr cond='!data:view.isHomepage' expr:value='data:blog.homepageUrl.canonical' name='href'/>
+                            <b:attr cond='!data:view.isHomepage' name='itemprop' value='url'/>
+                              
+                            <!--[ icon ]-->
+                            <b:include name='home-icon'/>
+                            
+                            <!--[ name ]-->
+                            <div class='n text'>
+                              <span>
+                                <b:attr cond='!data:view.isHomepage' name='itemprop' value='name'/>
+                                
+                                <b:comment><!--[ Replace <data:messages.home/> tag with the text you want ]--></b:comment>
+                                <data:messages.home/>
+                              </span>
+                            </div>
+                          </b:tag>
+                        </li>
+                      
+                        <!--[ Dropdown: 게임개발 ]-->
+                        <li class='leftC dr'>
+                          <b:comment><!--[ Add open='' attribute to keep the menu open ]--></b:comment>
+                          <b:tag name='details'>
+                            <b:tag aria-label='게임개발' class='a flex noWrap op i20' name='summary'>
+                              <!--[ icon ]-->
+                              <b:include name='category-2-icon'/>
+                          
+                              <!--[ name ]-->
+                              <b:tag class='flexIn center grow text' name='span'>
+                                <span>게임개발</span>
+                                <b:include name='arrow-down-1-icon'/>
+                              </b:tag>
+                              <span class='pTip'>게임개발</span>
+                            </b:tag>
+                            
+                            <ul class='n'>
+                              <li itemprop='name'>
+                                <a href='/search/label/Unity' itemprop='url'>
+                                  <span>Unity</span>
+                                </a>
+                              </li>
+                              <li itemprop='name'>
+                                <a href='/search/label/Unreal' itemprop='url'>
+                                  <span>Unreal</span>
+                                </a>
+                              </li>
+                              <li itemprop='name'>
+                                <a href='/search/label/Shader' itemprop='url'>
+                                  <span>Shader</span>
+                                </a>
+                              </li>
+                            </ul>
+                            
+                          </b:tag>
+                        </li>
+                      
+                        <!--[ Dropdown: 취미 ]-->
+                        <li class='leftC dr br'>
+                          <b:comment><!--[ Add open='' attribute to keep the menu open ]--></b:comment>
+                          <b:tag name='details'>
+                            <b:tag aria-label='취미' class='a flex noWrap op i20' name='summary'>
+                              <!--[ icon ]-->
+                              <b:include name='folder-2-icon'/>
+                          
+                              <!--[ name ]-->
+                              <b:tag class='flexIn center grow text' name='span'>
+                                <span>취미</span>
+                                <b:include name='arrow-down-1-icon'/>
+                              </b:tag>
+                              <span class='pTip'>취미</span>
+                            </b:tag>
+                            
+                            <ul class='n'>
+                              <li itemprop='name'>
+                                <a href='/search/label/Blog' itemprop='url'>
+                                  <span>블로그</span>
+                                </a>
+                              </li>
+                              <li itemprop='name'>
+                                <a href='/search/label/Server' itemprop='url'>
+                                  <span>서버</span>
+                                </a>
+                              </li>
+                              <li itemprop='name'>
+                                <a href='/search/label/PersonalDev' itemprop='url'>
+                                  <span>개인 개발</span>
+                                </a>
+                              </li>
+                              <li itemprop='name'>
+                                <a href='/search/label/Review' itemprop='url'>
+                                  <span>리뷰</span>
+                                </a>
+                              </li>
+                            </ul>
+                            
+                          </b:tag>
+                        </li>
+                          
+                        <!--[ Standar menu: About ]-->
+                        <li class='leftC'>
+                          <a aria-label='About' class='a flex op i20' href='/p/about.html' itemprop='url'>
+                            <!--[ icon ]-->
+                            <b:include name='profile-2user-icon'/>
+                            
+                            <!--[ name ]-->
+                            <div class='n text'>
+                              <span itemprop='name'>About</span>
+                            </div>
+                          </a>
+                        </li>
+                          
+                        <!--[ Standar menu: Contact (Guestbook) ]-->
+                        <li class='leftC br'>
+                          <a aria-label='Contact' class='a flex op i20' href='/p/guestbook.html' itemprop='url'>
+                            <!--[ icon ]-->
+                            <b:include name='sms-edit-icon'/>
+                            
+                            <!--[ name ]-->
+                            <div class='n text'>
+                              <span itemprop='name'>Contact</span>
+                            </div>
+                          </a>
+                        </li>
+                          
+                        <!--[ Dropdown: 시리즈 (Custom menu) ]-->
+                        <li class='leftC dr'>
+                          <b:tag name='details'>
+                            <b:tag aria-label='시리즈' class='a flex noWrap op i20' name='summary'>
+                              <!--[ icon ]-->
+                              <b:include name='document-icon'/>
+                          
+                              <!--[ name ]-->
+                              <b:tag class='flexIn center grow text' name='span'>
+                                <span>시리즈</span>
+                                <b:include name='arrow-down-1-icon'/>
+                              </b:tag>
+                              <span class='pTip'>시리즈</span>
+                            </b:tag>
+                            
+                            <ul class='n'>
+                              <li itemprop='name'>
+                                <a href='/search/label/WebTranslator' itemprop='url'>
+                                  <span>Web Translator</span>
+                                </a>
+                              </li>
+                              <li itemprop='name'>
+                                <a href='/search/label/Homelab' itemprop='url'>
+                                  <span>Homelab</span>
+                                </a>
+                              </li>
+                            </ul>
+                          </b:tag>
+                        </li>
+                      </ul>
+                    </b:includable>
+                  </b:widget>
+                  <b:widget id='LinkList000' locked='true' title='Main Menu (alternative)' type='LinkList' version='2' visible='false'>
+                    <b:widget-settings>
+                      <b:widget-setting name='link-3'>#</b:widget-setting>
+                      <b:widget-setting name='sorting'>NONE</b:widget-setting>
+                      <b:widget-setting name='text-1'>About</b:widget-setting>
+                      <b:widget-setting name='link-1'>#</b:widget-setting>
+                      <b:widget-setting name='text-0'>Home</b:widget-setting>
+                      <b:widget-setting name='link-2'>#</b:widget-setting>
+                      <b:widget-setting name='text-3'>Custom menu</b:widget-setting>
+                      <b:widget-setting name='link-0'>custom_text</b:widget-setting>
+                      <b:widget-setting name='text-2'>Contact</b:widget-setting>
+                    </b:widget-settings>
+                    <b:includable id='main'>
+                      <b:include name='content'/>
+                    </b:includable>
+                    <b:includable id='content'>
+                      <ul class='leftNav flex column noList' itemscope='itemscope' itemtype='https://schema.org/SiteNavigationElement'>
+                        <b:class cond='data:blog.languageDirection == &quot;rtl&quot;' name='r'/>
+                        
+                        <b:loop values='data:links' var='link'>
+                          <b:if cond='data:link.name == &quot;Home&quot;'>
+                            <!--[ Homepage menu ]-->
+                            <li class='leftC'>
+                              <b:tag class='a flex op i20' expr:name='!data:view.isHomepage ? &quot;a&quot; : &quot;div&quot;'>
+                                <b:class cond='data:view.isHomepage' name='home'/>
+                                <b:attr cond='!data:view.isHomepage' expr:value='data:messages.home' name='aria-label'/>
+                                <b:attr cond='!data:view.isHomepage' expr:value='data:blog.homepageUrl.canonical' name='href'/>
+                                <b:attr cond='!data:view.isHomepage' name='itemprop' value='url'/>
+                              
+                                <!--[ icon ]-->
+                                <b:include name='home-icon'/>
+                            
+                                <!--[ name ]-->
+                                <div class='n text'>
+                                  <span>
+                                    <b:attr cond='!data:view.isHomepage' name='itemprop' value='name'/>
+                                
+                                    <b:if cond='data:link.target != &quot;#&quot; and data:link.target != &quot;custom_text&quot;'>
+                                      <data:link.target/>
+                                      <b:else/>
+                                      <data:link.name/>
+                                    </b:if>
+                                  </span>
+                                </div>
+                              </b:tag>
+                            </li>
+                          </b:if>
+                        </b:loop>
+                        
+                        <b:loop values='data:links' var='link'>
+                          <b:if cond='data:link.name != &quot;Home&quot;'>
+                            <li class='leftC'>
+                              <a aria-label='About' class='a flex op i20' expr:href='data:link.target' itemprop='url'>
+                                <!--[ icon ]-->
+                                <b:if cond='data:link.name == &quot;About&quot;'>
+                                  <b:include name='profile-2user-icon'/>
+                                  
+                                  <b:elseif cond='data:link.name == &quot;Contact&quot;'/>
+                                  <b:include name='sms-edit-icon'/>
+                                  
+                                  <b:else/>
+                                  <b:include name='folder-2-icon'/>
+                                </b:if>
+                            
+                                <!--[ name ]-->
+                                <div class='n text'>
+                                  <span itemprop='name'><data:link.name/></span>
+                                </div>
+                              </a>
+                            </li>
+                          </b:if>
+                        </b:loop>
+                        
+                      </ul>
+                    </b:includable>
+                  </b:widget>
+                </b:section>
+              
+                <b:section class='leftP' id='Left-profile' maxwidgets='2' showaddelement='false'>
+                  <b:widget id='Profile1' locked='false' title='Contributors' type='Profile' version='2' visible='true'>
+                    <b:widget-settings>
+                      <b:widget-setting name='showaboutme'>true</b:widget-setting>
+                      <b:widget-setting name='showlocation'>true</b:widget-setting>
+                    </b:widget-settings>
+                    <b:includable id='main' var='this'>
+                      <b:include name='content'/>
+                    </b:includable>
+                    <b:includable id='authorProfileImage'>
+                      <b:tag class='av' name='span'>
+                        <span class='avatar flex center shrink bgAlt' expr:data-style='&quot;background-image: url(&quot; + resizeImage(data:authorPhoto.image,35) + &quot;)&quot;'>
+                          <b:class cond='!data:view.isPreview' name='lazy'/>
+                          <b:class cond='data:team' name='n'/>
+                          <b:attr cond='data:view.isPreview' expr:value='&quot;background-image: url(&quot; + resizeImage(data:authorPhoto.image,35) + &quot;)&quot;' name='style'/>
+                        </span>
+                        <noscript>
+                          <span class='avatar flex center bgAlt' expr:style='&quot;background-image: url(&quot; + resizeImage(data:authorPhoto.image,35) + &quot;)&quot;'>
+                            <b:class cond='data:team' name='n'/>
+                          </span>
+                        </noscript>
+                      </b:tag>
+                    </b:includable>
+                    <b:includable id='content'>
+                      <b:tag class='proP hidden' id='forProfile' name='input' type='checkbox'/>
+                      
+                      <!--[ Profile: icon ]-->
+                      <div class='profileIcon leftC flex'>
+                        <b:class expr:name='data:team ? &quot;team&quot; : &quot;solo&quot;'/>
+                        <label class='a flexIn fc' for='forProfile'>
+                          <b:if cond='data:team'>
+                            <b:comment>Profile Teams</b:comment>
+                            <b:loop index='team' values='data:authors' var='author'>
+                              <b:if cond='data:team &lt;= 2'>
+                                <b:include data='author' name='profileImage'/>
+                                
+                              </b:if>
+                            </b:loop>
+                            <b:tag class='n p fontS opacity' cond='data:authors.length &gt; (2 + 1)' expr:data-text='&quot;+&quot; + (data:authors.length - (2 + 1))' name='span'/>
+                            <b:if cond='!data:blog.isMobileRequest'>
+                              <span class='avi flex center op i20'><b:include name='profile-circle-icon'/></span>
+                            </b:if>
+                            
+                            <b:else/>
+                            <b:comment>Profile individual</b:comment>
+                            <b:include name='profileImage'/>
+                            <b:comment>Name and location</b:comment>
+                            <span class='n flex column'>
+                              <span class='fontS'>
+                                <b:include name='userProfileNameOnly'/>
+                              </span>
+                              <b:include cond='data:showlocation and data:location != &quot;&quot;' name='userLocation'/>
+                            </span>
+                          </b:if>
+                        </label>
+                      </div>
+                      
+                      <!--[ Profile: pop-up ]-->
+                      <div class='profilePop invisible'>
+                        <b:class cond='data:blog.languageDirection == &quot;rtl&quot;' name='r'/>
+                        <b:class expr:name='data:team ? &quot;team&quot; : &quot;solo&quot;'/>
+                        <b:class cond='!data:team' name='flex'/>
+                        <b:if cond='data:team'>
+                          <b:comment>Profile Teams</b:comment>
+                          <b:include name='teamProfile'/>
+                          
+                          <b:else/>
+                          <b:comment>Profile Individual</b:comment>
+                          <div class='proTeam'>
+                            <div class='h flex'>
+                              <b:include name='profileImage'/>
+                              <b:comment>Name and location</b:comment>
+                              <div class='n flex column'>
+                                <div class='fontS'>
+                                  <b:comment>Replace with userProfileLink to show profile with link</b:comment>
+                                  <b:include name='userProfileNameOnly'/>
+                                </div>
+                                <b:include cond='data:showlocation and data:location != &quot;&quot;' name='userLocation'/>
+                              </div>
+                            </div>
+                          
+                            <div class='d'>
+                              <b:include cond='data:aboutme != &quot;&quot;' name='userProfileText'/>
+                            </div>
+                          </div>
+                        </b:if>
+                      </div>
+                    </b:includable>
+                    <b:includable id='defaultProfileImage'>
+                      <b:tag class='av' name='span'>
+                        <span class='avatar flex center shrink bgAlt op i14'>
+                          <b:class cond='data:team' name='n'/>
+                          <b:include name='user-icon'/>
+                        </span>
+                      </b:tag>
+                    </b:includable>
+                    <b:includable id='profileImage'>
+                      <b:if cond='data:authorPhoto.image'>
+                        <b:include name='authorProfileImage'/>
+                        <b:else/>
+                        <b:include name='defaultProfileImage'/>
+                      </b:if>
+                    </b:includable>
+                    <b:includable id='teamProfile'>
+                      <b:tag class='proT hidden' cond='data:authors.length &gt; (3 + 1)' expr:id='data:widget.instanceId + &quot;-in&quot;' name='input' type='checkbox'/>
+                      
+                      <div class='proTeam flex column fontM fontBa'>
+                        <b:loop index='team' values='data:authors' var='author'>
+                          <div class='team'>
+                            <b:comment>Showing only 4 team</b:comment>
+                            <b:class cond='data:team &lt;= 3' name='s'/>
+                            
+                            <b:comment>Replace with teamProfileLink to show profile with link</b:comment>
+                            <b:include data='author' name='teamProfileName'/>
+                          </div>
+                        </b:loop>
+                      </div>
+        
+                      <b:tag aria-label='Show all contributors' class='fontM' cond='data:authors.length &gt; (3 + 1)' expr:data-text='data:messages.showAll + &quot; (+&quot; + (data:authors.length - (3 + 1)) + &quot;)&quot;' expr:for='data:widget.instanceId + &quot;-in&quot;' name='label'/>
+                    </b:includable>
+                    <b:includable id='teamProfileLink'>
+                      <a class='flex' expr:aria-label='data:display-name' expr:data-text='data:display-name' expr:href='data:userUrl' rel='noreferrer' target='_blank'>
+                        <b:include name='profileImage'/>
+                      </a>
+                    </b:includable>
+                    <b:includable id='teamProfileName'>
+                      <div class='flex' expr:data-text='data:display-name'>
+                        <b:include name='profileImage'/>
+                      </div>
+                    </b:includable>
+                    <b:includable id='userLocation'>
+                      <span class='location fontSm opacity ellips' expr:data-text='data:location'/>
+                    </b:includable>
+                    <b:includable id='userProfile'><!--[ removed ]--></b:includable>
+                    <b:includable id='userProfileData'><!--[ removed ]--></b:includable>
+                    <b:includable id='userProfileImage'><!--[ removed ]--></b:includable>
+                    <b:includable id='userProfileInfo'><!--[ removed ]--></b:includable>
+                    <b:includable id='userProfileLink'>
+                      <a class='name extL' expr:href='data:userUrl' expr:title='data:messages.viewMyCompleteProfile' rel='author noreferrer' target='_blank'>
+                        <bdi><data:displayname/></bdi>
+                      </a>
+                    </b:includable>
+                    <b:includable id='userProfileNameOnly'>
+                      <span class='name'><bdi><data:displayname/></bdi></span>
+                    </b:includable>
+                    <b:includable id='userProfileText'>
+                      <b:tag class='proT hidden' cond='data:aboutme.length &gt; 200' expr:id='data:widget.instanceId + &quot;-in&quot;' name='input' type='checkbox'/>
+    
+                      <div class='t fontS'>
+                        <b:class cond='data:aboutme.length &gt; 200' name='clamp'/>
+      
+                        <b:comment>Add length: 200, To limit the number of characters appearing</b:comment>
+                        <b:eval expr='data:aboutme snippet {links: true, linebreaks: true}'/>
+                      </div>
+                      <b:tag class='fontS' cond='data:aboutme.length &gt; 200' expr:data-text='data:messages.showAll' expr:for='data:widget.instanceId + &quot;-in&quot;' name='label'/>
+                    </b:includable>
+                    <b:includable id='viewProfileLink'><!--[ removed ]--></b:includable>
+                  </b:widget>
+                </b:section>
+              
+                <div class='leftF leftC hidden fontM'>
+                  <label aria-label='Close menu' class='flexIn' for='forNav'/>
+                </div>
+                
+              </div>
+            </div>
+          </div>
+        
+          <div class='mainR flex column grow'>
+            
+            <!--[ Content ]-->
+            <div class='mainC'>
+              
+              <b:comment><!--[ Widget: Notify ]--></b:comment>
+              <b:section class='notify fontM noPrint' id='notif-widget' maxwidgets='1' showaddelement='false'>
+                <b:widget id='HTML0' locked='true' title='Notification' type='HTML' version='2' visible='false'>
+                  <b:widget-settings>
+                    <b:widget-setting name='content'><![CDATA[Lorem ipsum dolor sit amet, consectetur adipiscing elit. <a href='#'>Test link</a>]]></b:widget-setting>
+                  </b:widget-settings>
+                  <b:includable id='main'>
+                    <b:tag class='maxC' name='div'>
+                      <details open=''>
+                        <summary class='n flex center'>
+                          <b:class cond='data:blog.languageDirection == &quot;rtl&quot;' name='r'/>
+                          <span class='c' data-text='Close'/>
+                        </summary>
+                        <div class='p flex center'>
+                          <div>
+                            <data:content/>
+                          </div>
+                        </div>
+                      </details>
+                    </b:tag>
+                  </b:includable>
+                </b:widget>
+              </b:section>
+           
+              <b:tag class='maxC' name='div'>
+                
+                <b:comment><!--[ Widget: Billboard ad ]--></b:comment>
+                <b:section class='mainAd noPrint' id='billboard-ad' maxwidgets='2' showaddelement='true'>
+                  <b:widget id='HTML91' locked='true' title='Ads under header' type='HTML' version='2' visible='false'>
+                    <b:widget-settings>
+                      <b:widget-setting name='content'/>
+                    </b:widget-settings>
+                    <b:includable id='main'>
+                      <b:if cond='data:content != &quot;&quot;'>
+                        <data:content/>
+                      </b:if>
+                    </b:includable>
+                  </b:widget>
+                </b:section>
+                
+                <b:comment><!--[ Widget: Main and Sidebar ]--></b:comment>
+                <div class='mainB flex wrap'>
+                  
+                  <main class='blogB grow'>
+                    <b:class cond='data:view.isPost' name='item'/>
+                    <b:class cond='data:view.isPage' name='static'/>
+                    
+                    <b:comment>Custom Slider</b:comment>
+                    <b:comment>Dynamic Auto Slider</b:comment>
+                    <b:if cond='data:view.isHomepage'>
+                      <div class='slideB scrlH fontM noPrint' id='homeSliderWrap'>
+                        <!--[ Optional Notice Widget for Layout UI ]-->
+                        <b:section class='sliderNoticeSec hidden' id='slider-notice-widget' maxwidgets='1' showaddelement='false'>
+                          <b:widget id='Image1' locked='true' title='[1순위 공지 슬라이드] 이미지/설명(제목)/링크 입력' type='Image' version='2' visible='true'>
+                            <b:widget-settings>
+                              <b:widget-setting name='displayUrl'>https://1.bp.blogspot.com/-yMSpgmjn390/YF1Q5CvGIcI/AAAAAAAAQlg/59LxYemhlyEbbhqlpdfypu5OXRav4t-JgCNcBGAsYHQ/s1600/slider-1-min.png</b:widget-setting>
+                              <b:widget-setting name='displayHeight'>648</b:widget-setting>
+                              <b:widget-setting name='sectionWidth'>150</b:widget-setting>
+                              <b:widget-setting name='shrinkToFit'>false</b:widget-setting>
+                              <b:widget-setting name='displayWidth'>1600</b:widget-setting>
+                              <b:widget-setting name='link'/>
+                              <b:widget-setting name='caption'/>
+                            </b:widget-settings>
+                            <b:includable id='main'>
+                              <b:include name='content'/>
+                            </b:includable>
+                            <b:includable id='content'>
+                              <b:if cond='data:caption and data:caption != "" and data:sourceUrl and data:sourceUrl != "" and data:sourceUrl != "https://1.bp.blogspot.com/-yMSpgmjn390/YF1Q5CvGIcI/AAAAAAAAQlg/59LxYemhlyEbbhqlpdfypu5OXRav4t-JgCNcBGAsYHQ/s1600/slider-1-min.png"'>
+                                <div class='custom-notice-slide hidden' expr:data-img='data:sourceUrl' expr:data-link='data:link ? data:link : "#"' expr:data-title='data:caption' id='customNoticeSlide'/>
+                              </b:if>
+                            </b:includable>
+                          </b:widget>
+                        </b:section>
+                        
+                        <!--[ Slider Track ]-->
+                        <div class='slider flex' id='homeSliderTrack'>
+                          <!-- Initial loading skeleton -->
+                          <div class='item' style='width:100%;'>
+                            <div class='img' style='background-color:var(--contentBg-alt);display:flex;align-items:flex-end;padding:25px;'>
+                              <div class='cap' style='position:relative;background:none;padding:0;'>
+                                <span class='slider-badge' style='background:var(--contentBg-sec);color:var(--themeC);'>로딩 중</span>
+                                <span class='slider-title' style='color:var(--themeC);font-size:1rem;'>추천 게시글을 불러오고 있습니다...</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                          
+                        <!--[ Indicators ]-->
+                        <div class='slideI flex center i12' id='homeSliderDots'>
+                          <!-- Indicators dynamically rendered by JS -->
+                          <b:include name='playPause-icon'/>
+                        </div>
+                      </div>
+                      
+                      <script>/*<![CDATA[*/
+                      (function() {
+                        var homeUrl = window.location.origin;
+                        var track = document.getElementById('homeSliderTrack');
+                        var dotsWrap = document.getElementById('homeSliderDots');
+                        var container = document.getElementById('homeSliderWrap');
+                        if (!track || !dotsWrap) return;
+
+                        var noticeEl = document.getElementById('customNoticeSlide');
+                        var script = document.createElement('script');
+                        var callbackName = 'renderAutoSlider_' + Date.now();
+
+                        window[callbackName] = function(data) {
+                          delete window[callbackName];
+                          script.remove();
+
+                          var entries = (data && data.feed && data.feed.entry) ? data.feed.entry : [];
+                          var slides = [];
+
+                          // 1. 공지/추천 배너 (등록된 경우 최우선 1번)
+                          if (noticeEl) {
+                            var img = noticeEl.getAttribute('data-img') || '';
+                            var link = noticeEl.getAttribute('data-link') || '#';
+                            var title = noticeEl.getAttribute('data-title') || '공지사항';
+
+                            // Fallback: 텍스트/HTML 직접 파싱
+                            if (!img) {
+                              var rawHtml = (noticeEl.innerHTML || '').trim();
+                              var rawText = (noticeEl.innerText || noticeEl.textContent || '').trim();
+                              if (rawHtml.indexOf('<img') > -1 || rawHtml.indexOf('<a') > -1) {
+                                var imgTagM = rawHtml.match(/src=["']([^"']+)["']/i);
+                                var linkTagM = rawHtml.match(/href=["']([^"']+)["']/i);
+                                var altTagM = rawHtml.match(/alt=["']([^"']+)["']/i);
+                                if (imgTagM) img = imgTagM[1];
+                                if (linkTagM) link = linkTagM[1];
+                                title = altTagM ? altTagM[1] : (rawText || '공지사항');
+                              } else if (rawText.indexOf('|') > -1) {
+                                var parts = rawText.split('|');
+                                if (parts.length >= 1) img = parts[0].trim();
+                                if (parts.length >= 2) title = parts[1].trim();
+                                if (parts.length >= 3) link = parts[2].trim();
+                              } else {
+                                var urlM = rawText.match(/https?:\/\/[^\s]+/i);
+                                if (urlM) img = urlM[0];
+                                title = rawText.replace(/https?:\/\/[^\s]+/gi, '').trim() || '공지사항';
+                              }
+                            }
+
+                            if (img) {
+                              slides.push({
+                                badge: '공지',
+                                title: title,
+                                img: img,
+                                link: link
+                              });
+                            }
+                          }
+
+                          // 헬퍼: 이미지 URL 고화질 변환 및 추출
+                          function extractImage(entry) {
+                            var url = '';
+                            if (entry.media$thumbnail && entry.media$thumbnail.url) {
+                              url = entry.media$thumbnail.url;
+                            }
+                            if (!url && entry.content && entry.content.$t) {
+                              var m = entry.content.$t.match(/<img[^>]+src=["']([^"']+)["']/i);
+                              if (m) url = m[1];
+                            }
+                            if (!url && entry.summary && entry.summary.$t) {
+                              var m2 = entry.summary.$t.match(/<img[^>]+src=["']([^"']+)["']/i);
+                              if (m2) url = m2[1];
+                            }
+                            if (!url) return '';
+
+                            url = url.replace(/^http:\/\//i, 'https://');
+                            if (url.match(/\/s\d+[^/]*\//)) {
+                              url = url.replace(/\/s\d+[^/]*\//, '/s1600/');
+                            } else if (url.match(/\/w\d+[^/]*\//)) {
+                              url = url.replace(/\/w\d+[^/]*\//, '/w1600/');
+                            } else if (url.indexOf('=s') > -1 || url.indexOf('=w') > -1) {
+                              url = url.replace(/=[sw]\d+[^=]*$/, '=w1600');
+                            }
+                            return url;
+                          }
+
+                          // 헬퍼: 엔트리 정보 추출
+                          function parseEntry(entry, defaultBadge) {
+                            if (!entry) return null;
+                            var title = entry.title ? entry.title.$t : '';
+                            var link = '#';
+                            if (entry.link) {
+                              for (var i = 0; i < entry.link.length; i++) {
+                                if (entry.link[i].rel === 'alternate') { link = entry.link[i].href; break; }
+                              }
+                            }
+                            var img = extractImage(entry);
+                            var comments = parseInt((entry.thr$total && entry.thr$total.$t) ? entry.thr$total.$t : 0, 10);
+                            return { badge: defaultBadge, title: title, img: img, link: link, comments: comments, id: link };
+                          }
+
+                          if (entries.length > 0) {
+                            // 2. 최신 게시글 1위
+                            var latest = parseEntry(entries[0], '최신글');
+                            if (latest) slides.push(latest);
+
+                            // 3. 화제의 글 1위 (댓글 가장 많은 글)
+                            var sortedByComments = entries.slice().sort(function(a, b) {
+                              var cA = parseInt((a.thr$total && a.thr$total.$t) ? a.thr$total.$t : 0, 10);
+                              var cB = parseInt((b.thr$total && b.thr$total.$t) ? b.thr$total.$t : 0, 10);
+                              return cB - cA;
+                            });
+                            
+                            var mostCommented = null;
+                            for (var c = 0; c < sortedByComments.length; c++) {
+                              var candidate = parseEntry(sortedByComments[c], '화제의 글');
+                              if (!latest || candidate.id !== latest.id || sortedByComments.length === 1) {
+                                mostCommented = candidate;
+                                break;
+                              }
+                            }
+
+                            // 4. 인기 게시글 1위 (2번째 최신글 또는 대표글)
+                            var popular = null;
+                            for (var p = 1; p < entries.length; p++) {
+                              var candP = parseEntry(entries[p], '인기글');
+                              if ((!latest || candP.id !== latest.id) && (!mostCommented || candP.id !== mostCommented.id)) {
+                                popular = candP;
+                                break;
+                              }
+                            }
+                            if (!popular && entries.length > 1) {
+                              popular = parseEntry(entries[1], '인기글');
+                            } else if (!popular && entries.length === 1) {
+                              popular = parseEntry(entries[0], '인기글');
+                            }
+
+                            if (popular) slides.push(popular);
+                            if (mostCommented) slides.push(mostCommented);
+                          }
+
+                          if (slides.length === 0) {
+                            if (container) container.style.display = 'none';
+                            return;
+                          }
+
+                          // 렌더링
+                          var total = slides.length;
+                          track.style.width = (total * 100) + '%';
+                          var trackHtml = '';
+                          var dotsHtml = '';
+
+                          for (var s = 0; s < total; s++) {
+                            var item = slides[s];
+                            var itemWidth = (100 / total) + '%';
+                            var bgStyle = item.img ? 'background-image:url(\'' + item.img + '\');' : 'background:linear-gradient(135deg, #1e222b 0%, #2a303c 100%);';
+                            trackHtml += '<div class="item" style="width:' + itemWidth + ';">' +
+                              '<a class="img" href="' + item.link + '" style="' + bgStyle + '">' +
+                                '<span class="cap">' +
+                                  '<span class="slider-badge">' + item.badge + '</span>' +
+                                  '<span class="slider-title clamp">' + item.title + '</span>' +
+                                '</span>' +
+                              '</a>' +
+                            '</div>';
+                            dotsHtml += '<span class="i' + (s === 0 ? ' active' : '') + '" data-index="' + s + '"></span>';
+                          }
+
+                          track.innerHTML = trackHtml;
+                          dotsWrap.innerHTML = dotsHtml;
+
+                          // 슬라이더 전환 애니메이션 제어
+                          var currentIndex = 0;
+                          var intervalTimer = null;
+                          var isPaused = false;
+
+                          function goToSlide(index) {
+                            currentIndex = (index + total) % total;
+                            track.style.transform = 'translateX(-' + (currentIndex * (100 / total)) + '%)';
+                            var dotList = dotsWrap.querySelectorAll('.i');
+                            for (var d = 0; d < dotList.length; d++) {
+                              if (d === currentIndex) dotList[d].classList.add('active');
+                              else dotList[d].classList.remove('active');
+                            }
+                          }
+
+                          function startAutoPlay() {
+                            if (intervalTimer) clearInterval(intervalTimer);
+                            intervalTimer = setInterval(function() {
+                              if (!isPaused && total > 1) {
+                                goToSlide(currentIndex + 1);
+                              }
+                            }, 4500);
+                          }
+
+                          // 도트 클릭 이벤트
+                          dotsWrap.addEventListener('click', function(e) {
+                            if (e.target && e.target.classList.contains('i')) {
+                              var idx = parseInt(e.target.getAttribute('data-index'), 10);
+                              if (!isNaN(idx)) {
+                                goToSlide(idx);
+                                startAutoPlay();
+                              }
+                            }
+                          });
+
+                          // 마우스 오버 시 일시정지
+                          container.addEventListener('mouseenter', function() { isPaused = true; });
+                          container.addEventListener('mouseleave', function() { isPaused = false; });
+
+                          startAutoPlay();
+                        };
+
+                        script.src = homeUrl + '/feeds/posts/default?alt=json-in-script&max-results=30&callback=' + callbackName;
+                        document.head.appendChild(script);
+                      })();
+                      /*]]>*/</script>
+                    </b:if>
+              
+                    <b:section class='flex column' cond='data:view.isHomepage' id='top-widget' showaddelement='true'>
+                      <b:widget cond='!data:view.isPreview' id='HTML92' locked='true' title='Ads go here' type='HTML' version='2' visible='false'>
+                        <b:widget-settings>
+                          <b:widget-setting name='content'/>
+                        </b:widget-settings>
+                        <b:includable id='main'>
+                          <b:if cond='data:content != &quot;&quot;'>
+                            <data:content/>
+                          </b:if>
+                        </b:includable>
+                      </b:widget>
+                      <b:widget id='FeaturedPost1' locked='true' title='Pinned Post' type='FeaturedPost' version='2' visible='true'>
+                        <b:widget-settings>
+                          <b:widget-setting name='showSnippet'>true</b:widget-setting>
+                          <b:widget-setting name='showPostTitle'>true</b:widget-setting>
+                          <b:widget-setting name='postId'>7782172058206086230</b:widget-setting>
+                          <b:widget-setting name='showFirstImage'>true</b:widget-setting>
+                          <b:widget-setting name='useMostRecentPost'>true</b:widget-setting>
+                        </b:widget-settings>
+                        <b:includable id='main' var='this'>
+                          <b:if cond='data:title != &quot;&quot;'>
+                            <h2 class='title'><data:title/></h2>
+                          </b:if>
+                          <b:include name='snippetedPosts'/>
+                        </b:includable>
+                        <b:includable id='blogThisShare'/>
+                        <b:includable id='bylineByName' var='byline'/>
+                        <b:includable id='bylineRegion' var='regionItems'/>
+                        <b:includable id='commentsLink'/>
+                        <b:includable id='commentsLinkIframe'/>
+                        <b:includable id='emailPostIcon'/>
+                        <b:includable id='facebookShare'/>
+                        <b:includable id='footerBylines'/>
+                        <b:includable id='googlePlusShare'/>
+                        <b:includable id='headerByline'/>
+                        <b:includable id='linkShare'/>
+                        <b:includable id='otherSharingButton'/>
+                        <b:includable id='platformShare'/>
+                        <b:includable id='postAuthor'/>
+                        <b:includable id='postCommentsLink'/>
+                        <b:includable id='postFooter' var='post'>
+                          <b:tag class='pF items flex space-between fontM cInherit' name='div'>
+                            <b:class cond='data:post.labels any (label =&gt; label.name in [ &quot;Sponsored&quot; ])' name='sponsor'/>
+                            
+                            <b:comment>post Footer in MultipleItems page</b:comment>
+                            <b:include cond='data:post.labels none (label =&gt; label.name in [&quot;Sponsored&quot; ])' name='postTimestamps'/>
+                              
+                            <b:comment><!--[ Jumplink / read more link ]--></b:comment>
+                            <b:include data='post' name='postJumpLink'/>
+                            
+                          </b:tag>
+                        </b:includable>
+                        <b:includable id='postJumpLink' var='post'>
+                          <a class='jump jumpLink shrink' expr:aria-label='data:blog.jumpLinkMessage' expr:data-text='data:blog.jumpLinkMessage' expr:href='data:post.url'>
+                            <b:class cond='data:post.labels any (label =&gt; label.name in [ &quot;Sponsored&quot; ])' name='sponsor'/>
+                          </a>
+                        </b:includable>
+                        <b:includable id='postLabels'>
+                          <b:if cond='data:widgets.Blog.first.allBylineItems.labels'>
+                            <div class='label ellips cInherit'>
+                              <b:attr cond='data:post.labels' expr:value='data:widgets.Blog.first.allBylineItems.labels.label' name='data-text'/>
+                              <b:class cond='data:post.labels any (label =&gt; label.name in [ &quot;Sponsored&quot; ])' name='opacity sponsor'/>
+      
+                              <b:if cond='data:post.labels any (label =&gt; label.name in [ &quot;Sponsored&quot; ])'>
+                                <b:loop values='data:post.labels' var='label'>
+                                  <b:if cond='data:label.name == &quot;Sponsored&quot;'>
+                                    <b:tag class='extL' expr:data-text='data:label.name' name='span'/>
+                                  </b:if>
+                                </b:loop>
+              
+                                <b:else/>
+                                <b:loop values='data:post.labels' var='label'>
+                                  <b:if cond='data:label.name == &quot;Product&quot;'>
+                                    <b:tag cond='data:widget.type != &quot;PopularPosts&quot;' name='span'>
+                                      <b:tag expr:data-text='data:label.name' expr:name='data:blog.url != data:label.url ? &quot;a&quot; : &quot;span&quot;'>
+                                        <b:attr cond='data:blog.url != data:label.url' expr:value='data:label.url' name='href'/>
+                                        <b:attr cond='data:blog.url != data:label.url' name='rel' value='tag'/>
+                                        <b:attr cond='data:blog.url != data:label.url' expr:value='data:label.name' name='aria-label'/>
+                                      </b:tag>
+                                    </b:tag>
+                                  </b:if>
+                                </b:loop>
+      
+                                <b:loop values='data:post.labels' var='label'>
+                                    <b:if cond='data:label.name in {&quot;Unity&quot;, &quot;Unreal&quot;, &quot;Shader&quot;, &quot;Blog&quot;, &quot;Server&quot;, &quot;PersonalDev&quot;, &quot;Review&quot;, &quot;WebTranslator&quot;, &quot;Homelab&quot;}'>
+                                      <a expr:href='data:label.url' expr:aria-label='data:label.name' expr:data-text='data:label.name' rel='tag'></a>
+                                    </b:if>
+                                  </b:loop>
                               </b:if>
                             </div>
                           </b:if>
@@ -3116,7 +5233,7 @@
             <b:widget-setting name='sorting'>NONE</b:widget-setting>
             <b:widget-setting name='item-2'><![CDATA[We can't seem to find the page you are looking for, we'll fix that soon but for now you can return to the home page]]></b:widget-setting>
             <b:widget-setting name='item-1'><![CDATA[Something's wrong]]></b:widget-setting>
-            <b:widget-setting name='item-0'>&#175;\_(??_/&#175;</b:widget-setting>
+            <b:widget-setting name='item-0'>&#175;\_(ツ)_/&#175;</b:widget-setting>
           </b:widget-settings>
           <b:includable id='main'>
             <b:include name='content'/>
@@ -3167,8 +5284,7 @@
       
     </b:if>
     
-  <!--[ 
-<script type='text/javascript'>
+  <!--[ <script type='text/javascript'>
 // <![CDATA[
 document.addEventListener("DOMContentLoaded", function() {
   const navContainer = document.querySelector('.series-nav');
@@ -3189,7 +5305,7 @@ document.addEventListener("DOMContentLoaded", function() {
       posts.sort((a, b) => new Date(a.published.$t) - new Date(b.published.$t));
 
       let htmlContent = '<div class="series-nav-inner" style="margin-top: 2rem; padding: 1.5rem; background: var(--nav-bg, rgba(0,0,0,0.05)); border-radius: 8px;">';
-      htmlContent += '<h3 style="margin-bottom: 1rem; font-size: 1.1rem;">?? '' + seriesName + '' �ø��� �����</h3><ul style="list-style: none; padding: 0; margin: 0;">';
+      htmlContent += '<h3 style="margin-bottom: 1rem; font-size: 1.1rem;">📌 ' + seriesName + ' 시리즈 모아보기</h3><ul style="list-style: none; padding: 0; margin: 0;">';
 
       for (let i = 0; i < posts.length; i++) {
         const linkObj = posts[i].link.find(l => l.rel === "alternate");
@@ -3198,7 +5314,7 @@ document.addEventListener("DOMContentLoaded", function() {
         const postTitle = posts[i].title.$t;
         
         if (postUrl.includes(currentSlug)) {
-          htmlContent += '<li style="margin-bottom: 0.5rem; font-weight: bold;">?? ' + postTitle + ' (���� ��)</li>';
+          htmlContent += '<li style="margin-bottom: 0.5rem; font-weight: bold;">👉 ' + postTitle + ' (현재 글)</li>';
         } else {
           htmlContent += '<li style="margin-bottom: 0.5rem;"><a href="' + postUrl + '" style="text-decoration: none;">' + postTitle + '</a></li>';
         }
@@ -3212,8 +5328,7 @@ document.addEventListener("DOMContentLoaded", function() {
 // ]]>
 </script>
 </body> close ]-->
-  <b:if cond='!data:view.isPreview'>&lt;!--</b:if>
-<script type='text/javascript'>
+  <b:if cond='!data:view.isPreview'>&lt;!--</b:if><script type='text/javascript'>
 // <![CDATA[
 document.addEventListener("DOMContentLoaded", function() {
   const navContainer = document.querySelector('.series-nav');
@@ -3234,7 +5349,7 @@ document.addEventListener("DOMContentLoaded", function() {
       posts.sort((a, b) => new Date(a.published.$t) - new Date(b.published.$t));
 
       let htmlContent = '<div class="series-nav-inner" style="margin-top: 2rem; padding: 1.5rem; background: var(--nav-bg, rgba(0,0,0,0.05)); border-radius: 8px;">';
-      htmlContent += '<h3 style="margin-bottom: 1rem; font-size: 1.1rem;">?? '' + seriesName + '' �ø��� �����</h3><ul style="list-style: none; padding: 0; margin: 0;">';
+      htmlContent += '<h3 style="margin-bottom: 1rem; font-size: 1.1rem;">📌 ' + seriesName + ' 시리즈 모아보기</h3><ul style="list-style: none; padding: 0; margin: 0;">';
 
       for (let i = 0; i < posts.length; i++) {
         const linkObj = posts[i].link.find(l => l.rel === "alternate");
@@ -3243,7 +5358,7 @@ document.addEventListener("DOMContentLoaded", function() {
         const postTitle = posts[i].title.$t;
         
         if (postUrl.includes(currentSlug)) {
-          htmlContent += '<li style="margin-bottom: 0.5rem; font-weight: bold;">?? ' + postTitle + ' (���� ��)</li>';
+          htmlContent += '<li style="margin-bottom: 0.5rem; font-weight: bold;">👉 ' + postTitle + ' (현재 글)</li>';
         } else {
           htmlContent += '<li style="margin-bottom: 0.5rem;"><a href="' + postUrl + '" style="text-decoration: none;">' + postTitle + '</a></li>';
         }
