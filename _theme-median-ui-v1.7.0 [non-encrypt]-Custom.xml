@@ -46,6 +46,7 @@
     </b:if>
   </b:if>
 
+  <script>/*<![CDATA[*/(function(){var t=localStorage.getItem("theme");if(t&&t!=="default"){document.documentElement.setAttribute("data-theme",t)}})();/*]]>*/</script>
   <!--[ Meta for browser ]-->
   <meta charset='UTF-8'/>
   <meta content='width=device-width, initial-scale=1.0' name='viewport'/>
@@ -1546,7 +1547,7 @@ article img {
       <!--[ Comment FB ]-->
       <b:includable id='commentFB'>
         <div id='fb-root'/>
-        <script src='http://connect.facebook.net/en_US/all.js#xfbml=1' type='deferjs'/>
+        <script src='https://connect.facebook.net/en_US/all.js#xfbml=1' type='deferjs'/>
         <div id='commentFB'><fb:comments expr:href='data:post.url' num_posts='10' width='650'/></div>
         <script>/*<![CDATA[*/ /* to remove ?m=1 in mobile */ var uri = window.location.toString(); if (uri.indexOf("?m=1","?m=1") > 0) {var clean_uri = uri.substring(0, uri.indexOf("?m=1"));window.history.replaceState({}, document.title, clean_uri); }; /*]]>*/</script>
       </b:includable>
@@ -1706,15 +1707,15 @@ error: &quot;<div class='j e button' expr:aria-label='data:messages.loadMorePost
             }
 
             tabsWrapper.innerHTML = 
-              '<div class="nav-tab-buttons">' +
-                '<button type="button" class="nav-tab-btn active" data-tab="series">' +
+              '<div class="nav-tab-buttons" role="tablist">' +
+                '<button type="button" class="nav-tab-btn active" role="tab" aria-selected="true" aria-controls="tab-panel-series" data-tab="series">' +
                   '<span>시리즈 목록</span>' +
                 '</button>' +
-                '<button type="button" class="nav-tab-btn" data-tab="related">' +
+                '<button type="button" class="nav-tab-btn" role="tab" aria-selected="false" aria-controls="tab-panel-related" data-tab="related">' +
                   '<span>관심 있을 만한 글</span>' +
                 '</button>' +
               '</div>' +
-              '<div class="nav-tab-panel active" id="tab-panel-series">' +
+              '<div class="nav-tab-panel active" id="tab-panel-series" role="tabpanel">' +
                 '<div class="series-nav-box">' +
                   '<div class="series-section-header">' +
                     '<span>' + seriesTitle + ' (총 ' + postList.length + '편)</span>' +
@@ -1744,9 +1745,10 @@ error: &quot;<div class='j e button' expr:aria-label='data:messages.loadMorePost
             tabBtns.forEach(function(btn) {
               btn.addEventListener('click', function() {
                 var targetTab = this.getAttribute('data-tab');
-                tabBtns.forEach(function(b) { b.classList.remove('active'); });
+                tabBtns.forEach(function(b) { b.classList.remove('active'); b.setAttribute('aria-selected', 'false'); });
                 panels.forEach(function(p) { p.classList.remove('active'); });
                 this.classList.add('active');
+                this.setAttribute('aria-selected', 'true');
                 var activePanel = tabsWrapper.querySelector('#tab-panel-' + targetTab);
                 if (activePanel) activePanel.classList.add('active');
               });
@@ -2589,6 +2591,7 @@ class TableOfContents { constructor({ from, to }) { this.fromElement = from; thi
     <b:if cond='!data:view.isError'>      
       <b:comment><!--[ to activate the function ]--></b:comment>
       <input class='navi hidden' id='forNav' type='checkbox'/>
+      <script>/*<![CDATA[*/(function(){var b=document.body,t=localStorage.getItem("theme")||"default";if(b){b.setAttribute("data-theme",t)}var fn=document.getElementById("forNav");if(fn&&window.innerWidth>=897&&localStorage.getItem("sidenav_state")==="expanded"){fn.checked=true}})();/*]]>*/</script>
       
       <!--[ Wrapper ]-->
       <b:tag class='mainW' name='div'>
@@ -5863,8 +5866,6 @@ class TableOfContents { constructor({ from, to }) { this.fromElement = from; thi
       <b:include cond='data:view.isHomepage or data:view.url == data:blog.homepageUrl.canonical path &quot;search&quot;' name='postPaginationMore'/>
       
       <script>/*<![CDATA[*/ /*@shinsenter/defer.js*/ !function(c,i,t){var f,o=/^data-(.+)/,u='IntersectionObserver',r=/p/.test(i.readyState),s=[],a=s.slice,d='lazied',n='load',e='pageshow',l='forEach',m='hasAttribute',h='shift';function p(e){i.head.appendChild(e)}function v(e,n){a.call(e.attributes)[l](n)}function y(e,n,t,o){return o=(o=n?i.getElementById(n):o)||i.createElement(e),n&&(o.id=n),t&&(o.onload=t),o}function b(e,n){return a.call((n||i).querySelectorAll(e))}function g(t,e){b('source',t)[l](g),v(t,function(e,n){(n=o.exec(e.name))&&(t[n[1]]=e.value)}),e&&(t.className+=' '+e),n in t&&t[n]()}function I(e){f(function(o){o=b(e||'[type=deferjs]'),function e(n,t){(n=o[h]())&&(n.parentNode.removeChild(n),(t=y(n.nodeName)).text=n.text,v(n,function(e){'type'!=e.name&&(t[e.name]=e.value)}),t.src&&!t[m]('async')?(t.onload=t.onerror=e,p(t)):(p(t),e()))}()})}(f=function(e,n){r?t(e,n):s.push(e,n)}).all=I,f.js=function(n,t,e,o){f(function(e){(e=y('SCRIPT',t,o)).src=n,p(e)},e)},f.css=function(n,t,e,o){f(function(e){(e=y('LINK',t,o)).rel='stylesheet',e.href=n,p(e)},e)},f.dom=function(e,n,t,o,i){function r(e){o&&!1===o(e)||g(e,t)}f(function(t){t=u in c&&new c[u](function(e){e[l](function(e,n){e.isIntersecting&&(n=e.target)&&(t.unobserve(n),r(n))})},i),b(e||'[data-src]')[l](function(e){e[m](d)||(e.setAttribute(d,''),t?t.observe(e):r(e))})},n)},f.reveal=g,c.Defer=f,c.addEventListener('on'+e in c?e:n,function(){for(I();s[0];t(s[h](),s[h]()))r=1})}(this,document,setTimeout),function(e,n){e.defer=n=e.Defer,e.deferscript=n.js,e.deferstyle=n.css,e.deferimg=e.deferiframe=n.dom}(this); /*]]>*/</script>
-      <script id='polyfill-js'>/*<![CDATA[*/ 'IntersectionObserver'in window||document.write('<script src="https://polyfill.io/v3/polyfill.min.js?features=IntersectionObserver"><\/script>'); /*]]>*/</script>
-      
       <b:comment><!--[ Additional script ]--></b:comment>
       <b:include name='allJavascript'/>
       <b:include cond='data:view.isPost' name='copyCodeToClipboard'/>
