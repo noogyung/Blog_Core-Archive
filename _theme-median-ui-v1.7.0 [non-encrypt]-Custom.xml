@@ -1079,11 +1079,18 @@
                 </b:if>
               </b:loop>
               
-              <b:loop values='data:post.labels' var='label'>
-                                    <b:if cond='data:label.name in {&quot;Unity&quot;, &quot;Unreal&quot;, &quot;Shader&quot;, &quot;Blog&quot;, &quot;Server&quot;, &quot;PersonalDev&quot;, &quot;Review&quot;, &quot;WebTranslator&quot;, &quot;Homelab&quot;}'>
-                                      <a expr:href='data:label.url' expr:aria-label='data:label.name' expr:data-text='data:label.name' rel='tag'></a>
-                                    </b:if>
-                                  </b:loop>
+              <b:loop index='i' values='data:post.labels' var='label'>
+                <b:if cond='data:post.labels none (label =&gt; label.name in [ &quot;Product&quot;, &quot;Discount10&quot;, &quot;Discount20&quot;, &quot;Discount30&quot;, &quot;Discount40&quot;, &quot;Discount50&quot;, &quot;Discount60&quot;, &quot;Discount70&quot;, &quot;Discount80&quot;, &quot;Discount90&quot; ])'>
+                  <b:if cond='data:i &lt;= 0'>
+                    <b:tag class='tab flexIn shrink noWrap' itemprop='itemListElement' itemscope='itemscope' itemtype='https://schema.org/ListItem' name='div'>
+                      <a class='n flexIn ellips fontM' expr:aria-label='data:label.name' expr:data-text='data:label.name' expr:href='data:label.url' itemprop='item'>
+                        <span itemprop='name'><data:label.name/></span>
+                      </a>
+                      <meta expr:content='data:i+2' itemprop='position'/>
+                    </b:tag>
+                  </b:if>
+                </b:if>
+              </b:loop>
               
               <b:elseif cond='data:view.isPost'/>
               <div class='tab flexIn noWrap'>
@@ -1531,9 +1538,15 @@ error: &quot;<div class='j e button' expr:aria-label='data:messages.loadMorePost
                 var mm = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
                 var MM = mm[parseInt(M, 10) - 1] || '';
 
-                // 카드의 대표 라벨 태그: 해당 글 본문(BLOG_LABELS)의 1순위 라벨을 직접 추출
+                // 카드의 대표 라벨 태그: 해당 글 본문(BLOG_LABELS)의 1순위 및 2순위 라벨 추출
                 var postFileLabels = getOriginalLabelsFromContent(content);
-                var cardCat = (postFileLabels.length > 0) ? postFileLabels[0] : (entry.category && entry.category.length ? entry.category[0].term : (label1 || ''));
+                var cat1 = postFileLabels[0] || (entry.category && entry.category[0] ? entry.category[0].term : (label1 || ''));
+                var cat2 = postFileLabels[1] || (entry.category && entry.category[1] ? entry.category[1].term : null);
+
+                var labelHtml = '<a aria-label="Tag" data-text="' + cat1 + '" href="' + home + '/search/label/' + encodeURIComponent(cat1) + '" rel="tag"></a>';
+                if (cat2 && cat2 !== cat1) {
+                  labelHtml += '<a aria-label="Tag" data-text="' + cat2 + '" href="' + home + '/search/label/' + encodeURIComponent(cat2) + '" rel="tag"></a>';
+                }
 
                 var summary = '';
                 if (entry.summary && entry.summary.$t) {
@@ -1547,7 +1560,7 @@ error: &quot;<div class='j e button' expr:aria-label='data:messages.loadMorePost
                   published: dt,
                   dateText: MM + ' ' + D,
                   dateFull: MM + ' ' + D + ', ' + Y,
-                  category: cardCat,
+                  categoryHtml: labelHtml,
                   summary: summary
                 });
               }
@@ -1569,12 +1582,12 @@ error: &quot;<div class='j e button' expr:aria-label='data:messages.loadMorePost
                   : post.title;
 
                 if (c === 2 || c === 3) {
-                  html += '<article class="flex column"><div class="pI shrink"><a aria-label="Thumbnail" class="image" href="' + post.url + '"><div class="mi lazy" style="background-image:url(' + post.thumb + ')" data-style="background-image:url(' + post.thumb + ')"></div></a></div><div class="pC grow flex column"><div class="pH info flex fontM"><time class="time ellips opacity shrink" data-text="' + post.dateText + '" datetime="' + post.published + '" title="Published on: ' + post.dateFull + '"></time><div class="label ellips cInherit"><a aria-label="Tag" data-text="' + post.category + '" href="' + home + '/search/label/' + encodeURIComponent(post.category) + '" rel="tag"></a></div></div><div class="pT cInherit"><h4 class="name"><a class="clamp" href="' + post.url + '">' + postTitle + '</a></h4></div></div></article>';
+                  html += '<article class="flex column"><div class="pI shrink"><a aria-label="Thumbnail" class="image" href="' + post.url + '"><div class="mi lazy" style="background-image:url(' + post.thumb + ')" data-style="background-image:url(' + post.thumb + ')"></div></a></div><div class="pC grow flex column"><div class="pH info flex fontM"><time class="time ellips opacity shrink" data-text="' + post.dateText + '" datetime="' + post.published + '" title="Published on: ' + post.dateFull + '"></time><div class="label ellips cInherit" data-text="in">' + post.categoryHtml + '</div></div><div class="pT cInherit"><h4 class="name"><a class="clamp" href="' + post.url + '">' + postTitle + '</a></h4></div></div></article>';
                 } else if (c === 4) {
-                  html += '<article class="flex column shrink"><div class="pI shrink"><a aria-label="Thumbnail" class="image" href="' + post.url + '"><div class="mi lazy" style="background-image:url(' + post.thumb + ')" data-style="background-image:url(' + post.thumb + ')"></div></a></div><div class="pC grow flex column"><div class="pH info flex fontM"><time class="time ellips opacity shrink" data-text="' + post.dateText + '" datetime="' + post.published + '" title="Published on: ' + post.dateFull + '"></time><div class="label ellips cInherit"><a aria-label="Tag" data-text="' + post.category + '" href="' + home + '/search/label/' + encodeURIComponent(post.category) + '" rel="tag"></a></div></div><div class="pT cInherit"><h4 class="name"><a class="clamp" href="' + post.url + '">' + postTitle + '</a></h4></div><div class="pS fontM"><div class="snippet clamp opacity">' + post.summary + '</div></div></div></article>';
+                  html += '<article class="flex column shrink"><div class="pI shrink"><a aria-label="Thumbnail" class="image" href="' + post.url + '"><div class="mi lazy" style="background-image:url(' + post.thumb + ')" data-style="background-image:url(' + post.thumb + ')"></div></a></div><div class="pC grow flex column"><div class="pH info flex fontM"><time class="time ellips opacity shrink" data-text="' + post.dateText + '" datetime="' + post.published + '" title="Published on: ' + post.dateFull + '"></time><div class="label ellips cInherit" data-text="in">' + post.categoryHtml + '</div></div><div class="pT cInherit"><h4 class="name"><a class="clamp" href="' + post.url + '">' + postTitle + '</a></h4></div><div class="pS fontM"><div class="snippet clamp opacity">' + post.summary + '</div></div></div></article>';
                 } else {
                   // type-1 (기본)
-                  html += '<article class="flex"><div class="pI shrink"><a aria-label="Thumbnail" class="image" href="' + post.url + '"><div class="mi lazy" style="background-image:url(' + post.thumb + ')" data-style="background-image:url(' + post.thumb + ')"></div></a></div><div class="pC grow"><div class="pH info flex fontM"><time class="time ellips opacity shrink" data-text="' + post.dateText + '" datetime="' + post.published + '" title="Published on: ' + post.dateFull + '"></time><div class="label ellips cInherit"><a aria-label="Tag" data-text="' + post.category + '" href="' + home + '/search/label/' + encodeURIComponent(post.category) + '" rel="tag"></a></div></div><div class="pT cInherit"><h4 class="name"><a class="clamp" href="' + post.url + '">' + postTitle + '</a></h4></div></div></article>';
+                  html += '<article class="flex"><div class="pI shrink"><a aria-label="Thumbnail" class="image" href="' + post.url + '"><div class="mi lazy" style="background-image:url(' + post.thumb + ')" data-style="background-image:url(' + post.thumb + ')"></div></a></div><div class="pC grow"><div class="pH info flex fontM"><time class="time ellips opacity shrink" data-text="' + post.dateText + '" datetime="' + post.published + '" title="Published on: ' + post.dateFull + '"></time><div class="label ellips cInherit" data-text="in">' + post.categoryHtml + '</div></div><div class="pT cInherit"><h4 class="name"><a class="clamp" href="' + post.url + '">' + postTitle + '</a></h4></div></div></article>';
                 }
               }
 
@@ -1729,23 +1742,15 @@ error: &quot;<div class='j e button' expr:aria-label='data:messages.loadMorePost
               </b:loop>
               
               <b:else/>
-              <b:loop values='data:post.labels' var='label'>
-                <b:if cond='data:label.name == &quot;Product&quot;'>
-                  <b:tag cond='data:widget.type != &quot;PopularPosts&quot;' name='span'>
-                    <b:tag expr:data-text='data:label.name' expr:name='data:blog.url != data:label.url ? &quot;a&quot; : &quot;span&quot;'>
-                      <b:attr cond='data:blog.url != data:label.url' expr:value='data:label.url' name='href'/>
-                      <b:attr cond='data:blog.url != data:label.url' name='rel' value='tag'/>
-                      <b:attr cond='data:blog.url != data:label.url' expr:value='data:label.name' name='aria-label'/>
-                    </b:tag>
-                  </b:tag>
-                </b:if>
-              </b:loop>
-      
-              <b:loop values='data:post.labels' var='label'>
-                                    <b:if cond='data:label.name in {&quot;Unity&quot;, &quot;Unreal&quot;, &quot;Shader&quot;, &quot;Blog&quot;, &quot;Server&quot;, &quot;PersonalDev&quot;, &quot;Review&quot;, &quot;WebTranslator&quot;, &quot;Homelab&quot;}'>
-                                      <a expr:href='data:label.url' expr:aria-label='data:label.name' expr:data-text='data:label.name' rel='tag'></a>
-                                    </b:if>
-                                  </b:loop>
+              <b:with value='data:post.labels filter (l =&gt; l.name in {&quot;WebTranslator&quot;, &quot;ChromeExtension&quot;, &quot;Homelab&quot;, &quot;Antigravity&quot;, &quot;AI&quot;, &quot;Blog&quot;, &quot;Server&quot;, &quot;PersonalDev&quot;, &quot;Review&quot;, &quot;Unity&quot;, &quot;Unreal&quot;, &quot;Shader&quot;, &quot;Gemini&quot;})' var='mainLabels'>
+                <b:with value='data:mainLabels.length &gt; 0 ? data:mainLabels : data:post.labels' var='displayLabels'>
+                  <b:loop index='i' values='data:displayLabels' var='label'>
+                    <b:if cond='data:i &lt;= 1'>
+                      <a expr:aria-label='data:label.name' expr:data-text='data:label.name' expr:href='data:label.url' rel='tag'/>
+                    </b:if>
+                  </b:loop>
+                </b:with>
+              </b:with>
             </b:if>
           </div>
         </b:if>
@@ -3451,23 +3456,15 @@ class TableOfContents { constructor({ from, to }) { this.fromElement = from; thi
                                 </b:loop>
               
                                 <b:else/>
-                                <b:loop values='data:post.labels' var='label'>
-                                  <b:if cond='data:label.name == &quot;Product&quot;'>
-                                    <b:tag cond='data:widget.type != &quot;PopularPosts&quot;' name='span'>
-                                      <b:tag expr:data-text='data:label.name' expr:name='data:blog.url != data:label.url ? &quot;a&quot; : &quot;span&quot;'>
-                                        <b:attr cond='data:blog.url != data:label.url' expr:value='data:label.url' name='href'/>
-                                        <b:attr cond='data:blog.url != data:label.url' name='rel' value='tag'/>
-                                        <b:attr cond='data:blog.url != data:label.url' expr:value='data:label.name' name='aria-label'/>
-                                      </b:tag>
-                                    </b:tag>
-                                  </b:if>
-                                </b:loop>
-      
-                                <b:loop values='data:post.labels' var='label'>
-                                    <b:if cond='data:label.name in {&quot;Unity&quot;, &quot;Unreal&quot;, &quot;Shader&quot;, &quot;Blog&quot;, &quot;Server&quot;, &quot;PersonalDev&quot;, &quot;Review&quot;, &quot;WebTranslator&quot;, &quot;Homelab&quot;}'>
-                                      <a expr:href='data:label.url' expr:aria-label='data:label.name' expr:data-text='data:label.name' rel='tag'></a>
-                                    </b:if>
-                                  </b:loop>
+                                <b:with value='data:post.labels filter (l =&gt; l.name in {&quot;WebTranslator&quot;, &quot;ChromeExtension&quot;, &quot;Homelab&quot;, &quot;Antigravity&quot;, &quot;AI&quot;, &quot;Blog&quot;, &quot;Server&quot;, &quot;PersonalDev&quot;, &quot;Review&quot;, &quot;Unity&quot;, &quot;Unreal&quot;, &quot;Shader&quot;, &quot;Gemini&quot;})' var='mainLabels'>
+                                  <b:with value='data:mainLabels.length &gt; 0 ? data:mainLabels : data:post.labels' var='displayLabels'>
+                                    <b:loop index='i' values='data:displayLabels' var='label'>
+                                      <b:if cond='data:i &lt;= 1'>
+                                        <a expr:aria-label='data:label.name' expr:data-text='data:label.name' expr:href='data:label.url' rel='tag'/>
+                                      </b:if>
+                                    </b:loop>
+                                  </b:with>
+                                </b:with>
                               </b:if>
                             </div>
                           </b:if>
@@ -4392,23 +4389,15 @@ class TableOfContents { constructor({ from, to }) { this.fromElement = from; thi
                                 </b:loop>
                                 
                                 <b:else/>
-                                <b:loop values='data:post.labels' var='label'>
-                                  <b:if cond='data:label.name == &quot;Product&quot;'>
-                                    <b:tag cond='data:widget.type != &quot;PopularPosts&quot;' name='span'>
-                                      <b:tag expr:data-text='data:label.name' expr:name='data:blog.url != data:label.url ? &quot;a&quot; : &quot;span&quot;'>
-                                        <b:attr cond='data:blog.url != data:label.url' expr:value='data:label.url' name='href'/>
-                                        <b:attr cond='data:blog.url != data:label.url' name='rel' value='tag'/>
-                                        <b:attr cond='data:blog.url != data:label.url' expr:value='data:label.name' name='aria-label'/>
-                                      </b:tag>
-                                    </b:tag>
-                                  </b:if>
-                                </b:loop>
-                        
-                                <b:loop values='data:post.labels' var='label'>
-                                    <b:if cond='data:label.name in {&quot;Unity&quot;, &quot;Unreal&quot;, &quot;Shader&quot;, &quot;Blog&quot;, &quot;Server&quot;, &quot;PersonalDev&quot;, &quot;Review&quot;, &quot;WebTranslator&quot;, &quot;Homelab&quot;}'>
-                                      <a expr:href='data:label.url' expr:aria-label='data:label.name' expr:data-text='data:label.name' rel='tag'></a>
-                                    </b:if>
-                                  </b:loop>
+                                <b:with value='data:post.labels filter (l =&gt; l.name in {&quot;WebTranslator&quot;, &quot;ChromeExtension&quot;, &quot;Homelab&quot;, &quot;Antigravity&quot;, &quot;AI&quot;, &quot;Blog&quot;, &quot;Server&quot;, &quot;PersonalDev&quot;, &quot;Review&quot;, &quot;Unity&quot;, &quot;Unreal&quot;, &quot;Shader&quot;, &quot;Gemini&quot;})' var='mainLabels'>
+                                  <b:with value='data:mainLabels.length &gt; 0 ? data:mainLabels : data:post.labels' var='displayLabels'>
+                                    <b:loop index='i' values='data:displayLabels' var='label'>
+                                      <b:if cond='data:i &lt;= 1'>
+                                        <a expr:aria-label='data:label.name' expr:data-text='data:label.name' expr:href='data:label.url' rel='tag'/>
+                                      </b:if>
+                                    </b:loop>
+                                  </b:with>
+                                </b:with>
                               </b:if>
                             </div>
                           </b:if>
@@ -4850,23 +4839,16 @@ class TableOfContents { constructor({ from, to }) { this.fromElement = from; thi
                                   </b:loop>
               
                                   <b:else/>
-                                  <b:loop values='data:post.labels' var='label'>
-                                    <b:if cond='data:label.name == &quot;Product&quot;'>
-                                      <b:tag cond='data:widget.type != &quot;PopularPosts&quot;' name='span'>
-                                        <b:tag expr:data-text='data:label.name' expr:name='data:blog.url != data:label.url ? &quot;a&quot; : &quot;span&quot;'>
-                                          <b:attr cond='data:blog.url != data:label.url' expr:value='data:label.url' name='href'/>
-                                          <b:attr cond='data:blog.url != data:label.url' name='rel' value='tag'/>
-                                          <b:attr cond='data:blog.url != data:label.url' expr:value='data:label.name' name='aria-label'/>
-                                        </b:tag>
-                                      </b:tag>
-                                    </b:if>
-                                  </b:loop>
       
-                                  <b:loop values='data:post.labels' var='label'>
-                                    <b:if cond='data:label.name in {&quot;Unity&quot;, &quot;Unreal&quot;, &quot;Shader&quot;, &quot;Blog&quot;, &quot;Server&quot;, &quot;PersonalDev&quot;, &quot;Review&quot;, &quot;WebTranslator&quot;, &quot;Homelab&quot;}'>
-                                      <a expr:href='data:label.url' expr:aria-label='data:label.name' expr:data-text='data:label.name' rel='tag'></a>
-                                    </b:if>
-                                  </b:loop>
+                                  <b:with value='data:post.labels filter (l =&gt; l.name in {&quot;WebTranslator&quot;, &quot;ChromeExtension&quot;, &quot;Homelab&quot;, &quot;Antigravity&quot;, &quot;AI&quot;, &quot;Blog&quot;, &quot;Server&quot;, &quot;PersonalDev&quot;, &quot;Review&quot;, &quot;Unity&quot;, &quot;Unreal&quot;, &quot;Shader&quot;, &quot;Gemini&quot;})' var='mainLabels'>
+                                    <b:with value='data:mainLabels.length &gt; 0 ? data:mainLabels : data:post.labels' var='displayLabels'>
+                                      <b:loop index='i' values='data:displayLabels' var='label'>
+                                        <b:if cond='data:i &lt;= 1'>
+                                          <a expr:aria-label='data:label.name' expr:data-text='data:label.name' expr:href='data:label.url' rel='tag'/>
+                                        </b:if>
+                                      </b:loop>
+                                    </b:with>
+                                  </b:with>
                                 </b:if>
                               </div>
                             </b:if>
