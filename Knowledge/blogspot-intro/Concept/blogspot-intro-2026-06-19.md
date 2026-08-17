@@ -14,7 +14,8 @@ blog_draft_path: Blog_Posts/core-archive/2026-06/blogspot-intro-adsense-guide.ht
 blog_draft_date: 2026-06-19
 blog_id: core-archive
 blog_published: true
-series_name: null
+series_id: null
+series_title: null
 series_part: null
 series_prev_slug: null
 ---

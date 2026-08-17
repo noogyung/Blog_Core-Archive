@@ -1,4 +1,4 @@
-﻿---
+---
 topic: webtranslator-03-custom-dict-and-snapshot
 title_kr: v0.1 스냅샷과 사용자 사전 적용 순서 버그
 category: Troubleshooting
@@ -14,7 +14,8 @@ blog_draft_path: Blog_Posts/core-archive/2026-08/webtranslator-03-v01-snapshot-a
 blog_draft_date: 2026-08-15
 blog_id: core-archive
 blog_published: true
-series_name: WebTranslator 개발기
+series_id: webtranslator
+series_title: WebTranslator 개발기
 series_part: 3
 series_prev_slug: webtranslator-02-shortcut-race-condition-and-storage-split
 ---

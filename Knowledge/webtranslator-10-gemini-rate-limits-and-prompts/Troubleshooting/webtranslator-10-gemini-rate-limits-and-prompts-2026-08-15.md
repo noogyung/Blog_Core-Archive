@@ -1,4 +1,4 @@
-﻿---
+---
 topic: webtranslator-10-gemini-rate-limits-and-prompts
 title_kr: Gemini 429 쿼터 초과와 통합 프롬프트 빌더
 category: Troubleshooting
@@ -14,7 +14,8 @@ blog_draft_path: Blog_Posts/core-archive/2026-08/webtranslator-10-gemini-rate-li
 blog_draft_date: 2026-08-15
 blog_id: core-archive
 blog_published: true
-series_name: WebTranslator 개발기
+series_id: webtranslator
+series_title: WebTranslator 개발기
 series_part: 10
 series_prev_slug: webtranslator-09-selection-vs-full-page-state-collision
 ---

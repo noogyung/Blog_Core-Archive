@@ -1,4 +1,4 @@
-﻿---
+---
 topic: webtranslator-05-steam-button-and-dual-renderer
 title_kr: 스팀 장바구니 버튼 깨짐과 인라인/블록 듀얼 분기
 category: Troubleshooting
@@ -14,7 +14,8 @@ blog_draft_path: Blog_Posts/core-archive/2026-08/webtranslator-05-steam-button-c
 blog_draft_date: 2026-08-15
 blog_id: core-archive
 blog_published: true
-series_name: WebTranslator 개발기
+series_id: webtranslator
+series_title: WebTranslator 개발기
 series_part: 5
 series_prev_slug: webtranslator-04-steam-link-color-and-orphan-text-nodes
 ---

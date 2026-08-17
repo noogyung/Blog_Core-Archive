@@ -11,7 +11,8 @@ blog_draft_path: null
 blog_draft_date: null
 blog_id: core-archive
 blog_published: false
-series_name: null
+series_id: null
+series_title: null
 series_part: null
 series_prev_slug: null
 ---

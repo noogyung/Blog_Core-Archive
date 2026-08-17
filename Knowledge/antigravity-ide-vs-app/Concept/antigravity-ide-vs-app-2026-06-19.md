@@ -1,4 +1,4 @@
-﻿---
+---
 topic: antigravity-ide-vs-app
 title_kr: Antigravity IDE와 Antigravity 2.0 앱의 차이점
 category: Concept
@@ -14,7 +14,8 @@ blog_draft_path: Blog_Posts/core-archive/2026-06/antigravity-ide-vs-app-workflow
 blog_draft_date: 2026-06-19
 blog_id: core-archive
 blog_published: true
-series_name: null
+series_id: null
+series_title: null
 series_part: null
 series_prev_slug: null
 ---

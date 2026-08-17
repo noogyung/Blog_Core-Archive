@@ -11,7 +11,8 @@ blog_id: core-archive
 blog_draft_path: Blog_Posts/core-archive/2026-08/gemini-flash-coding-failure-and-waline-disaster.html
 blog_draft_date: 2026-08-15
 blog_published: true
-series_name: null
+series_id: null
+series_title: null
 series_part: null
 series_prev_slug: null
 ---

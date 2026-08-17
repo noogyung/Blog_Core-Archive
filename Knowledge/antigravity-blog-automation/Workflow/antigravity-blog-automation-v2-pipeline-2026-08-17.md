@@ -14,7 +14,8 @@ blog_draft_path: Blog_Posts/core-archive/2026-08/antigravity-blog-automation-wor
 blog_draft_date: 2026-08-17
 blog_id: core-archive
 blog_published: true
-series_name: Antigravity 블로그 포스팅 자동화 구축기
+series_id: antigravity-blog-automation
+series_title: Antigravity 블로그 포스팅 자동화 구축기
 series_part: 2
 series_prev_slug: antigravity-blog-automation-workflow
 ---

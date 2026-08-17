@@ -1,4 +1,4 @@
-﻿---
+---
 topic: webtranslator-07-multi-engine-and-json-cleaning
 title_kr: 구글·Gemini·Libre 다중 엔진 연동과 응답 정제
 category: Troubleshooting
@@ -14,7 +14,8 @@ blog_draft_path: Blog_Posts/core-archive/2026-08/webtranslator-07-multi-engine-p
 blog_draft_date: 2026-08-15
 blog_id: core-archive
 blog_published: true
-series_name: WebTranslator 개발기
+series_id: webtranslator
+series_title: WebTranslator 개발기
 series_part: 7
 series_prev_slug: webtranslator-06-selection-translation-no-content-false-alarm
 ---

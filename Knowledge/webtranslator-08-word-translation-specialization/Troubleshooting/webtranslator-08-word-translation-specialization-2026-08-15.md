@@ -1,4 +1,4 @@
-﻿---
+---
 topic: webtranslator-08-word-translation-specialization
 title_kr: 단어 번역 획일화 문제와 LLM 사전 파이프라인 특화
 category: Troubleshooting
@@ -14,7 +14,8 @@ blog_draft_path: Blog_Posts/core-archive/2026-08/webtranslator-08-word-translati
 blog_draft_date: 2026-08-15
 blog_id: core-archive
 blog_published: true
-series_name: WebTranslator 개발기
+series_id: webtranslator
+series_title: WebTranslator 개발기
 series_part: 8
 series_prev_slug: webtranslator-07-multi-engine-pipeline-and-json-cleaning
 ---
