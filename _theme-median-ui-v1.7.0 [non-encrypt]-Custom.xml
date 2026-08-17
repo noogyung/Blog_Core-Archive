@@ -1434,7 +1434,7 @@ error: &quot;<div class='j e button' expr:aria-label='data:messages.loadMorePost
               minPosts: 2,
               summaryLength: 200,
               titleLength: &quot;auto&quot;,
-              thumbnailSize: 300,
+              thumbnailSize: 480,
               noImage: &quot;data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=&quot;,
               containerId: &quot;relatedPost&quot;
             };
@@ -1448,15 +1448,28 @@ error: &quot;<div class='j e button' expr:aria-label='data:messages.loadMorePost
             var targetCount = relatedPostConfig.numPosts || 4;
             var currentPath = window.location.pathname;
 
+            // 블로그 대표 대분류/시리즈 카테고리 우선순위 목록
+            var priorityCategories = [
+              "WebTranslator", "Homelab", "Antigravity", 
+              "Unity", "Unreal", "Shader", 
+              "Blog", "Server", "PersonalDev", "Review", "AI", "ChromeExtension"
+            ];
+
             var decodeLabel = function(str) {
               var el = document.createElement('textarea');
               el.innerHTML = str;
               return el.value;
             };
 
-            var cleanLabels = (Array.isArray(labelArray) ? labelArray : []).map(decodeLabel).filter(Boolean);
-            var label1 = cleanLabels[0] || null;
-            var label2 = cleanLabels[1] || null;
+            var rawLabels = (Array.isArray(labelArray) ? labelArray : []).map(decodeLabel).filter(Boolean);
+            
+            // Blogger의 알파벳순 라벨 정렬을 보정하여 대표 카테고리를 1순위/2순위로 선정
+            var matchedPriority = priorityCategories.filter(function(p) { return rawLabels.indexOf(p) !== -1; });
+            var remainingLabels = rawLabels.filter(function(r) { return priorityCategories.indexOf(r) === -1; });
+            var sortedLabels = matchedPriority.concat(remainingLabels);
+
+            var label1 = sortedLabels[0] || null;
+            var label2 = sortedLabels[1] || null;
 
             var collectedPosts = [];
             var seenUrls = new Set();
@@ -1481,8 +1494,14 @@ error: &quot;<div class='j e button' expr:aria-label='data:messages.loadMorePost
                 seenUrls.add(href);
 
                 var title = entry.title ? entry.title.$t : '';
+                
+                // CDN 이미지 추출 (entry.content 내부 첫 번째 img 태그 추출)
+                var content = (entry.content && entry.content.$t) ? entry.content.$t : ((entry.summary && entry.summary.$t) ? entry.summary.$t : '');
+                var imgMatch = content.match(/<img[^>]+src=["']([^"']+)["']/i);
                 var thumb = relatedPostConfig.noImage;
-                if (entry.media$thumbnail && entry.media$thumbnail.url) {
+                if (imgMatch && imgMatch[1]) {
+                  thumb = imgMatch[1];
+                } else if (entry.media$thumbnail && entry.media$thumbnail.url) {
                   thumb = entry.media$thumbnail.url.replace(/\/s\d+(-c)?\//, '/s' + relatedPostConfig.thumbnailSize + '/');
                 }
 
@@ -1494,7 +1513,18 @@ error: &quot;<div class='j e button' expr:aria-label='data:messages.loadMorePost
                 var mm = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
                 var MM = mm[parseInt(M, 10) - 1] || '';
 
-                var category = (entry.category && entry.category.length) ? entry.category[0].term : (label1 || '');
+                // 카드의 대표 라벨 태그 결정 (우선순위 카테고리 매칭)
+                var postCats = (entry.category || []).map(function(c) { return c.term; }).filter(Boolean);
+                var cardCat = null;
+                for (var pi = 0; pi < priorityCategories.length; pi++) {
+                  if (postCats.indexOf(priorityCategories[pi]) !== -1) {
+                    cardCat = priorityCategories[pi];
+                    break;
+                  }
+                }
+                if (!cardCat) {
+                  cardCat = (postCats.length > 0) ? postCats[0] : (label1 || '');
+                }
 
                 var summary = '';
                 if (entry.summary && entry.summary.$t) {
@@ -1508,7 +1538,7 @@ error: &quot;<div class='j e button' expr:aria-label='data:messages.loadMorePost
                   published: dt,
                   dateText: MM + ' ' + D,
                   dateFull: MM + ' ' + D + ', ' + Y,
-                  category: category,
+                  category: cardCat,
                   summary: summary
                 });
               }
@@ -1545,19 +1575,19 @@ error: &quot;<div class='j e button' expr:aria-label='data:messages.loadMorePost
 
             var p = Promise.resolve();
 
-            // 1단계: 1번 라벨 관련 글 수집
+            // 1단계: 1순위 대표 라벨 관련 글 수집 (/feeds/posts/default 피드)
             if (label1) {
               p = p.then(function() {
-                return fetchFeed(home + '/feeds/posts/summary/-/' + encodeURIComponent(label1) + '?alt=json&start-index=1&max-results=10')
+                return fetchFeed(home + '/feeds/posts/default/-/' + encodeURIComponent(label1) + '?alt=json&start-index=1&max-results=10')
                   .then(processEntries);
               });
             }
 
-            // 2단계: 개수 부족 시 2번 라벨 관련 글 수집
+            // 2단계: 개수 부족 시 2순위 대표 라벨 관련 글 수집
             if (label2) {
               p = p.then(function() {
                 if (collectedPosts.length < targetCount) {
-                  return fetchFeed(home + '/feeds/posts/summary/-/' + encodeURIComponent(label2) + '?alt=json&start-index=1&max-results=10')
+                  return fetchFeed(home + '/feeds/posts/default/-/' + encodeURIComponent(label2) + '?alt=json&start-index=1&max-results=10')
                     .then(processEntries);
                 }
               });
@@ -1566,7 +1596,7 @@ error: &quot;<div class='j e button' expr:aria-label='data:messages.loadMorePost
             // 3단계: 여전히 부족한 경우 최근 게시글로 폴백 (최소 2개 보장)
             p = p.then(function() {
               if (collectedPosts.length < (relatedPostConfig.minPosts || 2) || collectedPosts.length < targetCount) {
-                return fetchFeed(home + '/feeds/posts/summary?alt=json&start-index=1&max-results=10')
+                return fetchFeed(home + '/feeds/posts/default?alt=json&start-index=1&max-results=10')
                   .then(processEntries);
               }
             });
