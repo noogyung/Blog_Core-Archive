@@ -2610,11 +2610,11 @@ class TableOfContents { constructor({ from, to }) { this.fromElement = from; thi
             
             <b:comment>Header widget</b:comment>
             <b:section class='headT notranslate' id='header-title' maxwidgets='1' showaddelement='false'>
-              <b:widget id='Header1' locked='true' title='Median UI [Dev] (Header)' type='Header' version='2' visible='true'>
+              <b:widget id='Header1' locked='true' title='Core-Archive(헤더)' type='Header' version='2' visible='true'>
                 <b:widget-settings>
                   <b:widget-setting name='displayUrl'/>
                   <b:widget-setting name='displayHeight'>0</b:widget-setting>
-                  <b:widget-setting name='sectionWidth'>-1</b:widget-setting>
+                  <b:widget-setting name='sectionWidth'>150</b:widget-setting>
                   <b:widget-setting name='useImage'>false</b:widget-setting>
                   <b:widget-setting name='shrinkToFit'>false</b:widget-setting>
                   <b:widget-setting name='imagePlacement'>BEHIND</b:widget-setting>
@@ -2665,7 +2665,7 @@ class TableOfContents { constructor({ from, to }) { this.fromElement = from; thi
             
             <b:comment>Search input</b:comment>
             <b:section class='headS' id='header-search' maxwidgets='2' showaddelement='false'>
-              <b:widget id='BlogSearch1' locked='true' title='e.g. Typography' type='BlogSearch' version='2' visible='true'>
+              <b:widget id='BlogSearch1' locked='true' title='Search...' type='BlogSearch' version='2' visible='true'>
                 <b:includable id='main'>
                       <b:include name='content'/>
                     </b:includable>
@@ -2992,37 +2992,39 @@ class TableOfContents { constructor({ from, to }) { this.fromElement = from; thi
                   </b:widget>
                   <b:widget id='LinkList000' locked='true' title='Main Menu' type='LinkList' version='2' visible='true'>
                     <b:widget-settings>
+                      <b:widget-setting name='text-10'>_리뷰</b:widget-setting>
                       <b:widget-setting name='sorting'>NONE</b:widget-setting>
-                      <b:widget-setting name='text-0'>Home</b:widget-setting>
-                      <b:widget-setting name='link-0'>/</b:widget-setting>
-                      <b:widget-setting name='text-1'>게임개발</b:widget-setting>
                       <b:widget-setting name='link-1'>_</b:widget-setting>
-                      <b:widget-setting name='text-2'>_Unity</b:widget-setting>
+                      <b:widget-setting name='link-13'>_</b:widget-setting>
                       <b:widget-setting name='link-2'>/search/label/Unity</b:widget-setting>
-                      <b:widget-setting name='text-3'>_Unreal</b:widget-setting>
+                      <b:widget-setting name='link-12'>/p/guestbook.html</b:widget-setting>
+                      <b:widget-setting name='link-15'>/search/label/Homelab</b:widget-setting>
+                      <b:widget-setting name='link-0'>/</b:widget-setting>
+                      <b:widget-setting name='link-14'>/search/label/WebTranslator</b:widget-setting>
+                      <b:widget-setting name='link-11'>/p/about.html</b:widget-setting>
+                      <b:widget-setting name='link-10'>/search/label/Review</b:widget-setting>
+                      <b:widget-setting name='text-9'>_개인 개발</b:widget-setting>
+                      <b:widget-setting name='link-9'>/search/label/PersonalDev</b:widget-setting>
+                      <b:widget-setting name='text-8'>_서버</b:widget-setting>
+                      <b:widget-setting name='link-7'>/search/label/Blog</b:widget-setting>
+                      <b:widget-setting name='link-8'>/search/label/Server</b:widget-setting>
+                      <b:widget-setting name='link-5'>/search/label/Plugin</b:widget-setting>
+                      <b:widget-setting name='link-6'>_</b:widget-setting>
                       <b:widget-setting name='link-3'>/search/label/Unreal</b:widget-setting>
-                      <b:widget-setting name='text-4'>_Shader</b:widget-setting>
                       <b:widget-setting name='link-4'>/search/label/Shader</b:widget-setting>
-                      <b:widget-setting name='text-5'>취미</b:widget-setting>
-                      <b:widget-setting name='link-5'>_</b:widget-setting>
-                      <b:widget-setting name='text-6'>_블로그</b:widget-setting>
-                      <b:widget-setting name='link-6'>/search/label/Blog</b:widget-setting>
-                      <b:widget-setting name='text-7'>_서버</b:widget-setting>
-                      <b:widget-setting name='link-7'>/search/label/Server</b:widget-setting>
-                      <b:widget-setting name='text-8'>_개인 개발</b:widget-setting>
-                      <b:widget-setting name='link-8'>/search/label/PersonalDev</b:widget-setting>
-                      <b:widget-setting name='text-9'>_리뷰</b:widget-setting>
-                      <b:widget-setting name='link-9'>/search/label/Review</b:widget-setting>
-                      <b:widget-setting name='text-10'>About</b:widget-setting>
-                      <b:widget-setting name='link-10'>/p/about.html</b:widget-setting>
-                      <b:widget-setting name='text-11'>Contact</b:widget-setting>
-                      <b:widget-setting name='link-11'>/p/guestbook.html</b:widget-setting>
-                      <b:widget-setting name='text-12'>시리즈</b:widget-setting>
-                      <b:widget-setting name='link-12'>_</b:widget-setting>
-                      <b:widget-setting name='text-13'>_Web Translator</b:widget-setting>
-                      <b:widget-setting name='link-13'>/search/label/WebTranslator</b:widget-setting>
-                      <b:widget-setting name='text-14'>_Homelab</b:widget-setting>
-                      <b:widget-setting name='link-14'>/search/label/Homelab</b:widget-setting>
+                      <b:widget-setting name='text-1'>게임개발</b:widget-setting>
+                      <b:widget-setting name='text-0'>Home</b:widget-setting>
+                      <b:widget-setting name='text-3'>_Unreal</b:widget-setting>
+                      <b:widget-setting name='text-2'>_Unity</b:widget-setting>
+                      <b:widget-setting name='text-5'>_Plugin</b:widget-setting>
+                      <b:widget-setting name='text-4'>_Shader</b:widget-setting>
+                      <b:widget-setting name='text-7'>_블로그</b:widget-setting>
+                      <b:widget-setting name='text-6'>취미</b:widget-setting>
+                      <b:widget-setting name='text-15'>_Homelab</b:widget-setting>
+                      <b:widget-setting name='text-11'>About</b:widget-setting>
+                      <b:widget-setting name='text-12'>Contact</b:widget-setting>
+                      <b:widget-setting name='text-13'>시리즈</b:widget-setting>
+                      <b:widget-setting name='text-14'>_Web Translator</b:widget-setting>
                     </b:widget-settings>
                     <b:includable id='main'>
                       <b:include name='content'/>
@@ -3414,22 +3416,22 @@ class TableOfContents { constructor({ from, to }) { this.fromElement = from; thi
                       <div class='slideB scrlH fontM noPrint' id='homeSliderWrap'>
                         <!--[ Optional Notice Widget for Layout UI ]-->
                         <b:section class='sliderNoticeSec hidden' id='slider-notice-widget' maxwidgets='1' showaddelement='false'>
-                          <b:widget id='Image1' locked='true' title='[1순위 공지 슬라이드] 이미지/설명(제목)/링크 입력' type='Image' version='2' visible='true'>
+                          <b:widget id='Image1' locked='true' title='[공지사항]' type='Image' version='2' visible='true'>
                             <b:widget-settings>
-                              <b:widget-setting name='displayUrl'>https://1.bp.blogspot.com/-yMSpgmjn390/YF1Q5CvGIcI/AAAAAAAAQlg/59LxYemhlyEbbhqlpdfypu5OXRav4t-JgCNcBGAsYHQ/s1600/slider-1-min.png</b:widget-setting>
-                              <b:widget-setting name='displayHeight'>648</b:widget-setting>
-                              <b:widget-setting name='sectionWidth'>150</b:widget-setting>
-                              <b:widget-setting name='shrinkToFit'>false</b:widget-setting>
-                              <b:widget-setting name='displayWidth'>1600</b:widget-setting>
-                              <b:widget-setting name='link'/>
-                              <b:widget-setting name='caption'/>
+                              <b:widget-setting name='displayUrl'>https://mblogthumb-phinf.pstatic.net/MjAxOTA1MDNfMjI3/MDAxNTU2ODcyMTA1NzM3.E-zZpN1fZDfTINHEgQT-f2Pqf4YDbRmaq1xgFZKGXcYg.Xa1EoJDQr9A-nx689IGzPULr-S2RtTvDcluTu7zFt9og.GIF.james0549/6e6819e7efb9daed1086ead18032b4e7.gif?type=w800</b:widget-setting>
+                              <b:widget-setting name='displayHeight'>275</b:widget-setting>
+                              <b:widget-setting name='sectionWidth'>453</b:widget-setting>
+                              <b:widget-setting name='shrinkToFit'>true</b:widget-setting>
+                              <b:widget-setting name='displayWidth'>400</b:widget-setting>
+                              <b:widget-setting name='link'>/p/about.html</b:widget-setting>
+                              <b:widget-setting name='caption'>[공지사항] 블로그가 오픈되었습니다.</b:widget-setting>
                             </b:widget-settings>
                             <b:includable id='main'>
                               <b:include name='content'/>
                             </b:includable>
                             <b:includable id='content'>
-                              <b:if cond='data:caption and data:caption != "" and data:sourceUrl and data:sourceUrl != "" and data:sourceUrl != "https://1.bp.blogspot.com/-yMSpgmjn390/YF1Q5CvGIcI/AAAAAAAAQlg/59LxYemhlyEbbhqlpdfypu5OXRav4t-JgCNcBGAsYHQ/s1600/slider-1-min.png"'>
-                                <div class='custom-notice-slide hidden' expr:data-img='data:sourceUrl' expr:data-link='data:link ? data:link : "#"' expr:data-title='data:caption' id='customNoticeSlide'/>
+                              <b:if cond='data:caption and data:caption != &quot;&quot; and data:sourceUrl and data:sourceUrl != &quot;&quot; and data:sourceUrl != &quot;https://1.bp.blogspot.com/-yMSpgmjn390/YF1Q5CvGIcI/AAAAAAAAQlg/59LxYemhlyEbbhqlpdfypu5OXRav4t-JgCNcBGAsYHQ/s1600/slider-1-min.png&quot;'>
+                                <div class='custom-notice-slide hidden' expr:data-img='data:sourceUrl' expr:data-link='data:link ? data:link : &quot;#&quot;' expr:data-title='data:caption' id='customNoticeSlide'/>
                               </b:if>
                             </b:includable>
                           </b:widget>
@@ -4046,30 +4048,31 @@ class TableOfContents { constructor({ from, to }) { this.fromElement = from; thi
                           </b:if>
                         </b:includable>
                       </b:widget>
-                      <b:widget id='Blog1' locked='true' title='Blog Posts' type='Blog' version='2' visible='true'>
+                      <b:widget id='Blog1' locked='true' title='블로그 게시물' type='Blog' version='2' visible='true'>
                         <b:widget-settings>
-                          <b:widget-setting name='showDateHeader'>false</b:widget-setting>
                           <b:widget-setting name='commentLabel'>Comment</b:widget-setting>
-                          <b:widget-setting name='style.textcolor'>#3740ff</b:widget-setting>
                           <b:widget-setting name='showShareButtons'>true</b:widget-setting>
                           <b:widget-setting name='authorLabel'>Oleh</b:widget-setting>
-                          <b:widget-setting name='showCommentLink'>true</b:widget-setting>
-                          <b:widget-setting name='style.urlcolor'>#f9f9fb</b:widget-setting>
-                          <b:widget-setting name='showAuthor'>true</b:widget-setting>
-                          <b:widget-setting name='style.linkcolor'>#fffdfc</b:widget-setting>
                           <b:widget-setting name='style.unittype'>TextAndImage</b:widget-setting>
-                          <b:widget-setting name='style.bgcolor'>#000000</b:widget-setting>
                           <b:widget-setting name='timestampLabel'>Update and timeAgo</b:widget-setting>
                           <b:widget-setting name='reactionsLabel'/>
                           <b:widget-setting name='showAuthorProfile'>true</b:widget-setting>
                           <b:widget-setting name='style.layout'>1x1</b:widget-setting>
-                          <b:widget-setting name='showLabels'>true</b:widget-setting>
                           <b:widget-setting name='showLocation'>false</b:widget-setting>
-                          <b:widget-setting name='postLabelsLabel'>in</b:widget-setting>
                           <b:widget-setting name='showTimestamp'>true</b:widget-setting>
                           <b:widget-setting name='postsPerAd'>1</b:widget-setting>
+                          <b:widget-setting name='style.bordercolor'>#ffffff</b:widget-setting>
+                          <b:widget-setting name='showDateHeader'>false</b:widget-setting>
+                          <b:widget-setting name='style.textcolor'>#ffffff</b:widget-setting>
+                          <b:widget-setting name='showCommentLink'>true</b:widget-setting>
+                          <b:widget-setting name='style.urlcolor'>#ffffff</b:widget-setting>
+                          <b:widget-setting name='postLocationLabel'>Location:</b:widget-setting>
+                          <b:widget-setting name='showAuthor'>true</b:widget-setting>
+                          <b:widget-setting name='style.linkcolor'>#ffffff</b:widget-setting>
+                          <b:widget-setting name='style.bgcolor'>#ffffff</b:widget-setting>
+                          <b:widget-setting name='showLabels'>true</b:widget-setting>
+                          <b:widget-setting name='postLabelsLabel'>in</b:widget-setting>
                           <b:widget-setting name='showBacklinks'>false</b:widget-setting>
-                          <b:widget-setting name='style.bordercolor'>#000000</b:widget-setting>
                           <b:widget-setting name='showInlineAds'>false</b:widget-setting>
                           <b:widget-setting name='showReactions'>false</b:widget-setting>
                         </b:widget-settings>
@@ -5080,6 +5083,44 @@ class TableOfContents { constructor({ from, to }) { this.fromElement = from; thi
                             <script>/*<![CDATA[*/ document.addEventListener("DOMContentLoaded", function() { var a=document, b = a.getElementById("comment-editor"), d = b.getAttribute("data-src"); if (b.setAttribute("src", d), 1 == comment) { var f = a.getElementsByClassName("rpT"), c = a.getElementById("commentForm"), h = f.length, k = function(b, d, e, f) { b.addEventListener("click", function() { var c = b.getAttribute("data-reply-to"); a.getElementById("c" + c).appendChild(d); a.getElementById("commentForm").className = "cmX"; a.getElementById("cmAd").className = "cmD cmButton"; e.src = f + "&parentID=" + c }) }; for (i = 0; i < h; i++) k(f[i], c, b, d); var l = a.getElementsByClassName("cmF")[0]; a.getElementById("cmAd").addEventListener("click", function() { l.appendChild(c); a.getElementById("commentForm").className = "cmX"; a.getElementById("cmAd").className = "cmD hidden"; b.src = d }) } }); /*]]>*/</script>
                           </b:if>
                         </b:includable>
+                        <b:includable id='tooltipCss'>
+  <!-- LINT.IfChange -->
+  <style>
+    .post-body a.b-tooltip-container {
+      position: relative;
+      display: inline-block;
+    }
+
+    .post-body a.b-tooltip-container .b-tooltip {
+      display: block !important;
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translate(-20%, 1px);
+      visibility: hidden;
+      opacity: 0;
+      z-index: 1;
+      transition: opacity 0.2s ease-in-out;
+    }
+
+    .post-body a.b-tooltip-container .b-tooltip iframe {
+      width: 200px;
+      height: 198px;
+      max-width: none;
+      border: none;
+      border-radius: 20px;
+      box-shadow: 1px 1px 3px 1px rgba(0, 0, 0, 0.2);
+    }
+
+    @media (hover: hover) {
+      .post-body a.b-tooltip-container:hover .b-tooltip {
+        visibility: visible;
+        opacity: 1;
+      }
+    }
+  </style>
+  <!-- LINT.ThenChange(//depot/google3/java/com/google/blogger/b2/layouts/widgets/v2-style.css) -->
+</b:includable>
                       </b:widget>
                       <b:widget cond='data:view.isPost and !data:view.isPreview' id='LinkList01' locked='false' title='Middle post Ad 01' type='LinkList' version='2' visible='false'>
                         <b:widget-settings>
@@ -5346,7 +5387,7 @@ class TableOfContents { constructor({ from, to }) { this.fromElement = from; thi
                         </b:widget>
                         <b:widget id='Label00' locked='false' title='Labels' type='Label' version='2' visible='true'>
                           <b:widget-settings>
-                            <b:widget-setting name='sorting'>ALPHA</b:widget-setting>
+                            <b:widget-setting name='sorting'>FREQUENCY</b:widget-setting>
                             <b:widget-setting name='display'>LIST</b:widget-setting>
                             <b:widget-setting name='selectedLabelsList'/>
                             <b:widget-setting name='showType'>ALL</b:widget-setting>
@@ -5459,15 +5500,16 @@ class TableOfContents { constructor({ from, to }) { this.fromElement = from; thi
                         </b:widget>
                         <b:widget id='LinkList1' locked='true' title='Additional menu' type='LinkList' version='2' visible='true'>
                           <b:widget-settings>
+                            <b:widget-setting name='shownum'>2</b:widget-setting>
                             <b:widget-setting name='link-3'>#</b:widget-setting>
                             <b:widget-setting name='sorting'>NONE</b:widget-setting>
                             <b:widget-setting name='text-1'>Disclaimer</b:widget-setting>
-                            <b:widget-setting name='link-1'>#</b:widget-setting>
-                            <b:widget-setting name='text-0'>Term</b:widget-setting>
+                            <b:widget-setting name='link-1'>/p/disclaimer.html</b:widget-setting>
+                            <b:widget-setting name='text-0'>Privacy</b:widget-setting>
                             <b:widget-setting name='link-2'>#</b:widget-setting>
                             <b:widget-setting name='text-3'>Faq</b:widget-setting>
-                            <b:widget-setting name='link-0'>#</b:widget-setting>
-                            <b:widget-setting name='text-2'>Privacy</b:widget-setting>
+                            <b:widget-setting name='link-0'>/p/privacy-policy.html</b:widget-setting>
+                            <b:widget-setting name='text-2'>Term</b:widget-setting>
                           </b:widget-settings>
                           <b:includable id='main'>
                             <b:include name='content'/>
@@ -5634,36 +5676,18 @@ class TableOfContents { constructor({ from, to }) { this.fromElement = from; thi
                   </b:widget>
                   <b:widget id='LinkList88' locked='true' title='Social media' type='LinkList' version='2' visible='true'>
                     <b:widget-settings>
-                      <b:widget-setting name='text-10'>Line</b:widget-setting>
                       <b:widget-setting name='shownum'>4</b:widget-setting>
-                      <b:widget-setting name='sorting'>NONE</b:widget-setting>
-                      <b:widget-setting name='link-1'>#</b:widget-setting>
-                      <b:widget-setting name='link-13'>#</b:widget-setting>
-                      <b:widget-setting name='link-2'>#</b:widget-setting>
-                      <b:widget-setting name='link-12'>#</b:widget-setting>
-                      <b:widget-setting name='link-0'>#</b:widget-setting>
-                      <b:widget-setting name='link-11'>#</b:widget-setting>
-                      <b:widget-setting name='link-10'>#</b:widget-setting>
-                      <b:widget-setting name='text-9'>Tiktok</b:widget-setting>
-                      <b:widget-setting name='link-9'>#</b:widget-setting>
-                      <b:widget-setting name='text-8'>Messenger</b:widget-setting>
-                      <b:widget-setting name='link-7'>#</b:widget-setting>
-                      <b:widget-setting name='link-8'>#</b:widget-setting>
-                      <b:widget-setting name='link-5'>#</b:widget-setting>
-                      <b:widget-setting name='link-6'>#</b:widget-setting>
                       <b:widget-setting name='link-3'>#</b:widget-setting>
+                      <b:widget-setting name='sorting'>NONE</b:widget-setting>
                       <b:widget-setting name='link-4'>#</b:widget-setting>
-                      <b:widget-setting name='text-1'>Instagram</b:widget-setting>
-                      <b:widget-setting name='text-0'>Facebook</b:widget-setting>
+                      <b:widget-setting name='text-1'>LinkedIn</b:widget-setting>
+                      <b:widget-setting name='link-1'>https://www.linkedin.com/in/changyeong-kim-08a555179/</b:widget-setting>
+                      <b:widget-setting name='text-0'>Github</b:widget-setting>
+                      <b:widget-setting name='link-2'>#</b:widget-setting>
                       <b:widget-setting name='text-3'>Youtube</b:widget-setting>
-                      <b:widget-setting name='text-2'>Twitter</b:widget-setting>
-                      <b:widget-setting name='text-5'>Pinterest</b:widget-setting>
-                      <b:widget-setting name='text-4'>LinkedIn</b:widget-setting>
-                      <b:widget-setting name='text-7'>Telegram</b:widget-setting>
-                      <b:widget-setting name='text-6'>Whatsapp</b:widget-setting>
-                      <b:widget-setting name='text-11'>Dribbble</b:widget-setting>
-                      <b:widget-setting name='text-12'>Tumblr</b:widget-setting>
-                      <b:widget-setting name='text-13'>Github</b:widget-setting>
+                      <b:widget-setting name='link-0'>https://github.com/noogyung</b:widget-setting>
+                      <b:widget-setting name='text-2'>Instagram</b:widget-setting>
+                      <b:widget-setting name='text-4'>Messenger</b:widget-setting>
                     </b:widget-settings>
                     <b:includable id='main'>
                       <b:include name='content'/>
