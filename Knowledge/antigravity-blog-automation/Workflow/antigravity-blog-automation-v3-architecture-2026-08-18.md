@@ -152,6 +152,11 @@ series_prev_slug: antigravity-blog-automation-workflow-v2
   * **원인:** AI의 불필요한 인라인 스타일 생성 습관.
   * **해결법:** `blog-harness-rules.md`에 인라인 스타일 절대 금지 및 순수 `<img>` 태그 작성 규칙을 명문화하고, 테마 전역 CSS가 800px 반응형 및 모서리 곡률을 자동 제어하도록 위임함. [FACT]
 
+* **[Blogger의 알파벳 강제 정렬로 인한 대표 카테고리 라벨 왜곡 해결]**
+  * **증상:** Blogger가 포스트 라벨 순서를 무시하고 알파벳/가나다 순으로 강제 정렬하여, 포스트 카드나 상단 메타의 `in {라벨}` 영역에 대표 카테고리(예: `Blog`, `GameDev`) 대신 알파벳이 빠른 세부 태그(예: `Antigravity`)가 강제 노출되는 문제.
+  * **원인:** Blogger 엔진 자체의 알파벳 우선 라벨 인덱싱 정책.
+  * **해결법:** 테마의 라벨 렌더링 로직을 직접 수정하여, 포스트 메타데이터 `Labels:`에 지정된 순서 중 **첫 번째(메인 카테고리)와 두 번째 라벨을 정상적으로 우선 파싱하여 보여주도록 패치 완료**함. [FACT/USER VERIFIED]
+
 ---
 
 #### 🔧 변화를 이끈 사건들과 비하인드 스토리 (What Happened → What Changed)
@@ -209,6 +214,7 @@ series_prev_slug: antigravity-blog-automation-workflow-v2
 * [x] **Blogger 테마 동적 탭 네비게이션 렌더링 검증** — Verified 2026-08-18 (`series_navigation_plan.md` 사양 수립 및 3_게시글 스킬 연동 완료)
 * [x] **슬래시 커맨드(`/1_주제` ~ `/5_블로그추가`) UI 편의성 검증** — Verified 2026-08-18 (스킬 디렉토리 정규화 및 슬래시 커맨드 매핑 정상 작동 확인)
 * [x] **상시 룰 경량화 및 토큰 절감 검증** — Verified 2026-08-18 (`blog-harness-rules.md` 가드레일 압축 및 `3_게시글` 스킬 상세 스펙 내재화 완료)
+* [x] **Blogger Label 정렬 및 대표 라벨 표시 정상화 검증** — Verified 2026-08-18 (테마 라벨 렌더링 로직 수정을 통해 `Labels:`의 1번째, 2번째 라벨이 정상적으로 우선 노출되도록 패치 완료)
 
 **[향후 개선 과제 및 로드맵 (Next Milestones)]**
 * [ ] **유료 Median UI 테마 저작권 보호 및 저장소 보안 격리:**
@@ -224,8 +230,6 @@ series_prev_slug: antigravity-blog-automation-workflow-v2
 * [ ] **구글 Blogger 기본 댓글의 한계 극복 및 독립형 댓글 시스템 재검토:**
   * 기본 블로거 댓글의 구조적 결함(Blogger 계정 필수 로그인, 댓글 삭제 시 잔여 문구로 인한 디자인 훼손, 댓글 수정 불가, 모바일 대댓글 UX 한계).
   * 향후 안정된 고성능 모델 환경에서 테마와 조화로운 모던 댓글 시스템(Waline, Giscus 등)의 재도입 추진.
-* [ ] **Blogger Label 정렬 이슈 (카테고리 표시 위젯 `in {라벨}` 강제 정렬) 패치:**
-  * 테마 클라이언트 JS 수정을 통해 대표 카테고리 라벨이 첫 번째로 고정 노출되도록 필터링 로직 구현.
 * [ ] **본문 보조 이미지(다이어그램/스크린샷) 자동 추천 파이프라인:**
   * 3D 메인 썸네일 자동 생성 외에, 본문 텍스트 맥락상 시각 자료가 필요한 위치를 에이전트가 판별하여 보조 이미지 슬롯 삽입을 능동적으로 제안하도록 하네스 보강.
 
@@ -233,7 +237,7 @@ series_prev_slug: antigravity-blog-automation-workflow-v2
 
 #### 🏷️ Tags
 
-Antigravity, 블로그-자동화, 분산-아키텍처, Control-Plane, Data-Plane, Skill-시스템, Rule-가드레일, 슬래시-커맨드, 멀티-블로그, 시리즈-네비게이션, Blogger, Median-UI, 하네스-경량화, 저작권-보안, 레이아웃-위젯
+Antigravity, 블로그-자동화, 분산-아키텍처, Control-Plane, Data-Plane, Skill-시스템, Rule-가드레일, 슬래시-커맨드, 멀티-블로그, 시리즈-네비게이션, Blogger, Median-UI, 하네스-경량화, 저작권-보안, 레이아웃-위젯, 라벨-정렬-패치
 
 ===== KNOWLEDGE PACKAGE END =====
 
@@ -276,6 +280,11 @@ Antigravity, 블로그-자동화, 분산-아키텍처, Control-Plane, Data-Plane
 ### 2026-08-18 (5차) — Test Result: PASS
 
 * **피드백 내용:** 향후 개선 과제 및 로드맵 7개 항목(유료 테마 저작권/보안 분리, 테마 XML 레거시 청소, 5번 스킬 실전 엔드투엔드 검증, 하네스 지속 고도화, Blogger 댓글 한계 및 독립 댓글 재도입, 라벨 정렬 패치, 보조 이미지 추천 파이프라인) 상세 명문화.
+
+### 2026-08-18 (6차) — Test Result: PASS
+
+* **피드백 내용:** Blogger Label 정렬 이슈 해결 상태 반영 — 테마 수정을 통해 메타데이터 `Labels:`의 1번째(메인 카테고리), 2번째 라벨이 정상적으로 우선 노출되도록 패치 완료되었음을 확인하고 Errors 및 Missing Info 섹션에 갱신.
+
 
 
 
