@@ -5585,5 +5585,89 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 // ]]>
 </script>
+
+<!--[ Sync Card & Post Labels with Original Metadata Order (1st: Category, 2nd: Relevance) ]-->
+<script type='text/javascript'>
+// <![CDATA[
+document.addEventListener("DOMContentLoaded", function() {
+  var home = window.location.origin;
+
+  // 1. 단일 포스트 페이지 본문 헤더 라벨 동기화 (본문 DOM 주석 직접 파싱)
+  try {
+    var it = document.createNodeIterator(document.body, NodeFilter.SHOW_COMMENT, null, false);
+    var n;
+    while (n = it.nextNode()) {
+      var val = n.nodeValue || '';
+      var m = val.match(/(?:BLOG_LABELS|Labels \(Tags\)):\s*([^\r\n]+)/i);
+      if (m && m[1]) {
+        var clean = m[1].replace(/-->.*$/, '').trim();
+        var parsed = clean.split(',').map(function(s) { return s.trim(); }).filter(Boolean);
+        if (parsed.length > 0) {
+          var headerLabel = document.querySelector('.postI .pH.info .label') || document.querySelector('article.item .pH.info .label');
+          if (headerLabel) {
+            var hHtml = '<a aria-label="' + parsed[0] + '" data-text="' + parsed[0] + '" href="' + home + '/search/label/' + encodeURIComponent(parsed[0]) + '" rel="tag"></a>';
+            if (parsed.length > 1) {
+              hHtml += '<a aria-label="' + parsed[1] + '" data-text="' + parsed[1] + '" href="' + home + '/search/label/' + encodeURIComponent(parsed[1]) + '" rel="tag"></a>';
+            }
+            headerLabel.innerHTML = hHtml;
+          }
+          break;
+        }
+      }
+    }
+  } catch (e) {}
+
+  // 2. 전체 카드(홈 피드, 검색/라벨 피드, 인기글 위젯)의 라벨을 본문 원본 순서(1번 카테고리, 2번 관련도)로 동기화
+  fetch(home + '/feeds/posts/default?alt=json&max-results=50')
+    .then(function(r) { return r.ok ? r.json() : null; })
+    .then(function(json) {
+      if (!json || !json.feed || !json.feed.entry) return;
+      var entries = json.feed.entry;
+      var labelMap = {};
+
+      for (var i = 0; i < entries.length; i++) {
+        var e = entries[i];
+        var altLink = (e.link || []).find(function(l) { return l.rel === 'alternate'; });
+        if (!altLink || !altLink.href) continue;
+        
+        var path = new URL(altLink.href, home).pathname;
+        var content = (e.content && e.content.$t) ? e.content.$t : '';
+        var m = content.match(/(?:BLOG_LABELS|Labels \(Tags\)):\s*([^\r\n]+)/i);
+        
+        if (m && m[1]) {
+          var cleanLine = m[1].replace(/-->.*$/, '').trim();
+          var labels = cleanLine.split(',').map(function(s) { return s.trim(); }).filter(Boolean);
+          if (labels.length > 0) {
+            labelMap[path] = labels;
+          }
+        }
+      }
+
+      var articles = document.querySelectorAll('article:not(.item)');
+      for (var a = 0; a < articles.length; a++) {
+        var art = articles[a];
+        var link = art.querySelector('a[href*=".html"]');
+        if (!link) continue;
+        
+        var artPath = new URL(link.href, home).pathname;
+        var originalLabels = labelMap[artPath];
+        if (!originalLabels || originalLabels.length === 0) continue;
+
+        var labelContainer = art.querySelector('.pH.info .label');
+        if (labelContainer) {
+          var l1 = originalLabels[0];
+          var l2 = originalLabels[1] || null;
+          var newHtml = '<a aria-label="' + l1 + '" data-text="' + l1 + '" href="' + home + '/search/label/' + encodeURIComponent(l1) + '" rel="tag"></a>';
+          if (l2) {
+            newHtml += '<a aria-label="' + l2 + '" data-text="' + l2 + '" href="' + home + '/search/label/' + encodeURIComponent(l2) + '" rel="tag"></a>';
+          }
+          labelContainer.innerHTML = newHtml;
+        }
+      }
+    })
+    .catch(function() {});
+});
+// ]]>
+</script>
 </body><b:if cond='!data:view.isPreview'>--&gt;&lt;/body&gt;</b:if>
 </html>
