@@ -852,51 +852,93 @@ article img {
 .series-toc-item.current span {
   text-decoration: none;
 }
-/* Translate Popup and Buttons */
+/* Translate Popup (Exact match with Appearance UI) */
 .transI:checked ~ .settB .iTrans { top: 5px !important; opacity: 1 !important; visibility: visible !important; z-index: 10 !important; }
 .transI:checked ~ .settB .iTrans:not(.r) { right: 0 !important; }
 .transI:checked ~ .settB .iTrans.r { left: 0 !important; }
 .transI:checked ~ .section .tc.fc::after { opacity: 1 !important; visibility: visible !important; z-index: 2 !important; }
-.trans-options {
+
+.iTrans .inn {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 12px !important;
+  padding-top: 4px !important;
+}
+.iTrans .inn .trans-card {
   display: flex !important;
   flex-direction: column !important;
-  gap: 8px !important;
-  margin-top: 10px !important;
+  align-items: center !important;
+  flex: 1 1 0 !important;
+  min-width: 65px !important;
+  cursor: pointer !important;
+  color: inherit !important;
+  text-decoration: none !important;
+  user-select: none !important;
 }
-.trans-btn {
-  background: var(--lightBg-sec, rgba(128,128,128,0.08));
-  border: 1px solid var(--contentBd-color);
-  border-radius: var(--contentBd-radiusA);
-  padding: 8px 12px;
-  cursor: pointer;
-  color: inherit;
-  font-weight: 500;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  transition: background-color 0.2s ease, border-color 0.2s ease;
-  outline: none;
-  text-align: left;
+.iTrans .inn .trans-card::after {
+  content: attr(data-text) !important;
+  font-size: 0.88rem !important;
+  margin-top: 6px !important;
+  font-weight: 500 !important;
+  text-align: center !important;
+  white-space: nowrap !important;
 }
-.trans-btn:hover {
-  background: var(--lightBg-alt, rgba(128,128,128,0.15));
+.iTrans .inn .trans-card .i.trans-preview {
+  width: 100% !important;
+  height: 48px !important;
+  border-radius: var(--contentBd-radiusA, 8px) !important;
+  background-color: var(--lightBg-sec, rgba(128,128,128,0.12)) !important;
+  border: 1.5px solid transparent !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  position: relative !important;
+  overflow: hidden !important;
+  transition: all 0.2s ease !important;
 }
-.trans-btn.active {
-  border-color: var(--themeLink) !important;
-  color: var(--themeLink) !important;
+.nB[data-theme=dark] .iTrans .inn .trans-card .i.trans-preview {
+  background-color: var(--darkBg-sec, rgba(255,255,255,0.08)) !important;
+}
+.iTrans .inn .trans-card .tr-badge {
+  font-size: 0.95rem !important;
   font-weight: 700 !important;
+  letter-spacing: 0.5px !important;
+  font-family: var(--fontCode, monospace) !important;
+  opacity: 0.8 !important;
 }
-.trans-btn .lang-flag {
-  font-size: 1.2em;
+.iTrans .inn .trans-card:hover .i.trans-preview {
+  background-color: var(--lightBg-alt, rgba(128,128,128,0.2)) !important;
 }
-.nB[data-theme=dark] .trans-btn {
-  background: var(--darkBg-sec, rgba(255,255,255,0.06));
-}
-.nB[data-theme=dark] .trans-btn:hover {
-  background: var(--darkBg-alt, rgba(255,255,255,0.12));
+.nB[data-theme=dark] .iTrans .inn .trans-card:hover .i.trans-preview {
+  background-color: var(--darkBg-alt, rgba(255,255,255,0.15)) !important;
 }
 
-/* Hide Google Translate top banner & tooltip */
+/* Active State */
+.iTrans .inn .trans-card.active {
+  color: var(--themeLink) !important;
+}
+.iTrans .inn .trans-card.active .i.trans-preview {
+  border-color: var(--themeLink) !important;
+  box-shadow: 0 0 0 1px var(--themeLink) !important;
+}
+.iTrans .inn .trans-card.active .tr-badge {
+  color: var(--themeLink) !important;
+  opacity: 1 !important;
+}
+
+/* Caption */
+.iTrans .inn .trans-caption {
+  width: 100% !important;
+  flex: 1 0 100% !important;
+  font-size: 0.82rem !important;
+  margin-top: 4px !important;
+  opacity: 0.55 !important;
+}
+.iTrans .inn .trans-caption::before {
+  content: attr(data-text) !important;
+}
+
+/* Hide Google Translate elements */
 .goog-te-banner-frame.skiptranslate, .goog-te-banner-frame { display: none !important; }
 body { top: 0px !important; }
 .goog-tooltip, .goog-tooltip:hover { display: none !important; }
@@ -1632,7 +1674,7 @@ error: &quot;<div class='j e button' expr:aria-label='data:messages.loadMorePost
 /* Google Translate 1-Click Engine */
 (function() {
   var d = document;
-  var transBtns = d.querySelectorAll('.trans-btn');
+  var transBtns = d.querySelectorAll('.trans-card');
   if (transBtns.length === 0) return;
 
   function getTransCookie() {
@@ -3086,33 +3128,35 @@ class TableOfContents { constructor({ from, to }) { this.fromElement = from; thi
                 <!--[ Google Translate Popup ]-->
                 <div class='iTrans ipopUp flex column invisible noJava'>
                   <b:class cond='data:blog.languageDirection == &quot;rtl&quot;' name='r'/>
-                  <label class='h flexIn fontS opacity i14' data-text='언어 선택 (Language)' for='forTrans'>
+                  <label class='h flexIn fontS opacity i14' data-text='Language' for='forTrans'>
                     <b:if cond='data:blog.languageDirection != &quot;rtl&quot;'>
                       <b:include name='arrow-left-1-icon'/>
                       <b:else/>
                       <b:include name='arrow-right-1-icon'/>
                     </b:if>
                   </label>
-                  <div class='inn flex column fontS trans-options'>
-                    <button type='button' class='trans-btn flex fontM' data-lang='ko'>
-                      <span class='lang-flag'>🇰🇷</span>
-                      <span class='lang-name grow'>한국어 (기본)</span>
-                    </button>
-                    <button type='button' class='trans-btn flex fontM' data-lang='en'>
-                      <span class='lang-flag'>🇺🇸</span>
-                      <span class='lang-name grow'>English</span>
-                    </button>
-                    <button type='button' class='trans-btn flex fontM' data-lang='ja'>
-                      <span class='lang-flag'>🇯🇵</span>
-                      <span class='lang-name grow'>日本語</span>
-                    </button>
+                  <div class='inn flex fontS'>
+                    <span aria-label='한국어' class='fontM trans-card active' data-lang='ko' data-text='한국어' role='button'>
+                      <span class='i flex trans-preview'>
+                        <span class='tr-badge'>KO</span>
+                      </span>
+                    </span>
+                    <span aria-label='English' class='fontM trans-card' data-lang='en' data-text='English' role='button'>
+                      <span class='i flex trans-preview'>
+                        <span class='tr-badge'>EN</span>
+                      </span>
+                    </span>
+                    <span aria-label='日本語' class='fontM trans-card' data-lang='ja' data-text='日本語' role='button'>
+                      <span class='i flex trans-preview'>
+                        <span class='tr-badge'>JA</span>
+                      </span>
+                    </span>
+                    <span class='fontM opacity trans-caption' data-text='Setting applies to this browser only'/>
                   </div>
                 </div>
               </div>
             </div>
-            
           </div>
-          
         </header>
           
         <div class='mainN flex'>
