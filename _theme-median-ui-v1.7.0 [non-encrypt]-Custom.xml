@@ -852,8 +852,7 @@ article img {
 .series-toc-item.current span {
   text-decoration: none;
 }
-/*]]>*/
-/* Translate Popup & Buttons */
+/* Translate Popup and Buttons */
 .transI:checked ~ .settB .iTrans { top: 5px; opacity: 1; visibility: visible; }
 .transI:checked ~ .settB .iTrans:not(.r) { right: 0; }
 .transI:checked ~ .settB .iTrans.r { left: 0; }
@@ -905,6 +904,7 @@ body { top: 0px !important; }
 #goog-gt-tt, .goog-te-balloon-frame { display: none !important; }
 #google_translate_element { display: none !important; }
 
+/*]]>*/
 </style>
     
     <b:else/>
