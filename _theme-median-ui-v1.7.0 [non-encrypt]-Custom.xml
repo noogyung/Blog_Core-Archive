@@ -853,15 +853,15 @@ article img {
   text-decoration: none;
 }
 /* Translate Popup and Buttons */
-.transI:checked ~ .settB .iTrans { top: 5px; opacity: 1; visibility: visible; }
-.transI:checked ~ .settB .iTrans:not(.r) { right: 0; }
-.transI:checked ~ .settB .iTrans.r { left: 0; }
-.transI:checked ~ .section .tc.fc::after { opacity: 1; visibility: visible; z-index: 2; }
+.transI:checked ~ .settB .iTrans { top: 5px !important; opacity: 1 !important; visibility: visible !important; z-index: 10 !important; }
+.transI:checked ~ .settB .iTrans:not(.r) { right: 0 !important; }
+.transI:checked ~ .settB .iTrans.r { left: 0 !important; }
+.transI:checked ~ .section .tc.fc::after { opacity: 1 !important; visibility: visible !important; z-index: 2 !important; }
 .trans-options {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin-top: 10px;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 8px !important;
+  margin-top: 10px !important;
 }
 .trans-btn {
   background: var(--lightBg-sec, rgba(128,128,128,0.08));
@@ -882,9 +882,9 @@ article img {
   background: var(--lightBg-alt, rgba(128,128,128,0.15));
 }
 .trans-btn.active {
-  border-color: var(--themeLink);
-  color: var(--themeLink);
-  font-weight: 700;
+  border-color: var(--themeLink) !important;
+  color: var(--themeLink) !important;
+  font-weight: 700 !important;
 }
 .trans-btn .lang-flag {
   font-size: 1.2em;
@@ -3081,32 +3081,33 @@ class TableOfContents { constructor({ from, to }) { this.fromElement = from; thi
                     </b:includable>
                   </b:widget>
                   
-                  <!--[ Google Translate Popup ]-->
-                  <div class='iTrans ipopUp flex column invisible noJava'>
-                    <b:class cond='data:blog.languageDirection == &quot;rtl&quot;' name='r'/>
-                    <label class='h flexIn fontS opacity i14' data-text='언어 선택 (Language)' for='forTrans'>
-                      <b:if cond='data:blog.languageDirection != &quot;rtl&quot;'>
-                        <b:include name='arrow-left-1-icon'/>
-                        <b:else/>
-                        <b:include name='arrow-right-1-icon'/>
-                      </b:if>
-                    </label>
-                    <div class='inn flex column fontS trans-options'>
-                      <button type='button' class='trans-btn flex fontM' data-lang='ko'>
-                        <span class='lang-flag'>🇰🇷</span>
-                        <span class='lang-name grow'>한국어 (기본)</span>
-                      </button>
-                      <button type='button' class='trans-btn flex fontM' data-lang='en'>
-                        <span class='lang-flag'>🇺🇸</span>
-                        <span class='lang-name grow'>English</span>
-                      </button>
-                      <button type='button' class='trans-btn flex fontM' data-lang='ja'>
-                        <span class='lang-flag'>🇯🇵</span>
-                        <span class='lang-name grow'>日本語</span>
-                      </button>
-                    </div>
-                  </div>
+                  
                 </b:section>
+                <!--[ Google Translate Popup ]-->
+                <div class='iTrans ipopUp flex column invisible noJava'>
+                  <b:class cond='data:blog.languageDirection == &quot;rtl&quot;' name='r'/>
+                  <label class='h flexIn fontS opacity i14' data-text='언어 선택 (Language)' for='forTrans'>
+                    <b:if cond='data:blog.languageDirection != &quot;rtl&quot;'>
+                      <b:include name='arrow-left-1-icon'/>
+                      <b:else/>
+                      <b:include name='arrow-right-1-icon'/>
+                    </b:if>
+                  </label>
+                  <div class='inn flex column fontS trans-options'>
+                    <button type='button' class='trans-btn flex fontM' data-lang='ko'>
+                      <span class='lang-flag'>🇰🇷</span>
+                      <span class='lang-name grow'>한국어 (기본)</span>
+                    </button>
+                    <button type='button' class='trans-btn flex fontM' data-lang='en'>
+                      <span class='lang-flag'>🇺🇸</span>
+                      <span class='lang-name grow'>English</span>
+                    </button>
+                    <button type='button' class='trans-btn flex fontM' data-lang='ja'>
+                      <span class='lang-flag'>🇯🇵</span>
+                      <span class='lang-name grow'>日本語</span>
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
             
