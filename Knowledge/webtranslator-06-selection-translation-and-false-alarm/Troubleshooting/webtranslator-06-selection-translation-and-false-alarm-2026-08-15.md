@@ -1,4 +1,4 @@
----
+﻿---
 topic: webtranslator-06-selection-translation-and-false-alarm
 title_kr: 선택 영역 번역 도입과 "내용 없음" 오탐 버그 해결
 category: Troubleshooting
@@ -14,11 +14,9 @@ blog_draft_path: Blog_Posts/core-archive/2026-08/webtranslator-06-selection-tran
 blog_draft_date: 2026-08-15
 blog_id: core-archive
 blog_published: true
-series_name: WebTranslator
+series_name: WebTranslator 개발기
 series_part: 6
-series_total: 21
 series_prev_slug: webtranslator-05-steam-button-crash-and-dual-renderer
-series_next_slug: webtranslator-07-multi-engine-adapter-pattern
 ---
 
 # Knowledge File: webtranslator-06-selection-translation-and-false-alarm

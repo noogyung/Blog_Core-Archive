@@ -14,11 +14,9 @@ blog_draft_path: Blog_Posts/core-archive/2026-06/antigravity-blog-automation-wor
 blog_draft_date: 2026-06-19
 blog_id: core-archive
 blog_published: true
-series_name: null
-series_part: null
-series_total: null
+series_name: Antigravity 블로그 포스팅 자동화 구축기
+series_part: 1
 series_prev_slug: null
-series_next_slug: null
 ---
 
 ===== KNOWLEDGE PACKAGE START =====

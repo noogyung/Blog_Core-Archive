@@ -1,4 +1,4 @@
----
+﻿---
 topic: webtranslator-04-steam-link-color-and-orphan-nodes
 title_kr: 스팀 <a> 링크 색상 오추출과 고아 텍스트 노드 래핑
 category: Troubleshooting
@@ -14,11 +14,9 @@ blog_draft_path: Blog_Posts/core-archive/2026-08/webtranslator-04-steam-link-col
 blog_draft_date: 2026-08-15
 blog_id: core-archive
 blog_published: true
-series_name: WebTranslator
+series_name: WebTranslator 개발기
 series_part: 4
-series_total: 21
 series_prev_slug: webtranslator-03-v01-snapshot-and-custom-dict-order-bug
-series_next_slug: webtranslator-05-steam-button-crash-and-dual-renderer
 ---
 
 # Knowledge File: webtranslator-04-steam-link-color-and-orphan-nodes

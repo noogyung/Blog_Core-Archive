@@ -1,59 +1,58 @@
 <!-- ============================================================
-  [BLOG POST METADATA - Blogspot ?�정�?복사??
-  Title: [WebTranslator 개발�?#10] Gemini 429 쿼터 초과?� ?�합 ?�롬?�트 빌더
-  Labels (Tags): WebTranslator, ChromeExtension, ?�롬?�장?�로그램, Gemini, ?�롬?�트?��??�어�? 429Error, MutationObserver, ?�러블슈??  Meta Description: ?�롬 ?�장 ?�로그램 개발�?10?? �?문서 �?무한 ?�크�?번역 ??Gemini 무료 쿼터 초과(429)�?멈추??문제�?지??백오?��? MutationObserver ?�로 ?�결?�고, ?�편?�된 ?�롬?�트�?중앙 빌더�??�합??과정???�리?�니??
+  [BLOG POST METADATA - Blogspot 설정창 복사용]
+  Title: [WebTranslator 개발기 #10] Gemini 429 쿼터 초과와 통합 프롬프트 빌더
+  Labels (Tags): WebTranslator, ChromeExtension, 크롬확장프로그램, Gemini, 프롬프트엔지니어링, 429Error, MutationObserver, 트러블슈팅
+  Meta Description: 크롬 확장 프로그램 개발기 10편: 긴 문서 및 무한 스크롤 번역 시 Gemini 무료 쿼터 초과(429)로 멈추던 문제를 지수 백오프와 MutationObserver 큐로 해결하고, 파편화된 프롬프트를 중앙 빌더로 통합한 과정을 정리합니다.
   Slug: webtranslator-10-gemini-rate-limits-and-prompt-builder
-  Primary Keyword: Gemini API 429 ?�류 ?�결
-  Secondary Keywords: ?�롬 ?�장 ?�로그램 ?�롬?�트 빌더, 15 RPM 쿼터 ?�로?��? MutationObserver ?�적 번역, 지??백오???�시?? LLM ?�롬?�트 중앙??  Related Entities: Gemini 15 RPM Quota, Exponential Backoff, MutationObserver Batch Queue, Single Source of Truth Prompt
+  ---
+  Primary Keyword: Gemini API 429 오류 해결
+  Secondary Keywords: 크롬 확장 프로그램 프롬프트 빌더, 15 RPM 쿼터 스로틀링, MutationObserver 동적 번역, 지수 백오프 재시도, LLM 프롬프트 중앙화
   Knowledge Source: Knowledge/webtranslator-10-gemini-rate-limits-and-prompts/Troubleshooting/webtranslator-10-gemini-rate-limits-and-prompts-2026-08-15.md
   Generated Date: 2026-08-15
-  Estimated Read Time: 7�?  ============================================================ -->
-
-<!-- [블로그스???�용 ?�드 복사??- �?줄을 복사?�여 블로그스???�력?�??붙여?�기] -->
-<!-- BLOG_TITLE: [WebTranslator 개발�?#10] Gemini 429 쿼터 초과?� ?�합 ?�롬?�트 빌더 -->
-<!-- BLOG_LABELS: WebTranslator, ChromeExtension, ?�롬?�장?�로그램, Gemini, ?�롬?�트?��??�어�? 429Error, MutationObserver, ?�러블슈??-->
-<!-- META_DESCRIPTION: ?�롬 ?�장 ?�로그램 개발�?10?? �?문서 �?무한 ?�크�?번역 ??Gemini 무료 쿼터 초과(429)�?멈추??문제�?지??백오?��? MutationObserver ?�로 ?�결?�고, ?�편?�된 ?�롬?�트�?중앙 빌더�??�합??과정???�리?�니?? -->
+  Estimated Read Time: 7분
+  Series: WebTranslator 개발기
+  Prev Slug: webtranslator-09-selection-vs-full-page-state-collision
+  ============================================================ -->
 
 <article>
 
-  <!-- ?��?지 ?�롯 1: ?�???��?지 -->
-  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-08/webtranslator-10-gemini-rate-limits-and-prompt-builder-img1.jpg" alt="Gemini API 429 쿼터 ?�로?��?�??�합 ?�롬?�트 빌더 ?�키?�처 ?�이?�그??
-       style="width:100%; max-width:800px; height:auto; border-radius:8px; margin:1em 0; display:block;">
+  <!-- 이미지 슬롯 1: 대표 이미지 -->
+  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-08/webtranslator-10-gemini-rate-limits-and-prompt-builder-img1.jpg" alt="Gemini API 429 쿼터 스로틀링 및 통합 프롬프트 빌더 아키텍처 다이어그램">
 
   <p>
-    지??9?�에?�는 ?�어 ?�전 ?�업???�려 ?�는 ?�태?�서 ?�축??<code>Alt+A</code>)�??��?????발생?�던 ?�업 ?�존�??�스???�중 ?�집 충돌??비동�??�집 ???�기?�으�??�업???�탕?�는 <strong>?�행 ?�탕(Cleanup-First) ?�턴</strong>?�로 말끔???�결?�습?�다.
+    지난 9편에서는 단어 사전 팝업이 열려 있는 상태에서 단축키(<code>Alt+A</code>)를 눌렀을 때 발생하던 팝업 잔존과 텍스트 이중 수집 충돌을 비동기 수집 전 동기적으로 팝업을 소탕하는 <strong>선행 소탕(Cleanup-First) 패턴</strong>으로 말끔히 해결했습니다.
   </p>
 
   <p>
-    기초 ?�터?�션�??�중 ?�진 ?�댑?��? ?�착?�자, ?�제 ?�용?�이 많�? ?�?�량 ?�문??MDN 개발 문서, 방�???깃허�??�키 ???� 무한 ?�크�??�페?��?�??�?�으�?본격?�인 ?�전 번역??가?�했?�니?? 그러??100�??�상??문단???�함??�??�이지�?번역?�던 �? <strong>Google Gemini API??무료 ?�어 ?�출 ?�도??걸려 <code>429 Resource Exhausted</code> ?�러가 ?��?�??�이지 ?�반??번역?��? ?�고 멈춰버리???�애</strong>가 발생?�습?�다.
+    기초 인터랙션과 다중 엔진 어댑터가 안착되자, 실제 사용량이 많은 대용량 웹문서(MDN 개발 문서, 방대한 깃허브 위키 등)와 무한 스크롤 웹페이지를 대상으로 본격적인 실전 번역을 가동했습니다. 그러나 100개 이상의 문단이 포함된 긴 페이지를 번역하던 중, <strong>Google Gemini API의 무료 티어 호출 한도에 걸려 <code>429 Resource Exhausted</code> 에러가 터지며 페이지 절반이 번역되지 않고 멈춰버리는 장애</strong>가 발생했습니다.
   </p>
 
   <p>
-    ?�상가?�으�??�로?�트 초기??"?�크롤이??AJAX�???글???�어?�면 ?��?감�??�서 번역?�자"�??�시�?걸어?�었??<strong>조잡???�적 로딩 감�?�?/strong>가 ?�크롤을 ?�릴 ?�마??미세???�스???�어리�? 쪼개??API�?무차�??�사?�면??쿼터 고갈??극도�?가?�화?�고 ?�었?�니??
+    설상가상으로 프로젝트 초기에 "스크롤이나 AJAX로 새 글이 들어오면 대충 감지해서 번역하자"며 임시로 걸어두었던 <strong>조잡한 동적 로딩 감지기</strong>가 스크롤을 내릴 때마다 미세한 텍스트 덩어리를 쪼개어 API로 무차별 난사하면서 쿼터 고갈을 극도로 가속화하고 있었습니다.
   </p>
 
   <p>
-    ?�번 <strong>Part 4 (API ?�정??&amp; 최적??</strong>??�?글?�서??429 쿼터 ?�한??극복?�는 <strong>지??백오??Exponential Backoff)</strong>, ?�시 감�?기�? 걷어?�고 ?�식 ?�성??<strong>MutationObserver ?�바?�스 배치 ??/strong>, 그리�?모델�??�롬?�트 ?�편?��? ?�원?�한 <strong>중앙 ?�합 ?�롬?�트 빌더</strong> 구축 과정???�리??보고???�니??
+    이번 <strong>Part 4 (API 안정성 &amp; 최적화)</strong>의 첫 글에서는 429 쿼터 제한을 극복하는 <strong>지수 백오프(Exponential Backoff)</strong>, 임시 감지기를 걷어내고 정식 완성한 <strong>MutationObserver 디바운스 배치 큐</strong>, 그리고 모델별 프롬프트 파편화를 일원화한 <strong>중앙 통합 프롬프트 빌더</strong> 구축 과정을 정리해 보고자 합니다.
   </p>
 
   <h2 id="rate-limit-challenges">
-    1. ?�?�량 번역??복병: 15 RPM 쿼터?� ?�시 ?�적 감�?기의 ??��
+    1. 대용량 번역의 복병: 15 RPM 쿼터와 임시 동적 감지기의 폭주
   </h2>
 
   <p>
-    Google Gemini 1.5 Flash??초고???�답�?무료 API ?�어�??�공?�여 개인??번역 ?�장 ?�로그램??가??매력?�인 모델?�니?? ?��?�?무료 ?�어?�는 ?�격??<strong>분당 ?�청 ???�한(15 RPM, Requests Per Minute)</strong>??걸려 ?�습?�다.
+    Google Gemini 3.5 Flash는 초고속 응답과 무료 API 티어를 제공하여 개인용 번역 확장 프로그램에 가장 매력적인 모델입니다. 하지만 무료 티어에는 엄격한 <strong>분당 요청 수 제한(15 RPM, Requests Per Minute)</strong>이 걸려 있습니다.
   </p>
 
   <p>
-    문제가 ?�진 ?�인?� ??가지???�순?�이?�습?�다:
+    문제가 터진 원인은 두 가지의 악순환이었습니다:
   </p>
 
   <ol class="step">
-    <li><strong>지?�치�??�게 쪼갠 배치:</strong> 빠른 ?�더링을 ?�해 ?�스???�드�?5~10개씩 ?�게 쪼개???�속?�으�?<code>Promise.all</code> 병렬 ?�출???�렸?�니??</li>
-    <li><strong>?�시 ?�적 감�?기의 무차�??�사:</strong> 개발 초기???�시�??�어?�었??DOM 감�?기�? SPA??무한 ?�크�??�페?��??�서 ?�로???�드가 주입???�마???�바?�스 ?�이 즉시 개별 API ?�청???�아부?�습?�다.</li>
+    <li><strong>지나치게 잘게 쪼갠 배치:</strong> 빠른 렌더링을 위해 텍스트 노드를 5~10개씩 작게 쪼개어 연속적으로 <code>Promise.all</code> 병렬 호출을 날렸습니다.</li>
+    <li><strong>임시 동적 감지기의 무차별 난사:</strong> 개발 초기에 임시로 넣어두었던 DOM 감지기가 SPA나 무한 스크롤 웹페이지에서 새로운 노드가 주입될 때마다 디바운스 없이 즉시 개별 API 요청을 쏟아부었습니다.</li>
   </ol>
 
-  <div class="pre custom" data-text="Google Gemini API ?�러 ?�답">
+  <div class="pre custom" data-text="Google Gemini API 에러 응답">
     <button aria-label="Copy code">Copy</button>
     <pre>{
   "error": {
@@ -65,21 +64,21 @@
   </div>
 
   <div class="note wr">
-    <strong>?�️ ?�심 결함:</strong> 100문단짜리 문서?�서 ?�크롤을 �?�??�리?�마??15??쿼터가 ?�식간에 고갈?�었�? 429 ?�러�??�해 ?��? 비동�??�이?�라?�이 ?��? ??��?�면???�이지 ?�단???�문?�로 굳어버렸?�니??
+    <strong>⚠️ 핵심 결함:</strong> 100문단짜리 문서에서 스크롤을 몇 번 내리자마자 15회 쿼터가 순식간에 고갈되었고, 429 에러로 인해 남은 비동기 파이프라인이 전부 폭사하면서 페이지 하단이 원문으로 굳어버렸습니다.
   </div>
 
   <h2 id="prompt-fragmentation">
-    2. ?�롬?�트 ?�편??Prompt Fragmentation)???�해
+    2. 프롬프트 파편화(Prompt Fragmentation)의 폐해
   </h2>
 
   <p>
-    ?�시???�로?�트 ?��? 구조?�서?????��?보수 결함???�러?�습?�다. AI ?�시?�턴?��? 모델�??�댑?��? ?�성?�면??�??�일마다 ?�롬?�트 문자?�을 ?�각�?구현???�었??것입?�다.
+    동시에 프로젝트 내부 구조에서도 큰 유지보수 결함이 드러났습니다. AI 어시스턴트가 모델별 어댑터를 작성하면서 각 파일마다 프롬프트 문자열을 제각각 구현해 두었던 것입니다.
   </p>
 
-  <!-- 코드 블록: AI ?�류 코드 -->
-  <div class="pre custom" data-text="JavaScript (?�댑???�일�?중복 코드 - ?�류 코드)">
+  <!-- 코드 블록: AI 오류 코드 -->
+  <div class="pre custom" data-text="JavaScript (어댑터 파일별 중복 코드 - 오류 코드)">
     <button aria-label="Copy code">Copy</button>
-    <pre>// gemini_adapter.js: 모델마다 ?�로?�로 ?�성???�롬?�트 (?�류 코드)
+    <pre>// gemini_adapter.js: 모델마다 따로따로 작성된 프롬프트 (오류 코드)
 function getGeminiPrompt(texts) {
   return "Translate JSON array to Korean: " + JSON.stringify(texts);
 }
@@ -91,66 +90,69 @@ function getOpenAIPrompt(texts) {
   </div>
 
   <h3 id="fragmentation-symptoms">
-    발생??문제??  </h3>
+    발생한 문제점
+  </h3>
 
   <ul>
-    <li><strong>?�질 불일�?</strong> OpenAI(GPT)?� Gemini 간에???�롬?�트 지침이 미세?�게 ?�라 존댓�?반말???�이거나 마크?�운 백틱 처리 ?��?가 갈리?????�진마다 번역 ?�앤매너?� JSON 출력 ?�식???�일?��? 못했?�니??</li>
-    <li><strong>?��?보수 비용 ??��:</strong> "HTML ?�그??변?�명?� 번역?��? �?�??�라??공통 번역 규칙???�나 추�??�려�?�??�댑???�일???��? ?�어??중복 ?�정?�야 ?�습?�다.</li>
+    <li><strong>품질 불일치:</strong> OpenAI(GPT)와 Gemini 간에도 프롬프트 지침이 미세하게 달라 존댓말/반말이 섞이거나 마크다운 백틱 처리 여부가 갈리는 등 엔진마다 번역 톤앤매너와 JSON 출력 형식이 통일되지 못했습니다.</li>
+    <li><strong>유지보수 비용 폭증:</strong> "HTML 태그나 변수명은 번역하지 말 것"이라는 공통 번역 규칙을 하나 추가하려면 각 어댑터 파일을 전부 열어서 중복 수정해야 했습니다.</li>
   </ul>
 
   <h2 id="exponential-backoff-and-observer">
-    3. ?�결�?1: 지??백오?��? MutationObserver ?�바?�스 배치 ??  </h2>
+    3. 해결책 1: 지수 백오프와 MutationObserver 디바운스 배치 큐
+  </h2>
 
   <p>
-    쿼터 ??���?근본?�으�?차단?�기 ?�해, ?�시 ?�적 감�?기�? ?�면 ?�기?�고 <strong>?�바?�스 배치 ??기반???�식 MutationObserver</strong>?� <strong>지??백오??Exponential Backoff)</strong> ?�이?�라?�을 구축?�습?�다.
+    쿼터 폭주를 근본적으로 차단하기 위해, 임시 동적 감지기를 전면 폐기하고 <strong>디바운스 배치 큐 기반의 정식 MutationObserver</strong>와 <strong>지수 백오프(Exponential Backoff)</strong> 파이프라인을 구축했습니다.
   </p>
 
   <div class="table w100 withBg">
     <table>
       <thead>
         <tr>
-          <th>방어 메커?�즘</th>
+          <th>방어 메커니즘</th>
           <th>처리 로직</th>
-          <th>?�과</th>
+          <th>효과</th>
         </tr>
       </thead>
       <tbody>
         <tr>
-          <td><strong>배치 ?�기 ?�축</strong></td>
-          <td>?�스???�드�?20~25�??�??�?���??�합</td>
-          <td>기본 API ?�출 ?�수 70% ?�상 ?�감</td>
+          <td><strong>배치 크기 압축</strong></td>
+          <td>텍스트 노드를 20~25개 대형 청크로 통합</td>
+          <td>기본 API 호출 횟수 70% 이상 절감</td>
         </tr>
         <tr>
-          <td><strong>MutationObserver ??/strong></td>
-          <td>300ms ?�바?�스 + 배치 ??`dynamicQueue`) ?�적</td>
-          <td>무한 ?�크�??�드 무차�??�출 차단 �??�괄 처리</td>
+          <td><strong>MutationObserver 큐</strong></td>
+          <td>300ms 디바운스 + 배치 큐(`dynamicQueue`) 누적</td>
+          <td>무한 스크롤 노드 무차별 호출 차단 및 일괄 처리</td>
         </tr>
         <tr>
-          <td><strong>지??백오???�시??/strong></td>
-          <td>429 감�? ??1�?$\rightarrow$ 2�?$\rightarrow$ 4�??�동 ?��?/td>
-          <td>?�청 취소 ?�는 100% ?�주 보장</td>
+          <td><strong>지수 백오프 재시도</strong></td>
+          <td>429 감지 시 1초 $\rightarrow$ 2초 $\rightarrow$ 4초 자동 대기</td>
+          <td>요청 취소 없는 100% 완주 보장</td>
         </tr>
       </tbody>
     </table>
   </div>
 
   <h3 id="observer-queue-code">
-    ?�식 MutationObserver ?�적 번역 ??구현
+    정식 MutationObserver 동적 번역 큐 구현
   </h3>
 
   <div class="pre custom" data-text="JavaScript (src/content/dynamic_observer.js)">
     <button aria-label="Copy code">Copy</button>
-    <pre>// src/content/dynamic_observer.js: ?�바?�스 배치 ??기반 ?�식 ?�적 감�?�?let dynamicQueue = [];
+    <pre>// src/content/dynamic_observer.js: 디바운스 배치 큐 기반 정식 동적 감지기
+let dynamicQueue = [];
 let debounceTimer = null;
 
 export function initDynamicObserver() {
   const observer = new MutationObserver((mutations) =&gt; {
-    // 번역 진행 중이 ?�닐 ?�는 무시
+    // 번역 진행 중이 아닐 때는 무시
     if (document.body.dataset.wtStatus !== "translated") return;
 
     for (const mutation of mutations) {
       mutation.addedNodes.forEach((node) =&gt; {
-        // ?��? 번역???�퍼(.wt-trans-wrapper)???�집 ?�외
+        // 이미 번역된 래퍼(.wt-trans-wrapper)는 수집 제외
         if (node.nodeType === Node.ELEMENT_NODE &amp;&amp; !node.classList.contains("wt-trans-wrapper")) {
           const texts = collectTextNodes(node);
           dynamicQueue.push(...texts);
@@ -158,7 +160,7 @@ export function initDynamicObserver() {
       });
     }
 
-    // 300ms ?�바?�스�??�청??묶어??25�??�위 배치�?발송
+    // 300ms 디바운스로 요청을 묶어서 25개 단위 배치로 발송
     clearTimeout(debounceTimer);
     debounceTimer = setTimeout(() =&gt; {
       if (dynamicQueue.length &gt; 0) {
@@ -173,59 +175,59 @@ export function initDynamicObserver() {
   </div>
 
   <h2 id="unified-prompt-builder">
-    4. ?�결�?2: 중앙 ?�합 ?�롬?�트 빌더 (`prompt_builder.js`)
+    4. 해결책 2: 중앙 통합 프롬프트 빌더 (`prompt_builder.js`)
   </h2>
 
   <p>
-    모든 AI 모델??공유?�는 번역 규칙???�일 모듈?�서 ?�원??관리하?�록 <strong>중앙 ?�합 ?�롬?�트 빌더</strong>�?구축?�습?�다.
+    모든 AI 모델이 공유하는 번역 규칙을 단일 모듈에서 일원화 관리하도록 <strong>중앙 통합 프롬프트 빌더</strong>를 구축했습니다.
   </p>
 
-  <div class="pre custom" data-text="AI 지???�정">
+  <div class="pre custom" data-text="AI 지시 수정">
     <button aria-label="Copy code">Copy</button>
-    <pre>모델마다 ?�로?�로 ?�롬?�트�?짜�? 마라. 공통 4?� 번역 규칙(1:1 매칭, ?�문 ?�어 무�? 번역, 코드/?�그 ?�형 보존, ?�수 JSON 강제)???�일 베이?�로 ?�의?�고, ?�용??커스?� 지?�문�?결합?�여 반환?�는 buildTranslationPrompt�??�전???�원?�해??</pre>
+    <pre>모델마다 따로따로 프롬프트를 짜지 마라. 공통 4대 번역 규칙(1:1 매칭, 원문 언어 무관 번역, 코드/태그 원형 보존, 순수 JSON 강제)을 단일 베이스로 정의하고, 사용자 커스텀 지시문만 결합하여 반환하는 buildTranslationPrompt로 완전히 일원화해라.</pre>
   </div>
 
   <div class="table w100 withBg">
     <table>
       <thead>
         <tr>
-          <th>공통 번역 4?� 철칙</th>
-          <th>?��? 지�?/th>
-          <th>?�과</th>
+          <th>공통 번역 4대 철칙</th>
+          <th>세부 지침</th>
+          <th>효과</th>
         </tr>
       </thead>
       <tbody>
         <tr>
-          <td><strong>1. ?�격??1:1 매칭</strong></td>
-          <td>?�력 배열???�소 개수?� ?�덱???�서 100% ?�치 보장</td>
-          <td>?�문 ?�드?� 번역문의 ?�덱??결합 ?�패 방�?</td>
+          <td><strong>1. 엄격한 1:1 매칭</strong></td>
+          <td>입력 배열의 요소 개수와 인덱스 순서 100% 일치 보장</td>
+          <td>원문 노드와 번역문의 인덱스 결합 실패 방지</td>
         </tr>
         <tr>
-          <td><strong>2. 비�????�어 ?�전 번역</strong></td>
-          <td>?�문 ?�어(?�어, ?�본?? 중국??????무�??�게 ?�국?�로 번역</td>
-          <td>?�국?��? ?�용???�페?��? ?�벽 ?�??/td>
+          <td><strong>2. 비대상 언어 완전 번역</strong></td>
+          <td>원문 언어(영어, 일본어, 중국어 등)에 무관하게 한국어로 번역</td>
+          <td>다국어가 혼용된 웹페이지 완벽 대응</td>
         </tr>
         <tr>
-          <td><strong>3. 기술 명칭 ?�형 보존</strong></td>
-          <td>코드 변?�명, HTML ?�그, 브랜??고유명사 보존</td>
-          <td>개발 문서 ?�이?�웃 �?코드 깨짐 방�?</td>
+          <td><strong>3. 기술 명칭 원형 보존</strong></td>
+          <td>코드 변수명, HTML 태그, 브랜드 고유명사 보존</td>
+          <td>개발 문서 레이아웃 및 코드 깨짐 방지</td>
         </tr>
         <tr>
-          <td><strong>4. ?�수 JSON 배열 강제</strong></td>
-          <td>마크?�운 백틱 �??�술???�사�?출력 금�?</td>
-          <td>JSON ?�싱 ?�공�?99.9% 보장</td>
+          <td><strong>4. 순수 JSON 배열 강제</strong></td>
+          <td>마크다운 백틱 및 서술형 인사말 출력 금지</td>
+          <td>JSON 파싱 성공률 99.9% 보장</td>
         </tr>
       </tbody>
     </table>
   </div>
 
   <h3 id="implementation-code">
-    ?�합 ?�롬?�트 빌더 구현
+    통합 프롬프트 빌더 구현
   </h3>
 
   <div class="pre custom" data-text="JavaScript (src/background/prompt_builder.js)">
     <button aria-label="Copy code">Copy</button>
-    <pre>// src/background/prompt_builder.js: 중앙 ?�합 번역 ?�롬?�트 빌더
+    <pre>// src/background/prompt_builder.js: 중앙 통합 번역 프롬프트 빌더
 export function buildTranslationPrompt(targetLang = "ko", customPrompt = "") {
   const baseRules = [
     `You are an expert professional translator. Translate the given JSON array of strings into ${targetLang}.`,
@@ -237,7 +239,7 @@ export function buildTranslationPrompt(targetLang = "ko", customPrompt = "") {
     "4. Return ONLY a valid JSON array with NO markdown backticks or commentary."
   ];
 
-  // ?�용?��? ?�션?�서 ?�록??커스?� 지?�문 ?�적 결합
+  // 사용자가 옵션에서 등록한 커스텀 지시문 동적 결합
   if (customPrompt &amp;&amp; customPrompt.trim().length &gt; 0) {
     baseRules.push("", `User Custom Instructions: ${customPrompt.trim()}`);
   }
@@ -247,47 +249,48 @@ export function buildTranslationPrompt(targetLang = "ko", customPrompt = "") {
   </div>
 
   <h2 id="verification-and-initial-failure">
-    5. ?�전 검�?결과?� 초기 3???�시???�략???�계
+    5. 실전 검증 결과와 초기 3회 재시도 전략의 한계
   </h2>
 
   <p>
-    MutationObserver ?�바?�스 ?��? ?�합 ?�롬?�트 빌더�??��? ??200문단 ?�상??방�???기술 문서?�서 ?�전 검증을 진행?�습?�다. 초기 ?�키?�처?�서???�순 ?�시??카운?��? ?�어 ?�음�?같이 ?�계?�습?�다:
+    MutationObserver 디바운스 큐와 통합 프롬프트 빌더를 얹은 후 200문단 이상의 방대한 기술 문서에서 실전 검증을 진행했습니다. 초기 아키텍처에서는 단순 재시도 카운터를 두어 다음과 같이 설계했습니다:
   </p>
 
   <ol class="step">
-    <li><strong>1�?429 발생:</strong> 5�??��???즉시 ?�요�?</li>
-    <li><strong>2�?429 반려:</strong> 10�??��???2�??�요�?</li>
-    <li><strong>3�?429 반려:</strong> ?�시 10�??��???3�??�요�?</li>
-    <li><strong>4�?최종 ?�패:</strong> 3???�시??초과�?간주?�고 <code>Failed</code> ?�러�??��?�??�당 배치 ?�구 ?�기.</li>
+    <li><strong>1차 429 발생:</strong> 5초 대기 후 즉시 재요청.</li>
+    <li><strong>2차 429 반려:</strong> 10초 대기 후 2차 재요청.</li>
+    <li><strong>3차 429 반려:</strong> 다시 10초 대기 후 3차 재요청.</li>
+    <li><strong>4차 최종 실패:</strong> 3회 재시도 초과로 간주하고 <code>Failed</code> 에러를 던지며 해당 배치 영구 포기.</li>
   </ol>
 
   <h3 id="failed-rate-problem">
-    발생???�각??결함: 빈번??Failed ??��
+    발생한 심각한 결함: 빈번한 Failed 폭사
   </h3>
 
   <p>
-    ?�론?�으로는 25�??�상???�유가 ?�기므�?쿼터가 ?�복??것이???�상?�으?? ?�전?�서??<strong>?�서 발송???�많?� 비동�?배치?�이 ?�전??15 RPM 쿼터�??�속?�로 ?�모</strong>?�고 ?�었?�니??
+    이론상으로는 25초 이상의 여유가 생기므로 쿼터가 회복될 것이라 예상했으나, 실전에서는 <strong>앞서 발송된 수많은 비동기 배치들이 여전히 15 RPM 쿼터를 연속으로 소모</strong>하고 있었습니다.
   </p>
 
   <p>
-    결국 고작 3번의 ?�시?�로??쿼터 병목???��? 못해 ?�이지 곳곳?�서 <code>Failed</code> ?�태가 ?�출?�고, 본문 군데군데가 번역?��? ?�고 ?�하�?비어버리??불완??번역 결함??발생?�습?�다.
+    결국 고작 3번의 재시도로는 쿼터 병목을 뚫지 못해 페이지 곳곳에서 <code>Failed</code> 상태가 속출했고, 본문 군데군데가 번역되지 않고 흉하게 비어버리는 불완전 번역 결함이 발생했습니다.
   </p>
 
   <div class="note wr">
-    <strong>?�️ ?�전 결함:</strong> 고정 ?�수(3?? ???�업???�기??버리???�순 카운??방식?� ?�시??쿼터 병목 ?�경?�서 ?�무 ?�게 번역 ?�패(Failed)�??�발?�니??
+    <strong>⚠️ 실전 결함:</strong> 고정 횟수(3회) 후 작업을 포기해 버리는 단순 카운터 방식은 동시성 쿼터 병목 환경에서 너무 쉽게 번역 실패(Failed)를 유발합니다.
   </div>
 
   <h2 id="persistent-queue-reenqueue">
-    6. 추�? 개선: ???�방 ?�진??Re-enqueuing)�?10�?지??루프
+    6. 추가 개선: 큐 후방 재진입(Re-enqueuing)과 10초 지속 루프
   </h2>
 
   <p>
-    ??1개의 문단???�실 ?�이 100% ?�주 번역??보장?�기 ?�해, <strong>?�패 ???�기?��? ?�고 배치�???�??�로 ?�시 밀?�넣?????�방 ?�진??Re-enqueuing)�?10�?지??루프</strong>�??�키?�처�??�면 개선?�습?�다.
+    단 1개의 문단도 유실 없이 100% 완주 번역을 보장하기 위해, <strong>실패 시 포기하지 않고 배치를 큐 맨 뒤로 다시 밀어넣는 큐 후방 재진입(Re-enqueuing)과 10초 지속 루프</strong>로 아키텍처를 전면 개선했습니다.
   </p>
 
-  <div class="pre custom" data-text="JavaScript (src/background/translator.js - ??지??루프)">
+  <div class="pre custom" data-text="JavaScript (src/background/translator.js - 큐 지속 루프)">
     <button aria-label="Copy code">Copy</button>
-    <pre>// src/background/translator.js: 429 반려 ?????�방 ?�진??�?지???�시???�이?�라??export async function processBatchWithPersistentRetry(batchQueue, engineConfig) {
+    <pre>// src/background/translator.js: 429 반려 시 큐 후방 재진입 및 지속 재시도 파이프라인
+export async function processBatchWithPersistentRetry(batchQueue, engineConfig) {
   while (batchQueue.length &gt; 0) {
     const currentBatch = batchQueue.shift();
 
@@ -296,14 +299,15 @@ export function buildTranslationPrompt(targetLang = "ko", customPrompt = "") {
       applyTranslationToDOM(currentBatch, translated);
     } catch (err) {
       if (err.status === 429 || err.message.includes("429")) {
-        console.warn("[WebTranslator] 429 쿼터 초과 감�?. 10�??��??????�방?�로 ?�진?�합?�다.");
+        console.warn("[WebTranslator] 429 쿼터 초과 감지. 10초 대기 후 큐 후방으로 재진입합니다.");
         
-        // 1. ?��? 진행 중인 ?�행 ?�청?�이 쿼터�??�모?�고 비워�??�까지 10�??��?        await sleep(10000);
+        // 1. 이미 진행 중인 선행 요청들이 쿼터를 소모하고 비워질 때까지 10초 대기
+        await sleep(10000);
 
-        // 2. ?�패 배치�???�??�로 ?�시 ?�어 ?�서 ?�조??(?�구 ?�기 방�?)
+        // 2. 실패 배치를 큐 맨 뒤로 다시 넣어 순서 재조정 (영구 포기 방지)
         batchQueue.push(currentBatch);
       } else {
-        console.error("[WebTranslator] 치명???�러 발생:", err);
+        console.error("[WebTranslator] 치명적 에러 발생:", err);
       }
     }
   }
@@ -314,54 +318,47 @@ export function buildTranslationPrompt(targetLang = "ko", customPrompt = "") {
     <table>
       <thead>
         <tr>
-          <th>비교 ??��</th>
-          <th>초기 3??고정 ?�시??/th>
-          <th>개선?????�방 ?�진??지??루프</th>
+          <th>비교 항목</th>
+          <th>초기 3회 고정 재시도</th>
+          <th>개선된 큐 후방 재진입 지속 루프</th>
         </tr>
       </thead>
       <tbody>
         <tr>
-          <td><strong>?�패 처리 방식</strong></td>
-          <td>3???�패 ??즉시 <code>Failed</code>�?버림</td>
-          <td>10�??��?????�??�로 ?�시 밀?�넣??무한 복구</td>
+          <td><strong>실패 처리 방식</strong></td>
+          <td>3회 실패 시 즉시 <code>Failed</code>로 버림</td>
+          <td>10초 대기 후 큐 맨 뒤로 다시 밀어넣어 무한 복구</td>
         </tr>
         <tr>
-          <td><strong>?�행 ?�청 ?��?/strong></td>
-          <td>?�행 배치?�이 쿼터�??????�까지 �?기다�?/td>
-          <td>10�??�유�??�보?�여 ?�행 ?�청 ?�결 ??쿼터 ?�보</td>
+          <td><strong>선행 요청 대기</strong></td>
+          <td>선행 배치들이 쿼터를 다 쓸 때까지 못 기다림</td>
+          <td>10초 여유를 확보하여 선행 요청 완결 후 쿼터 확보</td>
         </tr>
         <tr>
-          <td><strong>최종 ?�주??/strong></td>
-          <td>�?문서?�서 빈번???��? ?�락 발생</td>
-          <td><strong>Failed 발생�?0%, 100% ?�수 번역 ?�주</strong></td>
+          <td><strong>최종 완주율</strong></td>
+          <td>긴 문서에서 빈번한 일부 누락 발생</td>
+          <td><strong>Failed 발생률 0%, 100% 전수 번역 완주</strong></td>
         </tr>
       </tbody>
     </table>
   </div>
 
   <h2 id="summary">
-    마무리하�?  </h2>
+    마무리하며
+  </h2>
 
   <p>
-    ???�방 ?�진?�과 10�?지??루프�??�입?�으로써, Gemini 무료 ?�어??15 RPM ?�계 ?�에?�도 ?�백 문단??�??�페?��?�?????줄의 ?�락?�나 <code>Failed</code> ?�러 ?�이 100% ?�주?�는 강력??복원?�을 ?�성?�습?�다.
+    큐 후방 재진입과 10초 지속 루프를 도입함으로써, Gemini 무료 티어의 15 RPM 한계 속에서도 수백 문단의 긴 웹페이지를 단 한 줄의 누락이나 <code>Failed</code> 에러 없이 100% 완주하는 강력한 복원력을 완성했습니다.
   </p>
 
   <p>
-    그러???�롬?�트�??�원?�하�?쿼터 문제�??�전???�복?�여 쾌적?�게 ?�용?�던 �? 구�????�전 ?�고 ?�이 모델??Deprecated(지??중단) 처리?�면??모든 Gemini ?�청??<code>404 This model models/gemini-2.5-flash is no longer available</code> ?�러�?뿜으�??�면 중단?�는 ?�로???�태가 ?�졌?�니??
+    그러나 프롬프트를 일원화하고 쿼터 문제를 완전히 정복하여 쾌적하게 사용하던 중, 구글이 사전 예고 없이 모델을 Deprecated(지원 중단) 처리하면서 모든 Gemini 요청이 <code>404 This model models/gemini-2.5-flash is no longer available</code> 에러를 뿜으며 전면 중단되는 새로운 사태가 터졌습니다.
   </p>
 
   <p>
-    ?�음 글?�서???�스 코드 ???�드코딩??모델명을 ?�거?�고, 구�? API?�서 ?�재 ?�용 가?�한 최신 모델 목록???�시간으�?가?�오??<strong>?�적 모델 ?�색(Dynamic Model Fetch) ?�스??/strong> 구축 과정???�루??보겠?�니??
+    다음 글에서는 소스 코드 내 하드코딩된 모델명을 제거하고, 구글 API에서 현재 사용 가능한 최신 모델 목록을 실시간으로 가져오는 <strong>동적 모델 탐색(Dynamic Model Fetch) 시스템</strong> 구축 과정을 다루어 보겠습니다.
   </p>
 
+  <!-- 시리즈 네비게이션 컨테이너 (자동 생성, JS로 연동됨) -->
+  <nav class="series-nav" data-series="WebTranslator 개발기" data-current-slug="webtranslator-10-gemini-rate-limits-and-prompt-builder"></nav>
 </article>
-
-<!-- ============================================================
-  [PUBLISHING CHECKLIST - 발행 ??체크리스??
-  ??BLOG_TITLE ?�용 복사 ??Blogspot ?�단 '?�목' ?�력?�??붙여?�기
-  ??BLOG_LABELS ?�용 복사 ??Blogspot ?�측 ?�이?�바 '?�벨' 칸에 붙여?�기
-  ??META_DESCRIPTION ?�용 복사 ??Blogspot ?�측 '검???�명'?�??붙여?�기
-  ??Blogspot 본문 ?�디?��? "HTML 보기"�??�환 ????<article> ?�스 ?�체 붙여?�기
-  ???��?지 ?�롯 주석 ?�치???�제 ?��?지 ?�입
-  ???�약 발행 ?�는 즉시 발행
-  ============================================================ -->

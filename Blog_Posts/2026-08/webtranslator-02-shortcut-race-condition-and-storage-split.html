@@ -1,86 +1,84 @@
 <!-- ============================================================
-  [BLOG POST METADATA - Blogspot ?�정�?복사??
-  Title: [WebTranslator 개발�?#02] ?�축??Alt+A) ?��? ?�이??컨디???�결�??�토리�? 분리
-  Labels (Tags): WebTranslator, ChromeExtension, ?�롬?�장?�로그램, ?�이?�컨?�션, AbortController, ChromeStorage
-  Meta Description: ?�롬 ?�장 ?�로그램 개발�?2?? Alt+A ?�축???��? ??발생?�는 비동�??�이??컨디?�을 AbortController�?방어?�고, 100KB 쿼터 ?�도가 ?�는 sync ?�토리�??� ?�?�량 local ?�토리�?�?분리 ?�계??과정??공유?�니??
+  [BLOG POST METADATA - Blogspot 설정창 복사용]
+  Title: [WebTranslator 개발기 #02] 단축키(Alt+A) 연타 레이스 컨디션 해결과 스토리지 분리
+  Labels (Tags): WebTranslator, ChromeExtension, 크롬확장프로그램, 레이스컨디션, AbortController, ChromeStorage
+  Meta Description: 크롬 확장 프로그램 개발기 2편: Alt+A 단축키 연타 시 발생하는 비동기 레이스 컨디션을 AbortController로 방어하고, 100KB 쿼터 한도가 있는 sync 스토리지와 대용량 local 스토리지를 분리 설계한 과정을 공유합니다.
   Slug: webtranslator-02-shortcut-race-condition-and-storage-split
-  Primary Keyword: ?�바?�크립트 비동�??�이??컨디??  Secondary Keywords: ?�롬 ?�장 ?�로그램 ?�토리�?, AbortController ?�용�? Chrome MV3 비동�??�어, chrome storage sync local 차이
-  Related Entities: AbortController, AbortSignal, chrome.storage.sync, chrome.storage.local, State Machine
+  ---
+  Primary Keyword: 자바스크립트 비동기 레이스 컨디션
+  Secondary Keywords: 크롬 확장 프로그램 스토리지, AbortController 사용법, Chrome MV3 비동기 제어, chrome storage sync local 차이
   Knowledge Source: Knowledge/webtranslator-02-race-condition-and-storage/Troubleshooting/webtranslator-02-race-condition-and-storage-2026-08-15.md
   Generated Date: 2026-08-15
-  Estimated Read Time: 6�?  ============================================================ -->
-
-<!-- [블로그스???�용 ?�드 복사??- �?줄을 복사?�여 블로그스???�력?�??붙여?�기] -->
-<!-- BLOG_TITLE: [WebTranslator 개발�?#02] ?�축??Alt+A) ?��? ?�이??컨디???�결�??�토리�? 분리 -->
-<!-- BLOG_LABELS: WebTranslator, ChromeExtension, ?�롬?�장?�로그램, ?�이?�컨?�션, AbortController, ChromeStorage -->
-<!-- META_DESCRIPTION: ?�롬 ?�장 ?�로그램 개발�?2?? Alt+A ?�축???��? ??발생?�는 비동�??�이??컨디?�을 AbortController�?방어?�고, 100KB 쿼터 ?�도가 ?�는 sync ?�토리�??� ?�?�량 local ?�토리�?�?분리 ?�계??과정??공유?�니?? -->
+  Estimated Read Time: 6분
+  Series: WebTranslator 개발기
+  Prev Slug: webtranslator-01-inception-and-csp-bypass
+  ============================================================ -->
 
 <article>
 
-  <!-- ?��?지 ?�롯 1: ?�???��?지 -->
-  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-08/webtranslator-02-shortcut-race-condition-and-storage-split-img1.jpg" alt="?�축??비동�?취소 ?�태 머신 �?Chrome Storage 분리 ?�키?�처 ?�이?�그??
-       style="width:100%; max-width:800px; height:auto; border-radius:8px; margin:1em 0; display:block;">
+  <!-- 이미지 슬롯 1: 대표 이미지 -->
+  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-08/webtranslator-02-shortcut-race-condition-and-storage-split-img1.jpg" alt="단축키 비동기 취소 상태 머신 및 Chrome Storage 분리 아키텍처 다이어그램">
 
   <p>
-    ?�선 1?�에?�는 Background Service Worker�?중계 계층?�로 ?�용?�여 Chrome Manifest V3??강력??CSP(Content Security Policy) ?�트?�크 차단???�결?�고, ?�본 ?�페?��????�이?�웃???�손?��? ?�는 비파괴적 번역 ?�이?�라?�의 �??�추�?꿰었?�니??
+    앞선 1편에서는 Background Service Worker를 중계 계층으로 활용하여 Chrome Manifest V3의 강력한 CSP(Content Security Policy) 네트워크 차단을 해결하고, 원본 웹페이지의 레이아웃을 훼손하지 않는 비파괴적 번역 파이프라인의 첫 단추를 꿰었습니다.
   </p>
 
   <p>
-    ?��?�??�성??번역기�? ?�제 ???�핑 ?�경?�서 ?�스?�하??�??�상�?못한 치명?�인 문제가 ?�러?�습?�다. ?�용?��? <code>Alt+A</code> ?�축?��? ?�러 번역???�청??직후 마음??바뀌어 ?�시 ?�축?��? ?��????? 먼�? 보낸 번역 ?�청???�답???�늦�??�착?�면???�본?�로 복구???�면 ?�에 번역문을 강제�??�씌?�는 <strong>비동�??�이??컨디??Race Condition)</strong>??발생??것입?�다.
+    하지만 완성된 번역기를 실제 웹 서핑 환경에서 테스트하던 중 예상치 못한 치명적인 문제가 드러났습니다. 사용자가 <code>Alt+A</code> 단축키를 눌러 번역을 요청한 직후 마음이 바뀌어 다시 단축키를 눌렀을 때, 먼저 보낸 번역 요청의 응답이 뒤늦게 도착하면서 원본으로 복구된 화면 위에 번역문을 강제로 덧씌우는 <strong>비동기 레이스 컨디션(Race Condition)</strong>이 발생한 것입니다.
   </p>
 
   <p>
-    ?�번 글?�서???�바?�크립트??<strong>AbortController</strong>�??�입?�여 진행 중인 비동�??�트?�크 ?�청??즉각 물리?�으�?취소?�는 ?�태 머신??구축?�고, 쿼터 ?�한???�는 ?�롬 ?�토리�?�??�도??맞게 <strong>Sync?� Local�?분리 ?�계</strong>???�러블슈??과정???�리??보고???�니??
+    이번 글에서는 자바스크립트의 <strong>AbortController</strong>를 도입하여 진행 중인 비동기 네트워크 요청을 즉각 물리적으로 취소하는 상태 머신을 구축하고, 쿼터 제한이 있는 크롬 스토리지를 용도에 맞게 <strong>Sync와 Local로 분리 설계</strong>한 트러블슈팅 과정을 정리해 보고자 합니다.
   </p>
 
   <h2 id="race-condition-symptom">
-    1. ?�축???��? 기능�?비동�??�이??컨디?�의 발생
+    1. 단축키 토글 기능과 비동기 레이스 컨디션의 발생
   </h2>
 
   <p>
-    WebTranslator???�심 UX �??�나??마우??조작 ?�이 ?�보???�축??<code>Alt+A</code>) ??번으�?번역문을 ?�시?�고, ?�시 ?�르�?즉시 ?�본 ?�태�?깨끗?�게 복원?�는 <strong>?��?(Toggle) 메커?�즘</strong>?�니??
+    WebTranslator의 핵심 UX 중 하나는 마우스 조작 없이 키보드 단축키(<code>Alt+A</code>) 한 번으로 번역문을 표시하고, 다시 누르면 즉시 원본 상태로 깨끗하게 복원되는 <strong>토글(Toggle) 메커니즘</strong>입니다.
   </p>
 
   <p>
-    그러???�트?�크 ?�신?� ?�연?�으�?지???�간(Latency)???�반?�니?? ?�용?��? 번역???�청?�고 ?�답???�기까�? 1~2초�? ?�요?�는 ?�중 ?�축?��? ?�시 ?�르�??�음�?같�? ?�괴?�인 ?�나리오가 발생?�습?�다:
+    그러나 네트워크 통신은 필연적으로 지연 시간(Latency)을 동반합니다. 사용자가 번역을 요청하고 응답이 오기까지 1~2초가 소요되는 도중 단축키를 다시 누르면 다음과 같은 파괴적인 시나리오가 발생했습니다:
   </p>
 
   <ol class="step">
-    <li><strong>1�??�축???�력:</strong> <code>Alt+A</code> ?�력 $\rightarrow$ ?�페?��? ?�스?��? ?�집?�여 Background�?비동�?번역 API ?�청 발송.</li>
-    <li><strong>2�??�축???�력 (?�용??취소):</strong> 번역 ?�중 ?�용?��? ?�시 <code>Alt+A</code> ?�력 $\rightarrow$ ?�면???�본 ?�스?�로 즉각 롤백.</li>
-    <li><strong>?�늦?� ?�답 ?�착:</strong> 1�??�청??번역 결과가 1.5�????�착 $\rightarrow$ ?��? ?�본?�로 복원??DOM ?�에 번역 ?�그�?강제�??�입 $\rightarrow$ <strong>?�문�?번역문이 ?�섞?�며 ?�면 붕괴.</strong></li>
+    <li><strong>1차 단축키 입력:</strong> <code>Alt+A</code> 입력 $\rightarrow$ 웹페이지 텍스트를 수집하여 Background로 비동기 번역 API 요청 발송.</li>
+    <li><strong>2차 단축키 입력 (사용자 취소):</strong> 번역 도중 사용자가 다시 <code>Alt+A</code> 입력 $\rightarrow$ 화면을 원본 텍스트로 즉각 롤백.</li>
+    <li><strong>뒤늦은 응답 도착:</strong> 1차 요청의 번역 결과가 1.5초 뒤 도착 $\rightarrow$ 이미 원본으로 복원된 DOM 위에 번역 태그를 강제로 삽입 $\rightarrow$ <strong>원문과 번역문이 뒤섞이며 화면 붕괴.</strong></li>
   </ol>
 
   <div class="note wr">
-    <strong>?�️ 증상 ?�약:</strong> ?�용?��? 명시?�으�?번역??취소?�음?�도 불구?�고, ?��? 발송??비동�?Fetch ?�로미스가 ?�아?�아 ?�늦�?DOM??침범?�는 ?�태 꼬임(Inconsistent State)??발생?�습?�다.
+    <strong>⚠️ 증상 요약:</strong> 사용자가 명시적으로 번역을 취소했음에도 불구하고, 이미 발송된 비동기 Fetch 프로미스가 살아남아 뒤늦게 DOM을 침범하는 상태 꼬임(Inconsistent State)이 발생했습니다.
   </div>
 
   <h2 id="initial-flag-failure">
-    2. AI???�순 ?�래�??�어 ?�패?� ?�토리�? 쿼터 ?�험
+    2. AI의 단순 플래그 제어 실패와 스토리지 쿼터 위험
   </h2>
 
   <p>
-    ??문제�??�결?�기 ?�해 AI ?�시?�턴?�에�?비동�?취소 ?�어?� ?�용???�정/캐시 ?�?�을 지?�했?�니??
+    이 문제를 해결하기 위해 AI 어시스턴트에게 비동기 취소 제어와 사용자 설정/캐시 저장을 지시했습니다.
   </p>
 
-  <div class="pre custom" data-text="AI 지?�문">
+  <div class="pre custom" data-text="AI 지시문">
     <button aria-label="Copy code">Copy</button>
-    <pre>Alt+A ?�축?��? ?��??�도 DOM??깨�?지 ?�도�??�태 머신??만들�? ?�정값과 캐시�?Chrome Storage???�?�하?�록 구현?�라.</pre>
+    <pre>Alt+A 단축키를 연타해도 DOM이 깨지지 않도록 상태 머신을 만들고, 설정값과 캐시를 Chrome Storage에 저장하도록 구현해라.</pre>
   </div>
 
   <p>
-    지?��? 받�? AI???�래?� 같이 ?�순 boolean ?�래�?변?��? ?��??�는 코드�??�성?�왔?�니??
+    지시를 받은 AI는 아래와 같이 단순 boolean 플래그 변수를 토글하는 코드를 작성해왔습니다.
   </p>
 
-  <!-- 코드 블록: AI ?�류 코드 -->
-  <div class="pre custom" data-text="JavaScript (content.js - ?�류 코드)">
+  <!-- 코드 블록: AI 오류 코드 -->
+  <div class="pre custom" data-text="JavaScript (content.js - 오류 코드)">
     <button aria-label="Copy code">Copy</button>
-    <pre>// content.js: ?�순 boolean ?�래그�? ?�한 ?�태 ?�어 ?�도 (?�류 코드)
+    <pre>// content.js: 단순 boolean 플래그를 통한 상태 제어 시도 (오류 코드)
 let isTranslating = false;
 
 async function toggleTranslation() {
   if (isTranslating) {
-    isTranslating = false; // ?�래그�? 꺼도 ?��? 진행 중인 Promise 체인??막�? 못함!
+    isTranslating = false; // 플래그를 꺼도 이미 진행 중인 Promise 체인을 막지 못함!
     revertTranslation();
     return;
   }
@@ -88,97 +86,97 @@ async function toggleTranslation() {
   isTranslating = true;
   const texts = collectTextNodes();
   
-  // 비동�??�청 ?�작
+  // 비동기 요청 시작
   const result = await chrome.runtime.sendMessage({ action: "translate", payload: texts });
   
-  // ?�늦�??�착???�답??DOM??그�?�??�더링됨
+  // 뒤늦게 도착한 응답이 DOM에 그대로 렌더링됨
   renderTranslation(result);
   isTranslating = false;
 }</pre>
   </div>
 
   <h3 id="cause-analysis">
-    문제 ?�인 분석
+    문제 원인 분석
   </h3>
 
   <ul>
-    <li><strong>Promise 비동�?체인??무방비성:</strong> ?�바?�크립트?�서 ?�순 변??값을 변경하??것만?�로??백그?�운?�에???��? ?�행 중인 HTTP ?�트?�크 ?�청?�나 ?�싱 ?�업??중단?�킬 ???�습?�다. 비동�??�업???�료?�면 <code>await</code> ?�후??<code>renderTranslation()</code>??무조�??�행?�니??</li>
-    <li><strong>?�토리�? 쿼터 초과 ?�험 (QuotaExceededError):</strong> AI가 번역??문단 캐시 ?�이?�까지 기기�??�기???�토리�???<code>chrome.storage.sync</code>??무차별적?�로 ?�?�하?�록 ?�성?�습?�다. <code>sync</code> ?�토리�????�체 ?�량??100KB??불과?�여 �??�페?��? �?개만 번역?�도 즉시 쿼터 초과 ?�러가 발생???�험???�었?�니??</li>
+    <li><strong>Promise 비동기 체인의 무방비성:</strong> 자바스크립트에서 단순 변수 값을 변경하는 것만으로는 백그라운드에서 이미 실행 중인 HTTP 네트워크 요청이나 파싱 작업을 중단시킬 수 없습니다. 비동기 작업이 완료되면 <code>await</code> 이후의 <code>renderTranslation()</code>이 무조건 실행됩니다.</li>
+    <li><strong>스토리지 쿼터 초과 위험 (QuotaExceededError):</strong> AI가 번역된 문단 캐시 데이터까지 기기간 동기화 스토리지인 <code>chrome.storage.sync</code>에 무차별적으로 저장하도록 작성했습니다. <code>sync</code> 스토리지는 전체 용량이 100KB에 불과하여 긴 웹페이지 몇 개만 번역해도 즉시 쿼터 초과 에러가 발생할 위험이 있었습니다.</li>
   </ul>
 
   <h2 id="abort-controller-solution">
-    3. ?�결�?1: AbortController 기반 물리 취소 �?3?�계 ?�태 머신
+    3. 해결책 1: AbortController 기반 물리 취소 및 3단계 상태 머신
   </h2>
 
   <p>
-    비동�??�름??근본?�으�??�어?�기 ?�해 <strong>AbortController</strong>�??�입?�고, <code>document.body</code>???�이?�셋???�일 진실 공급??SSOT)?�로 ?�는 3?�계 ?�태 머신??구축?�도�?지?��? ?�정?�습?�다.
+    비동기 흐름을 근본적으로 제어하기 위해 <strong>AbortController</strong>를 도입하고, <code>document.body</code>의 데이터셋을 단일 진실 공급원(SSOT)으로 삼는 3단계 상태 머신을 구축하도록 지시를 수정했습니다.
   </p>
 
-  <div class="pre custom" data-text="AI 지???�정">
+  <div class="pre custom" data-text="AI 지시 수정">
     <button aria-label="Copy code">Copy</button>
-    <pre>?�순 boolean 변?�로 ?�우지 마라. AbortController�??�입?�여 ?�축?��? ?�시 ?�리??즉시 진행 중인 fetch ?�호�?강제 abort()?�키�? document.body???�이?�셋(data-wt-status)?�로 ?�재 ?�태(idle, translating, translated)�??�격???�제?�라.</pre>
+    <pre>단순 boolean 변수로 때우지 마라. AbortController를 도입하여 단축키가 다시 눌리는 즉시 진행 중인 fetch 신호를 강제 abort()시키고, document.body의 데이터셋(data-wt-status)으로 현재 상태(idle, translating, translated)를 엄격히 통제해라.</pre>
   </div>
 
   <div class="table w100 withBg">
     <table>
       <thead>
         <tr>
-          <th>?�태 (data-wt-status)</th>
-          <th>?�명</th>
-          <th>?�축??Alt+A) ?�력 ???�작</th>
+          <th>상태 (data-wt-status)</th>
+          <th>설명</th>
+          <th>단축키(Alt+A) 입력 시 동작</th>
         </tr>
       </thead>
       <tbody>
         <tr>
           <td><strong>idle</strong></td>
-          <td>번역???�용?��? ?��? 기본 ?�본 ?�태</td>
-          <td><code>AbortController</code> ?�성 $\rightarrow$ <code>translating</code> ?�이 �?번역 ?�청</td>
+          <td>번역이 적용되지 않은 기본 원본 상태</td>
+          <td><code>AbortController</code> 생성 $\rightarrow$ <code>translating</code> 전이 및 번역 요청</td>
         </tr>
         <tr>
           <td><strong>translating</strong></td>
-          <td>?�트?�크 ?�신 �?DOM ?�싱 진행 �?/td>
-          <td><code>controller.abort()</code> 즉시 ?�출 $\rightarrow$ 롤백 ??<code>idle</code> ?�이</td>
+          <td>네트워크 통신 및 DOM 파싱 진행 중</td>
+          <td><code>controller.abort()</code> 즉시 호출 $\rightarrow$ 롤백 후 <code>idle</code> 전이</td>
         </tr>
         <tr>
           <td><strong>translated</strong></td>
-          <td>번역�??�더링이 ?�료???�태</td>
-          <td>번역 컨테?�너 ?�거 $\rightarrow$ <code>idle</code> ?�이 (?�본 복원)</td>
+          <td>번역문 렌더링이 완료된 상태</td>
+          <td>번역 컨테이너 제거 $\rightarrow$ <code>idle</code> 전이 (원본 복원)</td>
         </tr>
       </tbody>
     </table>
   </div>
 
   <h3 id="refactored-code">
-    리팩?�링???�태 ?�어 구현
+    리팩터링된 상태 제어 구현
   </h3>
 
   <div class="pre custom" data-text="JavaScript (src/content/index.js)">
     <button aria-label="Copy code">Copy</button>
-    <pre>// src/content/index.js: AbortController 기반 ?�축???��? ?�태 머신
+    <pre>// src/content/index.js: AbortController 기반 단축키 토글 상태 머신
 let currentAbortController = null;
 
 export async function toggleTranslation() {
   const body = document.body;
   const state = body.dataset.wtStatus || "idle";
 
-  // 1. 번역 진행 �??�입?? 즉각 취소 �?롤백
+  // 1. 번역 진행 중 재입력: 즉각 취소 및 롤백
   if (state === "translating") {
     if (currentAbortController) {
-      currentAbortController.abort(); // ?�트?�크 �?비동�??�업 물리 취소
+      currentAbortController.abort(); // 네트워크 및 비동기 작업 물리 취소
     }
     body.dataset.wtStatus = "idle";
     revertTranslation();
     return;
   }
 
-  // 2. ?��? 번역???�태?�서 ?�입?? ?�본 복원
+  // 2. 이미 번역된 상태에서 재입력: 원본 복원
   if (state === "translated") {
     revertTranslation();
     body.dataset.wtStatus = "idle";
     return;
   }
 
-  // 3. idle ?�태?�서 ?�력: 번역 ?�로?�스 개시
+  // 3. idle 상태에서 입력: 번역 프로세스 개시
   body.dataset.wtStatus = "translating";
   currentAbortController = new AbortController();
 
@@ -186,14 +184,15 @@ export async function toggleTranslation() {
     const texts = collectTextNodes();
     const translated = await requestTranslation(texts, currentAbortController.signal);
     
-    // ?�청??취소?��? ?�고 ?�상 ?�료??경우?�만 ?�더�?    renderTranslation(translated);
+    // 요청이 취소되지 않고 정상 완료된 경우에만 렌더링
+    renderTranslation(translated);
     body.dataset.wtStatus = "translated";
   } catch (err) {
     if (err.name === "AbortError") {
-      // ?�용?��? ?�도?�으�?취소??경우???�상 ?�름?�로 간주?�고 무시
+      // 사용자가 의도적으로 취소한 경우는 정상 흐름으로 간주하고 무시
       return;
     }
-    console.error("[WebTranslator] 번역 처리 �??�류 발생:", err);
+    console.error("[WebTranslator] 번역 처리 중 오류 발생:", err);
     body.dataset.wtStatus = "idle";
     revertTranslation();
   }
@@ -201,15 +200,15 @@ export async function toggleTranslation() {
   </div>
 
   <div class="note">
-    <strong>?�� ??</strong> <code>AbortController.abort()</code>가 ?�출?�면 ?�결??Fetch ?�청?� 즉시 <code>AbortError</code> ?�외�?발생?�킵?�다. <code>catch</code> 블록?�서 <code>err.name === 'AbortError'</code>�??�별?�여 ?�러 로그�??�기지 ?�고 조용??리턴?�키??것이 중요?�니??
+    <strong>💡 팁:</strong> <code>AbortController.abort()</code>가 호출되면 연결된 Fetch 요청은 즉시 <code>AbortError</code> 예외를 발생시킵니다. <code>catch</code> 블록에서 <code>err.name === 'AbortError'</code>를 식별하여 에러 로그를 남기지 않고 조용히 리턴시키는 것이 중요합니다.
   </div>
 
   <h2 id="storage-architecture">
-    4. ?�결�?2: Chrome Storage ?�원???�계 (Sync vs Local)
+    4. 해결책 2: Chrome Storage 이원화 설계 (Sync vs Local)
   </h2>
 
   <p>
-    ?�장 ?�로그램???�루???�이?�의 ?�격�??�기???�라 ?�?�소�?명확??분리?�여 쿼터 ?�러�?방�??�습?�다.
+    확장 프로그램이 다루는 데이터의 성격과 크기에 따라 저장소를 명확히 분리하여 쿼터 에러를 방지했습니다.
   </p>
 
   <div class="table w100 withBg">
@@ -223,24 +222,24 @@ export async function toggleTranslation() {
       </thead>
       <tbody>
         <tr>
-          <td><strong>?�???�??/strong></td>
-          <td>API Key, 기본 ?��??�어, ?�마 ?�정</td>
-          <td>번역 문단 캐시, ?�?�량 ?�용??커스?� ?�전</td>
+          <td><strong>저장 대상</strong></td>
+          <td>API Key, 기본 타깃 언어, 테마 설정</td>
+          <td>번역 문단 캐시, 대용량 사용자 커스텀 사전</td>
         </tr>
         <tr>
-          <td><strong>?�량 ?�도</strong></td>
-          <td>?�체 <strong>100KB</strong> (??��??8KB)</td>
-          <td>기본 <strong>10MB</strong> (unlimitedStorage 가??</td>
+          <td><strong>용량 한도</strong></td>
+          <td>전체 <strong>100KB</strong> (항목당 8KB)</td>
+          <td>기본 <strong>10MB</strong> (unlimitedStorage 가능)</td>
         </tr>
         <tr>
-          <td><strong>?�기???��?</strong></td>
-          <td>구�? 계정 기반 기기�??�동 ?�기??/td>
-          <td>?�당 PC 브라?��? 로컬 ?�용</td>
+          <td><strong>동기화 여부</strong></td>
+          <td>구글 계정 기반 기기간 자동 동기화</td>
+          <td>해당 PC 브라우저 로컬 전용</td>
         </tr>
         <tr>
-          <td><strong>?�택 ?�유</strong></td>
-          <td>PC�?변경해???�정값이 ?��??�어????/td>
-          <td>?�?�량 ?�스??캐시�??�한 쿼터 ??�� 방�?</td>
+          <td><strong>선택 이유</strong></td>
+          <td>PC를 변경해도 설정값이 유지되어야 함</td>
+          <td>대용량 텍스트 캐시로 인한 쿼터 폭발 방지</td>
         </tr>
       </tbody>
     </table>
@@ -248,8 +247,9 @@ export async function toggleTranslation() {
 
   <div class="pre custom" data-text="JavaScript (src/utils/storage.js)">
     <button aria-label="Copy code">Copy</button>
-    <pre>// src/utils/storage.js: ?�토리�? ?�이??분리 ?�터?�이??export const SettingsStorage = {
-  // ?�용???�경?�정?� sync ?�토리�? ?�용 (기기 �??�기??
+    <pre>// src/utils/storage.js: 스토리지 레이어 분리 인터페이스
+export const SettingsStorage = {
+  // 사용자 환경설정은 sync 스토리지 활용 (기기 간 동기화)
   async get() {
     return await chrome.storage.sync.get({ apiKey: "", targetLang: "ko" });
   },
@@ -259,7 +259,7 @@ export async function toggleTranslation() {
 };
 
 export const CacheStorage = {
-  // ?�?�량 번역 캐시??local ?�토리�?�??�전 격리
+  // 대용량 번역 캐시는 local 스토리지로 완전 격리
   async getCache(hashKey) {
     const data = await chrome.storage.local.get(hashKey);
     return data[hashKey] || null;
@@ -271,37 +271,30 @@ export const CacheStorage = {
   </div>
 
   <h2 id="takeaway">
-    5. 검�?결과 �?교훈
+    5. 검증 결과 및 교훈
   </h2>
 
   <p>
-    <code>AbortController</code>?� ?�태 머신??결합??결과, <code>Alt+A</code>�?1초에 5�??�상 빠르�??��??�거???�트?�크 ?�답??극도�?지?�되???�경?�서???�전 ?�청??즉각 중단?�어 <strong>????번의 DOM 충돌?�나 ?�이?�웃 깨짐??발생?��? ?�았?�니??</strong>
+    <code>AbortController</code>와 상태 머신을 결합한 결과, <code>Alt+A</code>를 1초에 5번 이상 빠르게 연타하거나 네트워크 응답이 극도로 지연되는 환경에서도 이전 요청이 즉각 중단되어 <strong>단 한 번의 DOM 충돌이나 레이아웃 깨짐도 발생하지 않았습니다.</strong>
   </p>
 
   <ol class="step">
-    <li><strong>?�론?�엔??비동�??�어???�수 ?�구:</strong> 비동�?UI?�서???�순 ?�래�??��????�닌, ?�트?�크 ?��???취소 ?�어(AbortSignal)가 ?�수?�입?�다.</li>
-    <li><strong>?�장 ?�로그램 ?�토리�????�계 ?�해:</strong> <code>chrome.storage.sync</code>???�리?��?�??�량??매우 ?�으므�? ?�정(Metadata)�??�이??Payload)�?물리?�으�?분리?�는 ?�계가 ?�수?�입?�다.</li>
+    <li><strong>프론트엔드 비동기 제어의 필수 도구:</strong> 비동기 UI에서는 단순 플래그 토글이 아닌, 네트워크 수준의 취소 제어(AbortSignal)가 필수적입니다.</li>
+    <li><strong>확장 프로그램 스토리지의 한계 이해:</strong> <code>chrome.storage.sync</code>는 편리하지만 용량이 매우 작으므로, 설정(Metadata)과 데이터(Payload)를 물리적으로 분리하는 설계가 필수적입니다.</li>
   </ol>
 
   <h2 id="summary">
-    마무리하�?  </h2>
+    마무리하며
+  </h2>
 
   <p>
-    ?�축?��? ?�토리�? 기본기�? ?��?�?v0.1 ?�냅?�을 ?��??�던 �? ?�용?��? 직접 ?�록??<strong>'?�어 ?�용???�전(Custom Dictionary)'??번역 결과???��? 반영?��? ?�고 ?�히???�각??번역 ?�락 버그</strong>가 발견?�었?�니??
+    단축키와 스토리지 기본기를 다지고 v0.1 스냅샷을 점검하던 중, 사용자가 직접 등록한 <strong>'단어 사용자 사전(Custom Dictionary)'이 번역 결과에 전혀 반영되지 않고 씹히는 심각한 번역 누락 버그</strong>가 발견되었습니다.
   </p>
 
   <p>
-    ?�음 글?�서???�용???�전??무시?�었???�이?�라?�의 구조???�인??분석?�고, ?�처�??�치??방식???�계�?극복???�러블슈??과정???�루??보겠?�니??
+    다음 글에서는 사용자 사전이 무시되었던 파이프라인의 구조적 원인을 분석하고, 전처리 선치환 방식의 한계를 극복한 트러블슈팅 과정을 다루어 보겠습니다.
   </p>
 
+  <!-- 시리즈 네비게이션 컨테이너 (자동 생성, JS로 연동됨) -->
+  <nav class="series-nav" data-series="WebTranslator 개발기" data-current-slug="webtranslator-02-shortcut-race-condition-and-storage-split"></nav>
 </article>
-
-<!-- ============================================================
-  [PUBLISHING CHECKLIST - 발행 ??체크리스??
-  ??BLOG_TITLE ?�용 복사 ??Blogspot ?�단 '?�목' ?�력?�??붙여?�기
-  ??BLOG_LABELS ?�용 복사 ??Blogspot ?�측 ?�이?�바 '?�벨' 칸에 붙여?�기
-  ??META_DESCRIPTION ?�용 복사 ??Blogspot ?�측 '검???�명'?�??붙여?�기
-  ??Blogspot 본문 ?�디?��? "HTML 보기"�??�환 ????<article> ?�스 ?�체 붙여?�기
-  ???��?지 ?�롯 주석 ?�치???�제 ?��?지 ?�입
-  ???�약 발행 ?�는 즉시 발행
-  ============================================================ -->

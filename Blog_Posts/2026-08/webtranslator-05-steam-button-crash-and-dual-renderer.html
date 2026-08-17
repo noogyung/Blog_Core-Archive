@@ -1,55 +1,51 @@
 <!-- ============================================================
-  [BLOG POST METADATA - Blogspot ?�정�?복사??
-  Title: [WebTranslator 개발�?#05] ?��? 버튼 깨짐 방�??� ?�라?�·블�??�???�더??
-  Labels (Tags): WebTranslator, ChromeExtension, ?�롬?�장?�로그램, DOM, ?�더�? ?�러블슈??
-  Meta Description: ?�롬 ?�장 ?�로그램 개발�?5?? ?��? ?�점???��? 버튼??번역�??�문??3배로 ?�뚱?��????�더�?붕괴�??�결?�기 ?�해 25??기�? ?�라??블록 ?�???�더?��? 비파�?DOM ?�입??구축??과정???�리?�니??
+  [BLOG POST METADATA - Blogspot 설정창 복사용]
+  Title: [WebTranslator 개발기 #05] 스팀 버튼 깨짐 방지와 인라인·블록 듀얼 렌더러
+  Labels (Tags): WebTranslator, ChromeExtension, 크롬확장프로그램, DOM, 렌더링, 트러블슈팅
+  Meta Description: 크롬 확장 프로그램 개발기 5편: 스팀 상점의 작은 버튼이 번역문 때문에 3배로 뚱뚱해지던 렌더링 붕괴를 해결하기 위해 25자 기준 인라인/블록 듀얼 렌더러와 비파괴 DOM 삽입을 구축한 과정을 정리합니다.
   Slug: webtranslator-05-steam-button-crash-and-dual-renderer
-  Primary Keyword: ?�바?�크립트 DOM ?�더�?최적??
-  Secondary Keywords: ?�롬 ?�장 ?�로그램 버튼 깨짐, ?�라??블록 ?�더�?분기, Steam UI 번역, 비파�?DOM ?�입
-  Related Entities: Inline Formatting Context, Block Formatting Context, isInlineElement, Non-destructive DOM Append
+  ---
+  Primary Keyword: 자바스크립트 DOM 렌더링 최적화
+  Secondary Keywords: 크롬 확장 프로그램 버튼 깨짐, 인라인 블록 렌더링 분기, Steam UI 번역, 비파괴 DOM 삽입
   Knowledge Source: Knowledge/webtranslator-05-steam-button-and-dual-renderer/Troubleshooting/webtranslator-05-steam-button-and-dual-renderer-2026-08-15.md
   Generated Date: 2026-08-15
-  Estimated Read Time: 6�?
+  Estimated Read Time: 6분
+  Series: WebTranslator 개발기
+  Prev Slug: webtranslator-04-steam-link-color-and-orphan-text-nodes
   ============================================================ -->
-
-<!-- [블로그스???�용 ?�드 복사??- �?줄을 복사?�여 블로그스???�력?�??붙여?�기] -->
-<!-- BLOG_TITLE: [WebTranslator 개발�?#05] ?��? 버튼 깨짐 방�??� ?�라?�·블�??�???�더??-->
-<!-- BLOG_LABELS: WebTranslator, ChromeExtension, ?�롬?�장?�로그램, DOM, ?�더�? ?�러블슈??-->
-<!-- META_DESCRIPTION: ?�롬 ?�장 ?�로그램 개발�?5?? ?��? ?�점???��? 버튼??번역�??�문??3배로 ?�뚱?��????�더�?붕괴�??�결?�기 ?�해 25??기�? ?�라??블록 ?�???�더?��? 비파�?DOM ?�입??구축??과정???�리?�니?? -->
 
 <article>
 
-  <!-- ?��?지 ?�롯 1: ?�???��?지 -->
-  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-08/webtranslator-05-steam-button-crash-and-dual-renderer-img1.jpg" alt="?��? 버튼 ?�라??블록 ?�???�더???�키?�처 ?�이?�그??
-       style="width:100%; max-width:800px; height:auto; border-radius:8px; margin:1em 0; display:block;">
+  <!-- 이미지 슬롯 1: 대표 이미지 -->
+  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-08/webtranslator-05-steam-button-crash-and-dual-renderer-img1.jpg" alt="스팀 버튼 인라인 블록 듀얼 렌더러 아키텍처 다이어그램">
 
   <p>
-    지??4?�에?�는 ?��?(Steam) ?�점??복잡???�이?�웃?�서 발생??링크 ?�상 무차�??�이 버그�?직속 부�?계산 ?��??�로 ?�결?�고, 고아 ?�스???�드??<code>display: contents</code> 가???�퍼�??�워 Flex/Grid ?�이?�웃??0.1px???�?�짐 ?�이 보존?�는 ???�공?�습?�다.
+    지난 4편에서는 스팀(Steam) 상점의 복잡한 레이아웃에서 발생한 링크 색상 무차별 전이 버그를 직속 부모 계산 스타일로 해결하고, 고아 텍스트 노드에 <code>display: contents</code> 가상 래퍼를 씌워 Flex/Grid 레이아웃을 0.1px도 틀어짐 없이 보존하는 데 성공했습니다.
   </p>
 
   <p>
-    ?��?�????�른 ?�전 ?�더�?복병??기다리고 ?�었?�니?? ?��? ?�점??<code>Add to Cart (?�바구니??추�?)</code>??<code>Buy Now (지�?구매)</code> 같�? ?��? ?�색 ?�션 버튼??번역?�을 ?? 버튼 ?��???줄바꿈을 ?�반??거�???블록 ?�소가 강제�??�입?�면??<strong>?�씬?�던 버튼 ?�이가 ?�로�?3�??�상 거�??�게 ?�창(?�뚱???�여 ?�접 가격표?� 겹치??참사</strong>가 발생??것입?�다.
+    하지만 또 다른 실전 렌더링 복병이 기다리고 있었습니다. 스팀 상점의 <code>Add to Cart (장바구니에 추가)</code>나 <code>Buy Now (지금 구매)</code> 같은 작은 녹색 액션 버튼을 번역했을 때, 버튼 내부에 줄바꿈을 동반한 거대한 블록 요소가 강제로 삽입되면서 <strong>날씬했던 버튼 높이가 세로로 3배 이상 거대하게 팽창(뚱뚱화)하여 인접 가격표와 겹치는 참사</strong>가 발생한 것입니다.
   </p>
 
   <p>
-    ?�번 글?�서??모든 번역문을 ?�괄 블록?�로 처리?�던 방식???�피?�고, <strong>25??기�? �??�맨???�그�?결합??지?�형 ?�???�더??Dual Renderer)</strong>?� <strong>비파괴적(Non-destructive) DOM ?�전 ?�입</strong>??구축?�여 ?�벽??UI 균형???�성??과정???�리??보고???�니??
+    이번 글에서는 모든 번역문을 일괄 블록으로 처리하던 방식을 탈피하고, <strong>25자 기준 및 시맨틱 태그를 결합한 지능형 듀얼 렌더러(Dual Renderer)</strong>와 <strong>비파괴적(Non-destructive) DOM 안전 삽입</strong>을 구축하여 완벽한 UI 균형을 달성한 과정을 정리해 보고자 합니다.
   </p>
 
   <h2 id="button-explosion-symptom">
-    1. ?��? UI 버튼??참사: ?��? '?�바구니 추�?' 버튼??거�???
+    1. 작은 UI 버튼의 참사: 스팀 '장바구니 추가' 버튼의 거대화
   </h2>
 
   <p>
-    ?�페?��????�스?�는 ?�격???�라 차�??�는 공간??규칙(Formatting Context)???�전???�릅?�다.
+    웹페이지의 텍스트는 성격에 따라 차지하는 공간의 규칙(Formatting Context)이 완전히 다릅니다.
   </p>
 
   <ul>
-    <li><strong>�?본문 문단:</strong> ?�문 ?�래???�립??줄로 배치?�어??가?�성???�보?�니?? (Block ?�격)</li>
-    <li><strong>버튼 �?메뉴:</strong> ?�해�?좁�? ?�역 ?�에???�문 ?�에 ?��???배치?�어??버튼 ?�기가 ?��??�니?? (Inline ?�격)</li>
+    <li><strong>긴 본문 문단:</strong> 원문 아래에 독립된 줄로 배치되어야 가독성이 확보됩니다. (Block 성격)</li>
+    <li><strong>버튼 및 메뉴:</strong> 정해진 좁은 영역 안에서 원문 옆에 나란히 배치되어야 버튼 크기가 유지됩니다. (Inline 성격)</li>
   </ul>
 
   <p>
-    기존 번역 로직?� 모든 ?�스?��? ?�괄?�으�?<code>&lt;div class="wt-block"&gt;</code> ?�태�??�더링했?�니?? �?결과 ?��? ?�바구니 버튼 ?��??�서 강제 줄바꿈이 발생?�며 ?�음�?같�? 문제가 ?�졌?�니??
+    기존 번역 로직은 모든 텍스트를 일괄적으로 <code>&lt;div class="wt-block"&gt;</code> 형태로 렌더링했습니다. 그 결과 스팀 장바구니 버튼 내부에서 강제 줄바꿈이 발생하며 다음과 같은 문제가 터졌습니다:
   </p>
 
   <div class="table w100 withBg">
@@ -57,124 +53,124 @@
       <thead>
         <tr>
           <th>구분</th>
-          <th>?�상 ?�태 (Original)</th>
-          <th>블록 번역 ?�용 ??(Broken)</th>
+          <th>정상 상태 (Original)</th>
+          <th>블록 번역 적용 시 (Broken)</th>
         </tr>
       </thead>
       <tbody>
         <tr>
-          <td><strong>버튼 ?��? ?�태</strong></td>
-          <td><code>[ Add to Cart ]</code> (?�이 ??32px)</td>
-          <td><code>[ Add to Cart <br> (?�바구니??추�?) ]</code> (?�이 ??90px)</td>
+          <td><strong>버튼 내부 형태</strong></td>
+          <td><code>[ Add to Cart ]</code> (높이 약 32px)</td>
+          <td><code>[ Add to Cart <br> (장바구니에 추가) ]</code> (높이 약 90px)</td>
         </tr>
         <tr>
-          <td><strong>주�? ?�이?�웃</strong></td>
-          <td>?�의 ?�인??배�? �?가격표?� ?�벽 ?�평 ?�렬</td>
-          <td>버튼??거�??�져 가격표�?가리거???�래 줄로 밀?�남</td>
+          <td><strong>주변 레이아웃</strong></td>
+          <td>옆의 할인율 배지 및 가격표와 완벽 수평 정렬</td>
+          <td>버튼이 거대해져 가격표를 가리거나 아래 줄로 밀려남</td>
         </tr>
       </tbody>
     </table>
   </div>
 
   <h2 id="ai-trial-and-error">
-    2. AI???�순 ?�그 분기 ?�패?� ?�식 ?�드 증발 버그
+    2. AI의 단순 태그 분기 실패와 자식 노드 증발 버그
   </h2>
 
   <p>
-    AI ?�시?�턴?�에�?버튼?�나 짧�? ?�그???�라?�으�? 본문 문단?� 블록?�로 분기?�도�?지?�했?�니??
+    AI 어시스턴트에게 버튼이나 짧은 태그는 인라인으로, 본문 문단은 블록으로 분기하도록 지시했습니다.
   </p>
 
-  <div class="pre custom" data-text="AI 지?�문">
+  <div class="pre custom" data-text="AI 지시문">
     <button aria-label="Copy code">Copy</button>
-    <pre>모든 ?�소�??�괄 블록?�로 처리?��? 말고, 버튼?�나 짧�? ?�그???�라?�으�? 본문 문단?� 블록?�로 분기?�여 ?�더링하??지?�형 ?�더?��? ?�성?�라.</pre>
+    <pre>모든 요소를 일괄 블록으로 처리하지 말고, 버튼이나 짧은 태그는 인라인으로, 본문 문단은 블록으로 분기하여 렌더링하는 지능형 렌더러를 작성해라.</pre>
   </div>
 
   <p>
-    지?��? 받�? AI???�래?� 같이 ?�순 ?�그 ?�름?�로 분기?�고 <code>innerHTML</code>/<code>innerText</code>�???��?�는 코드�??�성?�왔?�니??
+    지시를 받은 AI는 아래와 같이 단순 태그 이름으로 분기하고 <code>innerHTML</code>/<code>innerText</code>를 덮어쓰는 코드를 작성해왔습니다.
   </p>
 
-  <!-- 코드 블록: AI ?�류 코드 -->
-  <div class="pre custom" data-text="JavaScript (renderer.js - ?�류 코드)">
+  <!-- 코드 블록: AI 오류 코드 -->
+  <div class="pre custom" data-text="JavaScript (renderer.js - 오류 코드)">
     <button aria-label="Copy code">Copy</button>
-    <pre>// renderer.js: ?�그 ?�름 ?�순 분기 �?innerText/innerHTML ??��?�기 (?�류 코드)
+    <pre>// renderer.js: 태그 이름 단순 분기 및 innerText/innerHTML 덮어쓰기 (오류 코드)
 function renderTranslatedNode(el, translatedText) {
-  // 1. ?�순 ?�그 ?�름만으�?분기
+  // 1. 단순 태그 이름만으로 분기
   if (el.tagName === "P" || el.tagName === "DIV") {
-    // innerHTML 직접 ?�입?�로 기존 ?�식 ?�소???�벤???�실
+    // innerHTML 직접 삽입으로 기존 자식 요소의 이벤트 소실
     el.innerHTML += `&lt;div class="wt-block"&gt;${translatedText}&lt;/div&gt;`;
   } else {
-    // innerText 조작?�로 버튼 ?��???SVG ?�이콘이??&lt;i&gt; ?�그 ?�째 증발!
+    // innerText 조작으로 버튼 내부의 SVG 아이콘이나 &lt;i&gt; 태그 통째 증발!
     el.innerText += ` (${translatedText})`;
   }
 }</pre>
   </div>
 
   <h3 id="problem-analysis">
-    발생???�각??부?�용 분석
+    발생한 심각한 부작용 분석
   </h3>
 
   <ol class="step">
-    <li><strong>버튼 ?�이�?�??�벤??리스???�괴:</strong> ?��????�바구니 버튼 ?�에??카트 모양??SVG ?�이콘과 ?�릭 ?�벤???�들?��? 바인?�되???�습?�다. <code>innerText</code>??<code>innerHTML</code>�?문자?�을 ??��?�는 ?�간 <strong>브라?��?가 기존 DOM ?�드�??�째�??�생?�하???�이콘이 ?�라지�?버튼 ?�릭??먹통</strong>???�었?�니??</li>
-    <li><strong>짧�? DIV ?�그???�창:</strong> 글???��? 3~5글?�에 불과??짧�? ?�목?�나 메뉴 배�?가 <code>&lt;div&gt;</code> ?�그�??�성?�어 ?�는 경우, 무조�?거�???블록?�로 처리?�어 불필?�한 공백???�하�?벌어졌습?�다.</li>
+    <li><strong>버튼 아이콘 및 이벤트 리스너 파괴:</strong> 스팀의 장바구니 버튼 안에는 카트 모양의 SVG 아이콘과 클릭 이벤트 핸들러가 바인딩되어 있습니다. <code>innerText</code>나 <code>innerHTML</code>로 문자열을 덮어쓰는 순간 <strong>브라우저가 기존 DOM 노드를 통째로 재생성하여 아이콘이 사라지고 버튼 클릭이 먹통</strong>이 되었습니다.</li>
+    <li><strong>짧은 DIV 태그의 팽창:</strong> 글자 수가 3~5글자에 불과한 짧은 제목이나 메뉴 배지가 <code>&lt;div&gt;</code> 태그로 작성되어 있는 경우, 무조건 거대한 블록으로 처리되어 불필요한 공백이 흉하게 벌어졌습니다.</li>
   </ol>
 
   <h2 id="dual-renderer-solution">
-    3. ?�결�?1: 25??기�? + ?�맨???�그 결합 ?�???�더??
+    3. 해결책 1: 25자 기준 + 시맨틱 태그 결합 듀얼 렌더러
   </h2>
 
   <p>
-    ?�그??본질�??�제 ?�스??길이�??�시??검?�하??<strong>지?�형 ?�라???�별 ?�수(<code>isInlineElement</code>)</strong>�?구축?�도�?지?��? ?�정?�습?�다.
+    태그의 본질과 실제 텍스트 길이를 동시에 검사하는 <strong>지능형 인라인 판별 함수(<code>isInlineElement</code>)</strong>를 구축하도록 지시를 수정했습니다.
   </p>
 
-  <div class="pre custom" data-text="AI 지???�정">
+  <div class="pre custom" data-text="AI 지시 수정">
     <button aria-label="Copy code">Copy</button>
-    <pre>innerHTML/innerText�?기존 DOM????��?��? 마라. ?�립??span ?�소�??�성???�입?�고, ?�그 종류(a, button, span, label)?� 글????25???�하)�??�시??검?�하??isInlineElement ?�수�?만들??25???�하??짧�? UI ?�소???�라?�으�? �?문장?� 블록?�로 칼같??분기?�라.</pre>
+    <pre>innerHTML/innerText로 기존 DOM을 덮어쓰지 마라. 독립된 span 요소를 생성해 삽입하고, 태그 종류(a, button, span, label)와 글자 수(25자 이하)를 동시에 검사하는 isInlineElement 함수를 만들어 25자 이하의 짧은 UI 요소는 인라인으로, 긴 문장은 블록으로 칼같이 분기해라.</pre>
   </div>
 
   <div class="table w100 withBg">
     <table>
       <thead>
         <tr>
-          <th>?�별 조건</th>
-          <th>?�용 ?�???�시</th>
-          <th>?�용 ?�래??�??��???/th>
+          <th>판별 조건</th>
+          <th>적용 대상 예시</th>
+          <th>적용 클래스 및 스타일</th>
         </tr>
       </thead>
       <tbody>
         <tr>
-          <td><strong>?�맨???�라???�그</strong></td>
+          <td><strong>시맨틱 인라인 태그</strong></td>
           <td><code>&lt;button&gt;</code>, <code>&lt;a&gt;</code>, <code>&lt;span&gt;</code>, <code>&lt;label&gt;</code></td>
-          <td><code>.wt-translation-inline</code> (?��???배치)</td>
+          <td><code>.wt-translation-inline</code> (나란히 배치)</td>
         </tr>
         <tr>
-          <td><strong>25???�하 짧�? ?�스??/strong></td>
+          <td><strong>25자 이하 짧은 텍스트</strong></td>
           <td><code>&lt;div&gt;New&lt;/div&gt;</code>, <code>&lt;h4&gt;Action&lt;/h4&gt;</code></td>
-          <td><code>.wt-translation-inline</code> (?�백 ?�곡 방�?)</td>
+          <td><code>.wt-translation-inline</code> (여백 왜곡 방지)</td>
         </tr>
         <tr>
-          <td><strong>25??초과 �?문단</strong></td>
-          <td>게임 ?�세 ?�명�? ?�용??리뷰 ?�락</td>
-          <td><code>.wt-translation-block</code> (?�단 ?�락 배치)</td>
+          <td><strong>25자 초과 긴 문단</strong></td>
+          <td>게임 상세 설명문, 사용자 리뷰 단락</td>
+          <td><code>.wt-translation-block</code> (하단 단락 배치)</td>
         </tr>
       </tbody>
     </table>
   </div>
 
   <h3 id="renderer-implementation">
-    ?��? 구현 코드
+    세부 구현 코드
   </h3>
 
   <div class="pre custom" data-text="JavaScript (src/content/renderer.js)">
     <button aria-label="Copy code">Copy</button>
-    <pre>// src/content/renderer.js: 지?�형 ?�???�더???�별 �?비파�??�입
+    <pre>// src/content/renderer.js: 지능형 듀얼 렌더러 판별 및 비파괴 삽입
 export function isInlineElement(el, originalText) {
   const tagName = el.tagName.toLowerCase();
 
-  // 1. 본질???�라???�소???�맨???�그 목록
+  // 1. 본질이 인라인 요소인 시맨틱 태그 목록
   const inlineTags = ["a", "button", "span", "b", "strong", "em", "i", "label"];
   if (inlineTags.includes(tagName)) return true;
 
-  // 2. 블록 ?�그?�도 ?�스??길이가 25???�하�?짧�? UI??경우 ?�라??처리
+  // 2. 블록 태그라도 텍스트 길이가 25자 이하로 짧은 UI인 경우 인라인 처리
   if (originalText.trim().length <= 25) {
     const display = window.getComputedStyle(el).display;
     if (display.includes("inline") || display.includes("flex")) {
@@ -186,19 +182,19 @@ export function isInlineElement(el, originalText) {
 }
 
 export function renderTranslation(targetNode, translatedText, isInline) {
-  // 기존 DOM???�괴?��? ?�고 ?�립??번역 ?�용 span ?�드 ?�성
+  // 기존 DOM을 파괴하지 않고 독립된 번역 전용 span 노드 생성
   const transSpan = document.createElement("span");
   transSpan.className = isInline ? "wt-translation-inline" : "wt-translation-block";
   transSpan.textContent = isInline ? ` (${translatedText})` : translatedText;
 
-  // ?�전?�게 ?�식 ?�드�??�붙??(?�벤??�??�이�?100% 보존)
+  // 안전하게 자식 노드로 덧붙임 (이벤트 및 아이콘 100% 보존)
   targetNode.appendChild(transSpan);
 }</pre>
   </div>
 
   <div class="pre custom" data-text="CSS (src/content/content.css)">
     <button aria-label="Copy code">Copy</button>
-    <pre>/* content.css: ?�라??블록 ?�???�더�??��???*/
+    <pre>/* content.css: 인라인/블록 듀얼 렌더링 스타일 */
 .wt-translation-inline {
   display: inline !important;
   margin-left: 6px;
@@ -214,38 +210,30 @@ export function renderTranslation(targetNode, translatedText, isInline) {
   </div>
 
   <h2 id="verification">
-    4. 검�?결과 �??�심 교훈
+    4. 검증 결과 및 핵심 교훈
   </h2>
 
   <p>
-    ?�???�더?��? ?�용??결과, ?��? ?�점??모든 UI ?�소가 ?�상?�인 ?�각??균형???�찾?�습?�다.
+    듀얼 렌더러를 적용한 결과, 스팀 상점의 모든 UI 요소가 이상적인 시각적 균형을 되찾았습니다.
   </p>
 
   <ol class="step">
-    <li><strong>버튼???�형 보존:</strong> <code>Add to Cart (?�바구니??추�?)</code> ?�태�??�스?��? ?��???붙어 버튼 ?�이가 32px 그�?�??��??�었?�며, 카트 SVG ?�이콘과 ?�릭 ?�벤?�도 ?�전???�동?�습?�다.</li>
-    <li><strong>문단??가?�성 ?��?:</strong> �?게임 ?�명 문단?� ?�문 ?�래???�갈??블록?�로 ?�렬?�어 ?�문�??�조하�??�기??최적???�경???�공?�습?�다.</li>
+    <li><strong>버튼의 원형 보존:</strong> <code>Add to Cart (장바구니에 추가)</code> 형태로 텍스트가 나란히 붙어 버튼 높이가 32px 그대로 유지되었으며, 카트 SVG 아이콘과 클릭 이벤트도 온전히 작동했습니다.</li>
+    <li><strong>문단의 가독성 유지:</strong> 긴 게임 설명 문단은 원문 아래에 정갈한 블록으로 정렬되어 원문과 대조하며 읽기에 최적의 환경을 제공했습니다.</li>
   </ol>
 
   <h2 id="summary">
-    마무리하�?
+    마무리하며
   </h2>
 
   <p>
-    ?�축??<code>Alt+A</code>)�??�한 ?�이지 ?�체 번역?� ?�제 ?�벽???�이?�웃 ?�정?�을 갖추�??�었?�니?? ?��?�????�핑 �??�제???�이지 ?�체�?번역???�요???�었?�며, ?�고 ?��? ?�정 문장?�나 ?�어�?빠르�??�인?�고 ?�을 ?��? ?�해 마우???�래�?기반??<strong>'?�택 ?�역 번역(Selection Translation)' 기능</strong>???�롭�??�입?�기�??�습?�다.
+    단축키(<code>Alt+A</code>)를 통한 페이지 전체 번역은 이제 완벽한 레이아웃 안정성을 갖추게 되었습니다. 하지만 웹 서핑 중 언제나 페이지 전체를 번역할 필요는 없었으며, 읽고 싶은 특정 문장이나 단어만 빠르게 확인하고 싶을 때를 위해 마우스 드래그 기반의 <strong>'선택 영역 번역(Selection Translation)' 기능</strong>을 새롭게 도입하기로 했습니다.
   </p>
 
   <p>
-    ?�음 글?�서??마우???�래그�? 감�??�여 ?�업???�우???�택 ?�역 번역??초기 ?�계?� ?�께, 개발 과정?�서 마주�?"?�용 ?�음" ?�탐 버그 �?�?문단 찌그?�짐 문제�??�결??과정???�루??보겠?�니??
+    다음 글에서는 마우스 드래그를 감지하여 팝업을 띄우는 선택 영역 번역의 초기 설계와 함께, 개발 과정에서 마주친 "내용 없음" 오탐 버그 및 긴 문단 찌그러짐 문제를 해결한 과정을 다루어 보겠습니다.
   </p>
 
+  <!-- 시리즈 네비게이션 컨테이너 (자동 생성, JS로 연동됨) -->
+  <nav class="series-nav" data-series="WebTranslator 개발기" data-current-slug="webtranslator-05-steam-button-crash-and-dual-renderer"></nav>
 </article>
-
-<!-- ============================================================
-  [PUBLISHING CHECKLIST - 발행 ??체크리스??
-  ??BLOG_TITLE ?�용 복사 ??Blogspot ?�단 '?�목' ?�력?�??붙여?�기
-  ??BLOG_LABELS ?�용 복사 ??Blogspot ?�측 ?�이?�바 '?�벨' 칸에 붙여?�기
-  ??META_DESCRIPTION ?�용 복사 ??Blogspot ?�측 '검???�명'?�??붙여?�기
-  ??Blogspot 본문 ?�디?��? "HTML 보기"�??�환 ????<article> ?�스 ?�체 붙여?�기
-  ???��?지 ?�롯 주석 ?�치???�제 ?��?지 ?�입
-  ???�약 발행 ?�는 즉시 발행
-  ============================================================ -->

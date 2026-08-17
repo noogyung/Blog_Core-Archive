@@ -1,44 +1,42 @@
 <!-- ============================================================
-  [BLOG POST METADATA - Blogspot ?�정�?복사??
-  Title: [WebTranslator 개발�?#01] ?�롬 ?�장 ?�로그램 기획
-  Labels (Tags): WebTranslator, ChromeExtension, ?�롬?�장?�로그램, ?�번?? CSP, ?�러블슈??  Meta Description: ?�롬 ?�장 ?�로그램(WebTranslator) 개발�?1?? ?�페?��? ?�이?�웃???�치지 ?�는 번역�?기획 배경�?Content Script?�서 발생??CSP 보안 차단??Background Service Worker 중계 ?�키?�처�?극복??과정???�리?�니??
+  [BLOG POST METADATA - Blogspot 설정창 복사용]
+  Title: [WebTranslator 개발기 #01] 크롬 확장 프로그램 기획
+  Labels (Tags): WebTranslator, ChromeExtension, 크롬확장프로그램, 웹번역, CSP, 트러블슈팅
+  Meta Description: 크롬 확장 프로그램(WebTranslator) 개발기 1편: 웹페이지 레이아웃을 해치지 않는 번역기 기획 배경과 Content Script에서 발생한 CSP 보안 차단을 Background Service Worker 중계 아키텍처로 극복한 과정을 정리합니다.
   Slug: webtranslator-01-inception-and-csp-bypass
-  Primary Keyword: ?�롬 ?�장 ?�로그램 번역
-  Secondary Keywords: Chrome MV3 번역�? CSP ?�러 ?�결, Content Script Background ?�신, ?�롬 ?�스?�션 개발
-  Related Entities: Manifest V3, Content Security Policy, Background Service Worker, chrome.runtime.sendMessage
+  ---
+  Primary Keyword: 크롬 확장 프로그램 번역
+  Secondary Keywords: Chrome MV3 번역기, CSP 에러 해결, Content Script Background 통신, 크롬 익스텐션 개발
   Knowledge Source: Knowledge/webtranslator-01-inception-and-csp/Troubleshooting/webtranslator-01-inception-and-csp-2026-08-15.md
   Generated Date: 2026-08-15
-  Estimated Read Time: 5�?  ============================================================ -->
-
-<!-- [블로그스???�용 ?�드 복사??- �?줄을 복사?�여 블로그스???�력?�??붙여?�기] -->
-<!-- BLOG_TITLE: [WebTranslator 개발�?#01] ?�롬 ?�장 ?�로그램 기획 -->
-<!-- BLOG_LABELS: WebTranslator, ChromeExtension, ?�롬?�장?�로그램, ?�번?? CSP, ?�러블슈??-->
-<!-- META_DESCRIPTION: ?�롬 ?�장 ?�로그램(WebTranslator) 개발�?1?? ?�페?��? ?�이?�웃???�치지 ?�는 번역�?기획 배경�?Content Script?�서 발생??CSP 보안 차단??Background Service Worker 중계 ?�키?�처�?극복??과정???�리?�니?? -->
+  Estimated Read Time: 5분
+  Series: WebTranslator 개발기
+  Prev Slug: null
+  ============================================================ -->
 
 <article>
 
-  <!-- ?��?지 ?�롯 1: ?�???��?지 -->
-  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-08/webtranslator-01-inception-and-csp-bypass-img1.jpg" alt="?�롬 ?�장 ?�로그램 WebTranslator ?�키?�처 �?CSP 차단 극복 ?�이?�그??
-       style="width:100%; max-width:800px; height:auto; border-radius:8px; margin:1em 0; display:block;">
+  <!-- 이미지 슬롯 1: 대표 이미지 -->
+  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-08/webtranslator-01-inception-and-csp-bypass-img1.jpg" alt="크롬 확장 프로그램 WebTranslator 아키텍처 및 CSP 차단 극복 다이어그램">
 
   <p>
-    ?�외 기술 공식 문서(GitHub, MDN)???��?(Steam) ?�점??게임 ?�치 ?�트�??�다 보면, ?�롬 브라?��? 기본 번역 기능???�계??부?�히??경우가 많습?�다. ?�이지 ?�체�?번역?�면 기존 CSS ?�이?�웃??붕괴?�어 버튼 ?�치가 ?�긋?�거???�스?��? 겹치??문제가 빈번?�게 발생?�며, ?�색?�게 번역??문장???�문�?즉각 ?�조하�??�렵?�는 치명?�인 ?�점??존재?�니??
+    해외 기술 공식 문서(GitHub, MDN)나 스팀(Steam) 상점의 게임 패치 노트를 읽다 보면, 크롬 브라우저 기본 번역 기능의 한계에 부딪히는 경우가 많습니다. 페이지 전체를 번역하면 기존 CSS 레이아웃이 붕괴되어 버튼 위치가 어긋나거나 텍스트가 겹치는 문제가 빈번하게 발생하며, 어색하게 번역된 문장을 원문과 즉각 대조하기 어렵다는 치명적인 단점이 존재합니다.
   </p>
 
   <p>
-    ?�전?�는 ?�?�이 만든 번역기�? ?�용?�는 방법 밖에???�었지�?AI??발달�??�구???�게 ?�런 ?�업???????�게 ?�었�? ?�심 ?�떤 것을 AI�?개발?�볼�??�는 ?�각???�었?�니?? 그러??�?마침 ?�용?�던 ?�롬 ?�장 번역기�? 과금 ?�도?� 계정 가???�을 ?�구?�여 ?�게 불편???�황??발생?�습?�다.
+    이전에는 타인이 만든 번역기를 사용하는 방법 밖에는 없었지만 AI의 발달로 누구나 쉽게 이런 작업을 할 수 있게 되었고, 내심 어떤 것을 AI로 개발해볼까 하는 생각이 있었습니다. 그러던 중 마침 사용하던 크롬 확장 번역기가 과금 유도와 계정 가입 등을 요구하여 크게 불편한 상황이 발생했습니다.
   </p>
 
   <p>
-    ?�러??불편??근본?�으�??�소?�고?? <strong>"?�본 ?�페?��????�이?�웃??100% 보존?�면???�문 ?�래??번역문을 ?�연?�럽�??�입?�는 비파괴적(Non-destructive) 번역�?</strong>??<strong>WebTranslator</strong> ?�로?�트�?기획?�게 ?�었?�니?? ?�번 글?�서???�로?�트??초기 ?�구?�항 ?�의부??Chrome Manifest V3(MV3) ?�경?�서 발생??<strong>CSP(Content Security Policy) ?�신 차단 ?�류</strong>�??�결?�기까�???과정???�리??보고???�니??
+    이러한 불편을 근본적으로 해소하고자, <strong>"원본 웹페이지의 레이아웃을 100% 보존하면서 원문 아래에 번역문을 자연스럽게 삽입하는 비파괴적(Non-destructive) 번역기"</strong>인 <strong>WebTranslator</strong> 프로젝트를 기획하게 되었습니다. 이번 글에서는 프로젝트의 초기 요구사항 정의부터 Chrome Manifest V3(MV3) 환경에서 발생한 <strong>CSP(Content Security Policy) 통신 차단 오류</strong>를 해결하기까지의 과정을 정리해 보고자 합니다.
   </p>
 
   <h2 id="project-requirements">
-    1. ?�로?�트 ?�구?�항 �??�심 ?�계 목표
+    1. 프로젝트 요구사항 및 핵심 설계 목표
   </h2>
 
   <p>
-    WebTranslator???�순??번역기�? ?�어 개발?��? 게이머�? ???�핑 ?�름???��? ?�고 ?�문�?번역문을 ?�시???�비?????�는 ?�경??목표�??�계?�었?�니??
+    WebTranslator는 단순한 번역기를 넘어 개발자와 게이머가 웹 서핑 흐름을 끊지 않고 원문과 번역문을 동시에 소비할 수 있는 환경을 목표로 설계되었습니다.
   </p>
 
   <div class="table w100 withBg">
@@ -46,51 +44,51 @@
       <thead>
         <tr>
           <th>구분</th>
-          <th>?�구?�항</th>
-          <th>기술??구현 목표</th>
+          <th>요구사항</th>
+          <th>기술적 구현 목표</th>
         </tr>
       </thead>
       <tbody>
         <tr>
-          <td><strong>?�이?�웃 보존</strong></td>
-          <td>기존 DOM 구조�??�괴?��? ?�는 비파괴적 ?�더�?/td>
-          <td>?�문 ?�스???�드 ?�단???�립??번역 컨테?�너 ?�입</td>
+          <td><strong>레이아웃 보존</strong></td>
+          <td>기존 DOM 구조를 파괴하지 않는 비파괴적 렌더링</td>
+          <td>원문 텍스트 노드 하단에 독립된 번역 컨테이너 삽입</td>
         </tr>
         <tr>
-          <td><strong>?�근??& 조작</strong></td>
-          <td>?�축??기반??즉각?�인 번역 ?��?</td>
-          <td><code>Alt+A</code> ?�축???�력 ??번역/?�문 ?�태 ?�환</td>
+          <td><strong>접근성 & 조작</strong></td>
+          <td>단축키 기반의 즉각적인 번역 토글</td>
+          <td><code>Alt+A</code> 단축키 입력 시 번역/원문 상태 전환</td>
         </tr>
         <tr>
-          <td><strong>?��? ?�랫??/strong></td>
-          <td>Chrome 최신 ?�장 ?�로그램 규격 준??/td>
-          <td>Manifest V3(MV3) 기반???�비???�커 ?�키?�처 채택</td>
+          <td><strong>표준 플랫폼</strong></td>
+          <td>Chrome 최신 확장 프로그램 규격 준수</td>
+          <td>Manifest V3(MV3) 기반의 서비스 워커 아키텍처 채택</td>
         </tr>
       </tbody>
     </table>
   </div>
 
   <h2 id="initial-instruction-and-failure">
-    2. 초기 구현 지?��? CSP ?�신 차단 ?�러
+    2. 초기 구현 지시와 CSP 통신 차단 에러
   </h2>
 
   <p>
-    기획???�구?�항??바탕?�로 AI 코딩 ?�시?�턴?�에�?초기 Chrome MV3 ?�장 ?�로그램??골격 ?�성??지?�했?�니??
+    기획된 요구사항을 바탕으로 AI 코딩 어시스턴트에게 초기 Chrome MV3 확장 프로그램의 골격 작성을 지시했습니다.
   </p>
 
-  <div class="pre custom" data-text="AI 지?�문">
+  <div class="pre custom" data-text="AI 지시문">
     <button aria-label="Copy code">Copy</button>
-    <pre>Alt+A ?�축?��? ?�르�??�페?��????�스?��? ?�집?�여 번역 API�??�달?�고, ?�문 ?�래??번역 결과�??�연?�럽�??�더링하??Chrome MV3 ?�장 ?�로그램??기본 골격???�성?�라.</pre>
+    <pre>Alt+A 단축키를 누르면 웹페이지의 텍스트를 수집하여 번역 API로 전달하고, 원문 아래에 번역 결과를 자연스럽게 렌더링하는 Chrome MV3 확장 프로그램의 기본 골격을 작성해라.</pre>
   </div>
 
   <p>
-    지?��? 받�? AI???�래?� 같이 <code>content.js</code> ?��??�서 직접 번역 ?�버�?<code>fetch()</code> 비동�??�청??보내??코드�??�성?�왔?�니??
+    지시를 받은 AI는 아래와 같이 <code>content.js</code> 내부에서 직접 번역 서버로 <code>fetch()</code> 비동기 요청을 보내는 코드를 작성해왔습니다.
   </p>
 
-  <!-- 코드 블록: Content Script ?�류 코드 -->
-  <div class="pre custom" data-text="JavaScript (content.js - ?�류 코드)">
+  <!-- 코드 블록: Content Script 오류 코드 -->
+  <div class="pre custom" data-text="JavaScript (content.js - 오류 코드)">
     <button aria-label="Copy code">Copy</button>
-    <pre>// content.js: Content Script?�서 직접 ?��? API fetch ?�도
+    <pre>// content.js: Content Script에서 직접 외부 API fetch 시도
 async function fetchTranslation(text) {
   const response = await fetch("https://translation-api.example.com/translate", {
     method: "POST",
@@ -102,77 +100,78 @@ async function fetchTranslation(text) {
   </div>
 
   <p>
-    ?��?�??�장 ?�로그램???�롬??로드?�고 GitHub?� Steam ?�페?��??�서 ?�행?�자마자 콘솔??빨간???�러 로그가 출력?�며 번역 ?�청???�전??먹통???�었?�니??
+    하지만 확장 프로그램을 크롬에 로드하고 GitHub와 Steam 웹페이지에서 실행하자마자 콘솔에 빨간색 에러 로그가 출력되며 번역 요청이 완전히 먹통이 되었습니다.
   </p>
 
   <div class="note wr">
-    <strong>?�️ 발생???�러:</strong> Refused to connect to 'https://translation-api.example.com/translate' because it violates the following Content Security Policy directive: "connect-src 'self' ...".
+    <strong>⚠️ 발생한 에러:</strong> Refused to connect to 'https://translation-api.example.com/translate' because it violates the following Content Security Policy directive: "connect-src 'self' ...".
   </div>
 
   <h3 id="csp-cause-analysis">
-    ?�인 분석: ??Content Script??직접 fetch??차단?�는가?
+    원인 분석: 왜 Content Script의 직접 fetch는 차단되는가?
   </h3>
 
   <p>
-    Chrome Manifest V3 ?�경?�서 <strong>Content Script</strong>???�페?��???DOM ?�리??직접 ?�근?????��?�? ?�행?�는 <strong>?�바?�크립트 ?�트?�크 컨텍?�트??방문 중인 ?�사?�트(Host Page)??CSP 보안 ?�책??그�?�??�속</strong>받습?�다.
+    Chrome Manifest V3 환경에서 <strong>Content Script</strong>는 웹페이지의 DOM 트리에 직접 접근할 수 있지만, 실행되는 <strong>자바스크립트 네트워크 컨텍스트는 방문 중인 웹사이트(Host Page)의 CSP 보안 정책을 그대로 상속</strong>받습니다.
   </p>
 
   <ul>
-    <li>GitHub, Steam, 금융/공공기�? ??강력??보안 ?�책??가�??�사?�트??<code>connect-src</code> 지?�자�??�해 ?��??��? ?��? ?��? ?�메?�과??<code>fetch/XHR</code> ?�신??브라?��? ?�벨?�서 ?�천 차단?�니??</li>
-    <li>?�라??Content Script ?�에???�무�??�장 ?�로그램 권한???�정?�더?�도 ?�스???�페?��???CSP ?�약???�회?????�습?�다.</li>
+    <li>GitHub, Steam, 금융/공공기관 등 강력한 보안 정책을 가진 웹사이트는 <code>connect-src</code> 지시자를 통해 인가되지 않은 외부 도메인과의 <code>fetch/XHR</code> 통신을 브라우저 레벨에서 원천 차단합니다.</li>
+    <li>따라서 Content Script 내에서 아무리 확장 프로그램 권한을 설정하더라도 호스트 웹페이지의 CSP 제약을 우회할 수 없습니다.</li>
   </ul>
 
   <h2 id="architecture-refactoring">
-    3. ?�키?�처 ?�면 ?�정: Background 중계 ?�이?�라??  </h2>
+    3. 아키텍처 전면 수정: Background 중계 파이프라인
+  </h2>
 
   <p>
-    ??문제�??�결?�기 ?�해 AI?�게 MV3??보안 모델??부?�하???�신 ?�이?�라???�설계�? 지?�했?�니??
+    이 문제를 해결하기 위해 AI에게 MV3의 보안 모델에 부합하는 통신 파이프라인 재설계를 지시했습니다.
   </p>
 
-  <div class="pre custom" data-text="AI 지???�정">
+  <div class="pre custom" data-text="AI 지시 수정">
     <button aria-label="Copy code">Copy</button>
-    <pre>Content Script?�서 직접 ?��? API�?fetch?��? 마라. 보안 ?�약???�는 Background Service Worker가 ?��? API ?�신???�담?�게 만들�? Content Script??chrome.runtime.sendMessage�??�스?�만 ?�겨받아 ?�더링하?�록 ?�신 ?�이?�라?�을 ?�면 ?�정?�라.</pre>
+    <pre>Content Script에서 직접 외부 API를 fetch하지 마라. 보안 제약이 없는 Background Service Worker가 외부 API 통신을 전담하게 만들고, Content Script는 chrome.runtime.sendMessage로 텍스트만 넘겨받아 렌더링하도록 통신 파이프라인을 전면 수정해라.</pre>
   </div>
 
   <p>
-    개편???�키?�처???�이???�름?� ?�음�?같습?�다.
+    개편된 아키텍처의 데이터 흐름은 다음과 같습니다.
   </p>
 
   <div class="table w100 withBg">
     <table>
       <thead>
         <tr>
-          <th>컴포?�트</th>
-          <th>??�� �??�행 컨텍?�트</th>
-          <th>보안 �??�신 ?�성</th>
+          <th>컴포넌트</th>
+          <th>역할 및 실행 컨텍스트</th>
+          <th>보안 및 통신 특성</th>
         </tr>
       </thead>
       <tbody>
         <tr>
           <td><strong>Content Script</strong></td>
-          <td>?�페?��? DOM ?�집 �?번역 결과 ?�더�?/td>
-          <td>?�스???�이지 CSP 종속, ?��? 직접 ?�신 불�?</td>
+          <td>웹페이지 DOM 수집 및 번역 결과 렌더링</td>
+          <td>호스트 페이지 CSP 종속, 외부 직접 통신 불가</td>
         </tr>
         <tr>
           <td><strong>Message Passing</strong></td>
           <td><code>chrome.runtime.sendMessage</code></td>
-          <td>브라?��? ?��? IPC�??�한 ?�전???�이??교환</td>
+          <td>브라우저 내부 IPC를 통한 안전한 데이터 교환</td>
         </tr>
         <tr>
           <td><strong>Background Service Worker</strong></td>
-          <td>?��? 번역 API ?�출 �??�이??가�?/td>
-          <td>?�립 컨텍?�트 ?�행, <code>host_permissions</code> 기반 CSP ?�회 ?�신 가??/td>
+          <td>외부 번역 API 호출 및 데이터 가공</td>
+          <td>독립 컨텍스트 실행, <code>host_permissions</code> 기반 CSP 우회 통신 가능</td>
         </tr>
       </tbody>
     </table>
   </div>
 
   <h3 id="implementation-details">
-    ?��? 구현 코드
+    세부 구현 코드
   </h3>
 
   <p>
-    먼�? <code>manifest.json</code>??Background Service Worker?� ?�요???�스??권한??명시?�니??
+    먼저 <code>manifest.json</code>에 Background Service Worker와 필요한 호스트 권한을 명시합니다.
   </p>
 
   <div class="pre custom" data-text="JSON (manifest.json)">
@@ -196,7 +195,7 @@ async function fetchTranslation(text) {
   </div>
 
   <p>
-    Background Service Worker?�서??비동�?메시지 리스?��? ?�고 ?��? API ?�출??처리?�니??
+    Background Service Worker에서는 비동기 메시지 리스너를 열고 외부 API 호출을 처리합니다.
   </p>
 
   <div class="pre custom" data-text="JavaScript (src/background/index.js)">
@@ -204,12 +203,12 @@ async function fetchTranslation(text) {
     <pre>// src/background/index.js
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "translateBatch") {
-    // ?��? 번역 API 비동�??�출 처리
+    // 외부 번역 API 비동기 호출 처리
     handleTranslation(request.payload)
       .then(result => sendResponse({ success: true, data: result }))
       .catch(error => sendResponse({ success: false, error: error.message }));
 
-    return true; // 비동�?sendResponse ?�답 ?�기�? ?�해 true 반환 ?�수
+    return true; // 비동기 sendResponse 응답 대기를 위해 true 반환 필수
   }
 });
 
@@ -224,11 +223,11 @@ async function handleTranslation(payload) {
   </div>
 
   <div class="note">
-    <strong>?�� ??</strong> <code>chrome.runtime.onMessage.addListener</code> ?��??�서 비동�??�로미스�?처리???? ?�벤???�들?��? ?�기?�으�?<code>true</code>�?반환?��? ?�으�?<code>sendResponse</code> 채널???��? <code>The message port closed before a response was received</code> ?�류가 발생?�니??
+    <strong>💡 팁:</strong> <code>chrome.runtime.onMessage.addListener</code> 내부에서 비동기 프로미스를 처리할 때, 이벤트 핸들러가 동기적으로 <code>true</code>를 반환하지 않으면 <code>sendResponse</code> 채널이 닫혀 <code>The message port closed before a response was received</code> 오류가 발생합니다.
   </div>
 
   <p>
-    Content Script???�제 ?�순?�게 ?�스?��? 메시지�??�달?�고 ?�신받�? 결과�?DOM??반영?�니??
+    Content Script는 이제 단순하게 텍스트를 메시지로 전달하고 회신받은 결과만 DOM에 반영합니다.
   </p>
 
   <div class="pre custom" data-text="JavaScript (src/content/index.js)">
@@ -245,7 +244,7 @@ async function requestTranslation(texts) {
         if (response && response.success) {
           resolve(response.data);
         } else {
-          reject(new Error(response?.error || "번역 ?�청 ?�패"));
+          reject(new Error(response?.error || "번역 요청 실패"));
         }
       }
     );
@@ -254,37 +253,30 @@ async function requestTranslation(texts) {
   </div>
 
   <h2 id="takeaway-and-next">
-    4. 검�?결과 �??�심 교훈
+    4. 검증 결과 및 핵심 교훈
   </h2>
 
   <p>
-    Background 중계 구조�??�환???? ?�격??CSP ?�책??걸려 ?�던 GitHub?� Steam ?�점 ?�이지?�서???�류 ?�이 ?�정?�으�?번역 API ?�답???�신?�고 비파괴적 ?�더링이 ?�작?�는 것을 ?�인?�습?�다.
+    Background 중계 구조로 전환한 뒤, 엄격한 CSP 정책이 걸려 있던 GitHub와 Steam 상점 페이지에서도 오류 없이 안정적으로 번역 API 응답을 수신하고 비파괴적 렌더링이 동작하는 것을 확인했습니다.
   </p>
 
   <ol class="step">
-    <li><strong>AI 코딩 ?�시?�턴?�의 ?�계 ?��?:</strong> AI?�게 ?�순 ???�플리�??�션 관?�으�?지?�하�??�장 ?�로그램???�드박스 �?보안 격리 모델??간과?�기 ?�습?�다.</li>
-    <li><strong>?�키?�처??명확???�전 ?�의:</strong> MV3 ?�장 ?�로그램??개발???�는 초기부??'UI ?�더�?Content Script)'�?'?�트?�크 ?�신(Background Service Worker)'??책임??분리?�여 지?�해???�니??</li>
+    <li><strong>AI 코딩 어시스턴트의 한계 인지:</strong> AI에게 단순 웹 애플리케이션 관점으로 지시하면 확장 프로그램의 샌드박스 및 보안 격리 모델을 간과하기 쉽습니다.</li>
+    <li><strong>아키텍처의 명확한 사전 정의:</strong> MV3 확장 프로그램을 개발할 때는 초기부터 'UI 렌더링(Content Script)'과 '네트워크 통신(Background Service Worker)'의 책임을 분리하여 지시해야 합니다.</li>
   </ol>
 
   <h2 id="summary">
-    마무리하�?  </h2>
+    마무리하며
+  </h2>
 
   <p>
-    ?�신 ?�이?�라?�을 ?�공?�으�?개통?�면??�?번째 기술??관문을 ?�과?�습?�다. 그러???�제 브라?�징 ?�경?�서 <code>Alt+A</code> ?�축?��? ?�속?�로 ?��??�거?? ?�트?�크 ?�답??지?�되???�황?�서 비동�??�답 ?�서가 ?�엉�??�문�?번역문이 ?�섞?�는 ?�로??문제(Race Condition)가 발생?�습?�다.
+    통신 파이프라인을 성공적으로 개통하면서 첫 번째 기술적 관문을 통과했습니다. 그러나 실제 브라우징 환경에서 <code>Alt+A</code> 단축키를 연속으로 연타하거나, 네트워크 응답이 지연되는 상황에서 비동기 응답 순서가 뒤엉켜 원문과 번역문이 뒤섞이는 새로운 문제(Race Condition)가 발생했습니다.
   </p>
 
   <p>
-    ?�음 글?�서???�축???��? ???�전 ?�청???�전?�게 ?�기?�는 비동�?취소 ?�태 머신 구축�??�롬 ?�토리�? ?�량 분리 과정???�루??보겠?�니??
+    다음 글에서는 단축키 연타 시 이전 요청을 안전하게 폐기하는 비동기 취소 상태 머신 구축과 크롬 스토리지 용량 분리 과정을 다루어 보겠습니다.
   </p>
 
+  <!-- 시리즈 네비게이션 컨테이너 (자동 생성, JS로 연동됨) -->
+  <nav class="series-nav" data-series="WebTranslator 개발기" data-current-slug="webtranslator-01-inception-and-csp-bypass"></nav>
 </article>
-
-<!-- ============================================================
-  [PUBLISHING CHECKLIST - 발행 ??체크리스??
-  ??BLOG_TITLE ?�용 복사 ??Blogspot ?�단 '?�목' ?�력?�??붙여?�기
-  ??BLOG_LABELS ?�용 복사 ??Blogspot ?�측 ?�이?�바 '?�벨' 칸에 붙여?�기
-  ??META_DESCRIPTION ?�용 복사 ??Blogspot ?�측 '검???�명'?�??붙여?�기
-  ??Blogspot 본문 ?�디?��? "HTML 보기"�??�환 ????<article> ?�스 ?�체 붙여?�기
-  ???��?지 ?�롯 주석 ?�치???�제 ?��?지 ?�입
-  ???�약 발행 ?�는 즉시 발행
-  ============================================================ -->

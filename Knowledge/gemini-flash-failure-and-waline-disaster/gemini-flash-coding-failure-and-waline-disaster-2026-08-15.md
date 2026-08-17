@@ -11,6 +11,9 @@ blog_id: core-archive
 blog_draft_path: Blog_Posts/core-archive/2026-08/gemini-flash-coding-failure-and-waline-disaster.html
 blog_draft_date: 2026-08-15
 blog_published: true
+series_name: null
+series_part: null
+series_prev_slug: null
 ---
 
 # 📦 [Knowledge Package] Gemini 3.7 Flash의 뇌피셜과 Waline 댓글 도입 참사 분석

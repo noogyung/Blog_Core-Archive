@@ -1,4 +1,4 @@
----
+﻿---
 topic: webtranslator-01-inception-and-csp
 title_kr: 웹 번역 확장 프로그램 기획과 CSP 차단 극복
 category: Troubleshooting
@@ -14,11 +14,9 @@ blog_draft_path: Blog_Posts/core-archive/2026-08/webtranslator-01-inception-and-
 blog_draft_date: 2026-08-15
 blog_id: core-archive
 blog_published: true
-series_name: WebTranslator
+series_name: WebTranslator 개발기
 series_part: 1
-series_total: 21
 series_prev_slug: null
-series_next_slug: webtranslator-02-shortcut-race-condition-and-storage-split
 ---
 
 # Knowledge File: webtranslator-01-inception-and-csp

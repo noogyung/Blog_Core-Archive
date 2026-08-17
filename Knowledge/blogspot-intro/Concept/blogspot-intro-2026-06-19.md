@@ -1,10 +1,22 @@
 ---
+topic: blogspot-intro
+title_kr: 구글 블로그스팟(Blogger) 기본 개념과 장단점 분석
+category: Concept
+sub_category: Platform-Overview
+version: 2026-06-19
 status: Verified
+created_date: 2026-06-19
 last_modified: 2026-06-19
-blog_id: core-archive
+language: KR
+tags: [Blogger, Blogspot, Google, AdSense, 플랫폼비교, 블로그구축]
+sources_count: 3
 blog_draft_path: Blog_Posts/core-archive/2026-06/blogspot-intro-adsense-guide.html
 blog_draft_date: 2026-06-19
+blog_id: core-archive
 blog_published: true
+series_name: null
+series_part: null
+series_prev_slug: null
 ---
 # Knowledge File: blogspot-intro
 ## Category: Concept

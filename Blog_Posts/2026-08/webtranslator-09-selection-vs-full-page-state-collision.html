@@ -1,177 +1,175 @@
 <!-- ============================================================
-  [BLOG POST METADATA - Blogspot ?�정�?복사??
-  Title: [WebTranslator 개발�?#09] ?�택 번역 ?�업�??�체 번역(Alt+A) �??�태 충돌 ?�결
-  Labels (Tags): WebTranslator, ChromeExtension, ?�롬?�장?�로그램, ?�태관�? DOM, ?�러블슈??  Meta Description: ?�롬 ?�장 ?�로그램 개발�?9?? ?�어 ?�전 ?�업???�린 ?�태?�서 ?�축??Alt+A)�??��?????발생?�던 ?�업 ?�존�??�스???�중 ?�집 충돌???�행 ?�탕(Cleanup-First) ?�턴?�로 ?�결??과정???�룹?�다.
+  [BLOG POST METADATA - Blogspot 설정창 복사용]
+  Title: [WebTranslator 개발기 #09] 선택 번역 팝업과 전체 번역(Alt+A) 간 상태 충돌 해결
+  Labels (Tags): WebTranslator, ChromeExtension, 크롬확장프로그램, 상태관리, DOM, 트러블슈팅
+  Meta Description: 크롬 확장 프로그램 개발기 9편: 단어 사전 팝업이 열린 상태에서 단축키(Alt+A)를 눌렀을 때 발생하던 팝업 잔존과 텍스트 이중 수집 충돌을 선행 소탕(Cleanup-First) 패턴으로 해결한 과정을 다룹니다.
   Slug: webtranslator-09-selection-vs-full-page-state-collision
-  Primary Keyword: ?�롬 ?�장 ?�로그램 ?�태 충돌
-  Secondary Keywords: DOM ?�태 머신 최적?? Alt+A ?�축???�업 ?�기, Cleanup-First ?�턴, ?�택 번역 ?�체 번역 공존
-  Related Entities: Content Script State Machine, Cleanup-First Pattern, Floating Popup Lifecycle, DOM Mutation Guard
+  ---
+  Primary Keyword: 크롬 확장 프로그램 상태 충돌
+  Secondary Keywords: DOM 상태 머신 최적화, Alt+A 단축키 팝업 닫기, Cleanup-First 패턴, 선택 번역 전체 번역 공존
   Knowledge Source: Knowledge/webtranslator-09-selection-vs-full-page-state/Troubleshooting/webtranslator-09-selection-vs-full-page-state-2026-08-15.md
   Generated Date: 2026-08-15
-  Estimated Read Time: 6�?  ============================================================ -->
-
-<!-- [블로그스???�용 ?�드 복사??- �?줄을 복사?�여 블로그스???�력?�??붙여?�기] -->
-<!-- BLOG_TITLE: [WebTranslator 개발�?#09] ?�택 번역 ?�업�??�체 번역(Alt+A) �??�태 충돌 ?�결 -->
-<!-- BLOG_LABELS: WebTranslator, ChromeExtension, ?�롬?�장?�로그램, ?�태관�? DOM, ?�러블슈??-->
-<!-- META_DESCRIPTION: ?�롬 ?�장 ?�로그램 개발�?9?? ?�어 ?�전 ?�업???�린 ?�태?�서 ?�축??Alt+A)�??��?????발생?�던 ?�업 ?�존�??�스???�중 ?�집 충돌???�행 ?�탕(Cleanup-First) ?�턴?�로 ?�결??과정???�룹?�다. -->
+  Estimated Read Time: 6분
+  Series: WebTranslator 개발기
+  Prev Slug: webtranslator-08-word-translation-homogenization-and-specialization
+  ============================================================ -->
 
 <article>
 
-  <!-- ?��?지 ?�롯 1: ?�???��?지 -->
-  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-08/webtranslator-09-selection-vs-full-page-state-collision-img1.jpg" alt="?�택 번역 ?�업�??�체 번역 �??�태 충돌 ?�결 �?Cleanup-First ?�키?�처 ?�이?�그??
-       style="width:100%; max-width:800px; height:auto; border-radius:8px; margin:1em 0; display:block;">
+  <!-- 이미지 슬롯 1: 대표 이미지 -->
+  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-08/webtranslator-09-selection-vs-full-page-state-collision-img1.jpg" alt="선택 번역 팝업과 전체 번역 간 상태 충돌 해결 및 Cleanup-First 아키텍처 다이어그램">
 
   <p>
-    지??8?�에?�는 NMT 기계 번역�?LLM ?�성??AI??본질??차이�?분리?�고, 마우???�래�???IPA 발음기호, ?�사, ?�심 ??3�? ?�생???�문???��??�게 추출?�는 <strong>LLM ?�용 구조???�전 ?�이?�라??/strong>??구축?�습?�다.
+    지난 8편에서는 NMT 기계 번역과 LLM 생성형 AI의 본질적 차이를 분리하고, 마우스 드래그 시 IPA 발음기호, 품사, 핵심 뜻 3개, 실생활 예문을 풍부하게 추출하는 <strong>LLM 전용 구조화 사전 파이프라인</strong>을 구축했습니다.
   </p>
 
   <p>
-    마우???�래그�? ?�한 <strong>'?�택 번역(Word &amp; Selection Lookup)'</strong>�??�축??<code>Alt+A</code>)�??�한 <strong>'?�이지 ?�체 번역(Full Page Translation)'</strong>?�라????가지 ?�심 ?�터?�션??모두 ?�성?�었?�나, ?�전 브라?�징 ?�경?�서 ??기능??교차?�는 ?�간 치명?�인 <strong>?�태 충돌(State Collision)</strong>??발생?�습?�다.
+    마우스 드래그를 통한 <strong>'선택 번역(Word &amp; Selection Lookup)'</strong>과 단축키(<code>Alt+A</code>)를 통한 <strong>'페이지 전체 번역(Full Page Translation)'</strong>이라는 두 가지 핵심 인터랙션이 모두 완성되었으나, 실전 브라우징 환경에서 두 기능이 교차하는 순간 치명적인 <strong>상태 충돌(State Collision)</strong>이 발생했습니다.
   </p>
 
   <p>
-    ?�용?��? 모르???�어�??�래그하???�전 ?�업???�어???�태?�서 "?�이지 ?�체�?번역?�야겠다"�?<code>Alt+A</code>�??�르�? <strong>기존 ?�업???�히지 ?�고 ?�존?�여 ?�체 번역 ?�집기�? ?�업 ?��? ?�스?�까지 번역 ?�???�드�?긁어가 글?��? ?�중?�로 ?�엉?�고 ?�면???�얗�?굳어버리??결함</strong>???��???것입?�다.
+    사용자가 모르는 단어를 드래그하여 사전 팝업을 열어둔 상태에서 "페이지 전체를 번역해야겠다"고 <code>Alt+A</code>를 누르면, <strong>기존 팝업이 닫히지 않고 잔존하여 전체 번역 수집기가 팝업 내부 텍스트까지 번역 대상 노드로 긁어가 글자가 이중으로 뒤엉키고 화면이 하얗게 굳어버리는 결함</strong>이 나타난 것입니다.
   </p>
 
   <p>
-    ?�번 글?�서??비동�??�집 ?�이?�라???�반???�서�?바로?��? <strong>?�행 ?�탕(Cleanup-First) ?�턴</strong>�? ???�터?�션???�로�??�괴?��? ?�고 ?�연?�럽�?공존?�는 <strong>?�일 ?�태 머신 ?�계</strong> 과정???�리??보고???�니??
+    이번 글에서는 비동기 수집 파이프라인 전반의 순서를 바로잡은 <strong>선행 소탕(Cleanup-First) 패턴</strong>과, 두 인터랙션이 서로를 파괴하지 않고 자연스럽게 공존하는 <strong>단일 상태 머신 설계</strong> 과정을 정리해 보고자 합니다.
   </p>
 
   <h2 id="collision-scenario">
-    1. ?�중 ?�터?�션 ?�경?�서???�태 충돌
+    1. 다중 인터랙션 환경에서의 상태 충돌
   </h2>
 
   <p>
-    ??브라?��? ?�장 ?�로그램?�서 복수??UI ?�터?�션?????�면??공존???�는 �?기능???�이?�사?�클???��??�게 조율?�어???�니??
+    웹 브라우저 확장 프로그램에서 복수의 UI 인터랙션이 한 화면에 공존할 때는 각 기능의 라이프사이클이 정밀하게 조율되어야 합니다.
   </p>
 
   <div class="table w100 withBg">
     <table>
       <thead>
         <tr>
-          <th>?�터?�션</th>
+          <th>인터랙션</th>
           <th>DOM 조작 방식</th>
-          <th>?�명주기 관�?/th>
+          <th>생명주기 관리</th>
         </tr>
       </thead>
       <tbody>
         <tr>
-          <td><strong>?�택 번역 / ?�전 ?�업</strong></td>
-          <td>?�택 좌표 근처???�립 ?�로???�버?�이 ?�입</td>
-          <td>?��? ?�릭 ?�는 ESC ?�력 ???�힘</td>
+          <td><strong>선택 번역 / 사전 팝업</strong></td>
+          <td>선택 좌표 근처에 독립 플로팅 오버레이 삽입</td>
+          <td>외부 클릭 또는 ESC 입력 시 닫힘</td>
         </tr>
         <tr>
-          <td><strong>?�체 ?�이지 번역 (`Alt+A`)</strong></td>
-          <td>?�페?��? ??모든 ?�스???�드 ?�회 �??�라??블록 ?�핑</td>
-          <td>?�축???�입?????�체 ?�문 복원</td>
+          <td><strong>전체 페이지 번역 (`Alt+A`)</strong></td>
+          <td>웹페이지 내 모든 텍스트 노드 순회 및 인라인/블록 래핑</td>
+          <td>단축키 재입력 시 전체 원문 복원</td>
         </tr>
       </tbody>
     </table>
   </div>
 
   <p>
-    문제???�용?��? ?�전 ?�업???��? ?�고 곧바�?<code>Alt+A</code>�??��????? ?�업 ?�기 ?�벤?��? ?�체 번역 ?�집 로직???�시??충돌?�면??발생?�습?�다.
+    문제는 사용자가 사전 팝업을 닫지 않고 곧바로 <code>Alt+A</code>를 눌렀을 때, 팝업 닫기 이벤트와 전체 번역 수집 로직이 동시에 충돌하면서 발생했습니다.
   </p>
 
   <h2 id="trial-and-error">
-    2. AI???�행 ?�거 ?�수?� ?�스???�수�?참사
+    2. AI의 후행 제거 실수와 텍스트 재수집 참사
   </h2>
 
   <p>
-    AI ?�시?�턴?�에�??�축???�력 ??기존 ?�업???�리?�고 ?�체 번역???�행?�도�?지?�했?�니??
+    AI 어시스턴트에게 단축키 입력 시 기존 팝업을 정리하고 전체 번역을 수행하도록 지시했습니다.
   </p>
 
-  <div class="pre custom" data-text="AI 지?�문">
+  <div class="pre custom" data-text="AI 지시문">
     <button aria-label="Copy code">Copy</button>
-    <pre>?�택 ?�역 번역 ?�후 Alt+A�??��??????�택 ?�역 번역 ?�업???�라지지 ?�고 ?�체 번역�?충돌?�는 문제�??�결?�라. ?�축???�력 ??기존 ?�업??모두 ?�고 ?�체 번역??깔끔?�게 ?�행?�도�??�정?�라.</pre>
+    <pre>선택 영역 번역 이후 Alt+A를 눌렀을 때 선택 영역 번역 팝업이 사라지지 않고 전체 번역과 충돌하는 문제를 해결해라. 단축키 입력 시 기존 팝업을 모두 닫고 전체 번역이 깔끔하게 실행되도록 수정해라.</pre>
   </div>
 
   <p>
-    지?��? 받�? AI???�래?� 같이 ?�체 번역??먼�? ?�행?�고 �??�에 ?�업???�으?�는 코드�??�성?�왔?�니??
+    지시를 받은 AI는 아래와 같이 전체 번역을 먼저 실행하고 그 뒤에 팝업을 닫으려는 코드를 작성해왔습니다.
   </p>
 
-  <!-- 코드 블록: AI ?�류 코드 -->
-  <div class="pre custom" data-text="JavaScript (index.js - ?�류 코드)">
+  <!-- 코드 블록: AI 오류 코드 -->
+  <div class="pre custom" data-text="JavaScript (index.js - 오류 코드)">
     <button aria-label="Copy code">Copy</button>
-    <pre>// index.js: ?�행 ?�업 ?�거�??�한 ?�싱 참사 (?�류 코드)
+    <pre>// index.js: 후행 팝업 제거로 인한 파싱 참사 (오류 코드)
 function togglePageTranslation() {
-  // 1. 비동�??�체 번역 ?�작 (DOM ?�리 ?�회 �??�스???�집 가??
+  // 1. 비동기 전체 번역 시작 (DOM 트리 순회 및 텍스트 수집 가동)
   startFullPageTranslation();
 
-  // 2. ?�늦�??�업 ?�소 ?�거 ?�도 (비동�?지?�으�??��? ??��!)
+  // 2. 뒤늦게 팝업 요소 제거 시도 (비동기 지연으로 이미 늦음!)
   document.querySelectorAll(".wt-dictionary-popup").forEach(el =&gt; el.remove());
 }</pre>
   </div>
 
   <h3 id="problem-analysis">
-    결함 메커?�즘 분석
+    결함 메커니즘 분석
   </h3>
 
   <p>
-    <code>startFullPageTranslation()</code>?� 비동�?Async)�??�작?�며 ?�출 즉시 <code>document.body</code>??모든 ?�스???�드�?긁어모읍?�다.
+    <code>startFullPageTranslation()</code>은 비동기(Async)로 동작하며 호출 즉시 <code>document.body</code>의 모든 텍스트 노드를 긁어모읍니다.
   </p>
 
   <p>
-    ?�업 ?�거 ?�수가 ?�에 배치?�어 ?�었�??�문?? <strong>?�스???�집기�? ?�면?????�던 ?�전 ?�업 ?��????�어, 발음기호, ?�문 ?�스?�까지 번역 ?�???�문?�로 착각?�고 ?�집</strong>??버렸?�니?? 결국 ?�체 번역???�난 ???�페?��? ?�문 ?�래???�전 ?�스?�의 번역문이 기괴?�게 ?�붙?��???DOM ?�염??발생?�습?�다.
+    팝업 제거 함수가 뒤에 배치되어 있었기 때문에, <strong>텍스트 수집기가 화면에 떠 있던 사전 팝업 내부의 단어, 발음기호, 예문 텍스트까지 번역 대상 원문으로 착각하고 수집</strong>해 버렸습니다. 결국 전체 번역이 끝난 뒤 웹페이지 원문 아래에 사전 텍스트의 번역문이 기괴하게 덧붙여지는 DOM 오염이 발생했습니다.
   </p>
 
   <div class="note wr">
-    <strong>?�️ ?�심 결함:</strong> 비동�?DOM ?�색 ?�이?�라?�이 ?�작?�기 ?�에, 불필?�한 ?�로???�소가 DOM ?�리????1ms?�도 ?�아?�어?�는 ???�니??
+    <strong>⚠️ 핵심 결함:</strong> 비동기 DOM 탐색 파이프라인이 시작되기 전에, 불필요한 플로팅 요소가 DOM 트리에 단 1ms라도 남아있어서는 안 됩니다.
   </div>
 
   <h2 id="cleanup-first-solution">
-    3. ?�결�? ?�행 ?�탕(Cleanup-First) ?�턴 ?�입
+    3. 해결책: 선행 소탕(Cleanup-First) 패턴 도입
   </h2>
 
   <p>
-    ?�이?�라???�서�?강제?�여, <strong>?�축?��? ?�력?�는 즉시 ?�기(Sync)?�으�?<code>closeAllPopups()</code>�?1?�위�??�출?�여 DOM???�벽???�제????/strong>???�스???�집???�작?�도�?지?��? ?�정?�습?�다.
+    파이프라인 순서를 강제하여, <strong>단축키가 입력되는 즉시 동기(Sync)적으로 <code>closeAllPopups()</code>를 1순위로 호출하여 DOM을 완벽히 정제한 뒤</strong>에 텍스트 수집을 시작하도록 지시를 수정했습니다.
   </p>
 
-  <div class="pre custom" data-text="AI 지???�정">
+  <div class="pre custom" data-text="AI 지시 수정">
     <button aria-label="Copy code">Copy</button>
-    <pre>번역???�작???�에 지?��? 마라. Alt+A가 ?�리??즉시 ?�기?�으�?closeAllPopups()�??�출?�여 ?�면??모든 ?�로???�업 ?�소�?DOM?�서 ?�전???�거?�고, �?직후??깨끗?�진 DOM ?�리�??�집?�여 번역???�작?�도�??�서�?강제?�라.</pre>
+    <pre>번역을 시작한 뒤에 지우지 마라. Alt+A가 눌리는 즉시 동기적으로 closeAllPopups()를 호출하여 화면의 모든 플로팅 팝업 요소를 DOM에서 완전히 제거하고, 그 직후에 깨끗해진 DOM 트리를 수집하여 번역을 시작하도록 순서를 강제해라.</pre>
   </div>
 
   <div class="table w100 withBg">
     <table>
       <thead>
         <tr>
-          <th>?�계</th>
-          <th>?�행 ?�점</th>
-          <th>?�행 ?�업</th>
-          <th>결과 ?�태</th>
+          <th>단계</th>
+          <th>실행 시점</th>
+          <th>수행 작업</th>
+          <th>결과 상태</th>
         </tr>
       </thead>
       <tbody>
         <tr>
-          <td><strong>1?�계: ?�행 ?�탕</strong></td>
-          <td>?�축???�신 즉시 (?�기)</td>
-          <td><code>closeAllPopups()</code> 강제 ?�출</td>
-          <td>?�로???�업 ?�드 100% ?�거 ?�료</td>
+          <td><strong>1단계: 선행 소탕</strong></td>
+          <td>단축키 수신 즉시 (동기)</td>
+          <td><code>closeAllPopups()</code> 강제 호출</td>
+          <td>플로팅 팝업 노드 100% 제거 완료</td>
         </tr>
         <tr>
-          <td><strong>2?�계: ?�태 검??/strong></td>
-          <td>?�탕 직후 (?�기)</td>
-          <td><code>dataset.wtStatus</code> ?�태 머신 분기</td>
-          <td><code>translating</code> / <code>idle</code> ?�환</td>
+          <td><strong>2단계: 상태 검사</strong></td>
+          <td>소탕 직후 (동기)</td>
+          <td><code>dataset.wtStatus</code> 상태 머신 분기</td>
+          <td><code>translating</code> / <code>idle</code> 전환</td>
         </tr>
         <tr>
-          <td><strong>3?�계: ?�스???�집</strong></td>
-          <td>깨끗??DOM ?�리 (비동�?</td>
-          <td><code>collectTextNodes()</code> ?�행</td>
-          <td>?�문 ?�스?�만 ?�전?�게 ?�집</td>
+          <td><strong>3단계: 텍스트 수집</strong></td>
+          <td>깨끗한 DOM 트리 (비동기)</td>
+          <td><code>collectTextNodes()</code> 실행</td>
+          <td>원문 텍스트만 안전하게 수집</td>
         </tr>
       </tbody>
     </table>
   </div>
 
   <h3 id="implementation-code">
-    ?�행 ?�탕 �??�태 관�?구현 코드
+    선행 소탕 및 상태 관리 구현 코드
   </h3>
 
   <div class="pre custom" data-text="JavaScript (src/content/popup_manager.js)">
     <button aria-label="Copy code">Copy</button>
-    <pre>// src/content/popup_manager.js: ?�역 ?�업 즉시 ?�거 모듈
+    <pre>// src/content/popup_manager.js: 전역 팝업 즉시 제거 모듈
 export function closeAllPopups() {
   const popups = document.querySelectorAll(
     ".wt-dictionary-popup, .wt-selection-card, .wt-selection-tooltip"
@@ -182,23 +180,24 @@ export function closeAllPopups() {
 
   <div class="pre custom" data-text="JavaScript (src/content/index.js)">
     <button aria-label="Copy code">Copy</button>
-    <pre>// src/content/index.js: ?�행 ?�탕 기반 ?�체 번역 ?��? ?�들??import { closeAllPopups } from "./popup_manager.js";
+    <pre>// src/content/index.js: 선행 소탕 기반 전체 번역 토글 핸들러
+import { closeAllPopups } from "./popup_manager.js";
 
 export async function toggleTranslation() {
-  // 1. ?�축???�력 즉시 ?�면??모든 ?�성 ?�업???�기?�으�??�탕
+  // 1. 단축키 입력 즉시 화면의 모든 활성 팝업을 동기적으로 소탕
   closeAllPopups();
 
   const body = document.body;
   const state = body.dataset.wtStatus || "idle";
 
-  // ?��? 번역???�태??경우 ?�문 복원 ??종료
+  // 이미 번역된 상태인 경우 원문 복원 후 종료
   if (state === "translating" || state === "translated") {
     revertTranslation();
     body.dataset.wtStatus = "idle";
     return;
   }
 
-  // 2. ?�업???�전???�라�?깨끗??DOM?�서 ?�체 번역 ?�작
+  // 2. 팝업이 완전히 사라진 깨끗한 DOM에서 전체 번역 시작
   body.dataset.wtStatus = "translating";
   await executePageTranslation();
   body.dataset.wtStatus = "translated";
@@ -206,41 +205,34 @@ export async function toggleTranslation() {
   </div>
 
   <h2 id="coexistence-lifecycle">
-    4. ?�체 번역 ?�태?�서???�전 ?�업 ?�립 공존
+    4. 전체 번역 상태에서의 사전 팝업 독립 공존
   </h2>
 
   <p>
-    반�????�나리오???�벽?�게 지?�했?�니?? <strong>?�체 ?�이지 번역???��? 켜져 ?�는 ?�태(<code>translated</code>)?�서 ?�용?��? ?�정 ?�어�??�시 ?�래�?/strong>?�을 ?�는, ?�체 번역??DOM 구조�?건드리�? ?�고 ?�립??최상???�버?�이 ?�이?�로 ?�전 ?�업??부?�럽�??�우?�록 ?�벤???�파�?격리?�습?�다.
+    반대의 시나리오도 완벽하게 지원했습니다. <strong>전체 페이지 번역이 이미 켜져 있는 상태(<code>translated</code>)에서 사용자가 특정 단어를 다시 드래그</strong>했을 때는, 전체 번역된 DOM 구조를 건드리지 않고 독립된 최상위 오버레이 레이어로 사전 팝업을 부드럽게 띄우도록 이벤트 전파를 격리했습니다.
   </p>
 
   <h2 id="verification">
-    5. 검�?결과
+    5. 검증 결과
   </h2>
 
   <ol class="step">
-    <li><strong>?�업 ?�존 �??�스??중첩 ?�로:</strong> ?�전 ?�업?????�는 ?�태?�서 <code>Alt+A</code>�??��??�도 ?�업??즉시 ?�히�??�체 ?�이지 번역????치의 ?�긋???�이 깔끔?�게 ?�작?�습?�다.</li>
-    <li><strong>?�활???�방??공존:</strong> ?�체 번역 ?�태?�서 ?�어 조회 $\leftrightarrow$ ?�어 조회 ?�태?�서 ?�체 번역 간의 ?�환??100% 매끄?�게 ?��??�었?�니??</li>
+    <li><strong>팝업 잔존 및 텍스트 중첩 제로:</strong> 사전 팝업이 떠 있는 상태에서 <code>Alt+A</code>를 연타해도 팝업이 즉시 닫히며 전체 페이지 번역이 한 치의 어긋남 없이 깔끔하게 동작했습니다.</li>
+    <li><strong>원활한 양방향 공존:</strong> 전체 번역 상태에서 단어 조회 $\leftrightarrow$ 단어 조회 상태에서 전체 번역 간의 전환이 100% 매끄럽게 유지되었습니다.</li>
   </ol>
 
   <h2 id="summary">
-    마무리하�?  </h2>
+    마무리하며
+  </h2>
 
   <p>
-    ?�라?�언??�??�터?�션�??�태 머신???�전???�돈?�자, ?�제 ?�용?�이 많�? ?�경?�서 ?�로???�프??문제가 ?�져 ?�왔?�니?? Gemini API�??�용?�여 100�??�상??문단??가�?�?기술 문서�?번역????구�???무료 ?�어 쿼터(15 RPM) ?�한??걸려 <code>429 Too Many Requests</code> ?�러가 ?��?�? ?�러 모델 간에 ?�롬?�트 ?�식???�라 번역 ?�질???�쑥?�쑥?��????�상??발생??것입?�다.
+    클라이언트 측 인터랙션과 상태 머신이 완전히 정돈되자, 실제 사용량이 많은 환경에서 새로운 인프라 문제가 터져 나왔습니다. Gemini API를 사용하여 100개 이상의 문단을 가진 긴 기술 문서를 번역할 때 구글의 무료 티어 쿼터(15 RPM) 제한에 걸려 <code>429 Too Many Requests</code> 에러가 터지고, 여러 모델 간에 프롬프트 형식이 달라 번역 품질이 들쑥날쑥해지는 현상이 발생한 것입니다.
   </p>
 
   <p>
-    ?�음 글?�서??Gemini API???�청 쿼터�??�어?�는 <strong>?�적 배치 ?�로?��?Throttling)</strong>�?모든 LLM 모델???�롬?�트�?중앙?�서 ?�원??관리하??<strong>?�합 ?�롬?�트 빌더</strong> 구축 과정???�루??보겠?�니??
+    다음 글에서는 Gemini API의 요청 쿼터를 제어하는 <strong>동적 배치 스로틀링(Throttling)</strong>과 모든 LLM 모델의 프롬프트를 중앙에서 일원화 관리하는 <strong>통합 프롬프트 빌더</strong> 구축 과정을 다루어 보겠습니다.
   </p>
 
+  <!-- 시리즈 네비게이션 컨테이너 (자동 생성, JS로 연동됨) -->
+  <nav class="series-nav" data-series="WebTranslator 개발기" data-current-slug="webtranslator-09-selection-vs-full-page-state-collision"></nav>
 </article>
-
-<!-- ============================================================
-  [PUBLISHING CHECKLIST - 발행 ??체크리스??
-  ??BLOG_TITLE ?�용 복사 ??Blogspot ?�단 '?�목' ?�력?�??붙여?�기
-  ??BLOG_LABELS ?�용 복사 ??Blogspot ?�측 ?�이?�바 '?�벨' 칸에 붙여?�기
-  ??META_DESCRIPTION ?�용 복사 ??Blogspot ?�측 '검???�명'?�??붙여?�기
-  ??Blogspot 본문 ?�디?��? "HTML 보기"�??�환 ????<article> ?�스 ?�체 붙여?�기
-  ???��?지 ?�롯 주석 ?�치???�제 ?��?지 ?�입
-  ???�약 발행 ?�는 즉시 발행
-  ============================================================ -->

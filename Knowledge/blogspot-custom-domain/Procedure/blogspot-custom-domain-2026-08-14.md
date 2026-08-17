@@ -1,10 +1,22 @@
 ---
+topic: blogspot-custom-domain
+title_kr: 블로그스팟 맞춤 도메인(Custom Domain) 연결 및 DNS 설정 가이드
+category: Procedure
+sub_category: DNS-Configuration
+version: 2026-08-14
 status: Verified
+created_date: 2026-08-14
 last_modified: 2026-08-14
-blog_id: core-archive
+language: KR
+tags: [Blogspot, CustomDomain, DNS, CNAME, ARecord, Blogger, 도메인설정]
+sources_count: 3
 blog_draft_path: Blog_Posts/core-archive/2026-08/blogspot-custom-domain-setup-guide.html
 blog_draft_date: 2026-08-14
+blog_id: core-archive
 blog_published: true
+series_name: null
+series_part: null
+series_prev_slug: null
 ---
 # Knowledge File: blogspot-custom-domain
 ## Category: Procedure

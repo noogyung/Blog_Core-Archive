@@ -1,4 +1,4 @@
----
+﻿---
 topic: webtranslator-11-gemini-model-404-and-dynamic-fetch
 title_kr: gemini-2.5-flash 404 사태와 실시간 가용 모델 동적 탐색
 category: Troubleshooting
@@ -14,11 +14,9 @@ blog_draft_path: Blog_Posts/core-archive/2026-08/webtranslator-11-gemini-model-4
 blog_draft_date: 2026-08-15
 blog_id: core-archive
 blog_published: false
-series_name: WebTranslator
+series_name: WebTranslator 개발기
 series_part: 11
-series_total: 21
 series_prev_slug: webtranslator-10-gemini-rate-limits-and-prompt-builder
-series_next_slug: webtranslator-12-empty-response-retry-and-ollama-bridge
 ---
 
 # Knowledge File: webtranslator-11-gemini-model-404-and-dynamic-fetch

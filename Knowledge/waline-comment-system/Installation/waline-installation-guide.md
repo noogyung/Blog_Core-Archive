@@ -7,6 +7,13 @@ version: v3.5
 status: Verified
 date: 2026-08-15
 language: KR+EN
+blog_draft_path: null
+blog_draft_date: null
+blog_id: core-archive
+blog_published: false
+series_name: null
+series_part: null
+series_prev_slug: null
 ---
 
 # 📦 [Knowledge Package] Waline 댓글 시스템 도입 시도와 Vercel Serverless 장애 트러블슈팅 전말

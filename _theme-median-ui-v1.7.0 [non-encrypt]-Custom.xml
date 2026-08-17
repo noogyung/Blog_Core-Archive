@@ -696,6 +696,21 @@
 @media (prefers-color-scheme: dark){/* Set theme: switch */ .nB[data-theme=default] .dc[aria-label=Dark] svg .sun{display:none} .nB[data-theme=default] .dc[aria-label=Dark] svg .moon{display:block} .nB[data-theme=default]{--themeLink: var(--darkLink); --themeC: var(--darkC); --themeC-alt: var(--darkC-alt); --themeBg: var(--darkBg); --themeBg-alt: var(--darkBg-alt); --themeBg-sec: var(--darkBg-sec); --themeBg-pop: var(--darkBg-pop); --themeBd-color: var(--darkBd-color); --synC: var(--themeC-alt); --synBg: var(--themeBg-alt); --synBd-color: var(--themeBd-color); --tableBg-color: rgb(45 49 56 / 80%); /* reset */ --buttonBg: var(--themeLink); --stepC: var(--themeLink); --headerBg: var(--themeBg); --sideBg: var(--themeBg); --sidebarBg: var(--themeBg); --footerBg: var(--themeBg); --postBg: var(--themeBg); --mobileBg: var(--themeBg-alt); --tocBg: var(--themeBg-alt); --contentBg: var(--themeBg); --contentBg-alt: var(--themeBg-alt); --contentBg-sec: var(--themeBg-sec); --buttonBd-color: var(--themeBd-color); --headerBd-color: var(--themeBd-color); --sideBd-color: var(--themeBd-color); --sidebarBd-color: var(--themeBd-color); --footerBd-color: var(--themeBd-color); --postBd-color: var(--themeBd-color); --mobileBd-color: var(--themeBd-color); --tocBd-color: var(--themeBd-color); --contentBd-color: var(--themeBd-color); --headerC: currentColor; --sideC: currentColor; --sidebarC: currentColor; --footerC: currentColor; --postC: currentColor; --mobileC: currentColor; --tocC: currentColor; --contentC: currentColor; } .nB[data-theme=default] .ipopUp, .nB[data-theme=dark] .profilePop{background-color:var(--contentBg-alt)} }
 
 /* Additional (Dummy ad) */ .adB{display:flex; min-height:60px;border:1px solid rgb(0 0 0 /10%);border-radius:2px;font-size:smaller} .adB::before{content:attr(data-text); margin:auto;opacity:.7}
+
+/* Post Content Image Standard Styling */
+#postBody article img,
+#postBody img,
+.postBody article img,
+.postBody img,
+article img {
+  width: 100%;
+  max-width: 800px;
+  height: auto;
+  border-radius: 8px;
+  margin: 1.2em auto;
+  display: block;
+}
+
 /*]]>*/</style>
     
     <b:else/>

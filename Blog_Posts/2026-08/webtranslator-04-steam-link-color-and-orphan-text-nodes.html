@@ -1,102 +1,101 @@
 <!-- ============================================================
-  [BLOG POST METADATA - Blogspot ?�정�?복사??
-  Title: [WebTranslator 개발�?#04] ?��? 링크 ?�상 ?�추출과 고아 ?�스???�드 ?�핑
-  Labels (Tags): WebTranslator, ChromeExtension, ?�롬?�장?�로그램, DOM, CSS, ?�러블슈??  Meta Description: ?�롬 ?�장 ?�로그램 개발�?4?? ?��?(Steam)??복잡??Flex/Grid ?�이?�웃?�서 발생??링크 ?�상 ?�이 버그?� 고아 ?�스???�드�??�한 ?�이?�웃 붕괴�?CSS display: contents 가???�퍼�??�결??과정???�리?�니??
+  [BLOG POST METADATA - Blogspot 설정창 복사용]
+  Title: [WebTranslator 개발기 #04] 스팀 링크 색상 오추출과 고아 텍스트 노드 래핑
+  Labels (Tags): WebTranslator, ChromeExtension, 크롬확장프로그램, DOM, CSS, 트러블슈팅
+  Meta Description: 크롬 확장 프로그램 개발기 4편: 스팀(Steam)의 복잡한 Flex/Grid 레이아웃에서 발생한 링크 색상 전이 버그와 고아 텍스트 노드로 인한 레이아웃 붕괴를 CSS display: contents 가상 래퍼로 해결한 과정을 정리합니다.
   Slug: webtranslator-04-steam-link-color-and-orphan-text-nodes
-  Primary Keyword: ?�바?�크립트 DOM ?�스???�드 조작
-  Secondary Keywords: display contents ?�용�? ?��? ?�페?��? ?�이?�웃 깨짐, ?�롬 ?�장 ?�로그램 DOM ?�싱, getComputedStyle ?�상 추출
-  Related Entities: Orphan Text Node, CSS display: contents, computedStyle, DOM Traversal
+  ---
+  Primary Keyword: 자바스크립트 DOM 텍스트 노드 조작
+  Secondary Keywords: display contents 활용법, 스팀 웹페이지 레이아웃 깨짐, 크롬 확장 프로그램 DOM 파싱, getComputedStyle 색상 추출
   Knowledge Source: Knowledge/webtranslator-04-steam-link-color-and-orphan-nodes/Troubleshooting/webtranslator-04-steam-link-color-and-orphan-nodes-2026-08-15.md
   Generated Date: 2026-08-15
-  Estimated Read Time: 6�?  ============================================================ -->
-
-<!-- [블로그스???�용 ?�드 복사??- �?줄을 복사?�여 블로그스???�력?�??붙여?�기] -->
-<!-- BLOG_TITLE: [WebTranslator 개발�?#04] ?��? 링크 ?�상 ?�추출과 고아 ?�스???�드 ?�핑 -->
-<!-- BLOG_LABELS: WebTranslator, ChromeExtension, ?�롬?�장?�로그램, DOM, CSS, ?�러블슈??-->
-<!-- META_DESCRIPTION: ?�롬 ?�장 ?�로그램 개발�?4?? ?��?(Steam)??복잡??Flex/Grid ?�이?�웃?�서 발생??링크 ?�상 ?�이 버그?� 고아 ?�스???�드�??�한 ?�이?�웃 붕괴�?CSS display: contents 가???�퍼�??�결??과정???�리?�니?? -->
+  Estimated Read Time: 6분
+  Series: WebTranslator 개발기
+  Prev Slug: webtranslator-03-v01-snapshot-and-custom-dict-order-bug
+  ============================================================ -->
 
 <article>
 
-  <!-- ?��?지 ?�롯 1: ?�???��?지 -->
-  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-08/webtranslator-04-steam-link-color-and-orphan-text-nodes-img1.jpg" alt="?��? DOM 고아 ?�스???�드 ?�핑 �?display: contents 가???�퍼 ?�키?�처 ?�이?�그??
-       style="width:100%; max-width:800px; height:auto; border-radius:8px; margin:1em 0; display:block;">
+  <!-- 이미지 슬롯 1: 대표 이미지 -->
+  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-08/webtranslator-04-steam-link-color-and-orphan-text-nodes-img1.jpg" alt="스팀 DOM 고아 텍스트 노드 래핑 및 display: contents 가상 래퍼 아키텍처 다이어그램">
 
   <p>
-    지??3?�에?�는 번역 API ?�출 ???�문???�손?�던 ?�처�?Pre-processing) 방식???�류�?바로?�고, ?�후 ?�씌?�기(Post-processing) ?�이?�라?�과 DOM ?��? ?�염 방�? 가?��? 구축?�여 ?�로?�트??기초 ?�정 버전??<strong>v0.1 ?�냅??/strong>???�성?�습?�다.
+    지난 3편에서는 번역 API 호출 전 원문을 훼손하던 전처리(Pre-processing) 방식의 오류를 바로잡고, 사후 덧씌우기(Post-processing) 파이프라인과 DOM 자가 오염 방지 가드를 구축하여 프로젝트의 기초 안정 버전인 <strong>v0.1 스냅샷</strong>을 완성했습니다.
   </p>
 
   <p>
-    기초 ?�키?�처�??�진 ?? WebTranslator??�??�스???�경?�자 ?��? ??기술??복합?�으�??�용??<strong>?��?(Steam) ?�점 �?커�??�티 ?�이지</strong>?�서 본격?�인 ?�더�?검증을 진행?�습?�다. 그러???�순???�적 ?�문?��? ?�리, ?��???고도�?중첩??Flex/Grid ?�경?�서??<strong>링크 ?�그???��???글???�상???�체 ?�스?�로 ?�못 번�?거나 버튼 배치가 ?�로�?�?��지???�각??DOM ?�더�?붕괴</strong>가 발생?�습?�다.
+    기초 아키텍처를 다진 후, WebTranslator의 주 테스트 환경이자 현대 웹 기술이 복합적으로 적용된 <strong>스팀(Steam) 상점 및 커뮤니티 페이지</strong>에서 본격적인 렌더링 검증을 진행했습니다. 그러나 단순한 정적 웹문서와 달리, 스팀의 고도로 중첩된 Flex/Grid 환경에서는 <strong>링크 태그의 파란색 글자 색상이 전체 텍스트로 잘못 번지거나 버튼 배치가 세로로 찢어지는 심각한 DOM 렌더링 붕괴</strong>가 발생했습니다.
   </p>
 
   <p>
-    ?�번 글?�서??고아 ?�스???�드(Orphan Text Node)???�이?�웃 간섭??무력?�하??<strong>CSS <code>display: contents</code> 가???�퍼</strong>???�입 배경�? ?�스???�드 직속 부모의 계산???��???Computed Style)??1:1�?추출?�여 ?�상 ?�염???�결??과정???�리??보고???�니??
+    이번 글에서는 고아 텍스트 노드(Orphan Text Node)의 레이아웃 간섭을 무력화하는 <strong>CSS <code>display: contents</code> 가상 래퍼</strong>의 도입 배경과, 텍스트 노드 직속 부모의 계산된 스타일(Computed Style)을 1:1로 추출하여 색상 오염을 해결한 과정을 정리해 보고자 합니다.
   </p>
 
   <h2 id="steam-dom-challenges">
-    1. ?�전 복합 DOM???��?: ?��?(Steam) ?�점 ?�이지
+    1. 실전 복합 DOM의 난관: 스팀(Steam) 상점 페이지
   </h2>
 
   <p>
-    ?��? ?�점 ?�이지??게임 ?�명 문단, 가격표, ?�인??배�?, ?�바구니 버튼 ?�이 <code>display: flex</code>?� <code>display: grid</code>�??��??�게 맞물???�는 ?�?�적??복합 ???�플리�??�션?�니??
+    스팀 상점 페이지는 게임 설명 문단, 가격표, 할인율 배지, 장바구니 버튼 등이 <code>display: flex</code>와 <code>display: grid</code>로 정밀하게 맞물려 있는 대표적인 복합 웹 애플리케이션입니다.
   </p>
 
   <p>
-    ?�러???�이지?�서 기존 방식?�로 번역???�행?�자마자 ?�음�?같�? 2가지 치명?�인 ?�각??결함???��??�습?�다.
+    이러한 페이지에서 기존 방식으로 번역을 실행하자마자 다음과 같은 2가지 치명적인 시각적 결함이 나타났습니다.
   </p>
 
   <div class="table w100 withBg">
     <table>
       <thead>
         <tr>
-          <th>?�상 구분</th>
+          <th>현상 구분</th>
           <th>발생 증상</th>
-          <th>?�인 ?�약</th>
+          <th>원인 요약</th>
         </tr>
       </thead>
       <tbody>
         <tr>
-          <td><strong>?�이?�웃 붕괴</strong></td>
-          <td>버튼 ?�치가 밀?�나거나 ?�소?�이 ?�래�?줄바꿈됨</td>
-          <td>고아 ?�스???�드�??�반 <code>&lt;span&gt;</code>?�로 감싸�?Flex Item 증�?</td>
+          <td><strong>레이아웃 붕괴</strong></td>
+          <td>버튼 위치가 밀려나거나 요소들이 아래로 줄바꿈됨</td>
+          <td>고아 텍스트 노드를 일반 <code>&lt;span&gt;</code>으로 감싸며 Flex Item 증가</td>
         </tr>
         <tr>
-          <td><strong>?�상 ?�염</strong></td>
-          <td>링크 바깥???�반 본문 번역문까지 ?��? ?��? 링크 ?�으�?칠해�?/td>
-          <td>?�위 컨테?�너 ??<code>&lt;a&gt;</code> ?�그??CSS ?�상??무차�??�속??/td>
+          <td><strong>색상 오염</strong></td>
+          <td>링크 바깥의 일반 본문 번역문까지 전부 파란 링크 색으로 칠해짐</td>
+          <td>상위 컨테이너 내 <code>&lt;a&gt;</code> 태그의 CSS 색상이 무차별 상속됨</td>
         </tr>
       </tbody>
     </table>
   </div>
 
   <h2 id="trial-and-error">
-    2. AI???�반?�인 ?�드 ?�핑�??�상 ?�추출의 ?�계
+    2. AI의 일반적인 노드 래핑과 색상 오추출의 한계
   </h2>
 
   <p>
-    AI ?�시?�턴?�에�??�이?�웃 깨짐??방�??�고 ?�스???�드�??�전?�게 감싸?�록 지?�했?�니??
+    AI 어시스턴트에게 레이아웃 깨짐을 방지하고 텍스트 노드를 안전하게 감싸도록 지시했습니다.
   </p>
 
-  <div class="pre custom" data-text="AI 지?�문">
+  <div class="pre custom" data-text="AI 지시문">
     <button aria-label="Copy code">Copy</button>
-    <pre>?��? ?�이지???�이?�웃 깨짐??분석?�고, 고아 ?�스???�드�?Flex ?�이?�웃 ?�향 ?�이 감싸??DOM ?�회 ?�집기�? ?�성?�라. ?�한 링크 ?�상???�체 번역문으�?번�???버그�?고쳐??</pre>
+    <pre>스팀 페이지의 레이아웃 깨짐을 분석하고, 고아 텍스트 노드를 Flex 레이아웃 영향 없이 감싸는 DOM 순회 수집기를 작성해라. 또한 링크 색상이 전체 번역문으로 번지는 버그를 고쳐라.</pre>
   </div>
 
   <p>
-    지?��? 받�? AI???�래?� 같이 ?�반 <code>&lt;span&gt;</code>?�로 ?�스?��? 감싸�??�위 ?�소?�서 링크 ?�그�?찾아 ?�상??복사?�는 코드�??�성?�왔?�니??
+    지시를 받은 AI는 아래와 같이 일반 <code>&lt;span&gt;</code>으로 텍스트를 감싸고 상위 요소에서 링크 태그를 찾아 색상을 복사하는 코드를 작성해왔습니다.
   </p>
 
-  <!-- 코드 블록: AI ?�류 코드 -->
-  <div class="pre custom" data-text="JavaScript (dom_collector.js - ?�류 코드)">
+  <!-- 코드 블록: AI 오류 코드 -->
+  <div class="pre custom" data-text="JavaScript (dom_collector.js - 오류 코드)">
     <button aria-label="Copy code">Copy</button>
-    <pre>// dom_collector.js: ?�반 span ?�핑 �??�위 ?�상 ?�괄 조회 (?�류 코드)
+    <pre>// dom_collector.js: 일반 span 래핑 및 상위 색상 일괄 조회 (오류 코드)
 function wrapTextNode(textNode) {
-  // 1. ?�반 span???�성?�여 ?�스???�드 감싸�?  const span = document.createElement("span");
+  // 1. 일반 span을 생성하여 텍스트 노드 감싸기
+  const span = document.createElement("span");
   span.className = "wt-text-wrapper";
   textNode.parentNode.insertBefore(span, textNode);
   span.appendChild(textNode);
 
-  // 2. 부�?컨테?�너 ?�의 a ?�그 ?�상??무조�?복사?�여 ?�용
+  // 2. 부모 컨테이너 내의 a 태그 색상을 무조건 복사하여 적용
   const linkEl = span.parentElement.querySelector("a");
   const targetColor = window.getComputedStyle(linkEl || span.parentElement).color;
   span.style.color = targetColor;
@@ -104,57 +103,57 @@ function wrapTextNode(textNode) {
   </div>
 
   <h3 id="problem-analysis">
-    발생??기술???�인 분석
+    발생한 기술적 원인 분석
   </h3>
 
   <ul>
-    <li><strong>Flex 컨테?�너??Item ??증�?:</strong> 부모�? <code>display: flex</code>??경우, ?�식 ?�스???�드??직접?�인 Flex Item?�로 취급?��? ?�거???�명 ?�퍼�?묶입?�다. ?��?�??�기???�반 <code>&lt;span&gt;</code>???�입?�는 ?�간 브라?��????��? <strong>?�로???�립 Flex Item</strong>?�로 ?�식?�여 Flex ?�렬�??�비 계산???�시 ?�행?��?�?배치가 ?�산조각 ?�습?�다.</li>
-    <li><strong>`querySelector('a')`??과도???�상 ?�파:</strong> 문단 ?�에 ???�나??링크�??�함?�어 ?�어?? 문단 ?�체???�스???�드가 <code>querySelector('a')</code>???�해 ?��???링크 글?�색??강제 ?�속받아 ?�각???�계가 ?�전??무너졌습?�다.</li>
+    <li><strong>Flex 컨테이너의 Item 수 증가:</strong> 부모가 <code>display: flex</code>인 경우, 자식 텍스트 노드는 직접적인 Flex Item으로 취급되지 않거나 익명 래퍼로 묶입니다. 하지만 여기에 일반 <code>&lt;span&gt;</code>이 삽입되는 순간 브라우저는 이를 <strong>새로운 독립 Flex Item</strong>으로 인식하여 Flex 정렬과 너비 계산을 다시 수행하므로 배치가 산산조각 났습니다.</li>
+    <li><strong>`querySelector('a')`의 과도한 색상 전파:</strong> 문단 내에 단 하나의 링크만 포함되어 있어도, 문단 전체의 텍스트 노드가 <code>querySelector('a')</code>에 의해 파란색 링크 글자색을 강제 상속받아 시각적 위계가 완전히 무너졌습니다.</li>
   </ul>
 
   <h2 id="display-contents-solution">
-    3. ?�결�?1: CSS `display: contents` 가???�퍼 ?�입
+    3. 해결책 1: CSS `display: contents` 가상 래퍼 도입
   </h2>
 
   <p>
-    부모의 ?�이?�웃 계산???�절 간섭?��? ?�으면서 ?�스???�드만을 ?�리?�으�?감싸�??�해 <strong>CSS <code>display: contents</code></strong> 기법???�입?�도�?지?��? ?�정?�습?�다.
+    부모의 레이아웃 계산에 일절 간섭하지 않으면서 텍스트 노드만을 논리적으로 감싸기 위해 <strong>CSS <code>display: contents</code></strong> 기법을 도입하도록 지시를 수정했습니다.
   </p>
 
-  <div class="pre custom" data-text="AI 지???�정">
+  <div class="pre custom" data-text="AI 지시 수정">
     <button aria-label="Copy code">Copy</button>
-    <pre>?�반 span?�로 감싸??Flex Item???�리지 마라. CSS display: contents�??�용?�여 부�??�이?�웃 ?�진?�는 ?�퍼가 ?�는 것처???�명?�게 ?�작?�면???�직 ?�스???�드�??�제?�는 가???�퍼(.wt-text-wrapper)�??�용?�라.</pre>
+    <pre>일반 span으로 감싸서 Flex Item을 늘리지 마라. CSS display: contents를 적용하여 부모 레이아웃 엔진에는 래퍼가 없는 것처럼 투명하게 동작하면서 오직 텍스트 노드만 통제하는 가상 래퍼(.wt-text-wrapper)를 적용해라.</pre>
   </div>
 
   <div class="note">
-    <strong>?�� `display: contents`???�작 ?�리:</strong> ?�당 ?�소 ?�신??박스(Box) 모델(margin, border, padding ?????�더 ?�리?�서 ?�전???�략?�니?? 부모의 Flex/Grid ?�진?� ?�식 ?�스?��? ?�위 ?�그?�만 직접 바라보�?�?기존 ?�이?�웃??0.1px??변?��? ?�습?�다.
+    <strong>💡 `display: contents`의 동작 원리:</strong> 해당 요소 자신의 박스(Box) 모델(margin, border, padding 등)이 렌더 트리에서 완전히 생략됩니다. 부모의 Flex/Grid 엔진은 자식 텍스트와 하위 태그들만 직접 바라보므로 기존 레이아웃이 0.1px도 변하지 않습니다.
   </div>
 
   <h2 id="color-extraction-solution">
-    4. ?�결�?2: 직속 부�?기�? 1:1 글???�상 ?��? 추출
+    4. 해결책 2: 직속 부모 기준 1:1 글자 색상 정밀 추출
   </h2>
 
   <p>
-    ?�상 ?�염??방�??�기 ?�해 컨테?�너 ?��? 검??<code>querySelector</code>)???�면 금�??�고, �??�스???�드??직속 부�?<code>parentElement</code>)??<code>computedStyle.color</code>�??�격?�게 조회?�도�??�이?�라?�을 ?�비?�습?�다.
+    색상 오염을 방지하기 위해 컨테이너 내부 검색(<code>querySelector</code>)을 전면 금지하고, 각 텍스트 노드의 직속 부모(<code>parentElement</code>)의 <code>computedStyle.color</code>만 엄격하게 조회하도록 파이프라인을 정비했습니다.
   </p>
 
   <div class="pre custom" data-text="JavaScript (src/content/dom_collector.js)">
     <button aria-label="Copy code">Copy</button>
-    <pre>// src/content/dom_collector.js: display: contents 가???�퍼 �?직속 ?�상 추출
+    <pre>// src/content/dom_collector.js: display: contents 가상 래퍼 및 직속 색상 추출
 export function wrapTextRuns(element) {
   const childNodes = Array.from(element.childNodes);
 
   for (const node of childNodes) {
     if (node.nodeType === Node.TEXT_NODE && node.nodeValue.trim().length > 0) {
-      // 1. 가???�퍼 ?�성
+      // 1. 가상 래퍼 생성
       const wrapper = document.createElement("span");
       wrapper.className = "wt-text-wrapper";
-      wrapper.style.display = "contents"; // ?�이?�웃 간섭 ?�로
+      wrapper.style.display = "contents"; // 레이아웃 간섭 제로
 
-      // 2. 직속 부모의 ?�제 계산???�상�?1:1 추출
+      // 2. 직속 부모의 실제 계산된 색상만 1:1 추출
       const parentStyle = window.getComputedStyle(node.parentElement);
       wrapper.dataset.computedColor = parentStyle.color;
 
-      // 3. ?�스???�드 ?�전 ?�핑
+      // 3. 텍스트 노드 안전 래핑
       node.parentNode.insertBefore(wrapper, node);
       wrapper.appendChild(node);
     }
@@ -164,44 +163,37 @@ export function wrapTextRuns(element) {
 
   <div class="pre custom" data-text="CSS (src/content/content.css)">
     <button aria-label="Copy code">Copy</button>
-    <pre>/* content.css: 가???�퍼 ?��???보장 */
+    <pre>/* content.css: 가상 래퍼 스타일 보장 */
 .wt-text-wrapper {
   display: contents !important;
 }</pre>
   </div>
 
   <h2 id="verification">
-    5. 검�?결과 �??�심 교훈
+    5. 검증 결과 및 핵심 교훈
   </h2>
 
   <p>
-    <code>display: contents</code> 가???�퍼?� 직속 부�??�상 추출???�용?????��? ?�점 ?�이지�??�시 ?�스?�했?�니??
+    <code>display: contents</code> 가상 래퍼와 직속 부모 색상 추출을 적용한 뒤 스팀 상점 페이지를 다시 테스트했습니다.
   </p>
 
   <ol class="step">
-    <li><strong>?�벽???�이?�웃 보존:</strong> 복잡??Flex 가격표?� ?�바구니 버튼???�퍼 ?�입 ?�전�?100% ?�일???�치?� ?�기�??��??�습?�다.</li>
-    <li><strong>?�확???�스???�상 분리:</strong> 링크 ?�그 ?��????�스?�만 링크 ?�상???��??�고, 바깥???�반 본문 번역문�? 본문 고유???�색/?�색 ?�트 ?�상???�벽?�게 ?��??�습?�다.</li>
+    <li><strong>완벽한 레이아웃 보존:</strong> 복잡한 Flex 가격표와 장바구니 버튼이 래퍼 삽입 이전과 100% 동일한 위치와 크기를 유지했습니다.</li>
+    <li><strong>정확한 텍스트 색상 분리:</strong> 링크 태그 내부의 텍스트만 링크 색상을 유지하고, 바깥의 일반 본문 번역문은 본문 고유의 회색/흰색 폰트 색상을 완벽하게 유지했습니다.</li>
   </ol>
 
   <h2 id="summary">
-    마무리하�?  </h2>
+    마무리하며
+  </h2>
 
   <p>
-    고아 ?�스???�드?� 링크 ?�상 ?�이 문제�?깔끔?�게 ?�결?�으?? ?��? ?�점??<code>?�바구니??추�? (Add to Cart)</code> 같�? ?��? ?�색 버튼 ?�에??번역문이 <code>&lt;div&gt;</code> 블록처럼 줄바�??�더링되??버튼???�로�?거�??�게 ?�뚱?��??????�른 ?�더�?붕괴가 발견?�었?�니??
+    고아 텍스트 노드와 링크 색상 전이 문제를 깔끔하게 해결했으나, 스팀 상점의 <code>장바구니에 추가 (Add to Cart)</code> 같은 작은 녹색 버튼 안에서 번역문이 <code>&lt;div&gt;</code> 블록처럼 줄바꿈 렌더링되어 버튼이 세로로 거대하게 뚱뚱해지는 또 다른 렌더링 붕괴가 발견되었습니다.
   </p>
 
   <p>
-    ?�음 글?�서???�그???�성�?글??길이�?기반?�로 ?�라??Inline)�?블록(Block) ?�더링을 지?�적?�로 분기?�는 <strong>?�???�더??Dual Renderer)</strong> 구축 과정???�루??보겠?�니??
+    다음 글에서는 태그의 속성과 글자 길이를 기반으로 인라인(Inline)과 블록(Block) 렌더링을 지능적으로 분기하는 <strong>듀얼 렌더러(Dual Renderer)</strong> 구축 과정을 다루어 보겠습니다.
   </p>
 
+  <!-- 시리즈 네비게이션 컨테이너 (자동 생성, JS로 연동됨) -->
+  <nav class="series-nav" data-series="WebTranslator 개발기" data-current-slug="webtranslator-04-steam-link-color-and-orphan-text-nodes"></nav>
 </article>
-
-<!-- ============================================================
-  [PUBLISHING CHECKLIST - 발행 ??체크리스??
-  ??BLOG_TITLE ?�용 복사 ??Blogspot ?�단 '?�목' ?�력?�??붙여?�기
-  ??BLOG_LABELS ?�용 복사 ??Blogspot ?�측 ?�이?�바 '?�벨' 칸에 붙여?�기
-  ??META_DESCRIPTION ?�용 복사 ??Blogspot ?�측 '검???�명'?�??붙여?�기
-  ??Blogspot 본문 ?�디?��? "HTML 보기"�??�환 ????<article> ?�스 ?�체 붙여?�기
-  ???��?지 ?�롯 주석 ?�치???�제 ?��?지 ?�입
-  ???�약 발행 ?�는 즉시 발행
-  ============================================================ -->

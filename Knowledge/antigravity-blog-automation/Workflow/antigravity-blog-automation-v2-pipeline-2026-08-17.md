@@ -16,9 +16,7 @@ blog_id: core-archive
 blog_published: true
 series_name: Antigravity 블로그 포스팅 자동화 구축기
 series_part: 2
-series_total: 2
 series_prev_slug: antigravity-blog-automation-workflow
-series_next_slug: null
 ---
 
 ===== KNOWLEDGE PACKAGE START =====
