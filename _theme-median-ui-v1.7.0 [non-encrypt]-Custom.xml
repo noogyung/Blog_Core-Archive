@@ -935,13 +935,31 @@ article img {
   opacity: 0.55 !important;
 }
 
-/* Hide Google Translate elements */
-.goog-te-banner-frame.skiptranslate, .goog-te-banner-frame { display: none !important; }
-body { top: 0px !important; }
-.goog-tooltip, .goog-tooltip:hover { display: none !important; }
+/* Complete annihilation of Google Translate banner & frames */
+.goog-te-banner-frame,
+.goog-te-banner-frame.skiptranslate,
+iframe.goog-te-banner-frame,
+iframe.skiptranslate,
+.VIpgJd-ZVi9od-aZ2wEe-wOHMyf,
+.VIpgJd-ZVi9od-aZ2wEe-OiiCO,
+.VIpgJd-ZVi9od-ORHb,
+#goog-gt-tt,
+.goog-te-balloon-frame,
+.goog-tooltip,
+.goog-tooltip:hover,
+#google_translate_element {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  position: absolute !important;
+  top: -9999px !important;
+  left: -9999px !important;
+  width: 0 !important;
+  height: 0 !important;
+  z-index: -9999 !important;
+}
 .goog-text-highlight { background-color: transparent !important; border: none !important; box-shadow: none !important; }
-#goog-gt-tt, .goog-te-balloon-frame { display: none !important; }
-#google_translate_element { display: none !important; }
+body { top: 0px !important; position: static !important; }
 
 /*]]>*/
 </style>
@@ -2867,6 +2885,7 @@ class TableOfContents { constructor({ from, to }) { this.fromElement = from; thi
                 <b:widget id='TextList00' locked='true' title='Header icon' type='TextList' version='2' visible='true'>
                   <b:widget-settings>
                     <b:widget-setting name='shownum'/>
+                    <b:widget-setting name='item-3'>Translate</b:widget-setting>
                     <b:widget-setting name='sorting'>NONE</b:widget-setting>
                     <b:widget-setting name='item-2'>Bookmark</b:widget-setting>
                     <b:widget-setting name='item-1'>Dark</b:widget-setting>
@@ -3122,8 +3141,6 @@ class TableOfContents { constructor({ from, to }) { this.fromElement = from; thi
                       </b:loop>
                     </b:includable>
                   </b:widget>
-                  
-                  
                 </b:section>
                 <!--[ Google Translate Popup ]-->
                 <div class='iTrans ipopUp flex column invisible noJava'>
@@ -3178,39 +3195,37 @@ class TableOfContents { constructor({ from, to }) { this.fromElement = from; thi
                   </b:widget>
                   <b:widget id='LinkList000' locked='true' title='Main Menu' type='LinkList' version='2' visible='true'>
                     <b:widget-settings>
-                      <b:widget-setting name='text-10'>_리뷰</b:widget-setting>
+                      <b:widget-setting name='text-10'>About</b:widget-setting>
                       <b:widget-setting name='sorting'>NONE</b:widget-setting>
                       <b:widget-setting name='link-1'>_</b:widget-setting>
-                      <b:widget-setting name='link-13'>_</b:widget-setting>
+                      <b:widget-setting name='link-13'>/search/label/WebTranslator</b:widget-setting>
                       <b:widget-setting name='link-2'>/search/label/Unity</b:widget-setting>
-                      <b:widget-setting name='link-12'>/p/guestbook.html</b:widget-setting>
-                      <b:widget-setting name='link-15'>/search/label/Homelab</b:widget-setting>
+                      <b:widget-setting name='link-12'>_</b:widget-setting>
                       <b:widget-setting name='link-0'>/</b:widget-setting>
-                      <b:widget-setting name='link-14'>/search/label/WebTranslator</b:widget-setting>
-                      <b:widget-setting name='link-11'>/p/about.html</b:widget-setting>
-                      <b:widget-setting name='link-10'>/search/label/Review</b:widget-setting>
-                      <b:widget-setting name='text-9'>_개인 개발</b:widget-setting>
-                      <b:widget-setting name='link-9'>/search/label/PersonalDev</b:widget-setting>
-                      <b:widget-setting name='text-8'>_서버</b:widget-setting>
-                      <b:widget-setting name='link-7'>/search/label/Blog</b:widget-setting>
-                      <b:widget-setting name='link-8'>/search/label/Server</b:widget-setting>
-                      <b:widget-setting name='link-5'>/search/label/Plugin</b:widget-setting>
-                      <b:widget-setting name='link-6'>_</b:widget-setting>
+                      <b:widget-setting name='link-14'>/search/label/Homelab</b:widget-setting>
+                      <b:widget-setting name='link-11'>/p/guestbook.html</b:widget-setting>
+                      <b:widget-setting name='link-10'>/p/about.html</b:widget-setting>
+                      <b:widget-setting name='text-9'>_리뷰</b:widget-setting>
+                      <b:widget-setting name='link-9'>/search/label/Review</b:widget-setting>
+                      <b:widget-setting name='text-8'>_개인 개발</b:widget-setting>
+                      <b:widget-setting name='link-7'>/search/label/Server</b:widget-setting>
+                      <b:widget-setting name='link-8'>/search/label/PersonalDev</b:widget-setting>
+                      <b:widget-setting name='link-5'>_</b:widget-setting>
+                      <b:widget-setting name='link-6'>/search/label/Blog</b:widget-setting>
                       <b:widget-setting name='link-3'>/search/label/Unreal</b:widget-setting>
                       <b:widget-setting name='link-4'>/search/label/Shader</b:widget-setting>
                       <b:widget-setting name='text-1'>게임개발</b:widget-setting>
                       <b:widget-setting name='text-0'>Home</b:widget-setting>
                       <b:widget-setting name='text-3'>_Unreal</b:widget-setting>
                       <b:widget-setting name='text-2'>_Unity</b:widget-setting>
-                      <b:widget-setting name='text-5'>_Plugin</b:widget-setting>
+                      <b:widget-setting name='text-5'>취미</b:widget-setting>
                       <b:widget-setting name='text-4'>_Shader</b:widget-setting>
-                      <b:widget-setting name='text-7'>_블로그</b:widget-setting>
-                      <b:widget-setting name='text-6'>취미</b:widget-setting>
-                      <b:widget-setting name='text-15'>_Homelab</b:widget-setting>
-                      <b:widget-setting name='text-11'>About</b:widget-setting>
-                      <b:widget-setting name='text-12'>Contact</b:widget-setting>
-                      <b:widget-setting name='text-13'>시리즈</b:widget-setting>
-                      <b:widget-setting name='text-14'>_Web Translator</b:widget-setting>
+                      <b:widget-setting name='text-7'>_서버</b:widget-setting>
+                      <b:widget-setting name='text-6'>_블로그</b:widget-setting>
+                      <b:widget-setting name='text-11'>Contact</b:widget-setting>
+                      <b:widget-setting name='text-12'>시리즈</b:widget-setting>
+                      <b:widget-setting name='text-13'>_Web Translator</b:widget-setting>
+                      <b:widget-setting name='text-14'>_Homelab</b:widget-setting>
                     </b:widget-settings>
                     <b:includable id='main'>
                       <b:include name='content'/>
