@@ -711,6 +711,146 @@ article img {
   display: block;
 }
 
+/* ============================================================
+   [Series & Related Posts Tabs UI - Median UI Native Clean]
+   ============================================================ */
+.post-nav-tabs-wrapper {
+  margin-top: 45px;
+  background: transparent;
+  border: none;
+}
+.nav-tab-buttons {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 22px;
+  padding: 0;
+  border: none;
+}
+.nav-tab-btn {
+  background: none;
+  border: none;
+  padding: 0 0 6px 0;
+  font-size: 1.072rem;
+  font-weight: 500;
+  color: inherit;
+  opacity: 0.55;
+  cursor: pointer;
+  position: relative;
+  transition: opacity 0.2s ease, color 0.2s ease;
+  outline: none;
+}
+.nav-tab-btn:hover {
+  opacity: 0.9;
+}
+.nav-tab-btn.active {
+  font-weight: 700;
+  opacity: 1;
+}
+.nav-tab-btn.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: currentColor;
+}
+.nav-tab-panel {
+  display: none;
+}
+.nav-tab-panel.active {
+  display: block;
+}
+
+/* Hide duplicate header inside Related Post widget when inside tabs */
+.post-nav-tabs-wrapper #relatedPost .title {
+  display: none;
+}
+
+/* Series Section Header */
+.series-section-header {
+  margin-bottom: 18px;
+  font-size: 0.9rem;
+  opacity: 0.75;
+}
+
+/* Refined Post Title Font in Cards */
+.post-nav-tabs-wrapper .itemR .pT .name {
+  font-size: 1.1rem !important;
+  font-weight: 500 !important;
+  line-height: 1.4 !important;
+}
+
+/* Disabled Series Card */
+.series-cards-grid article.disabled {
+  opacity: 0.4;
+  pointer-events: none;
+  user-select: none;
+}
+.series-cards-grid article.disabled .mi {
+  background-color: var(--lightBg-sec, rgba(128,128,128,0.12));
+}
+.series-cards-grid article.disabled .pT .name {
+  font-weight: 400 !important;
+}
+
+/* Series TOC Accordion */
+.series-toc-accordion {
+  margin-top: 25px;
+  border: none;
+  background: transparent;
+}
+.series-toc-accordion summary {
+  cursor: pointer;
+  font-size: 0.85rem;
+  opacity: 0.65;
+  padding: 6px 0;
+  user-select: none;
+  outline: none;
+  transition: opacity 0.2s ease;
+}
+.series-toc-accordion summary:hover {
+  opacity: 1;
+  text-decoration: underline;
+}
+.series-toc-list {
+  margin: 12px 0 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.series-toc-item {
+  font-size: 0.88rem;
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  line-height: 1.5;
+}
+.series-toc-item .num {
+  font-size: 0.8rem;
+  opacity: 0.5;
+  font-family: var(--fontCode, monospace);
+  min-width: 26px;
+}
+.series-toc-item a {
+  color: inherit;
+  opacity: 0.85;
+  text-decoration: none;
+}
+.series-toc-item a:hover {
+  opacity: 1;
+  text-decoration: underline;
+}
+.series-toc-item.current {
+  font-weight: 700;
+  opacity: 1;
+}
+.series-toc-item.current span {
+  text-decoration: none;
+}
 /*]]>*/</style>
     
     <b:else/>
@@ -1440,6 +1580,223 @@ error: &quot;<div class='j e button' expr:aria-label='data:messages.loadMorePost
         <script> const cCopy = &quot;<data:messages.copyToClipboard/>&quot;; /*<![CDATA[*/ let box = document.querySelectorAll(".pre:not(.tb)"); box.forEach((block) => {if (navigator.clipboard) {let button = document.createElement("button"); button.innerText = cCopy; block.appendChild(button); button.addEventListener("click", async () => {await cCode(block, button);}); } }); async function cCode(block, button) {let code = block.querySelector("pre"), text = code.innerText; await navigator.clipboard.writeText(text); button.innerHTML = cCopy + "<span class='fixN copied'></span>"; setTimeout(() => {button.innerText = cCopy;}, 2200);} /*]]>*/</script>
       </b:includable>
       
+      <!--[ Series & Related Posts Navigation JavaScript ]-->
+      <b:includable id='seriesNavigationScript'>
+        <script>/*<![CDATA[*/
+        document.addEventListener("DOMContentLoaded", function() {
+          var navContainer = document.querySelector('.series-nav');
+          if (!navContainer) return;
+
+          var seriesId = navContainer.getAttribute('data-series');
+          var seriesTitle = navContainer.getAttribute('data-series-title') || seriesId;
+          var currentSlug = navContainer.getAttribute('data-current-slug');
+          if (!seriesId) return;
+
+          function getSlug(url) {
+            if (!url) return '';
+            var clean = url.split('?')[0].split('#')[0].replace(/\/+$/, '');
+            var parts = clean.split('/');
+            var last = parts[parts.length - 1] || '';
+            return last.replace(/\.html$/, '');
+          }
+
+          function getThumbnail(entry) {
+            var content = (entry.content && entry.content.$t) ? entry.content.$t : ((entry.summary && entry.summary.$t) ? entry.summary.$t : '');
+            var imgMatch = content.match(/<img[^>]+src=["']([^"']+)["']/i);
+            if (imgMatch && imgMatch[1]) {
+              return imgMatch[1];
+            }
+            if (entry.media$thumbnail && entry.media$thumbnail.url) {
+              return entry.media$thumbnail.url.replace(/\/s\d+(-c)?\//, '/s480/').replace(/s72-c[^\/]*\//, 's480/');
+            }
+            return 'data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
+          }
+
+          function formatDate(entry) {
+            var dt = (entry.published && entry.published.$t || '').substring(0, 10);
+            var dateText = '';
+            var dateFull = dt;
+            if (dt.length === 10) {
+              var Y = dt.substring(0, 4);
+              var M = dt.substring(5, 7);
+              var D = dt.substring(8, 10);
+              var mm = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+              var MM = mm[parseInt(M, 10) - 1] || '';
+              dateText = MM + ' ' + D;
+              dateFull = MM + ' ' + D + ', ' + Y;
+            }
+            return { dateText: dateText, dateFull: dateFull, published: dt };
+          }
+
+          function buildSeriesCard(post, directionText, emptyText) {
+            if (!post) {
+              return '<article class="flex disabled">' +
+                '<div class="pI shrink"><div class="image"><div class="mi"></div></div></div>' +
+                '<div class="pC grow">' +
+                  '<div class="pH info flex fontM"><time class="time ellips opacity shrink" data-text="' + directionText + '"></time></div>' +
+                  '<div class="pT cInherit"><h4 class="name">' + emptyText + '</h4></div>' +
+                '</div>' +
+              '</article>';
+            }
+
+            var d = formatDate(post.entry);
+            var metaText = directionText + ' · ' + d.dateText;
+
+            return '<article class="flex">' +
+              '<div class="pI shrink"><a aria-label="Thumbnail" class="image" href="' + post.url + '"><div class="mi" style="background-image:url(' + post.thumb + ')"></div></a></div>' +
+              '<div class="pC grow">' +
+                '<div class="pH info flex fontM"><time class="time ellips opacity shrink" data-text="' + metaText + '" datetime="' + d.published + '" title="Published on: ' + d.dateFull + '"></time></div>' +
+                '<div class="pT cInherit"><h4 class="name"><a class="clamp" href="' + post.url + '">' + post.title + '</a></h4></div>' +
+              '</div>' +
+            '</article>';
+          }
+
+          function processAndRender(posts) {
+            if (!posts || posts.length === 0) return false;
+
+            posts.sort(function(a, b) {
+              return new Date(a.published.$t) - new Date(b.published.$t);
+            });
+
+            var targetSlug = (currentSlug || getSlug(window.location.pathname)).toLowerCase();
+            var currentIndex = -1;
+            var postList = [];
+
+            for (var i = 0; i < posts.length; i++) {
+              var altLink = posts[i].link.find(function(l) { return l.rel === "alternate"; });
+              if (!altLink) continue;
+              var pUrl = altLink.href;
+              var pTitle = posts[i].title.$t;
+              var pThumb = getThumbnail(posts[i]);
+              var pSlug = getSlug(pUrl).toLowerCase();
+
+              var postObj = {
+                title: pTitle,
+                url: pUrl,
+                thumb: pThumb,
+                entry: posts[i],
+                slug: pSlug
+              };
+              postList.push(postObj);
+
+              if (pSlug === targetSlug) {
+                currentIndex = postList.length - 1;
+              }
+            }
+
+            var tabsWrapper = document.createElement('div');
+            tabsWrapper.className = 'post-nav-tabs-wrapper';
+
+            var prevPost = currentIndex > 0 ? postList[currentIndex - 1] : null;
+            var nextPost = (currentIndex !== -1 && currentIndex < postList.length - 1) ? postList[currentIndex + 1] : null;
+
+            var prevCardHtml = buildSeriesCard(prevPost, '이전 편', '첫 번째 글입니다');
+            var nextCardHtml = buildSeriesCard(nextPost, '다음 편', '마지막 편입니다');
+
+            var tocHtml = '';
+            for (var j = 0; j < postList.length; j++) {
+              var numStr = (j + 1) < 10 ? '0' + (j + 1) : (j + 1);
+              if (j === currentIndex) {
+                tocHtml += '<li class="series-toc-item current"><span class="num">#' + numStr + '</span><span>' + postList[j].title + ' (현재 글)</span></li>';
+              } else {
+                tocHtml += '<li class="series-toc-item"><span class="num">#' + numStr + '</span><a href="' + postList[j].url + '">' + postList[j].title + '</a></li>';
+              }
+            }
+
+            tabsWrapper.innerHTML = 
+              '<div class="nav-tab-buttons">' +
+                '<button type="button" class="nav-tab-btn active" data-tab="series">' +
+                  '<span>시리즈 목록</span>' +
+                '</button>' +
+                '<button type="button" class="nav-tab-btn" data-tab="related">' +
+                  '<span>관심 있을 만한 글</span>' +
+                '</button>' +
+              '</div>' +
+              '<div class="nav-tab-panel active" id="tab-panel-series">' +
+                '<div class="series-nav-box">' +
+                  '<div class="series-section-header">' +
+                    '<span>' + seriesTitle + ' (총 ' + postList.length + '편)</span>' +
+                  '</div>' +
+                  '<div class="itemR type-1 flex wrap scrlH series-cards-grid" role="feed">' +
+                    prevCardHtml +
+                    nextCardHtml +
+                  '</div>' +
+                  '<details class="series-toc-accordion">' +
+                    '<summary>시리즈 전체 목록 (' + postList.length + '편)</summary>' +
+                    '<ul class="series-toc-list">' + tocHtml + '</ul>' +
+                  '</details>' +
+                '</div>' +
+              '</div>' +
+              '<div class="nav-tab-panel" id="tab-panel-related"></div>';
+
+            navContainer.parentNode.replaceChild(tabsWrapper, navContainer);
+
+            var relatedWidget = document.getElementById('relatedPost');
+            var relatedPanel = tabsWrapper.querySelector('#tab-panel-related');
+            if (relatedWidget && relatedPanel) {
+              relatedPanel.appendChild(relatedWidget);
+            }
+
+            var tabBtns = tabsWrapper.querySelectorAll('.nav-tab-btn');
+            var panels = tabsWrapper.querySelectorAll('.nav-tab-panel');
+            tabBtns.forEach(function(btn) {
+              btn.addEventListener('click', function() {
+                var targetTab = this.getAttribute('data-tab');
+                tabBtns.forEach(function(b) { b.classList.remove('active'); });
+                panels.forEach(function(p) { p.classList.remove('active'); });
+                this.classList.add('active');
+                var activePanel = tabsWrapper.querySelector('#tab-panel-' + targetTab);
+                if (activePanel) activePanel.classList.add('active');
+              });
+            });
+            return true;
+          }
+
+          // Use full 'default' feed instead of 'summary' so content/img tags are present!
+          var labelFeedUrl = "/feeds/posts/default/-/" + encodeURIComponent(seriesId) + "?alt=json&max-results=500";
+          fetch(labelFeedUrl)
+            .then(function(res) { return res.json(); })
+            .then(function(data) {
+              var posts = data && data.feed && data.feed.entry;
+              if (posts && posts.length > 0) {
+                processAndRender(posts);
+              } else {
+                fetchAllFallback();
+              }
+            })
+            .catch(function() {
+              fetchAllFallback();
+            });
+
+          function fetchAllFallback() {
+            var allFeedUrl = "/feeds/posts/default?alt=json&max-results=500";
+            fetch(allFeedUrl)
+              .then(function(res) { return res.json(); })
+              .then(function(data) {
+                var allPosts = data && data.feed && data.feed.entry;
+                if (!allPosts) return;
+
+                var sIdLower = seriesId.toLowerCase();
+                var sTitleClean = seriesTitle.replace(/\s+/g, '').toLowerCase();
+
+                var filtered = allPosts.filter(function(entry) {
+                  var title = (entry.title && entry.title.$t || '').replace(/\s+/g, '').toLowerCase();
+                  var alt = entry.link && entry.link.find(function(l) { return l.rel === "alternate"; });
+                  var href = (alt && alt.href || '').toLowerCase();
+                  
+                  return title.indexOf(sTitleClean) !== -1 || href.indexOf(sIdLower) !== -1;
+                });
+
+                processAndRender(filtered);
+              })
+              .catch(function(err) {
+                console.error("Series Fallback Navigation Error: ", err);
+              });
+          }
+        });
+        /*]]>*/</script>
+      </b:includable>
+      
       <!--[ bookmarkLoad ]-->
       <b:includable id='bookmarkLoad'>
         <script>/*<![CDATA[*/ /* Bookmark With Browser Local Storage, Created by: igniel.com, Source code: https://www.igniel.com/2022/12/widget-bookmark-blog.html */ function bookmarkLoad(){ const bookmarks = {
@@ -1480,9 +1837,9 @@ error: &quot;<div class='j e button' expr:aria-label='data:messages.loadMorePost
 
             var home = (relatedPostConfig.homePage || window.location.origin).replace(/\/+$/, '');
             var targetCount = relatedPostConfig.numPosts || 4;
-            var currentPath = window.location.pathname;
+            var currentPath = window.location.pathname.replace(/\/+$/, '');
 
-            // 1. 현재 HTML 본문 주석(BLOG_LABELS 또는 Labels (Tags):)에서 작성자가 지정한 원본 라벨 순서 추출
+            // 1. 현재 본문 주석에서 원본 라벨 추출
             var getOriginalLabelsFromDOM = function() {
               try {
                 var iterator = document.createNodeIterator(document.body, NodeFilter.SHOW_COMMENT, null, false);
@@ -1500,7 +1857,6 @@ error: &quot;<div class='j e button' expr:aria-label='data:messages.loadMorePost
               return null;
             };
 
-            // 2. 피드 엔트리 본문에서 해당 글의 1순위/2순위 원본 라벨 추출
             var getOriginalLabelsFromContent = function(contentHtml) {
               if (!contentHtml) return [];
               var m = contentHtml.match(/(?:BLOG_LABELS|Labels \(Tags\)):\s*([^\r\n]+)/i);
@@ -1517,13 +1873,16 @@ error: &quot;<div class='j e button' expr:aria-label='data:messages.loadMorePost
               return el.value;
             };
 
-            // 파일 내부의 BLOG_LABELS 순서를 우선 적용 (없을 시 Blogger 기본 labelArray 사용)
             var fileLabels = getOriginalLabelsFromDOM();
             var fallbackLabels = (Array.isArray(labelArray) ? labelArray : []).map(decodeLabel).filter(Boolean);
             var activeLabels = (fileLabels && fileLabels.length > 0) ? fileLabels : fallbackLabels;
 
             var label1 = activeLabels[0] || null;
             var label2 = activeLabels[1] || null;
+
+            var normalize = function(s) { return (s || '').replace(/\s+/g, '').toLowerCase(); };
+            var normLabel1 = normalize(label1);
+            var normLabel2 = normalize(label2);
 
             var collectedPosts = [];
             var seenUrls = new Set();
@@ -1536,63 +1895,58 @@ error: &quot;<div class='j e button' expr:aria-label='data:messages.loadMorePost
                 .catch(function() { return []; });
             };
 
-            var processEntries = function(entries) {
-              for (var idx = 0; idx < entries.length; idx++) {
-                if (collectedPosts.length >= targetCount) break;
-                var entry = entries[idx];
-                var altLink = (entry.link || []).find(function(l) { return l.rel === 'alternate'; });
-                var href = altLink ? altLink.href : '';
+            var addEntryToCollected = function(entry) {
+              if (collectedPosts.length >= targetCount) return false;
+              var altLink = (entry.link || []).find(function(l) { return l.rel === 'alternate'; });
+              var href = altLink ? altLink.href : '';
 
-                if (!href) continue;
-                if (seenUrls.has(href) || href.endsWith(currentPath)) continue;
-                seenUrls.add(href);
-
-                var title = entry.title ? entry.title.$t : '';
-                
-                // CDN 이미지 추출 (entry.content 내부 첫 번째 img 태그 추출)
-                var content = (entry.content && entry.content.$t) ? entry.content.$t : ((entry.summary && entry.summary.$t) ? entry.summary.$t : '');
-                var imgMatch = content.match(/<img[^>]+src=["']([^"']+)["']/i);
-                var thumb = relatedPostConfig.noImage;
-                if (imgMatch && imgMatch[1]) {
-                  thumb = imgMatch[1];
-                } else if (entry.media$thumbnail && entry.media$thumbnail.url) {
-                  thumb = entry.media$thumbnail.url.replace(/\/s\d+(-c)?\//, '/s' + relatedPostConfig.thumbnailSize + '/');
-                }
-
-                var published = entry.published ? entry.published.$t : '';
-                var dt = published.substring(0, 29);
-                var Y = dt.substring(0, 4);
-                var M = dt.substring(5, 7);
-                var D = dt.substring(8, 10);
-                var mm = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-                var MM = mm[parseInt(M, 10) - 1] || '';
-
-                // 카드의 대표 라벨 태그: 해당 글 본문(BLOG_LABELS)의 1순위 및 2순위 라벨 추출
-                var postFileLabels = getOriginalLabelsFromContent(content);
-                var cat1 = ((postFileLabels[0] || (entry.category && entry.category[0] ? entry.category[0].term : (label1 || '')))).trim();
-                var cat2 = postFileLabels[1] ? postFileLabels[1].trim() : (entry.category && entry.category[1] ? entry.category[1].term.trim() : null);
-
-                var labelHtml = '<a href="' + home + '/search/label/' + encodeURIComponent(cat1) + '" rel="tag">' + cat1 + '</a>';
-                if (cat2 && cat2 !== cat1) {
-                  labelHtml += ', <a href="' + home + '/search/label/' + encodeURIComponent(cat2) + '" rel="tag">' + cat2 + '</a>';
-                }
-
-                var summary = '';
-                if (entry.summary && entry.summary.$t) {
-                  summary = entry.summary.$t.replace(/<br *\/?>/gi, ' ').replace(/<.*?>/g, '').replace(/[<>]/g, '').substring(0, relatedPostConfig.summaryLength) + '…';
-                }
-
-                collectedPosts.push({
-                  url: href,
-                  title: title,
-                  thumb: thumb,
-                  published: dt,
-                  dateText: MM + ' ' + D,
-                  dateFull: MM + ' ' + D + ', ' + Y,
-                  categoryHtml: labelHtml,
-                  summary: summary
-                });
+              if (!href) return false;
+              try {
+                var entryPath = new URL(href, window.location.origin).pathname.replace(/\/+$/, '');
+                if (currentPath === entryPath || seenUrls.has(href)) return false;
+              } catch(e) {
+                if (seenUrls.has(href)) return false;
               }
+
+              seenUrls.add(href);
+
+              var title = entry.title ? entry.title.$t : '';
+              var content = (entry.content && entry.content.$t) ? entry.content.$t : ((entry.summary && entry.summary.$t) ? entry.summary.$t : '');
+              var imgMatch = content.match(/<img[^>]+src=["']([^"']+)["']/i);
+              var thumb = relatedPostConfig.noImage;
+              if (imgMatch && imgMatch[1]) {
+                thumb = imgMatch[1];
+              } else if (entry.media$thumbnail && entry.media$thumbnail.url) {
+                thumb = entry.media$thumbnail.url.replace(/\/s\d+(-c)?\//, '/s' + relatedPostConfig.thumbnailSize + '/');
+              }
+
+              var published = entry.published ? entry.published.$t : '';
+              var dt = published.substring(0, 29);
+              var Y = dt.substring(0, 4);
+              var M = dt.substring(5, 7);
+              var D = dt.substring(8, 10);
+              var mm = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+              var MM = mm[parseInt(M, 10) - 1] || '';
+
+              var postFileLabels = getOriginalLabelsFromContent(content);
+              var cat1 = ((postFileLabels[0] || (entry.category && entry.category[0] ? entry.category[0].term : (label1 || '')))).trim();
+              var cat2 = postFileLabels[1] ? postFileLabels[1].trim() : (entry.category && entry.category[1] ? entry.category[1].term.trim() : null);
+
+              var labelHtml = '<a href="' + home + '/search/label/' + encodeURIComponent(cat1) + '" rel="tag">' + cat1 + '</a>';
+              if (cat2 && cat2 !== cat1) {
+                labelHtml += ', <a href="' + home + '/search/label/' + encodeURIComponent(cat2) + '" rel="tag">' + cat2 + '</a>';
+              }
+
+              collectedPosts.push({
+                url: href,
+                title: title,
+                thumb: thumb,
+                published: dt,
+                dateText: MM + ' ' + D,
+                dateFull: MM + ' ' + D + ', ' + Y,
+                categoryHtml: labelHtml
+              });
+              return true;
             };
 
             var render = function() {
@@ -1610,50 +1964,84 @@ error: &quot;<div class='j e button' expr:aria-label='data:messages.loadMorePost
                   ? post.title.substring(0, relatedPostConfig.titleLength) + '&hellip;'
                   : post.title;
 
-                if (c === 2 || c === 3) {
-                  html += '<article class="flex column"><div class="pI shrink"><a aria-label="Thumbnail" class="image" href="' + post.url + '"><div class="mi lazy" style="background-image:url(' + post.thumb + ')" data-style="background-image:url(' + post.thumb + ')"></div></a></div><div class="pC grow flex column"><div class="pH info flex fontM"><time class="time ellips opacity shrink" data-text="' + post.dateText + '" datetime="' + post.published + '" title="Published on: ' + post.dateFull + '"></time><div class="label ellips cInherit">' + post.categoryHtml + '</div></div><div class="pT cInherit"><h4 class="name"><a class="clamp" href="' + post.url + '">' + postTitle + '</a></h4></div></div></article>';
-                } else if (c === 4) {
-                  html += '<article class="flex column shrink"><div class="pI shrink"><a aria-label="Thumbnail" class="image" href="' + post.url + '"><div class="mi lazy" style="background-image:url(' + post.thumb + ')" data-style="background-image:url(' + post.thumb + ')"></div></a></div><div class="pC grow flex column"><div class="pH info flex fontM"><time class="time ellips opacity shrink" data-text="' + post.dateText + '" datetime="' + post.published + '" title="Published on: ' + post.dateFull + '"></time><div class="label ellips cInherit">' + post.categoryHtml + '</div></div><div class="pT cInherit"><h4 class="name"><a class="clamp" href="' + post.url + '">' + postTitle + '</a></h4></div><div class="pS fontM"><div class="snippet clamp opacity">' + post.summary + '</div></div></div></article>';
-                } else {
-                  // type-1 (기본)
-                  html += '<article class="flex"><div class="pI shrink"><a aria-label="Thumbnail" class="image" href="' + post.url + '"><div class="mi lazy" style="background-image:url(' + post.thumb + ')" data-style="background-image:url(' + post.thumb + ')"></div></a></div><div class="pC grow"><div class="pH info flex fontM"><time class="time ellips opacity shrink" data-text="' + post.dateText + '" datetime="' + post.published + '" title="Published on: ' + post.dateFull + '"></time><div class="label ellips cInherit">' + post.categoryHtml + '</div></div><div class="pT cInherit"><h4 class="name"><a class="clamp" href="' + post.url + '">' + postTitle + '</a></h4></div></div></article>';
-                }
+                html += '<article class="flex">' +
+                  '<div class="pI shrink"><a aria-label="Thumbnail" class="image" href="' + post.url + '"><div class="mi" style="background-image:url(' + post.thumb + ')"></div></a></div>' +
+                  '<div class="pC grow">' +
+                    '<div class="pH info flex fontM"><time class="time ellips opacity shrink" data-text="' + post.dateText + '" datetime="' + post.published + '" title="Published on: ' + post.dateFull + '"></time><div class="label ellips cInherit">' + post.categoryHtml + '</div></div>' +
+                    '<div class="pT cInherit"><h4 class="name"><a class="clamp" href="' + post.url + '">' + postTitle + '</a></h4></div>' +
+                  '</div>' +
+                '</article>';
               }
 
               html += '</div>';
               container.innerHTML = html;
             };
 
-            var p = Promise.resolve();
+            // 전체 피드 1회 요청으로 1차(태그 제외/매칭) 및 2차(랜덤 폴백) 처리
+            fetchFeed(home + '/feeds/posts/default?alt=json&start-index=1&max-results=500')
+              .then(function(allEntries) {
+                if (!allEntries || allEntries.length === 0) return;
 
-            // 1단계: 작성자가 지정한 1순위 라벨 관련 글 수집
-            if (label1) {
-              p = p.then(function() {
-                return fetchFeed(home + '/feeds/posts/default/-/' + encodeURIComponent(label1) + '?alt=json&start-index=1&max-results=10')
-                  .then(processEntries);
-              });
-            }
+                var isSeries = !!document.querySelector('.series-nav') || !!document.querySelector('.post-nav-tabs-wrapper');
 
-            // 2단계: 개수 부족 시 작성자가 지정한 2순위 라벨 관련 글 수집
-            if (label2) {
-              p = p.then(function() {
-                if (collectedPosts.length < targetCount) {
-                  return fetchFeed(home + '/feeds/posts/default/-/' + encodeURIComponent(label2) + '?alt=json&start-index=1&max-results=10')
-                    .then(processEntries);
+                if (isSeries) {
+                  // 1단계 (시리즈 글): 태그 1, 2와 겹치지 않는 글 우선 수집
+                  for (var i = 0; i < allEntries.length; i++) {
+                    if (collectedPosts.length >= targetCount) break;
+                    var entry = allEntries[i];
+                    var entryCats = (entry.category || []).map(function(c) { return normalize(c.term); });
+                    var isExcluded = entryCats.some(function(term) {
+                      return (normLabel1 && term === normLabel1) || (normLabel2 && term === normLabel2);
+                    });
+                    if (!isExcluded) {
+                      addEntryToCollected(entry);
+                    }
+                  }
+                } else {
+                  // 1단계 (일반 글): 태그 1 또는 태그 2 관련 글 우선 수집
+                  for (var i = 0; i < allEntries.length; i++) {
+                    if (collectedPosts.length >= targetCount) break;
+                    var entry = allEntries[i];
+                    var entryCats = (entry.category || []).map(function(c) { return normalize(c.term); });
+                    var isMatched = entryCats.some(function(term) {
+                      return (normLabel1 && term === normLabel1) || (normLabel2 && term === normLabel2);
+                    });
+                    if (isMatched) {
+                      addEntryToCollected(entry);
+                    }
+                  }
                 }
+
+                // 2단계 (부족 시 랜덤 폴백): 글이 4개 미만이면 남은 글들 중에서 랜덤 셔플하여 최대 4개까지 무조건 채움!
+                if (collectedPosts.length < targetCount) {
+                  var remainingCandidates = [];
+                  for (var k = 0; k < allEntries.length; k++) {
+                    var alt = (allEntries[k].link || []).find(function(l) { return l.rel === 'alternate'; });
+                    var href = alt ? alt.href : '';
+                    if (href && !seenUrls.has(href)) {
+                      remainingCandidates.append ? remainingCandidates.append(allEntries[k]) : remainingCandidates.push(allEntries[k]);
+                    }
+                  }
+
+                  // Fisher-Yates shuffle
+                  for (var s = remainingCandidates.length - 1; s > 0; s--) {
+                    var r = Math.floor(Math.random() * (s + 1));
+                    var tmp = remainingCandidates[s];
+                    remainingCandidates[s] = remainingCandidates[r];
+                    remainingCandidates[r] = tmp;
+                  }
+
+                  for (var m = 0; m < remainingCandidates.length; m++) {
+                    if (collectedPosts.length >= targetCount) break;
+                    addEntryToCollected(remainingCandidates[m]);
+                  }
+                }
+
+                render();
+              })
+              .catch(function(err) {
+                console.error("Related Posts Load Error: ", err);
               });
-            }
-
-            // 3단계: 여전히 부족한 경우 최근 게시글로 폴백 (최소 2개 보장)
-            p = p.then(function() {
-              if (collectedPosts.length < (relatedPostConfig.minPosts || 2) || collectedPosts.length < targetCount) {
-                return fetchFeed(home + '/feeds/posts/default?alt=json&start-index=1&max-results=10')
-                  .then(processEntries);
-              }
-            });
-
-            // 렌더링 실행
-            p.then(render);
           })();
           /*]]>*/</script>
         </div>
@@ -5517,77 +5905,12 @@ class TableOfContents { constructor({ from, to }) { this.fromElement = from; thi
       <b:include name='allJavascript'/>
       <b:include cond='data:view.isPost' name='copyCodeToClipboard'/>
       <b:include name='bookmarkLoad'/>
+      <b:include cond='data:view.isPost' name='seriesNavigationScript'/>
       
     </b:if>
     
   <!--[ </body> close ]-->
-  <b:if cond='!data:view.isPreview'>&lt;!--</b:if><script type='text/javascript'>
-// <![CDATA[
-document.addEventListener("DOMContentLoaded", function() {
-  const navContainer = document.querySelector('.series-nav');
-  if (!navContainer) return;
-
-  const seriesName = navContainer.getAttribute('data-series');
-  const currentSlug = navContainer.getAttribute('data-current-slug');
-  if (!seriesName || !currentSlug) return;
-
-  const feedUrl = "/feeds/posts/summary/-/" + encodeURIComponent(seriesName) + "?alt=json&max-results=100";
-
-  fetch(feedUrl)
-    .then(response => response.json())
-    .then(data => {
-      const posts = data.feed.entry;
-      if (!posts || posts.length < 2) return;
-
-      posts.sort((a, b) => new Date(a.published.$t) - new Date(b.published.$t));
-
-      let currentIndex = -1;
-      let postData = [];
-
-      for (let i = 0; i < posts.length; i++) {
-        const linkObj = posts[i].link.find(l => l.rel === "alternate");
-        if (!linkObj) continue;
-        const postUrl = linkObj.href;
-        const postTitle = posts[i].title.$t;
-        postData.push({ title: postTitle, url: postUrl });
-        
-        if (postUrl.includes(currentSlug)) {
-          currentIndex = postData.length - 1;
-        }
-      }
-
-      let htmlContent = '<div class="series-nav-inner" style="margin-top: 2rem; padding: 1.5rem; background: var(--nav-bg, rgba(0,0,0,0.05)); border-radius: 8px;">';
-      htmlContent += '<h3 style="margin-bottom: 1rem; font-size: 1.1rem; border-bottom: 1px solid rgba(0,0,0,0.1); padding-bottom: 0.5rem;">📌 ' + seriesName + ' 시리즈</h3>';
-
-      // Previous and Next Post Links
-      htmlContent += '<div style="margin-bottom: 1.5rem; display: flex; flex-direction: column; gap: 0.5rem;">';
-      if (currentIndex > 0) {
-        htmlContent += '<div><span style="font-weight:bold; color:var(--op-color, #666);">이전 글:</span> <a href="' + postData[currentIndex - 1].url + '" style="text-decoration:none;">' + postData[currentIndex - 1].title + '</a></div>';
-      }
-      if (currentIndex !== -1 && currentIndex < postData.length - 1) {
-        htmlContent += '<div><span style="font-weight:bold; color:var(--op-color, #666);">다음 글:</span> <a href="' + postData[currentIndex + 1].url + '" style="text-decoration:none;">' + postData[currentIndex + 1].title + '</a></div>';
-      }
-      htmlContent += '</div>';
-
-      // Full List
-      htmlContent += '<details style="cursor: pointer;"><summary style="font-weight: bold; margin-bottom: 0.5rem; outline: none;">시리즈 전체 목록 보기 (' + postData.length + '개)</summary>';
-      htmlContent += '<ul style="list-style: none; padding: 0; margin: 0; margin-top: 0.5rem;">';
-      
-      for (let i = 0; i < postData.length; i++) {
-        if (i === currentIndex) {
-          htmlContent += '<li style="margin-bottom: 0.5rem; font-weight: bold;">👉 ' + postData[i].title + ' (현재 글)</li>';
-        } else {
-          htmlContent += '<li style="margin-bottom: 0.5rem;"><a href="' + postData[i].url + '" style="text-decoration: none; color: inherit; opacity: 0.8;">' + postData[i].title + '</a></li>';
-        }
-      }
-      
-      htmlContent += '</ul></details></div>';
-      navContainer.innerHTML = htmlContent;
-    })
-    .catch(err => console.error("Series Navigation Error: ", err));
-});
-// ]]>
-</script>
+  
 
 
 </body><b:if cond='!data:view.isPreview'>--&gt;&lt;/body&gt;</b:if>
