@@ -852,7 +852,60 @@ article img {
 .series-toc-item.current span {
   text-decoration: none;
 }
-/*]]>*/</style>
+/*]]>*/
+/* Translate Popup & Buttons */
+.transI:checked ~ .settB .iTrans { top: 5px; opacity: 1; visibility: visible; }
+.transI:checked ~ .settB .iTrans:not(.r) { right: 0; }
+.transI:checked ~ .settB .iTrans.r { left: 0; }
+.transI:checked ~ .section .tc.fc::after { opacity: 1; visibility: visible; z-index: 2; }
+.trans-options {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 10px;
+}
+.trans-btn {
+  background: var(--lightBg-sec, rgba(128,128,128,0.08));
+  border: 1px solid var(--contentBd-color);
+  border-radius: var(--contentBd-radiusA);
+  padding: 8px 12px;
+  cursor: pointer;
+  color: inherit;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+  outline: none;
+  text-align: left;
+}
+.trans-btn:hover {
+  background: var(--lightBg-alt, rgba(128,128,128,0.15));
+}
+.trans-btn.active {
+  border-color: var(--themeLink);
+  color: var(--themeLink);
+  font-weight: 700;
+}
+.trans-btn .lang-flag {
+  font-size: 1.2em;
+}
+.nB[data-theme=dark] .trans-btn {
+  background: var(--darkBg-sec, rgba(255,255,255,0.06));
+}
+.nB[data-theme=dark] .trans-btn:hover {
+  background: var(--darkBg-alt, rgba(255,255,255,0.12));
+}
+
+/* Hide Google Translate top banner & tooltip */
+.goog-te-banner-frame.skiptranslate, .goog-te-banner-frame { display: none !important; }
+body { top: 0px !important; }
+.goog-tooltip, .goog-tooltip:hover { display: none !important; }
+.goog-text-highlight { background-color: transparent !important; border: none !important; box-shadow: none !important; }
+#goog-gt-tt, .goog-te-balloon-frame { display: none !important; }
+#google_translate_element { display: none !important; }
+
+</style>
     
     <b:else/>
     <!--[ CSS for Blogger Layout ]-->
@@ -1575,6 +1628,67 @@ error: &quot;<div class='j e button' expr:aria-label='data:messages.loadMorePost
 /* Dark mode */ const d = document, l = localStorage, b = d.querySelector(".nB"), m = d.querySelector("meta[name=theme-color]"), mM = d.querySelector("meta[name=msapplication-navbutton-color]"), mA = d.querySelector("meta[name=apple-mobile-web-app-status-bar-style]"), c = m.getAttribute("content"), cM = mM.getAttribute("content"), cA = mA.getAttribute("content"), iniTheme = "default", setTheme = (theme) => {b.setAttribute("data-theme", theme); if (theme === "dark") {m.setAttribute("content", "#1e1e1e"); mM.setAttribute("content", "#1e1e1e"); mA.setAttribute("content", "#1e1e1e")} else {m.setAttribute("content", c); mM.setAttribute("content", cM); mA.setAttribute("content", cA)} switch (theme) {case "default": l.setItem("theme", "default"); break; case "dark": l.setItem("theme", "dark"); break; case "light": l.setItem("theme", "light"); break}; }, setThemeOn = () => {saveTheme = l.getItem("theme"); saveTheme ? b.setAttribute("data-theme", saveTheme) : setTheme(iniTheme); if (saveTheme === "dark") {m.setAttribute("content", "#1e1e1e"); mM.setAttribute("content", "#1e1e1e"); mA.setAttribute("content", "#1e1e1e")} else {m.setAttribute("content", c); mM.setAttribute("content", cM); mA.setAttribute("content", cA)} }; setThemeOn();
 /* Sidenav State Persistence */ const forNav = d.getElementById('forNav'); if (forNav) { const isDesktop = () => window.innerWidth >= 897; const savedNav = l.getItem('sidenav_state'); if (isDesktop() && savedNav === 'expanded') { forNav.checked = true; } forNav.addEventListener('change', function() { if (isDesktop()) { l.setItem('sidenav_state', this.checked ? 'expanded' : 'collapsed'); } }); }
 /* Submenu State Persistence */ const leftNavDetails = d.querySelectorAll('.leftNav details'); if (leftNavDetails.length > 0) { let savedSub = {}; try { savedSub = JSON.parse(l.getItem('sidenav_submenus') || '{}'); } catch(e) {} leftNavDetails.forEach((dt, idx) => { const sm = dt.querySelector('summary'); const k = (sm && (sm.getAttribute('aria-label') || sm.querySelector('.flexIn span, span')?.innerText.trim())) || ('sub_' + idx); if (savedSub[k] !== undefined) { dt.open = !!savedSub[k]; } dt.addEventListener('toggle', function() { savedSub[k] = this.open; l.setItem('sidenav_submenus', JSON.stringify(savedSub)); }); }); }
+
+/* Google Translate 1-Click Engine */
+(function() {
+  var d = document;
+  var transBtns = d.querySelectorAll('.trans-btn');
+  if (transBtns.length === 0) return;
+
+  function getTransCookie() {
+    var match = document.cookie.match(/(?:^|;\s*)googtrans=([^;]+)/);
+    return match ? decodeURIComponent(match[1]) : '';
+  }
+
+  function setTransCookie(lang) {
+    var domain = window.location.hostname;
+    var rootDomain = domain.split('.').slice(-2).join('.');
+    var val = '/ko/' + lang;
+    if (lang === 'ko') {
+      document.cookie = 'googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+      document.cookie = 'googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=.' + domain + ';';
+      document.cookie = 'googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=.' + rootDomain + ';';
+    } else {
+      document.cookie = 'googtrans=' + val + '; path=/;';
+      document.cookie = 'googtrans=' + val + '; path=/; domain=.' + domain + ';';
+      document.cookie = 'googtrans=' + val + '; path=/; domain=.' + rootDomain + ';';
+    }
+  }
+
+  var curCookie = getTransCookie();
+  var curLang = 'ko';
+  if (curCookie.indexOf('/en') !== -1) curLang = 'en';
+  else if (curCookie.indexOf('/ja') !== -1) curLang = 'ja';
+
+  transBtns.forEach(function(btn) {
+    if (btn.getAttribute('data-lang') === curLang) {
+      btn.classList.add('active');
+    }
+    btn.addEventListener('click', function() {
+      var targetLang = this.getAttribute('data-lang');
+      setTransCookie(targetLang);
+      window.location.reload();
+    });
+  });
+
+  // Load Google Translate API element if translated
+  if (curLang !== 'ko' || true) {
+    window.googleTranslateElementInit = function() {
+      new google.translate.TranslateElement({
+        pageLanguage: 'ko',
+        includedLanguages: 'ko,en,ja',
+        autoDisplay: false
+      }, 'google_translate_element');
+    };
+    var gtDiv = d.createElement('div');
+    gtDiv.id = 'google_translate_element';
+    d.body.appendChild(gtDiv);
+    var gtScript = d.createElement('script');
+    gtScript.src = 'https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
+    gtScript.async = true;
+    d.head.appendChild(gtScript);
+  }
+})();
 /*]]>*/</script>
       </b:includable>
         
@@ -2704,6 +2818,7 @@ class TableOfContents { constructor({ from, to }) { this.fromElement = from; thi
                 <b:tag class='proI hidden' id='forUsers' name='input' type='checkbox'/>
                 <b:tag class='darkI hidden' id='forDark' name='input' type='checkbox'/>
                 <input class='bookI hidden' id='forBook' type='checkbox'/>
+                <input class='transI hidden' id='forTrans' type='checkbox'/>
               </b:if>
               
               <b:section id='header-icon' maxwidgets='3' showaddelement='false'>
@@ -2755,9 +2870,9 @@ class TableOfContents { constructor({ from, to }) { this.fromElement = from; thi
                         
                         <!--[ Translate ]-->
                         <b:elseif cond='data:item == &quot;Translate&quot;'/>
-                        <div class='tc ic op i20 noJava' expr:aria-label='data:item'>
+                        <label class='tc fc ic op i20 noJava' expr:aria-label='data:item' for='forTrans'>
                           <b:include name='translate-icon'/>
-                        </div>
+                        </label>
                         
                       </b:if>
                       
@@ -2965,6 +3080,32 @@ class TableOfContents { constructor({ from, to }) { this.fromElement = from; thi
                       </b:loop>
                     </b:includable>
                   </b:widget>
+                  
+                  <!--[ Google Translate Popup ]-->
+                  <div class='iTrans ipopUp flex column invisible noJava'>
+                    <b:class cond='data:blog.languageDirection == &quot;rtl&quot;' name='r'/>
+                    <label class='h flexIn fontS opacity i14' data-text='언어 선택 (Language)' for='forTrans'>
+                      <b:if cond='data:blog.languageDirection != &quot;rtl&quot;'>
+                        <b:include name='arrow-left-1-icon'/>
+                        <b:else/>
+                        <b:include name='arrow-right-1-icon'/>
+                      </b:if>
+                    </label>
+                    <div class='inn flex column fontS trans-options'>
+                      <button type='button' class='trans-btn flex fontM' data-lang='ko'>
+                        <span class='lang-flag'>🇰🇷</span>
+                        <span class='lang-name grow'>한국어 (기본)</span>
+                      </button>
+                      <button type='button' class='trans-btn flex fontM' data-lang='en'>
+                        <span class='lang-flag'>🇺🇸</span>
+                        <span class='lang-name grow'>English</span>
+                      </button>
+                      <button type='button' class='trans-btn flex fontM' data-lang='ja'>
+                        <span class='lang-flag'>🇯🇵</span>
+                        <span class='lang-name grow'>日本語</span>
+                      </button>
+                    </div>
+                  </div>
                 </b:section>
               </div>
             </div>
