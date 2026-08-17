@@ -5305,23 +5305,47 @@ document.addEventListener("DOMContentLoaded", function() {
 
       posts.sort((a, b) => new Date(a.published.$t) - new Date(b.published.$t));
 
-      let htmlContent = '<div class="series-nav-inner" style="margin-top: 2rem; padding: 1.5rem; background: var(--nav-bg, rgba(0,0,0,0.05)); border-radius: 8px;">';
-      htmlContent += '<h3 style="margin-bottom: 1rem; font-size: 1.1rem;">📌 ' + seriesName + ' 시리즈 모아보기</h3><ul style="list-style: none; padding: 0; margin: 0;">';
+      let currentIndex = -1;
+      let postData = [];
 
       for (let i = 0; i < posts.length; i++) {
         const linkObj = posts[i].link.find(l => l.rel === "alternate");
         if (!linkObj) continue;
         const postUrl = linkObj.href;
         const postTitle = posts[i].title.$t;
+        postData.push({ title: postTitle, url: postUrl });
         
         if (postUrl.includes(currentSlug)) {
-          htmlContent += '<li style="margin-bottom: 0.5rem; font-weight: bold;">👉 ' + postTitle + ' (현재 글)</li>';
+          currentIndex = postData.length - 1;
+        }
+      }
+
+      let htmlContent = '<div class="series-nav-inner" style="margin-top: 2rem; padding: 1.5rem; background: var(--nav-bg, rgba(0,0,0,0.05)); border-radius: 8px;">';
+      htmlContent += '<h3 style="margin-bottom: 1rem; font-size: 1.1rem; border-bottom: 1px solid rgba(0,0,0,0.1); padding-bottom: 0.5rem;">📌 ' + seriesName + ' 시리즈</h3>';
+
+      // Previous and Next Post Links
+      htmlContent += '<div style="margin-bottom: 1.5rem; display: flex; flex-direction: column; gap: 0.5rem;">';
+      if (currentIndex > 0) {
+        htmlContent += '<div><span style="font-weight:bold; color:var(--op-color, #666);">이전 글:</span> <a href="' + postData[currentIndex - 1].url + '" style="text-decoration:none;">' + postData[currentIndex - 1].title + '</a></div>';
+      }
+      if (currentIndex !== -1 && currentIndex < postData.length - 1) {
+        htmlContent += '<div><span style="font-weight:bold; color:var(--op-color, #666);">다음 글:</span> <a href="' + postData[currentIndex + 1].url + '" style="text-decoration:none;">' + postData[currentIndex + 1].title + '</a></div>';
+      }
+      htmlContent += '</div>';
+
+      // Full List
+      htmlContent += '<details style="cursor: pointer;"><summary style="font-weight: bold; margin-bottom: 0.5rem; outline: none;">시리즈 전체 목록 보기 (' + postData.length + '개)</summary>';
+      htmlContent += '<ul style="list-style: none; padding: 0; margin: 0; margin-top: 0.5rem;">';
+      
+      for (let i = 0; i < postData.length; i++) {
+        if (i === currentIndex) {
+          htmlContent += '<li style="margin-bottom: 0.5rem; font-weight: bold;">👉 ' + postData[i].title + ' (현재 글)</li>';
         } else {
-          htmlContent += '<li style="margin-bottom: 0.5rem;"><a href="' + postUrl + '" style="text-decoration: none;">' + postTitle + '</a></li>';
+          htmlContent += '<li style="margin-bottom: 0.5rem;"><a href="' + postData[i].url + '" style="text-decoration: none; color: inherit; opacity: 0.8;">' + postData[i].title + '</a></li>';
         }
       }
       
-      htmlContent += '</ul></div>';
+      htmlContent += '</ul></details></div>';
       navContainer.innerHTML = htmlContent;
     })
     .catch(err => console.error("Series Navigation Error: ", err));
