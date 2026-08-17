@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE html>
 <html b:css='false' b:defaultwidgetversion='2' b:layoutsVersion='3' b:responsive='true' b:templateUrl='unPlug' b:templateVersion='1.5.5' expr:dir='data:blog.languageDirection' expr:lang='data:blog.locale.language' xmlns='http://www.w3.org/1999/xhtml' xmlns:b='http://www.google.com/2005/gml/b' xmlns:data='http://www.google.com/2005/gml/data' xmlns:expr='http://www.google.com/2005/gml/expr'>
   <b:attr name='xmlns' value=''/>
@@ -1858,6 +1858,20 @@ error: &quot;<div class='j e button' expr:aria-label='data:messages.loadMorePost
         </div>
       </b:includable>
       <b:includable id='snippetedPosts'>
+        <script>
+          window._bloggerPopularPosts = [
+            <b:loop values='data:posts filter (p =&gt; p.id != data:view.postId)' var='post'>
+              {
+                &quot;id&quot;: &quot;<data:post.id/>&quot;,
+                &quot;url&quot;: &quot;<data:post.url/>&quot;,
+                &quot;title&quot;: &quot;<data:post.title/>&quot;,
+                &quot;thumbnail&quot;: &quot;<data:post.featuredImage/>&quot;,
+                &quot;date&quot;: &quot;<data:post.date.iso8601/>&quot;,
+                &quot;comments&quot;: <data:post.numberOfComments/>
+              }<b:if cond='!data:post.isLast'>,</b:if>
+            </b:loop>
+          ];
+        </script>
         <div class='itemP popular flex column' role='feed'>
           <!-- Don't render the post that we're currently already looking at. -->
           <b:loop index='i' values='data:posts filter (p =&gt; p.id != data:view.postId)' var='post'>
@@ -2996,45 +3010,132 @@ class TableOfContents { constructor({ from, to }) { this.fromElement = from; thi
                             return { badge: defaultBadge, title: title, img: img, link: link, comments: comments, id: link };
                           }
 
-                          if (entries.length > 0) {
-                            // 2. 최신 게시글 1위
-                            var latest = parseEntry(entries[0], '최신글');
-                            if (latest) slides.push(latest);
+                          function cleanImageUrl(url) {
+                            if (!url) return '';
+                            url = url.replace(/^http:\/\//i, 'https://');
+                            if (url.match(/\/s\d+[^/]*\//)) {
+                              url = url.replace(/\/s\d+[^/]*\//, '/s1600/');
+                            } else if (url.match(/\/w\d+[^/]*\//)) {
+                              url = url.replace(/\/w\d+[^/]*\//, '/w1600/');
+                            } else if (url.indexOf('=s') > -1 || url.indexOf('=w') > -1) {
+                              url = url.replace(/=[sw]\d+[^=]*$/, '=w1600');
+                            }
+                            return url;
+                          }
 
-                            // 3. 화제의 글 1위 (댓글 가장 많은 글)
+                          function findEntryByUrl(targetUrl) {
+                            if (!targetUrl) return null;
+                            var cleanTarget = targetUrl.split('?')[0].replace(/^https?:\/\//, '').replace(/\/$/, '');
+                            for (var e = 0; e < entries.length; e++) {
+                              var entryUrl = '';
+                              if (entries[e].link) {
+                                for (var l = 0; l < entries[e].link.length; l++) {
+                                  if (entries[e].link[l].rel === 'alternate') { entryUrl = entries[e].link[l].href; break; }
+                                }
+                              }
+                              var cleanEntry = entryUrl.split('?')[0].replace(/^https?:\/\//, '').replace(/\/$/, '');
+                              if (cleanEntry === cleanTarget) {
+                                return entries[e];
+                              }
+                            }
+                            return null;
+                          }
+
+                          // 2. 최신글 1위 (최신 등록 게시글)
+                          var latest = null;
+                          if (entries.length > 0) {
+                            latest = parseEntry(entries[0], '최신글');
+                            if (latest) slides.push(latest);
+                          }
+
+                          // 3. 인기글 1위 (Popular Posts 위젯의 1위 = 가장 조회수가 높은 글)
+                          var popularPostsList = window._bloggerPopularPosts || [];
+                          if (popularPostsList.length === 0) {
+                            var popDomArticles = document.querySelectorAll('.itemP.popular article.i');
+                            for (var pa = 0; pa < popDomArticles.length; pa++) {
+                              var pLinkEl = popDomArticles[pa].querySelector('a.clamp') || popDomArticles[pa].querySelector('a');
+                              var pImgEl = popDomArticles[pa].querySelector('img');
+                              if (pLinkEl) {
+                                popularPostsList.push({
+                                  title: pLinkEl.innerText || pLinkEl.textContent || '',
+                                  url: pLinkEl.href || '',
+                                  thumbnail: pImgEl ? (pImgEl.getAttribute('data-src') || pImgEl.src) : '',
+                                  comments: 0
+                                });
+                              }
+                            }
+                          }
+
+                          var popular = null;
+                          if (popularPostsList.length > 0) {
+                            var p1 = popularPostsList[0];
+                            var matchedEntry1 = findEntryByUrl(p1.url);
+                            if (matchedEntry1) {
+                              popular = parseEntry(matchedEntry1, '인기글');
+                            } else {
+                              popular = {
+                                badge: '인기글',
+                                title: p1.title,
+                                img: cleanImageUrl(p1.thumbnail),
+                                link: p1.url,
+                                comments: p1.comments || 0,
+                                id: p1.url
+                              };
+                            }
+                          } else if (entries.length > 1) {
+                            popular = parseEntry(entries[1], '인기글');
+                          }
+                          if (popular) slides.push(popular);
+
+                          // 4. 화제의 글 1위 (댓글 가장 많은 글 > 0, 전체 게시글 중 덧글이 아예 없으면 Popular Posts의 2번 글)
+                          var mostCommented = null;
+                          var maxComments = 0;
+                          for (var m = 0; m < entries.length; m++) {
+                            var cCount = parseInt((entries[m].thr$total && entries[m].thr$total.$t) ? entries[m].thr$total.$t : 0, 10);
+                            if (cCount > maxComments) {
+                              maxComments = cCount;
+                            }
+                          }
+
+                          if (maxComments > 0) {
                             var sortedByComments = entries.slice().sort(function(a, b) {
                               var cA = parseInt((a.thr$total && a.thr$total.$t) ? a.thr$total.$t : 0, 10);
                               var cB = parseInt((b.thr$total && b.thr$total.$t) ? b.thr$total.$t : 0, 10);
                               return cB - cA;
                             });
-                            
-                            var mostCommented = null;
                             for (var c = 0; c < sortedByComments.length; c++) {
-                              var candidate = parseEntry(sortedByComments[c], '화제의 글');
-                              if (!latest || candidate.id !== latest.id || sortedByComments.length === 1) {
-                                mostCommented = candidate;
+                              var cand = parseEntry(sortedByComments[c], '화제의 글');
+                              if (cand && (!latest || cand.id !== latest.id) && (!popular || cand.id !== popular.id)) {
+                                mostCommented = cand;
                                 break;
                               }
                             }
-
-                            // 4. 인기 게시글 1위 (2번째 최신글 또는 대표글)
-                            var popular = null;
-                            for (var p = 1; p < entries.length; p++) {
-                              var candP = parseEntry(entries[p], '인기글');
-                              if ((!latest || candP.id !== latest.id) && (!mostCommented || candP.id !== mostCommented.id)) {
-                                popular = candP;
-                                break;
+                            if (!mostCommented && sortedByComments.length > 0) {
+                              mostCommented = parseEntry(sortedByComments[0], '화제의 글');
+                            }
+                          } else {
+                            // 전체 게시글 중 덧글이 아예 없는 경우 -> Popular Posts의 2번 게시글 (조회수 2위)
+                            if (popularPostsList.length > 1) {
+                              var p2 = popularPostsList[1];
+                              var matchedEntry2 = findEntryByUrl(p2.url);
+                              if (matchedEntry2) {
+                                mostCommented = parseEntry(matchedEntry2, '화제의 글');
+                              } else {
+                                mostCommented = {
+                                  badge: '화제의 글',
+                                  title: p2.title,
+                                  img: cleanImageUrl(p2.thumbnail),
+                                  link: p2.url,
+                                  comments: p2.comments || 0,
+                                  id: p2.url
+                                };
                               }
+                            } else if (entries.length > 2) {
+                              mostCommented = parseEntry(entries[2], '화제의 글');
                             }
-                            if (!popular && entries.length > 1) {
-                              popular = parseEntry(entries[1], '인기글');
-                            } else if (!popular && entries.length === 1) {
-                              popular = parseEntry(entries[0], '인기글');
-                            }
-
-                            if (popular) slides.push(popular);
-                            if (mostCommented) slides.push(mostCommented);
                           }
+
+                          if (mostCommented) slides.push(mostCommented);
 
                           if (slides.length === 0) {
                             if (container) container.style.display = 'none';
@@ -3582,7 +3683,7 @@ class TableOfContents { constructor({ from, to }) { this.fromElement = from; thi
                             <b:attr cond='!data:comment.level.isDeleted' name='itemscope' value='itemscope'/>
                             <b:attr cond='!data:comment.level.isDeleted' name='itemtype' value='https://schema.org/Comment'/>
                         
-                            <div class='cmT comment-author flexIn baseline ellips'>
+                            <div class='cmT comment-author flex baseline'>
                               <b:class cond='data:comment.level.author == data:post.author.name' name='admin'/>
                               <span class='n'>
                                 <b:class cond='data:comment.level.author == data:post.author.name' name='flexIn i16'/>
@@ -3613,6 +3714,12 @@ class TableOfContents { constructor({ from, to }) { this.fromElement = from; thi
                                   <data:comment.level.timestamp/>
                                 </span>
                               </b:if>
+
+                              <b:if cond='!data:comment.level.isDeleted and data:comment.level.deleteUrl'>
+                                <a aria-label='Delete' class='cmDel flex center op i16 shrink' expr:href='data:comment.level.deleteUrl' expr:title='data:messages.deleteComment' rel='noreferrer noopener' style='margin-inline-start:auto;' target='_blank'>
+                                  <svg class='line' viewBox='0 0 24 24'><path d='M21 5.97998C17.67 5.64998 14.32 5.47998 10.98 5.47998C9 5.47998 7.02 5.57998 5.04 5.77998L3 5.97998'/><path d='M8.5 4.97L8.72 3.66C8.88 2.71 9 2 10.69 2H13.31C15 2 15.13 2.75 15.28 3.67L15.5 4.97'/><path d='M18.85 9.14001L18.2 19.21C18.09 20.78 18 22 15.21 22H8.79002C6.00002 22 5.91002 20.78 5.80002 19.21L5.15002 9.14001'/></svg>
+                                </a>
+                              </b:if>
                             </div>
                         
                             <b:tag expr:class='&quot;cmC comment-body&quot; + (data:comment.level.isDeleted ? &quot; delete ellips opacity fontM&quot; : &quot;&quot;)' expr:name='data:comment.level.isDeleted ? &quot;i&quot; : &quot;div&quot;'>
@@ -3636,12 +3743,6 @@ class TableOfContents { constructor({ from, to }) { this.fromElement = from; thi
                                 <b:if cond='data:comment.d and data:post.allowNewComments'>
                                   <a aria-label='Reply' class='r rpT' data-text='Relpy' expr:data-reply-to='data:commentLevel1.id' href='javascript:;' target='_self'/>
                                 </b:if>
-                            
-                                <b:comment>Delete comments button</b:comment>
-                                <!--<span class='r item-control'>
-                                  <b:class expr:name='data:comment.level.adminClass'/>
-                                  <a aria-label='Delete' class='d' data-text='Delete' expr:href='data:comment.level.deleteUrl' expr:title='data:messages.deleteComment' rel='noreferrer noopener' target='_blank'/>
-                                </span>-->
                               </div>
                             </b:if>
                       
@@ -3695,23 +3796,13 @@ class TableOfContents { constructor({ from, to }) { this.fromElement = from; thi
                           </ol>
                         </b:includable>
                         <b:includable id='commentPicker' var='post'>
-                          <b:comment>Input for comment pop-up</b:comment>
-                          <b:tag class='popI hidden' cond='data:post.embedCommentForm or data:post.commentsUrlOnclick' id='forComments' name='input' type='checkbox'/>
                           <b:tag class='cmi hidden' cond='data:post.numberOfComments &gt; 1' id='forAllCm' name='input' type='checkbox'/>
-                          
-                          <b:comment>Delete tag below to disable show/hide comment</b:comment>
-                          <b:if cond='data:post.embedCommentForm or data:post.commentsUrlOnclick'>
-                            <b:include cond='data:post.allowComments' name='commentButton'/>
-                          </b:if>
                           
                           <b:comment>Modified Blogger comments by jagodesain.com</b:comment>
                           <section expr:class='&quot;cm comments&quot; + (data:post.embedCommentForm ? &quot; embed&quot; : &quot; noEmbed&quot;)' expr:data-num-comments='data:post.numberOfComments' id='comments'>
                             
                             <b:attr cond='data:post.showThreadedComments' expr:value='data:post.embedCommentForm' name='data-embed'/>
                             <b:class cond='!data:post.allowNewComments' name='noNew'/>
-                            
-                            <b:comment>Delete tag below to disable Pop-up comments</b:comment>
-                            <b:class cond='data:post.embedCommentForm or data:post.commentsUrlOnclick' name='popUp'/>
                             
                             <b:if cond='data:post.showThreadedComments'>
                               <b:include data='post' name='threadedComments'/>
@@ -4229,7 +4320,7 @@ class TableOfContents { constructor({ from, to }) { this.fromElement = from; thi
                               <b:comment>Hide homePageLink button</b:comment>
                               <b:include cond='data:newerPageUrl' name='previousPageLink'/>
                               <b:include cond='data:view.isHomepage or data:view.url != data:blog.homepageUrl.canonical path &quot;search&quot;' name='homePageLink'/>
-                              <b:include cond='data:olderPageUrl' name='nextPageLink'/>
+                              <b:include cond='data:olderPageUrl and (!data:view.isLabelSearch or data:posts.size gte 20)' name='nextPageLink'/>
                             </b:if>
                           </b:tag>
                         </b:includable>
@@ -4666,7 +4757,7 @@ class TableOfContents { constructor({ from, to }) { this.fromElement = from; thi
                                 <b:include data='post' name='postHeaders'/>
                                 
                                 <!--[ Post thumbnails ]-->
-                                <b:include cond='data:i == 0 and (data:this.postDisplay.showFeaturedImage and data:post.featuredImage)' name='snippetedPostThumbnail'/>
+                                <b:include cond='data:this.postDisplay.showFeaturedImage and data:post.featuredImage' name='snippetedPostThumbnail'/>
                                 
                                 <b:include cond='data:this.postDisplay.showTitle' name='snippetedPostTitle'/>
                                 <b:include cond='data:this.postDisplay.showSnippet and data:i == 0' data='post' name='postSnippet'/>
