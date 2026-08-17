@@ -5284,50 +5284,7 @@ class TableOfContents { constructor({ from, to }) { this.fromElement = from; thi
       
     </b:if>
     
-  <!--[ <script type='text/javascript'>
-// <![CDATA[
-document.addEventListener("DOMContentLoaded", function() {
-  const navContainer = document.querySelector('.series-nav');
-  if (!navContainer) return;
-
-  const seriesName = navContainer.getAttribute('data-series');
-  const currentSlug = navContainer.getAttribute('data-current-slug');
-  if (!seriesName || !currentSlug) return;
-
-  const feedUrl = "/feeds/posts/summary/-/" + encodeURIComponent(seriesName) + "?alt=json&max-results=100";
-
-  fetch(feedUrl)
-    .then(response => response.json())
-    .then(data => {
-      const posts = data.feed.entry;
-      if (!posts || posts.length < 2) return;
-
-      posts.sort((a, b) => new Date(a.published.$t) - new Date(b.published.$t));
-
-      let htmlContent = '<div class="series-nav-inner" style="margin-top: 2rem; padding: 1.5rem; background: var(--nav-bg, rgba(0,0,0,0.05)); border-radius: 8px;">';
-      htmlContent += '<h3 style="margin-bottom: 1rem; font-size: 1.1rem;">📌 ' + seriesName + ' 시리즈 모아보기</h3><ul style="list-style: none; padding: 0; margin: 0;">';
-
-      for (let i = 0; i < posts.length; i++) {
-        const linkObj = posts[i].link.find(l => l.rel === "alternate");
-        if (!linkObj) continue;
-        const postUrl = linkObj.href;
-        const postTitle = posts[i].title.$t;
-        
-        if (postUrl.includes(currentSlug)) {
-          htmlContent += '<li style="margin-bottom: 0.5rem; font-weight: bold;">👉 ' + postTitle + ' (현재 글)</li>';
-        } else {
-          htmlContent += '<li style="margin-bottom: 0.5rem;"><a href="' + postUrl + '" style="text-decoration: none;">' + postTitle + '</a></li>';
-        }
-      }
-      
-      htmlContent += '</ul></div>';
-      navContainer.innerHTML = htmlContent;
-    })
-    .catch(err => console.error("Series Navigation Error: ", err));
-});
-// ]]>
-</script>
-</body> close ]-->
+  <!--[ </body> close ]-->
   <b:if cond='!data:view.isPreview'>&lt;!--</b:if><script type='text/javascript'>
 // <![CDATA[
 document.addEventListener("DOMContentLoaded", function() {
