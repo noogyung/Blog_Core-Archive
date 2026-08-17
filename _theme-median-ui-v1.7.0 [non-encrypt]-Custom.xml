@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+ï»¿<?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE html>
 <html b:css='false' b:defaultwidgetversion='2' b:layoutsVersion='3' b:responsive='true' b:templateUrl='unPlug' b:templateVersion='1.5.5' expr:dir='data:blog.languageDirection' expr:lang='data:blog.locale.language' xmlns='http://www.w3.org/1999/xhtml' xmlns:b='http://www.google.com/2005/gml/b' xmlns:data='http://www.google.com/2005/gml/data' xmlns:expr='http://www.google.com/2005/gml/expr'>
   <b:attr name='xmlns' value=''/>
@@ -1080,7 +1080,7 @@
               </b:loop>
               
               <b:loop values='data:post.labels' var='label'>
-  <b:if cond='data:label.name in {"Blog", "AI", "°³¹ßÈ¯°æ", "Server", "PersonalDev", "Review", "Unity", "Unreal", "Shader", "WebTranslator", "Homelab"}'>
+  <b:if cond='data:label.name in {"Blog", "AI", "ï¿½ï¿½ï¿½ï¿½È¯ï¿½ï¿½", "Server", "PersonalDev", "Review", "Unity", "Unreal", "Shader", "WebTranslator", "Homelab"}'>
     <a expr:href='data:label.url' expr:aria-label='data:label.name' expr:data-text='data:label.name' rel='tag'></a>
   </b:if>
 </b:loop>
@@ -2030,22 +2030,11 @@
                                   </b:if>
                                 </b:loop>
                         
-                                <b:loop index='i' values='data:post.labels' var='label'>
-                                  <b:if cond='data:post.labels none (label =&gt; label.name in [ &quot;Product&quot;, &quot;Discount10&quot;, &quot;Discount20&quot;, &quot;Discount30&quot;, &quot;Discount40&quot;, &quot;Discount50&quot;, &quot;Discount60&quot;, &quot;Discount70&quot;, &quot;Discount80&quot;, &quot;Discount90&quot; ])'>
-                                  
-                                    <b:comment><!--[ Replace data:i &lt;= 0 with data:i &lt;= 0 to display two labels ]--></b:comment>
-                                    <b:if cond='data:i &lt;= 0'>
-                                      <b:tag cond='data:widget.type != &quot;PopularPosts&quot;' name='span'>
-                                        <b:tag expr:data-text='data:label.name' expr:name='data:blog.url != data:label.url ? &quot;a&quot; : &quot;span&quot;'>
-                                          <b:attr cond='data:blog.url != data:label.url' expr:value='data:label.url' name='href'/>
-                                          <b:attr cond='data:blog.url != data:label.url' name='rel' value='tag'/>
-                                          <b:attr cond='data:blog.url != data:label.url' expr:value='data:label.name' name='aria-label'/>
-                                        </b:tag>
-                                      </b:tag>
+                                <b:loop values='data:post.labels' var='label'>
+                                    <b:if cond='data:label.name in {&quot;Unity&quot;, &quot;Unreal&quot;, &quot;Shader&quot;, &quot;Blog&quot;, &quot;Server&quot;, &quot;PersonalDev&quot;, &quot;Review&quot;, &quot;WebTranslator&quot;, &quot;Homelab&quot;}'>
+                                      <a expr:href='data:label.url' expr:aria-label='data:label.name' expr:data-text='data:label.name' rel='tag'></a>
                                     </b:if>
-                                  
-                                  </b:if>
-                                </b:loop>
+                                  </b:loop>
                               </b:if>
                             </div>
                           </b:if>
@@ -2499,20 +2488,9 @@
                                     </b:if>
                                   </b:loop>
       
-                                  <b:loop index='i' values='data:post.labels' var='label'>
-                                    <b:if cond='data:post.labels none (label =&gt; label.name in [ &quot;Product&quot;, &quot;Discount10&quot;, &quot;Discount20&quot;, &quot;Discount30&quot;, &quot;Discount40&quot;, &quot;Discount50&quot;, &quot;Discount60&quot;, &quot;Discount70&quot;, &quot;Discount80&quot;, &quot;Discount90&quot; ])'>
-                
-                                      <b:comment><!--[ Replace data:i &lt;= 0 with data:i &lt;= 0 to display two labels ]--></b:comment>
-                                      <b:if cond='data:i &lt;= 0'>
-                                        <b:tag cond='data:widget.type != &quot;PopularPosts&quot;' name='span'>
-                                          <b:tag expr:data-text='data:label.name' expr:name='data:blog.url != data:label.url ? &quot;a&quot; : &quot;span&quot;'>
-                                            <b:attr cond='data:blog.url != data:label.url' expr:value='data:label.url' name='href'/>
-                                            <b:attr cond='data:blog.url != data:label.url' name='rel' value='tag'/>
-                                            <b:attr cond='data:blog.url != data:label.url' expr:value='data:label.name' name='aria-label'/>
-                                          </b:tag>
-                                        </b:tag>
-                                      </b:if>
-                
+                                  <b:loop values='data:post.labels' var='label'>
+                                    <b:if cond='data:label.name in {&quot;Unity&quot;, &quot;Unreal&quot;, &quot;Shader&quot;, &quot;Blog&quot;, &quot;Server&quot;, &quot;PersonalDev&quot;, &quot;Review&quot;, &quot;WebTranslator&quot;, &quot;Homelab&quot;}'>
+                                      <a expr:href='data:label.url' expr:aria-label='data:label.name' expr:data-text='data:label.name' rel='tag'></a>
                                     </b:if>
                                   </b:loop>
                                 </b:if>
@@ -3211,7 +3189,7 @@ document.addEventListener("DOMContentLoaded", function() {
       posts.sort((a, b) => new Date(a.published.$t) - new Date(b.published.$t));
 
       let htmlContent = '<div class="series-nav-inner" style="margin-top: 2rem; padding: 1.5rem; background: var(--nav-bg, rgba(0,0,0,0.05)); border-radius: 8px;">';
-      htmlContent += '<h3 style="margin-bottom: 1rem; font-size: 1.1rem;">?? '' + seriesName + '' ½Ã¸®Áî ¿¬Àç±Û</h3><ul style="list-style: none; padding: 0; margin: 0;">';
+      htmlContent += '<h3 style="margin-bottom: 1rem; font-size: 1.1rem;">?? '' + seriesName + '' ï¿½Ã¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½</h3><ul style="list-style: none; padding: 0; margin: 0;">';
 
       for (let i = 0; i < posts.length; i++) {
         const linkObj = posts[i].link.find(l => l.rel === "alternate");
@@ -3220,7 +3198,7 @@ document.addEventListener("DOMContentLoaded", function() {
         const postTitle = posts[i].title.$t;
         
         if (postUrl.includes(currentSlug)) {
-          htmlContent += '<li style="margin-bottom: 0.5rem; font-weight: bold;">?? ' + postTitle + ' (ÇöÀç ±Û)</li>';
+          htmlContent += '<li style="margin-bottom: 0.5rem; font-weight: bold;">?? ' + postTitle + ' (ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½)</li>';
         } else {
           htmlContent += '<li style="margin-bottom: 0.5rem;"><a href="' + postUrl + '" style="text-decoration: none;">' + postTitle + '</a></li>';
         }
@@ -3256,7 +3234,7 @@ document.addEventListener("DOMContentLoaded", function() {
       posts.sort((a, b) => new Date(a.published.$t) - new Date(b.published.$t));
 
       let htmlContent = '<div class="series-nav-inner" style="margin-top: 2rem; padding: 1.5rem; background: var(--nav-bg, rgba(0,0,0,0.05)); border-radius: 8px;">';
-      htmlContent += '<h3 style="margin-bottom: 1rem; font-size: 1.1rem;">?? '' + seriesName + '' ½Ã¸®Áî ¿¬Àç±Û</h3><ul style="list-style: none; padding: 0; margin: 0;">';
+      htmlContent += '<h3 style="margin-bottom: 1rem; font-size: 1.1rem;">?? '' + seriesName + '' ï¿½Ã¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½</h3><ul style="list-style: none; padding: 0; margin: 0;">';
 
       for (let i = 0; i < posts.length; i++) {
         const linkObj = posts[i].link.find(l => l.rel === "alternate");
@@ -3265,7 +3243,7 @@ document.addEventListener("DOMContentLoaded", function() {
         const postTitle = posts[i].title.$t;
         
         if (postUrl.includes(currentSlug)) {
-          htmlContent += '<li style="margin-bottom: 0.5rem; font-weight: bold;">?? ' + postTitle + ' (ÇöÀç ±Û)</li>';
+          htmlContent += '<li style="margin-bottom: 0.5rem; font-weight: bold;">?? ' + postTitle + ' (ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½)</li>';
         } else {
           htmlContent += '<li style="margin-bottom: 0.5rem;"><a href="' + postUrl + '" style="text-decoration: none;">' + postTitle + '</a></li>';
         }
