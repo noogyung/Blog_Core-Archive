@@ -3023,8 +3023,6 @@ class TableOfContents { constructor({ from, to }) { this.fromElement = from; thi
                       <b:widget-setting name='link-13'>/search/label/WebTranslator</b:widget-setting>
                       <b:widget-setting name='text-14'>_Homelab</b:widget-setting>
                       <b:widget-setting name='link-14'>/search/label/Homelab</b:widget-setting>
-                      <b:widget-setting name='text-15'>_Antigravity</b:widget-setting>
-                      <b:widget-setting name='link-15'>/search/label/Antigravity</b:widget-setting>
                     </b:widget-settings>
                     <b:includable id='main'>
                       <b:include name='content'/>
