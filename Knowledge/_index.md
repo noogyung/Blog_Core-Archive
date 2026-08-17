@@ -1,11 +1,12 @@
 # Knowledge Base Index
-Last Updated: 2026-08-17
+Last Updated: 2026-08-18
 
 > 📚 **Series Catalog:** [`_series.yaml`](file:///d:/Noogs/NextCloud/Projects/Blog_Core-Archive/Knowledge/_series.yaml)
 
 | Topic | Category | Created Date | Last Modified | Status | File Path |
 |-------|----------|:------------:|:-------------:|:------:|-----------|
-| antigravity-blog-automation-v2 | Workflow | 2026-08-17 | 2026-08-17 | Verified | antigravity-blog-automation/Workflow/antigravity-blog-automation-v2-pipeline-2026-08-17.md |
+| antigravity-blog-automation-v3 | Workflow | 2026-08-18 | 2026-08-18 | Experimental | antigravity-blog-automation/Workflow/antigravity-blog-automation-v3-architecture-2026-08-18.md |
+| antigravity-blog-automation-v2 | Workflow | 2026-08-17 | 2026-08-18 | Verified | antigravity-blog-automation/Workflow/antigravity-blog-automation-v2-pipeline-2026-08-17.md |
 | gemini-flash-failure-and-waline-disaster | Troubleshooting | 2026-08-15 | 2026-08-15 | Verified | gemini-flash-failure-and-waline-disaster/gemini-flash-coding-failure-and-waline-disaster-2026-08-15.md |
 | waline-comment-system | Installation | 2026-08-15 | 2026-08-15 | Verified | waline-comment-system/Installation/waline-installation-guide.md |
 | webtranslator-01-inception-and-csp | Troubleshooting | 2026-08-15 | 2026-08-15 | Verified | webtranslator-01-inception-and-csp/Troubleshooting/webtranslator-01-inception-and-csp-2026-08-15.md |
@@ -20,6 +21,6 @@ Last Updated: 2026-08-17
 | webtranslator-10-gemini-rate-limits-and-prompts | Troubleshooting | 2026-08-15 | 2026-08-15 | Verified | webtranslator-10-gemini-rate-limits-and-prompts/Troubleshooting/webtranslator-10-gemini-rate-limits-and-prompts-2026-08-15.md |
 | webtranslator-11-gemini-model-404-and-dynamic-fetch | Troubleshooting | 2026-08-15 | 2026-08-15 | Verified | webtranslator-11-gemini-model-404-and-dynamic-fetch/Troubleshooting/webtranslator-11-gemini-model-404-and-dynamic-fetch-2026-08-15.md |
 | blogspot-custom-domain | Procedure | 2026-08-14 | 2026-08-14 | Verified | blogspot-custom-domain/Procedure/blogspot-custom-domain-2026-08-14.md |
-| antigravity-blog-automation | Workflow | 2026-06-19 | 2026-06-19 | Verified | antigravity-blog-automation/Workflow/antigravity-blog-automation-2026-06-19.md |
+| antigravity-blog-automation | Workflow | 2026-06-19 | 2026-08-18 | Verified | antigravity-blog-automation/Workflow/antigravity-blog-automation-2026-06-19.md |
 | antigravity-ide-vs-app | Concept | 2026-06-19 | 2026-06-19 | Verified (Partial) | antigravity-ide-vs-app/Concept/antigravity-ide-vs-app-2026-06-19.md |
 | blogspot-intro | Concept | 2026-06-19 | 2026-06-19 | Verified | blogspot-intro/Concept/blogspot-intro-2026-06-19.md |

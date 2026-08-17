@@ -1,6 +1,6 @@
 ---
 topic: antigravity-blog-automation
-title_kr: Antigravity를 이용한 블로그 포스팅 자동화 워크플로우
+title_kr: "[블로그 포스팅 자동화 구축기 #1] 구글 NotebookLM의 한계와 Antigravity 워크플로우 전환"
 category: Workflow
 sub_category: Automation-Setup
 version: 2026-06-19
@@ -25,7 +25,7 @@ series_prev_slug: null
 ### 📦 [Knowledge Package]
 
 * **Topic:** antigravity-blog-automation
-* **Title_KR:** Antigravity를 이용한 블로그 포스팅 자동화 워크플로우
+* **Title_KR:** [블로그 포스팅 자동화 구축기 #1] 구글 NotebookLM의 한계와 Antigravity 워크플로우 전환
 * **Category:** Workflow
 * **Sub-Category:** Automation-Setup
 * **Version:** 2026-06-19

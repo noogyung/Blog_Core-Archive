@@ -8,6 +8,7 @@ series:
     topics:
       - antigravity-blog-automation
       - antigravity-blog-automation-v2
+      - antigravity-blog-automation-v3
 
   webtranslator:
     series_name: "WebTranslator 개발기"

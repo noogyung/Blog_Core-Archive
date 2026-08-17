@@ -5709,7 +5709,7 @@ class TableOfContents { constructor({ from, to }) { this.fromElement = from; thi
                             <b:widget-setting name='text-0'>Privacy</b:widget-setting>
                             <b:widget-setting name='link-2'>#</b:widget-setting>
                             <b:widget-setting name='text-3'>Faq</b:widget-setting>
-                            <b:widget-setting name='link-0'>/p/privacy-policy.html</b:widget-setting>
+                            <b:widget-setting name='link-0'>/p/privacy.html</b:widget-setting>
                             <b:widget-setting name='text-2'>Term</b:widget-setting>
                           </b:widget-settings>
                           <b:includable id='main'>

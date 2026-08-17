@@ -1,6 +1,6 @@
 ---
 topic: antigravity-blog-automation-v2
-title_kr: 구글 NotebookLM의 한계와 Antigravity 블로그 포스팅 자동화 구축기 — v2 현황
+title_kr: "[블로그 포스팅 자동화 구축기 #2] 하네스 가드레일 정비, CDN 연동, 그리고 남겨진 과제들"
 category: Workflow
 sub_category: Automation-Pipeline-Evolution
 version: 2026-08-17
@@ -25,7 +25,7 @@ series_prev_slug: antigravity-blog-automation-workflow
 ### 📦 [Knowledge Package]
 
 * **Topic:** antigravity-blog-automation-v2
-* **Title_KR:** 구글 NotebookLM의 한계와 Antigravity 블로그 포스팅 자동화 구축기 — v2 현황
+* **Title_KR:** [블로그 포스팅 자동화 구축기 #2] 하네스 가드레일 정비, CDN 연동, 그리고 남겨진 과제들
 * **Category:** Workflow
 * **Sub-Category:** Automation-Pipeline-Evolution
 * **Version:** 2026-08-17
