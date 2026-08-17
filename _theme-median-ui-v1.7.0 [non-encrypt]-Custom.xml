@@ -3489,20 +3489,32 @@ class TableOfContents { constructor({ from, to }) { this.fromElement = from; thi
                                 </b:loop>
               
                                 <b:else/>
-                                <b:with value='data:post.labels filter (l =&gt; l.name in {&quot;WebTranslator&quot;, &quot;Homelab&quot;, &quot;PersonalDev&quot;, &quot;Blog&quot;, &quot;Server&quot;, &quot;Unity&quot;, &quot;Unreal&quot;, &quot;Shader&quot;, &quot;Review&quot;})' var='primaryCats'>
-                                <b:with value='data:primaryCats.length &gt; 0 ? data:primaryCats.first : data:post.labels.first' var='catLabel'>
-                                  <b:if cond='data:catLabel'>
-                                    <a expr:aria-label='data:catLabel.name' expr:data-text='data:catLabel.name' expr:href='data:catLabel.url' rel='tag'/>
-                                    <b:with value='data:post.labels filter (l =&gt; l.name != data:catLabel.name and !(l.name in {&quot;429Error&quot;, &quot;트러블슈팅&quot;, &quot;상태관리&quot;, &quot;상태충돌&quot;, &quot;사용자사전&quot;, &quot;레이스컨디션&quot;, &quot;어댑터패턴&quot;, &quot;웹번역&quot;, &quot;정규식&quot;, &quot;지식관리&quot;, &quot;개발환경&quot;, &quot;멀티에이전트&quot;, &quot;렌더링&quot;, &quot;DOM&quot;, &quot;CSS&quot;, &quot;UX&quot;, &quot;LLM&quot;, &quot;CSP&quot;, &quot;Troubleshooting&quot;, &quot;Serverless&quot;, &quot;Vercel&quot;, &quot;Waline&quot;, &quot;Product&quot;, &quot;Sponsored&quot;, &quot;SelectionAPI&quot;, &quot;ChromeStorage&quot;, &quot;AbortController&quot;, &quot;DNS설정&quot;, &quot;커스텀도메인&quot;}))' var='cleanSubCats'>
-                                    <b:with value='data:cleanSubCats.length &gt; 0 ? data:cleanSubCats.first : (data:post.labels filter (l =&gt; l.name != data:catLabel.name and !(l.name in {&quot;Sponsored&quot;, &quot;Product&quot;}))).first' var='subLabel'>
-                                      <b:if cond='data:subLabel'>
-                                        <a expr:aria-label='data:subLabel.name' expr:data-text='data:subLabel.name' expr:href='data:subLabel.url' rel='tag'/>
-                                      </b:if>
-                                    </b:with>
-                                    </b:with>
-                                  </b:if>
-                                </b:with>
-                                </b:with>
+                                <!-- 1순위: 대분류 카테고리 매칭 -->
+                                <b:loop values='[ &quot;WebTranslator&quot;, &quot;Homelab&quot;, &quot;PersonalDev&quot;, &quot;Blog&quot;, &quot;Server&quot;, &quot;Unity&quot;, &quot;Unreal&quot;, &quot;Shader&quot; ]' var='primaryName'>
+                                  <b:loop values='data:post.labels' var='label'>
+                                    <b:if cond='data:label.name == data:primaryName'>
+                                      <a expr:aria-label='data:label.name' expr:data-text='data:label.name' expr:href='data:label.url' rel='tag'/>
+                                    </b:if>
+                                  </b:loop>
+                                </b:loop>
+
+                                <!-- 대분류 카테고리가 아예 없는 포스트의 경우 첫 번째 라벨 출력 -->
+                                <b:if cond='data:post.labels none (l =&gt; l.name in [ &quot;WebTranslator&quot;, &quot;Homelab&quot;, &quot;PersonalDev&quot;, &quot;Blog&quot;, &quot;Server&quot;, &quot;Unity&quot;, &quot;Unreal&quot;, &quot;Shader&quot; ])'>
+                                  <b:loop index='i' values='data:post.labels' var='label'>
+                                    <b:if cond='data:i == 0'>
+                                      <a expr:aria-label='data:label.name' expr:data-text='data:label.name' expr:href='data:label.url' rel='tag'/>
+                                    </b:if>
+                                  </b:loop>
+                                </b:if>
+
+                                <!-- 2순위: 핵심 서브 라벨 매칭 -->
+                                <b:loop values='[ &quot;ChromeExtension&quot;, &quot;구글블로그스팟&quot;, &quot;AI&quot;, &quot;Gemini&quot;, &quot;Blogger&quot;, &quot;Antigravity&quot;, &quot;Review&quot; ]' var='subName'>
+                                  <b:loop values='data:post.labels' var='label'>
+                                    <b:if cond='data:label.name == data:subName'>
+                                      <a expr:aria-label='data:label.name' expr:data-text='data:label.name' expr:href='data:label.url' rel='tag'/>
+                                    </b:if>
+                                  </b:loop>
+                                </b:loop>
                               </b:if>
                             </div>
                           </b:if>
@@ -4427,20 +4439,32 @@ class TableOfContents { constructor({ from, to }) { this.fromElement = from; thi
                                 </b:loop>
                                 
                                 <b:else/>
-                                <b:with value='data:post.labels filter (l =&gt; l.name in {&quot;WebTranslator&quot;, &quot;Homelab&quot;, &quot;PersonalDev&quot;, &quot;Blog&quot;, &quot;Server&quot;, &quot;Unity&quot;, &quot;Unreal&quot;, &quot;Shader&quot;, &quot;Review&quot;})' var='primaryCats'>
-                                <b:with value='data:primaryCats.length &gt; 0 ? data:primaryCats.first : data:post.labels.first' var='catLabel'>
-                                  <b:if cond='data:catLabel'>
-                                    <a expr:aria-label='data:catLabel.name' expr:data-text='data:catLabel.name' expr:href='data:catLabel.url' rel='tag'/>
-                                    <b:with value='data:post.labels filter (l =&gt; l.name != data:catLabel.name and !(l.name in {&quot;429Error&quot;, &quot;트러블슈팅&quot;, &quot;상태관리&quot;, &quot;상태충돌&quot;, &quot;사용자사전&quot;, &quot;레이스컨디션&quot;, &quot;어댑터패턴&quot;, &quot;웹번역&quot;, &quot;정규식&quot;, &quot;지식관리&quot;, &quot;개발환경&quot;, &quot;멀티에이전트&quot;, &quot;렌더링&quot;, &quot;DOM&quot;, &quot;CSS&quot;, &quot;UX&quot;, &quot;LLM&quot;, &quot;CSP&quot;, &quot;Troubleshooting&quot;, &quot;Serverless&quot;, &quot;Vercel&quot;, &quot;Waline&quot;, &quot;Product&quot;, &quot;Sponsored&quot;, &quot;SelectionAPI&quot;, &quot;ChromeStorage&quot;, &quot;AbortController&quot;, &quot;DNS설정&quot;, &quot;커스텀도메인&quot;}))' var='cleanSubCats'>
-                                    <b:with value='data:cleanSubCats.length &gt; 0 ? data:cleanSubCats.first : (data:post.labels filter (l =&gt; l.name != data:catLabel.name and !(l.name in {&quot;Sponsored&quot;, &quot;Product&quot;}))).first' var='subLabel'>
-                                      <b:if cond='data:subLabel'>
-                                        <a expr:aria-label='data:subLabel.name' expr:data-text='data:subLabel.name' expr:href='data:subLabel.url' rel='tag'/>
-                                      </b:if>
-                                    </b:with>
-                                    </b:with>
-                                  </b:if>
-                                </b:with>
-                                </b:with>
+                                <!-- 1순위: 대분류 카테고리 매칭 -->
+                                <b:loop values='[ &quot;WebTranslator&quot;, &quot;Homelab&quot;, &quot;PersonalDev&quot;, &quot;Blog&quot;, &quot;Server&quot;, &quot;Unity&quot;, &quot;Unreal&quot;, &quot;Shader&quot; ]' var='primaryName'>
+                                  <b:loop values='data:post.labels' var='label'>
+                                    <b:if cond='data:label.name == data:primaryName'>
+                                      <a expr:aria-label='data:label.name' expr:data-text='data:label.name' expr:href='data:label.url' rel='tag'/>
+                                    </b:if>
+                                  </b:loop>
+                                </b:loop>
+
+                                <!-- 대분류 카테고리가 아예 없는 포스트의 경우 첫 번째 라벨 출력 -->
+                                <b:if cond='data:post.labels none (l =&gt; l.name in [ &quot;WebTranslator&quot;, &quot;Homelab&quot;, &quot;PersonalDev&quot;, &quot;Blog&quot;, &quot;Server&quot;, &quot;Unity&quot;, &quot;Unreal&quot;, &quot;Shader&quot; ])'>
+                                  <b:loop index='i' values='data:post.labels' var='label'>
+                                    <b:if cond='data:i == 0'>
+                                      <a expr:aria-label='data:label.name' expr:data-text='data:label.name' expr:href='data:label.url' rel='tag'/>
+                                    </b:if>
+                                  </b:loop>
+                                </b:if>
+
+                                <!-- 2순위: 핵심 서브 라벨 매칭 -->
+                                <b:loop values='[ &quot;ChromeExtension&quot;, &quot;구글블로그스팟&quot;, &quot;AI&quot;, &quot;Gemini&quot;, &quot;Blogger&quot;, &quot;Antigravity&quot;, &quot;Review&quot; ]' var='subName'>
+                                  <b:loop values='data:post.labels' var='label'>
+                                    <b:if cond='data:label.name == data:subName'>
+                                      <a expr:aria-label='data:label.name' expr:data-text='data:label.name' expr:href='data:label.url' rel='tag'/>
+                                    </b:if>
+                                  </b:loop>
+                                </b:loop>
                               </b:if>
                             </div>
                           </b:if>
