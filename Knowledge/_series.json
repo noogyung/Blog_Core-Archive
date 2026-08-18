@@ -1,0 +1,48 @@
+﻿{
+  "series": {
+    "antigravity-blog-automation": {
+      "series_name": "Antigravity 블로그 포스팅 자동화 구축기",
+      "topics": [
+        "antigravity-blog-automation",
+        "antigravity-blog-automation-v2",
+        "antigravity-blog-automation-v3"
+      ]
+    },
+    "webtranslator": {
+      "series_name": "WebTranslator 개발기",
+      "chapters": [
+        {
+          "chapter": "1장. MV3 아키텍처 및 통신 기반",
+          "topics": [
+            "webtranslator-01-inception-and-csp",
+            "webtranslator-02-race-condition-and-storage"
+          ]
+        },
+        {
+          "chapter": "2장. DOM 렌더링 및 파이프라인 최적화",
+          "topics": [
+            "webtranslator-03-custom-dict-and-snapshot",
+            "webtranslator-04-steam-link-color-and-orphan-nodes",
+            "webtranslator-05-steam-button-and-dual-renderer"
+          ]
+        },
+        {
+          "chapter": "3장. LLM 다중 엔진 및 상태 관리",
+          "topics": [
+            "webtranslator-06-selection-translation-and-false-alarm",
+            "webtranslator-07-multi-engine-and-json-cleaning",
+            "webtranslator-08-word-translation-specialization",
+            "webtranslator-09-selection-vs-full-page-state"
+          ]
+        },
+        {
+          "chapter": "4장. Gemini API 복원력 및 장애 극복",
+          "topics": [
+            "webtranslator-10-gemini-rate-limits-and-prompts",
+            "webtranslator-11-gemini-model-404-and-dynamic-fetch"
+          ]
+        }
+      ]
+    }
+  }
+}
