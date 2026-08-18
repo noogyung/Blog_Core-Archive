@@ -13,7 +13,7 @@ sources_count: 3
 blog_draft_path: Blog_Posts/core-archive/2026-08/webtranslator-11-gemini-model-404-and-dynamic-model-fetch.html
 blog_draft_date: 2026-08-19
 blog_id: core-archive
-blog_published: false
+blog_published: true
 series_id: webtranslator
 series_title: WebTranslator 개발기
 series_part: 11
