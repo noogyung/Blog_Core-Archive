@@ -13,7 +13,7 @@ sources_count: 3
 blog_draft_path: Blog_Posts/2026-08/webtranslator-13-modularization-and-native-esm.html
 blog_draft_date: 2026-08-19
 blog_id: core-archive
-blog_published: false
+blog_published: true
 series_id: webtranslator
 ---
 
