@@ -10,9 +10,9 @@ last_modified: 2026-08-19
 language: KR+EN
 tags: [WebTranslator, ChromeExtension, 크롬확장프로그램, Steam, EmptyResponse, RetryQueue, 장애격리, 스킵처리, 트러블슈팅]
 sources_count: 3
-blog_draft_path: null
-blog_draft_date: null
-blog_id: null
+blog_draft_path: Blog_Posts/2026-08/webtranslator-12-empty-response-and-retry-queue.html
+blog_draft_date: 2026-08-19
+blog_id: core-archive
 blog_published: false
 series_id: webtranslator
 ---

@@ -32,3 +32,4 @@ series:
         topics:
           - webtranslator-10-gemini-rate-limits-and-prompt-builder
           - webtranslator-11-gemini-model-404-and-dynamic-model-fetch
+          - webtranslator-12-empty-response-and-retry-queue

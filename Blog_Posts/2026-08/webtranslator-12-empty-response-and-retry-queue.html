@@ -1,0 +1,170 @@
+<!-- ============================================================
+  [BLOG POST METADATA - Blogspot 설정창 복사용]
+  Title: [WebTranslator 개발기 #12] 스팀 커뮤니티 빈 응답 오류와 큐 기반 재시도 및 장애 격리
+  Labels (Tags): WebTranslator, ChromeExtension, 크롬확장프로그램, Steam, 비동기처리, 에러핸들링, 트러블슈팅
+  Meta Description: 스팀 창작마당 등 대용량 웹페이지 번역 시 간헐적으로 발생하는 빈 응답(Empty Response) 결함을 분석하고, 3초/10초 차등 쿨타임 재시도 큐와 실패 배치 스킵 기반의 비파괴 장애 격리 아키텍처 구축 과정을 정리합니다.
+  Slug: webtranslator-12-empty-response-and-retry-queue
+  ---
+  Primary Keyword: 크롬 확장 프로그램 빈 응답 재시도
+  Secondary Keywords: WebTranslator, Steam 번역, 큐 기반 재시도, 장애 격리, Chrome MV3
+  Knowledge Source: Knowledge/webtranslator-12-empty-response-and-retry/Troubleshooting/webtranslator-12-empty-response-and-retry-2026-08-19.md
+  Generated Date: 2026-08-19
+  Estimated Read Time: 8분
+  Series ID: webtranslator
+  ============================================================ -->
+
+<!-- [블로그스팟 전용 필드 복사용 - 각 줄을 복사하여 블로그스팟 입력란에 붙여넣기] -->
+<!-- BLOG_TITLE: [WebTranslator 개발기 #12] 스팀 커뮤니티 빈 응답 오류와 큐 기반 재시도 및 장애 격리 -->
+<!-- BLOG_LABELS: WebTranslator, ChromeExtension, 크롬확장프로그램, Steam, 비동기처리, 에러핸들링, 트러블슈팅 -->
+<!-- META_DESCRIPTION: 스팀 창작마당 등 대용량 웹페이지 번역 시 간헐적으로 발생하는 빈 응답(Empty Response) 결함을 분석하고, 3초/10초 차등 쿨타임 재시도 큐와 실패 배치 스킵 기반의 비파괴 장애 격리 아키텍처 구축 과정을 정리합니다. -->
+
+<article>
+
+  <!-- 이미지 슬롯 1 (대표 이미지 - 필수) -->
+  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-08/webtranslator-12-empty-response-and-retry-queue-img1.jpg" alt="WebTranslator 큐 기반 재시도 및 장애 격리 아키텍처 다이어그램">
+
+  <p>
+    스팀 창작마당(Steam Workshop)의 대규모 모드 가이드나 수백 개의 패치 토론 댓글이 얽혀 있는 웹페이지를 번역하다 보면, 이전 글에서 해결한 429 쿼터 초과와는 성격이 전혀 다른 <strong>간헐적인 문단 누락 및 진행 멈춤 결함</strong>에 직면하게 됩니다. 백엔드 API와의 일시적인 통신 순단이나 LLM의 안전 필터(Safety Filter) 검열 등으로 인해 빈 응답(Empty Response)이 반환될 때, 해당 배치가 통째로 증발하여 화면 중간중간이 영문 원문으로 방치되는 문제가 발생했습니다.
+  </p>
+
+  <h2 id="empty-response-and-infinite-loop-trap">1. 빈 응답(Empty Response)의 실체와 단순 재호출의 한계</h2>
+
+  <p>
+    웹페이지 번역 파이프라인에서 수집된 텍스트 노드는 수십 개 단위의 배치(Batch)로 묶여 백그라운드 서비스 워커로 전송됩니다. 이때 스팀 커뮤니티와 같이 비정형 텍스트와 특수 기호가 많은 환경에서는 다음과 같은 원인으로 번역 결과 배열이 비정상 반환되는 현상이 확인되었습니다:
+  </p>
+
+  <ol class="step">
+    <li><strong>일시적 브라우저 통신 순단:</strong> 백그라운드 서비스 워커의 비활성화(Idle) 전환이나 포트 순단(<code>message port closed</code>, <code>Background script returned undefined</code>)으로 인한 결과 누락.</li>
+    <li><strong>LLM 프롬프트 안전 필터 검열:</strong> 게임 패치 노트나 사용자 댓글에 포함된 거친 표현, 비속어 등이 AI 공급자의 안전 검열 정책에 걸려 빈 문자열(<code>""</code>)로 반환.</li>
+    <li><strong>토큰 절단 및 JSON 배열 파싱 실패:</strong> 원문 배열 수와 반환된 번역 배열의 길이가 일치하지 않아 매핑이 어긋나는 현상.</li>
+  </ol>
+
+  <div class="note wr">
+    <strong>⚠️ 주의:</strong> 에러 발생 시 단순 <code>while(true)</code> 루프로 대기 시간 없이 즉시 재호출을 시도하면, API 서버로부터 429 레이트 리밋 차단을 당하거나 브라우저 탭 자체가 락(Lock)에 걸려 확장 프로그램 전체가 먹통이 되는 치명적인 부작용을 유발합니다.
+  </div>
+
+  <h2 id="differential-delay-retry-queue">2. 차등 쿨타임 기반 재시도 큐(Retry Queue) 설계</h2>
+
+  <p>
+    모든 에러를 동일한 지연 시간으로 처리하면 불필요한 대기 시간이 늘어나 사용자 경험이 저하됩니다. 따라서 WebTranslator에서는 오류의 성격에 따라 쿨타임을 분기하는 <strong>차등 쿨타임 재시도 큐(Differential Delay Retry Queue)</strong>를 구축했습니다.
+  </p>
+
+  <div class="table w100 withBg">
+    <table>
+      <thead>
+        <tr>
+          <th>오류 유형</th>
+          <th>감지 키워드</th>
+          <th>쿨타임 (대기 시간)</th>
+          <th>처리 전략</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>일시적 통신 오류 / 빈 응답</strong></td>
+          <td><code>비어 있습니다</code>, <code>message port closed</code></td>
+          <td><strong>3초 (3,000ms)</strong></td>
+          <td>단기 순단 회복 후 즉시 큐 재투입</td>
+        </tr>
+        <tr>
+          <td><strong>API 쿼터 초과 / 서버 과부하</strong></td>
+          <td><code>429</code>, <code>503</code>, <code>RESOURCE_EXHAUSTED</code></td>
+          <td><strong>10초 (10,000ms)</strong></td>
+          <td>RPM/TPM 한도 회복을 위한 넉넉한 대기</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    배치 큐의 각 아이템은 <code>availableAt</code> 타임스탬프를 부여받으며, 비동기 워커는 현재 시간이 <code>availableAt</code>을 경과한 배치만을 순차적으로 꺼내어 처리함으로써 서버와 클라이언트 모두에 무리를 주지 않도록 제어합니다.
+  </p>
+
+  <h2 id="fault-isolation-and-skip-architecture">3. 3회 제한과 비파괴 장애 격리(Fault Isolation)</h2>
+
+  <p>
+    아무리 정교한 재시도 로직이라도, LLM 안전 필터에 걸린 텍스트처럼 공급자 측에서 번역을 영구 거부하는 데이터는 무한히 재시도할 경우 큐 전체를 정체시키는 병목이 됩니다. 이를 방지하기 위해 <strong>최대 3회 재시도 제한</strong>과 <strong>실패 배치 스킵(Skip) 기반 장애 격리</strong>를 결합했습니다.
+  </p>
+
+  <div class="pre custom" data-text="JavaScript">
+    <button aria-label="Copy code">Copy</button>
+    <pre>// src/content/translation.js - 큐 워커 및 장애 격리 핵심 로직
+try {
+  var result = await sendToBackground({
+    action: "translate",
+    texts,
+    targetLang: settings.targetLang,
+    mode: settings.translationMode,
+    apiKey: settings.geminiApiKey,
+    geminiModel: settings.geminiModel,
+    openaiApiKey: settings.openaiApiKey,
+    openaiModel: settings.openaiModel,
+  });
+
+  if (result?.error) throw new Error(result.error);
+  if (!result?.translations) throw new Error("번역 응답이 비어 있습니다.");
+
+  // 정상 수신 시 DOM 렌더링 및 캐시 적재
+  batch.forEach((block, idx) => {
+    if (idx &lt; result.translations.length &amp;&amp; result.translations[idx]) {
+      var rawTranslation = result.translations[idx];
+      var transText = applyLocalDictionary(rawTranslation, dict);
+      applyTranslation(block.element, block.originalHTML, transText, settings.displayMode, block.isPure, block.isWrapper || false);
+      state.localCache[block.text] = rawTranslation;
+    }
+  });
+
+  completed += batch.length;
+  if (onProgress) onProgress(completed);
+  pendingBatches--;
+
+} catch (err) {
+  var errMsg = err.message || "";
+  var isRateLimit = errMsg.includes("429") || errMsg.includes("503") || errMsg.includes("RESOURCE_EXHAUSTED");
+  var isCommunicationError = errMsg.includes("message port closed") || errMsg.includes("Background script returned undefined") || errMsg.includes("비어 있습니다");
+
+  if ((isRateLimit || isCommunicationError) &amp;&amp; item.retryCount &lt; 3) {
+    item.retryCount++;
+    item.availableAt = Date.now() + (isRateLimit ? 10000 : 3000);
+    batchesQueue.push(item);
+    console.warn(`[WebTranslator] 배치 ${item.id} 일시적 오류("${errMsg}"). 재시도 큐에 추가됨 (재시도 ${item.retryCount}/3 회차)`);
+  } else {
+    // 3회 재시도 초과 또는 복구 불가 에러: 해당 배치만 안전하게 건너뛰고 전체 번역 완주
+    console.warn(`[WebTranslator] 배치 ${item.id} 오류 — 스킵하고 계속 진행 (재시도 초과 또는 치명적 오류)`, err);
+    completed += batch.length;
+    if (onProgress) onProgress(completed);
+    pendingBatches--;
+  }
+}</pre>
+  </div>
+
+  <div class="note">
+    <strong>💡 팁:</strong> 3회 재시도 후에도 복구되지 않는 배치는 상위로 예외를 던져 번역 전체를 멈추지 않고, <code>completed += batch.length</code>로 진행률 카운트를 보정하여 UI 프로그레스 바가 100%까지 정상 완료되도록 유도하는 것이 실전 웹 확장 프로그램의 핵심 UX입니다.
+  </div>
+
+  <h2 id="verification-and-resilience-results">4. 실전 검증 및 복원력 테스트 결과</h2>
+
+  <p>
+    스팀 창작마당의 500개 이상 댓글이 달린 대규모 가이드 페이지에서 실제 검증을 진행한 결과, 간헐적인 네트워크 순단 상황에서도 다음과 같은 안정성이 입증되었습니다:
+  </p>
+
+  <ul class="pros">
+    <li><strong>단기 통신 순단 자동 복구:</strong> 브라우저 탭 전환이나 일시적 지연으로 발생한 1~2회의 빈 응답 배치가 3초 후 재시도 큐를 통해 정상 복구됨.</li>
+    <li><strong>429 쿼터 초과 시 안전 분산:</strong> 연속 호출로 인한 레이트 리밋 발생 시 10초 쿨타임 동안 대기 후 순차 재진입하여 에러 락 해소.</li>
+    <li><strong>100% 비파괴 완주율:</strong> 안전 필터에 걸린 소수 문단이 스킵되더라도, 웹페이지 내 99% 이상의 정상 문단이 중단 없이 끝까지 렌더링 완료.</li>
+  </ul>
+
+  <h2 id="section-conclusion">마무리하며</h2>
+
+  <p>
+    외부 AI API와 네트워크 통신을 결합한 클라이언트 확장 프로그램을 개발할 때, 모든 요청이 100% 성공할 것이라는 가정은 쉽게 무너집니다. 일시적 장애는 큐 기반의 차등 쿨타임으로 유연하게 흡수하고, 영구적 실패는 안전하게 격리하여 전체 프로세스를 보호하는 <strong>우아한 장애 격리(Graceful Degradation)</strong>가 서비스의 완성도를 좌우한다는 점을 깊이 체감할 수 있었습니다.
+  </p>
+
+  <p>
+    혹시 대용량 비동기 텍스트 배치 처리나 확장 프로그램 개발 중 유사한 백그라운드 큐 처리 이슈를 겪으셨다면, 어떤 방식으로 재시도와 장애 격리를 구성하셨는지 의견을 남겨주시면 감사하겠습니다. 다음 글에서는 수많은 기능이 추가되면서 3,000줄을 돌파한 단일 모놀리스 코드를 네이티브 ES 모듈로 전면 개편한 리팩토링 과정을 다루겠습니다.
+  </p>
+
+  <!-- 시리즈 네비게이션 컨테이너 (JS로 동적 렌더링) -->
+  <nav class="series-nav"></nav>
+
+</article>
