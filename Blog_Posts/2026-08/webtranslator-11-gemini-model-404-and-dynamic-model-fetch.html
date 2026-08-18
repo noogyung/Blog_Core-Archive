@@ -1,12 +1,12 @@
 <!-- ============================================================
   [BLOG POST METADATA - Blogspot 설정창 복사용]
-  Title: [WebTranslator 개발기 #11] 자동 모델 탐색이 부른 과금 참사와 모델 헬퍼 도구 전환
+  Title: [WebTranslator 개발기 #11] 자동 모델 탐색의 과금 위험과 모델 헬퍼 도구 전환
   Labels (Tags): WebTranslator, ChromeExtension, 크롬확장프로그램, Gemini, GPT, API, 404Error, 비용최적화, 트러블슈팅
-  Meta Description: 크롬 확장 프로그램 개발기 11편: 10편의 RPM 한계에 이어 직면한 Gemini의 RPD(일일 요청 수) 고갈 및 OpenAI 토큰 단가 폭탄 문제를 해결하고, 사용자 모델 직접 고정과 모델 탐색 헬퍼 도구로 전환한 과정을 다룹니다.
+  Meta Description: 크롬 확장 프로그램 개발기 11편: 10편의 RPM 한계에 이어 직면한 Gemini의 RPD(일일 요청 수) 고갈 및 OpenAI 토큰 단가 문제를 해결하고, 사용자 모델 직접 고정과 모델 탐색 헬퍼 도구로 전환한 과정을 다룹니다.
   Slug: webtranslator-11-gemini-model-404-and-dynamic-model-fetch
   ---
   Primary Keyword: LLM API 비용 최적화
-  Secondary Keywords: Gemini RPD 쿼터 관리, GPT 토큰 단가 과금 방어, 크롬 확장 프로그램 모델 헬퍼, gemini-flash-lite-latest, gpt-5.4-nano
+  Secondary Keywords: Gemini RPD 쿼터 관리, GPT 토큰 단가 과금 방어, 크롬 확장 프로그램 모델 헬퍼, gemini-flash-lite-latest, gpt-5.6-luna
   Knowledge Source: Knowledge/webtranslator-11-gemini-model-404-and-dynamic-fetch/Troubleshooting/webtranslator-11-gemini-model-404-and-dynamic-fetch-2026-08-15.md
   Generated Date: 2026-08-19
   Estimated Read Time: 7분
@@ -27,11 +27,11 @@
   </p>
 
   <p>
-    그러나 RPM을 해결하자마자 또 다른 쿼터와 과금의 복병을 마주했습니다. 구형 모델 하드코딩으로 인한 404 장애를 해결하려던 중, AI의 추천대로 도입한 <strong>'실시간 자동 모델 선택' 기능이 모델별 일일 총 요청 수(RPD, Requests Per Day)와 토큰 단가 차이를 무시한 채 동작하면서, Gemini의 일일 쿼터를 조기 소진시키고 OpenAI 선결제 크레딧을 순식간에 탕진하는 과금 사고</strong>를 일으킨 것입니다.
+    그러나 RPM을 해결하자마자 또 다른 쿼터와 과금의 복병을 마주했습니다. 구형 모델 하드코딩으로 인한 404 장애를 해결하려던 중, AI의 추천대로 도입한 <strong>'실시간 자동 모델 선택' 기능이 모델별 일일 총 요청 수(RPD, Requests Per Day)와 토큰 단가 차이를 무시한 채 동작하면서, Gemini의 일일 쿼터를 조기 소진시키고 OpenAI 선결제 크레딧을 예상보다 빠르게 소진시키는 문제</strong>를 일으킨 것입니다.
   </p>
 
   <p>
-    이번 글에서는 10편의 RPM에 이어 직면한 <strong>RPD 한계와 유료 모델 단가 격차</strong>의 문제를 짚어보고, 런타임 자동 선택을 전면 폐기하여 <strong>초가성비 모델 직접 고정과 모델 탐색 헬퍼 도구</strong>로 아키텍처를 전면 전환한 과정을 정리해 보고자 합니다.
+    이번 글에서는 10편의 RPM에 이어 직면한 <strong>Gemini의 RPD 한계와 유료 모델 단가 격차</strong>의 문제를 짚어보고, 런타임 자동 선택을 전면 폐기하여 <strong>초가성비 모델 직접 고정과 모델 탐색 헬퍼 도구</strong>로 아키텍처를 전면 전환한 과정을 정리해 보고자 합니다.
   </p>
 
   <h2 id="hardcoded-model-and-rpd">
@@ -43,7 +43,7 @@
   </p>
 
   <p>
-    그러나 <code>gemini-2.5-flash</code>는 구형 실험용 프리뷰 모델로서 기본 제공되는 일일 무료 허용량(RPD)이 매우 적었습니다. 결국 웹서핑 중 쿼터가 순식간에 바닥나거나, 공급자 측에서 해당 프리뷰 엔드포인트를 사전 예고 없이 종료(Deprecated)하면서 콘솔에 다음과 같은 404 에러가 쏟아졌습니다:
+    그러나 <code>gemini-2.5-flash</code>는 구형 실험용 프리뷰 모델로서 기본 제공되는 일일 무료 허용량(RPD)이 매우 적었습니다. 결국 웹서핑 중 쿼터가 빠르게 소진되거나, 공급자 측에서 해당 프리뷰 엔드포인트를 사전 예고 없이 종료(Deprecated)하면서 콘솔에 다음과 같은 404 에러가 발생했습니다:
   </p>
 
   <div class="pre custom" data-text="Console 에러 로그">
@@ -53,33 +53,33 @@ Error: 404 This model models/gemini-2.5-flash is no longer available to new user
   </div>
 
   <p>
-    이 404 에러를 해결하기 위해 AI 어시스턴트에게 문제 해결을 맡겼고, 여기서부터 예상치 못한 두 번째 참사가 시작되었습니다.
+    이 404 에러를 해결하기 위해 AI 어시스턴트에게 문제 해결을 맡겼고, 여기서부터 예상치 못한 두 번째 문제가 발생했습니다.
   </p>
 
-  <h2 id="ai-auto-fetch-disaster">
-    2. AI의 '실시간 자동 모델 선택' 추천과 과금 및 RPD 참사
+  <h2 id="ai-auto-fetch-problem">
+    2. AI의 '실시간 자동 모델 선택' 추천과 RPD 소진 및 과금 문제
   </h2>
 
   <p>
     AI 어시스턴트는 404 에러를 방지하겠다며 구글 API(<code>GET /v1beta/models</code>)를 호출하여 <strong>실시간으로 가용한 모델을 자동으로 탐색하여 번역 런타임에 즉시 꽂아 넣는 자동 모델 선택 모듈</strong>을 제안했습니다.
   </p>
 
-  <div class="pre custom" data-text="JavaScript (AI가 제안한 위험한 런타임 자동 선택 코드 - 오류 코드)">
+  <div class="pre custom" data-text="JavaScript (AI가 제안한 런타임 자동 선택 코드 - 결함 코드)">
     <button aria-label="Copy code">Copy</button>
-    <pre>// translator.js: 모델별 RPD와 단가를 모르는 위험한 자동 선택 (오류 코드)
+    <pre>// translator.js: 모델별 RPD와 단가를 고려하지 않는 자동 선택 (결함 코드)
 async function getRuntimeModel(apiKey) {
   const models = await fetchAvailableModelsFromAPI(apiKey);
-  // 치명적 결함: RPD 한도나 토큰 단가를 전혀 고려하지 않고 아무 모델이나 골라잡음!
+  // 치명적 결함: RPD 한도나 토큰 단가를 전혀 고려하지 않고 임의의 모델을 선택!
   return models.find(m =&gt; m.supportsGeneration).name; 
 }</pre>
   </div>
 
   <h3 id="disaster-analysis">
-    발생한 치명적인 RPD 소진 및 과금 폭사 분석
+    발생한 RPD 소진 및 과금 메커니즘 분석
   </h3>
 
   <p>
-    이 자동 탐색 모듈은 <strong>각 AI 모델의 일일 총 요청 수(RPD)와 토큰 단가(Pricing) 차이를 전혀 알지 못했습니다</strong>:
+    이 자동 탐색 모듈은 <strong>각 AI 모델의 쿼터 구조와 토큰 단가(Pricing) 격차를 전혀 구분하지 못했습니다</strong>:
   </p>
 
   <div class="table w100 withBg">
@@ -87,67 +87,156 @@ async function getRuntimeModel(apiKey) {
       <thead>
         <tr>
           <th>엔진 분류</th>
-          <th>AI 자동 선택의 오작동 메커니즘</th>
-          <th>발생한 실전 장애</th>
+          <th>AI 자동 선택의 동작 방식</th>
+          <th>실제 발생한 운영 문제</th>
         </tr>
       </thead>
       <tbody>
         <tr>
           <td><strong>Google Gemini</strong></td>
           <td>모델별로 일일 허용량(RPD)이 다른데, RPD 한도가 극히 적은 실험용/상위 모델을 임의 선택</td>
-          <td>전체 계정의 무료 번역 가능 여유가 남아있음에도 불구하고 <strong>당일 모델 RPD가 조기 소진</strong>되어 번역 중단</td>
+          <td>전체 계정의 무료 번역 여유가 남아있음에도 <strong>해당 모델의 RPD가 조기 소진</strong>되어 번역 중단</td>
         </tr>
         <tr>
           <td><strong>OpenAI GPT</strong></td>
-          <td>초저가 모델(<code>gpt-5.4-nano</code>) 대신 요청당 단가가 수십 배 비싼 상위 모델(<code>gpt-4o</code>)을 임의 호출</td>
-          <td>선결제 방식으로 충전해 둔 <strong>$10 크레딧이 순식간에 탕진</strong>되는 과금 사고 발생</td>
+          <td>초저가 모델 대신 요청당 단가가 수십 배 비싼 상위 모델(<code>gpt-4o</code>)을 임의 호출</td>
+          <td>선결제 방식으로 충전해 둔 <strong>$10 크레딧이 단시간에 소진</strong>되는 비용 누수 발생</td>
         </tr>
       </tbody>
     </table>
   </div>
 
-  <div class="note wr">
-    <strong>⚠️ 핵심 교훈:</strong> 10편의 RPM(분당 요청 수) 한계를 배치 큐로 해결했다 하더라도, 모델별 RPD(일일 총 요청 수)와 토큰 단가를 통제하지 못하면 무료 쿼터 조기 고갈이나 과금 폭탄을 피할 수 없습니다.
-  </div>
-
-  <h2 id="user-fixed-model-solution">
-    3. 해결책 1: 자동 선택 전면 폐기 및 '사용자 직접 모델 고정' 전환
+  <h2 id="llm-pricing-and-quota-facts">
+    3. 실측 데이터로 살펴본 모델별 쿼터 및 단가 구조
   </h2>
 
   <p>
-    번역 런타임 내의 위험한 자동 모델 선택기를 전면 폐기하고, <strong>사용자가 RPD와 단가가 검증된 초가성비 모델을 설정창에서 직접 명시하여 고정 사용하는 방식</strong>으로 전환했습니다.
+    트러블슈팅 과정에서 각 공급자의 API 정책을 면밀히 분석한 결과, 모델군에 따라 쿼터와 단가가 극명하게 나뉘어 있음을 확인했습니다.
   </p>
 
+  <h3 id="gemini-quota-structure">
+    (1) Google Gemini의 3대 쿼터 축 (RPM / TPM / RPD)
+  </h3>
+
   <p>
-    10편에서 구축한 <strong>지수 백오프와 MutationObserver 디바운스 배치 큐</strong>가 분당 요청(RPM)을 이미 제어하고 있으므로, 가성비 모델을 고정하는 것만으로 RPD와 비용 문제가 완전히 해결되었습니다:
+    Gemini 무료 API는 <strong>RPM(분당 요청 수)</strong>, <strong>TPM(분당 토큰 수)</strong>, <strong>RPD(일일 요청 수)</strong>라는 세 가지 축으로 엄격히 관리되며, <strong>Pro $\rightarrow$ Flash $\rightarrow$ Flash-Lite</strong> 순으로 허용량에 큰 차이가 있습니다:
   </p>
 
   <div class="table w100 withBg">
     <table>
       <thead>
         <tr>
-          <th>엔진</th>
-          <th>고정 적용 모델</th>
-          <th>실제 운영 결과 및 비용</th>
+          <th>모델 라인업</th>
+          <th>대표 모델</th>
+          <th>무료 허용량 (RPM / TPM / RPD)</th>
+          <th>특징 및 적합성</th>
         </tr>
       </thead>
       <tbody>
         <tr>
-          <td><strong>Google Gemini</strong></td>
-          <td><code>gemini-flash-lite-latest</code></td>
-          <td>일일 요청 수(RPD)가 넉넉하여 하루 종일 웹서핑을 해도 쿼터 소진 없이 100% 무료 완주</td>
+          <td><strong>Pro 계열</strong></td>
+          <td>Gemini 2.5 Pro, 3.1 Pro</td>
+          <td>0 / 0 / 0 (무료 티어 미제공 또는 극소)</td>
+          <td>웹페이지 대량 번역용으로 사용 불가</td>
         </tr>
         <tr>
-          <td><strong>OpenAI GPT</strong></td>
-          <td><code>gpt-5.4-nano</code></td>
-          <td>10만 자 번역 시 약 <strong>$0.01</strong> 수준의 극도로 저렴한 토큰 단가로 경제적 번역 달성</td>
+          <td><strong>Flash 계열</strong></td>
+          <td>Gemini 2.5/3.5/3.6/3.7 Flash</td>
+          <td>5 RPM / 250K TPM / <strong>20 RPD</strong></td>
+          <td>일일 요청 수(RPD 20)가 매우 적어 단시간 내 소진</td>
+        </tr>
+        <tr>
+          <td><strong>Flash-Lite 계열</strong></td>
+          <td>Gemini 3.1/3.5 Flash Lite</td>
+          <td>15 RPM / 250K TPM / <strong>500 RPD</strong></td>
+          <td><strong>Flash 대비 RPD가 25배(500회)</strong>에 달해 대량 번역에 최적</td>
         </tr>
       </tbody>
     </table>
   </div>
 
+  <div class="note">
+    <strong>💡 핵심 개념:</strong> <code>gemini-flash-lite-latest</code>는 구글이 제공하는 최신 안정화 버전 중 <strong>무료 허용량(RPD/RPM)이 가장 넉넉한 Flash-Lite 모델을 자동으로 가리키는 공식 별칭(Alias)</strong>입니다.
+  </div>
+
+  <h3 id="gpt-pricing-structure">
+    (2) OpenAI GPT의 모델별 1M 토큰당 가격 구조
+  </h3>
+
+  <p>
+    OpenAI는 무료 플랜이 없으며 선결제 크레딧 기반으로 과금됩니다. 모델별 1M(100만) 토큰당 입출력 단가는 다음과 같이 큰 차이를 보입니다:
+  </p>
+
+  <div class="table w100 withBg">
+    <table>
+      <thead>
+        <tr>
+          <th>모델명</th>
+          <th>입력 단가 (Input / 1M)</th>
+          <th>출력 단가 (Output / 1M)</th>
+          <th>비고 및 특성</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>GPT-5.6 Sol</strong></td>
+          <td>$5.00</td>
+          <td>$30.00</td>
+          <td>최신 플래그십, 고성능 추론</td>
+        </tr>
+        <tr>
+          <td><strong>GPT-5.6 Terra</strong></td>
+          <td>$2.00</td>
+          <td>$12.00</td>
+          <td>성능과 비용 균형형 미드레인지</td>
+        </tr>
+        <tr>
+          <td><strong>GPT-5.6 Luna</strong></td>
+          <td><strong>$0.20</strong></td>
+          <td><strong>$1.20</strong></td>
+          <td>대량 텍스트 처리용 초저가 모델</td>
+        </tr>
+        <tr>
+          <td><strong>GPT-5.6 Cyber</strong></td>
+          <td>$12.50</td>
+          <td>$75.00</td>
+          <td>특수 보안·고급 연산용</td>
+        </tr>
+        <tr>
+          <td><strong>GPT-4o</strong></td>
+          <td>$2.50</td>
+          <td>$10.00</td>
+          <td>구형 멀티모달 주력 모델</td>
+        </tr>
+        <tr>
+          <td><strong>GPT-4o mini</strong></td>
+          <td><strong>$0.15</strong></td>
+          <td><strong>$0.60</strong></td>
+          <td>경량형 가성비 모델</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    만약 초저가 모델인 <code>GPT-5.6 Luna</code>($0.20) 대신 <code>GPT-4o</code>($2.50)나 <code>GPT-5.6 Sol</code>($5.00)이 호출될 경우, <strong>입력 기준 12배에서 25배 이상의 비용 차이</strong>가 발생하므로 런타임 자동 선택은 반드시 배제되어야 합니다.
+  </p>
+
+  <h2 id="user-fixed-model-solution">
+    4. 해결책 1: 자동 선택 전면 폐기 및 '사용자 직접 모델 고정' 전환
+  </h2>
+
+  <p>
+    번역 런타임 내의 위험한 자동 모델 선택기를 전면 폐기하고, <strong>사용자가 RPD와 단가가 검증된 초가성비 모델을 설정창에서 직접 명시하여 고정 사용하는 방식</strong>으로 전환했습니다:
+  </p>
+
+  <ol class="step">
+    <li><strong>Google Gemini:</strong> <code>gemini-flash-lite-latest</code>를 고정하여 500 RPD의 넉넉한 한도 내에서 100% 무료 완주 달성.</li>
+    <li><strong>OpenAI GPT:</strong> <code>gpt-5.6-luna</code> 또는 <code>gpt-4o-mini</code>를 고정하여 토큰 단가를 최소화하고 크레딧 조기 소진 방어.</li>
+  </ol>
+
   <h2 id="model-helper-tool">
-    4. 해결책 2: 가용 모델 조회를 '옵션 헬퍼 도구'로 변형 분리
+    5. 해결책 2: 가용 모델 조회를 '옵션 헬퍼 도구'로 변형 분리
   </h2>
 
   <p>
@@ -155,7 +244,7 @@ async function getRuntimeModel(apiKey) {
   </p>
 
   <p>
-    이에 AI가 만들었던 실시간 가용 모델 조회 API(<code>GET /v1beta/models</code>)를 번역 실행 루프에서 완전히 떼어내어, <strong>옵션 페이지에서 사용자가 현재 쓸 수 있는 최신 모델 목록을 손쉽게 검색하고 복사할 수 있는 '모델 탐색 헬퍼(Model Helper)' 도구</strong>로 변형 재활용했습니다.
+    이에 AI가 만들었던 실시간 가용 모델 조회 API(<code>GET /v1beta/models</code>)를 번역 실행 경로에서 완전히 떼어내어, <strong>옵션 페이지에서 사용자가 현재 쓸 수 있는 최신 모델 목록을 손쉽게 검색하고 복사할 수 있는 '모델 탐색 헬퍼(Model Helper)' 도구</strong>로 변형 재활용했습니다.
   </p>
 
   <div class="pre custom" data-text="JavaScript (src/options/model_helper.js)">
@@ -181,14 +270,13 @@ export async function fetchAvailableModelList(apiKey) {
 }</pre>
   </div>
 
-  <h2 id="verification">
-    5. 검증 결과 및 운영 안정성
-  </h2>
+  <h3 id="future-helper-vision">
+    향후 모델 인스펙터로의 발전 방향
+  </h3>
 
-  <ol class="step">
-    <li><strong>과금 참사 및 RPD 고갈 원천 봉쇄:</strong> 번역 런타임이 무단으로 모델을 바꾸지 않고 지정된 초가성비 모델만 호출하므로, OpenAI 크레딧 탕진과 Gemini RPD 조기 소진을 완벽히 차단했습니다.</li>
-    <li><strong>안정적 무료 번역 및 사용자 편의성 확보:</strong> Gemini는 <code>gemini-flash-lite-latest</code>로 비용 없이 하루 종일 번역을 완주하며, 모델명을 찾고 싶을 때는 옵션 창의 헬퍼를 통해 원클릭으로 최신 모델을 확인하여 지정할 수 있게 되었습니다.</li>
-  </ol>
+  <p>
+    현재는 가용 모델의 이름 목록만 단순 조회하지만, 향후에는 이를 발전시켜 <strong>무료 모델은 RPM, TPM, RPD 쿼터 지표를 표 형태로 보여주고, 유료 모델은 입력·출력 단가를 함께 시각화</strong>하여 사용자가 비용과 쿼터를 한눈에 비교하고 최적의 모델을 선택할 수 있는 '지능형 모델 인스펙터'로 고도화할 계획입니다.
+  </p>
 
   <h2 id="summary">
     마무리하며
@@ -203,7 +291,7 @@ export async function fetchAvailableModelList(apiKey) {
   </p>
 
   <p>
-    외부 유료 LLM API를 연동할 때 발생할 수 있는 예상치 못한 과금 폭탄을 방지하기 위해 어떤 모델 제어 방식을 적용하고 계신지 댓글로 여러분의 경험을 공유해 주시기 바랍니다.
+    외부 유료 LLM API를 연동할 때 발생할 수 있는 예기치 않은 비용 누수를 방지하기 위해 어떤 모델 관리 방식을 적용하고 계신지 댓글로 여러분의 경험을 공유해 주시기 바랍니다.
   </p>
 
   <!-- 시리즈 네비게이션 컨테이너 (JS로 동적 렌더링) -->
