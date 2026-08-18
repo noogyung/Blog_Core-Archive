@@ -84,6 +84,8 @@
     </table>
   </div>
 
+  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-08/antigravity-blog-automation-workflow-v3-img2.jpg" alt="BlogDocs Control Plane과 독립된 Data Plane 레포지토리 간의 분산 아키텍처 다이어그램">
+
   <p>
     에이전트는 Control Plane의 페르소나 파일에 정의된 <code>TargetDir: ../Blog_Core-Archive</code> 속성을 동적으로 참조합니다. 이를 통해 중앙의 에이전트 지능은 가볍게 유지하면서도, 물리적으로 분리된 여러 Data Plane 레포지토리를 자유자재로 넘나들며 지식 수집과 HTML 작성을 수행할 수 있게 되었습니다.
   </p>
@@ -121,6 +123,8 @@
     </li>
   </ol>
 
+  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-08/antigravity-blog-automation-workflow-v3-img3.jpg" alt="Antigravity IDE 슬래시 커맨드 팔레트와 5대 모듈형 Skill UI">
+
   <h2 id="design-and-ui-evolution">3. 디자인과 UI의 진화 — 위젯 통합과 동적 탭 네비게이션</h2>
 
   <p>
@@ -150,6 +154,8 @@
   <p>
     이제 블로그스팟 테마의 클라이언트 자바스크립트가 Blogger Label 피드를 비동기 조회하여 <strong>'시리즈 목록' 탭</strong>(이전/다음 글 네비게이션 카드 + 접이식 전체 목차)과 <strong>'관심이 있을 만한 글' 탭</strong>을 실시간으로 렌더링합니다. 미래 예측 필드는 시스템에서 영구 추방되었고, 오직 과거 글을 가리키는 <code>Prev Slug</code>만 기록하게 함으로써 링크 정합성을 완벽하게 보장하게 되었습니다.
   </p>
+
+  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-08/antigravity-blog-automation-workflow-v3-img4.png" alt="Blogger 테마에서 실시간으로 렌더링된 동적 시리즈 목록 탭과 네비게이션 카드 UI">
 
   <p>
     한편, Control/Data Plane 분리 작업 중 유료 테마(<code>Median-UI 1.7.xml</code>)가 public CDN 배포 레포의 <code>.gitignore</code>에 들어가 있어 Git 추적이 안 되던 탓에 테마와 위젯 설정이 통째로 날아가는 아찔한 사고도 있었습니다. 커밋 롤백이 불가능해 백업본과 기억을 더듬어 새벽 내내 수동 복구해야 했습니다. 이 일을 계기로 커스텀 테마 XML을 안전하게 형상 관리하고, <code>/5_블로그추가</code> 스킬 내에 테마 중립적 정적 페이지 생성 로직을 완전히 내재화했습니다.
