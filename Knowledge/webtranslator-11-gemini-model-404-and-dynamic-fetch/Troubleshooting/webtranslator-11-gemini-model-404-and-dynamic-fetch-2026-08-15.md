@@ -1,17 +1,17 @@
 ---
 topic: webtranslator-11-gemini-model-404-and-dynamic-fetch
-title_kr: gemini-2.5-flash 404 사태와 실시간 가용 모델 동적 탐색
+title_kr: 자동 모델 탐색이 부른 과금 참사와 모델 헬퍼 도구 전환
 category: Troubleshooting
 sub_category: API-Resilience
-version: 1.0.0
+version: 1.1.0
 status: Verified
 created_date: 2026-08-15
-last_modified: 2026-08-15
+last_modified: 2026-08-19
 language: KR+EN
-tags: [WebTranslator, ChromeExtension, Gemini, DynamicModelFetch, 404Error, SelfHealing, 트러블슈팅]
+tags: [WebTranslator, ChromeExtension, Gemini, GPT, API, 404Error, CostOptimization, ModelHelper, 트러블슈팅]
 sources_count: 3
 blog_draft_path: Blog_Posts/core-archive/2026-08/webtranslator-11-gemini-model-404-and-dynamic-model-fetch.html
-blog_draft_date: 2026-08-15
+blog_draft_date: 2026-08-19
 blog_id: core-archive
 blog_published: false
 series_id: webtranslator
@@ -22,75 +22,77 @@ series_prev_slug: webtranslator-10-gemini-rate-limits-and-prompt-builder
 
 # Knowledge File: webtranslator-11-gemini-model-404-and-dynamic-fetch
 ## Category: Troubleshooting (API-Resilience)
-## Date: 2026-08-15
+## Date: 2026-08-19
 
 ===== KNOWLEDGE PACKAGE START =====
 
 ### 📦 [Knowledge Package]
 
 * **Topic:** webtranslator-11-gemini-model-404-and-dynamic-fetch
-* **Title_KR:** gemini-2.5-flash 404 사태와 실시간 가용 모델 동적 탐색
+* **Title_KR:** 자동 모델 탐색이 부른 과금 참사와 모델 헬퍼 도구 전환
 * **Category:** Troubleshooting
 * **Sub-Category:** API-Resilience
-* **Version:** 1.0.0
+* **Version:** 1.1.0
 * **Status:** Verified
-* **Date:** 2026-08-15
+* **Date:** 2026-08-19
 * **Language:** KR+EN
 
 ---
 
 #### 📚 Sources & Confidence
-* [★★★★★] Google Generative AI API Models Reference (`GET /v1beta/models`)
-* [★★★★★] WebTranslator Gemini 어댑터 소스 코드 (`src/background/engines/gemini.js`)
-* [★★★★★] WebTranslator 실전 개발 및 디버깅 로그 (`55e0e726-ace7-4d89-80a2-5d9abb7eb7ad`, 커밋 `6abe2db`)
+* [★★★★★] WebTranslator 모델 설정 및 옵션 헬퍼 소스 코드 (`src/options/model_helper.js`, `src/background/engines/gemini.js`, `src/background/engines/openai.js`)
+* [★★★★★] Google Generative AI & OpenAI API Model Pricing/Quota Reference
+* [★★★★★] WebTranslator 실전 개발 및 과금 디버깅 로그 (`55e0e726-ace7-4d89-80a2-5d9abb7eb7ad`, 커밋 `6abe2db`)
 
 ---
 
 #### 🔑 Core Concepts (핵심 개념)
 
-* **[사용자 지정 모델의 가용성/쿼터 소진 한계]:** 초기 하드코딩에서 사용자 직접 모델명 입력 방식으로 전환했으나, 사용자가 지정한 모델의 무료 쿼터가 소진되거나 구글이 해당 프리뷰 모델을 내렸을 때 404 Not Found 및 호출 중단이 발생하는 문제. [FACT]
-* **[무분별한 자동 Fallback의 고비용(High-Cost) 과금 리스크]:** 모델 오류 발생 시 시스템이 임의로 다른 상위 모델로 자동 대체할 경우, 특히 유료 모델(GPT-4/5 상위 티어, Gemini Pro 등) 환경에서 예상치 못한 막대한 API 비용 청구 참사가 발생할 위험. [FACT]
-* **[고비용 방어형 실시간 모델 검증 (`getValidGeminiModel`)]:** 무조건적인 임의 대체를 금지하고, `GET /v1beta/models` 조회를 통해 사용자가 설정한 계정에서 사용 가능한 저비용/무료 Flash 계열 최신 모델만을 엄격히 선별·검증하여 비용 위험을 원천 차단하는 아키텍처. [FACT]
-* **[메모리 캐싱 및 사용자 통제권 보장]:** 검증된 모델명은 세션 메모리에 캐싱하여 지연을 줄이고, 모델 변경 시 사용자에게 명확한 선택권을 보장. [FACT]
+* **[구형 하드코딩 모델의 한계]:** 초기 `gemini-2.5-flash` 모델은 구형으로 무료 허용량이 매우 적었고, 서비스 종료로 404 Not Found가 발생함. [FACT]
+* **[AI의 자동 모델 선택이 초래한 과금 참사]:** 404 해결을 위해 AI가 제안한 '실시간 가용 모델 자동 탐색 및 자동 적용' 모듈이 모델별 단가와 쿼터 정책을 무시하고 고비용 상위 모델을 임의 선택함. Gemini는 쿼터가 순식간에 고갈되어 다시 404가 터지고, OpenAI는 선결제 $10 크레딧이 고비용 `gpt-4o`로 인해 순식간에 소진되는 참사 발생. (초저가 `gpt-5.4-nano` 누락) [FACT]
+* **[자동 선택 폐기 및 사용자 직접 모델 고정]:** 번역 런타임의 자동 모델 선택기를 전면 폐기하고, 사용자가 초가성비 모델(`gemini-flash-lite-latest`, `gpt-5.4-nano`)을 직접 지정하여 고정 사용하도록 개편. 10편의 배치 큐/지수 백오프와 결합하여 Gemini 무료 쿼터 완주 및 GPT 10만 자당 $0.01 수준의 경제적 운영 달성. [FACT]
+* **[실시간 가용 모델 조회의 헬퍼 도구 전환]:** AI가 작성했던 모델 메타데이터 조회 API를 번역 실행 루프에서 떼어내어, 옵션 설정창에서 "현재 사용 가능한 모델 목록을 검색하고 추천해 주는 보조 도구(Model Helper)"로 변형 재활용. [FACT]
 
 ---
 
 #### 🛠️ Procedures (절차)
 
-##### [1단계: 사용자 설정 모델 및 캐시 검증] [★★★★★]
-1. 사용자가 직접 입력한 모델명을 최우선으로 적용.
-2. `cachedModelName` 메모리 캐시 확인.
+##### [1단계: 번역 런타임 자동 모델 선택 로직 전면 제거] [★★★★★]
+1. `callEngineAPI` 내부의 무조건적 자동 Fallback 및 동적 모델 교체 코드 삭제.
+2. 사용자가 설정창에서 입력한 모델명을 최우선 고정 파라미터로 주입.
 
-##### [2단계: GET /v1beta/models 실시간 검증] [★★★★★]
-1. `https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}` 호출.
-2. `generateContent` 지원 및 `flash` 키워드가 포함된 안전 가성비 모델 목록 선별.
+##### [2단계: 초가성비 모델 고정 운용] [★★★★★]
+1. Gemini: `gemini-flash-lite-latest` 설정으로 15 RPM 무료 쿼터 내 100% 완주.
+2. OpenAI: `gpt-5.4-nano` 설정으로 10만 자당 $0.01 초저비용 번역.
 
-##### [3단계: 고비용 방어 티어 격리 및 모델 결정] [★★★★★]
-1. 고비용 Pro/상위 모델로의 임의 변경을 엄격히 차단하고 안전한 Flash 모델로만 정제 반환.
+##### [3단계: 실시간 가용 모델 조회 API를 옵션 헬퍼 도구로 분리] [★★★★★]
+1. `GET /v1beta/models` 조회를 옵션 페이지의 `fetchAvailableModels()` 버튼/자동완성 UI로 이동.
+2. 사용자가 직접 모델명을 복사/선택할 수 있도록 안내 헬퍼 역할만 수행.
 
 ---
 
 #### 🐛 Errors & Solutions (오류 및 해결법)
 
-* **[직접 입력 모델의 가용성 소진 및 404 Not Found 발생]**
-  * **증상:** 사용자가 입력한 프리뷰 모델의 쿼터 소진 또는 구글의 지원 중단으로 번역 중단.
-  * **원인:** 모델 수명 주기 변동 및 단순 자동 Fallback 시 유료 모델 고비용 과금 위험 존재.
-  * **해결법:** `getValidGeminiModel`을 통해 사용자 제어권을 유지하면서 Flash 계열 내에서만 안전하게 가용성을 검증하는 고비용 방어형 동적 탐색 구축. [FACT]
+* **[AI의 실시간 자동 모델 선택으로 인한 무료 쿼터 고갈 및 OpenAI $10 선결제금 증발]**
+  * **증상:** 번역 실행 시 비싼 상위 모델이 임의 할당되어 Gemini 무료 쿼터가 수 초 만에 마비되고 OpenAI 선결제 크레딧 $10가 증발함.
+  * **원인:** 번역 런타임에 모델별 가격을 모르는 AI 자동 선택기를 넣어 고비용 모델을 무차별 호출함.
+  * **해결법:** 자동 모델 선택기를 전면 폐기하고 초가성비 모델(`gemini-flash-lite-latest`, `gpt-5.4-nano`)을 직접 고정 입력하도록 수정하였으며, 가용 모델 API는 옵션 페이지의 단순 조회 헬퍼 도구로 분리 격리. [FACT]
 
 ---
 
 #### 💬 Experiences & Tips (경험 및 팁)
 
-* [FACT] 외부 LLM 연동 시 자동 Fallback은 반드시 동일 가격 티어(무료/초저가 Flash) 내로 엄격히 제한해야 하며, 유료 고성능 모델로의 자동 우회는 비용 폭탄을 유발하므로 절대 금지해야 한다.
+* [FACT] LLM API 연동 시 번역 실행 루프에서 모델을 임의로 자동 변경(Auto-Escalation)하게 두면 과금 폭탄을 맞을 수 있으므로, 모델 선택은 반드시 사용자가 직접 통제해야 한다.
+* [FACT] API 공급자의 모델 목록 엔드포인트는 런타임 자동 선택용이 아닌, 사용자 UI의 모델 추천/안내 헬퍼 도구로 활용하는 것이 가장 안전하다.
 
 ---
 
 #### 📋 Feedback History
-* **2026-08-19:** 사용자 모델 직접 입력 방식 및 유료 모델 고비용 방어 요구사항 반영 완료 (Status: Verified).
+* **2026-08-19:** 11편 작업 순서 및 실제 과금 참사/모델 헬퍼 전환 사실관계 전면 반영 완료 (Status: Verified).
 
 ---
 
 #### 🏷️ Tags
-WebTranslator, ChromeExtension, Gemini, DynamicModelFetch, 404Error, HighCostPrevention, 트러블슈팅
+WebTranslator, ChromeExtension, Gemini, GPT, API, 404Error, CostOptimization, ModelHelper, 트러블슈팅
 
 ===== KNOWLEDGE PACKAGE END =====

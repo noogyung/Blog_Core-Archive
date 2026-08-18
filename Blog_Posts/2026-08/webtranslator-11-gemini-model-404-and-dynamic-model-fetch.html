@@ -1,15 +1,15 @@
 <!-- ============================================================
   [BLOG POST METADATA - Blogspot 설정창 복사용]
-  Title: [WebTranslator 개발기 #11] 모델 404 장애와 유료 모델 과금 방어 동적 탐색
-  Labels (Tags): WebTranslator, ChromeExtension, 크롬확장프로그램, Gemini, API, 404Error, 비용최적화, 트러블슈팅
-  Meta Description: 크롬 확장 프로그램 개발기 11편: 사용자가 지정한 모델의 가용성 소진(404)에 대응하면서도, 유료 모델의 고비용 과금 리스크를 방어하는 안전한 동적 가용성 검증 파이프라인을 구축한 과정을 다룹니다.
+  Title: [WebTranslator 개발기 #11] 자동 모델 탐색이 부른 과금 참사와 모델 헬퍼 도구 전환
+  Labels (Tags): WebTranslator, ChromeExtension, 크롬확장프로그램, Gemini, GPT, API, 404Error, 비용최적화, 트러블슈팅
+  Meta Description: 크롬 확장 프로그램 개발기 11편: 404 에러를 막기 위해 AI가 추천한 실시간 자동 모델 선택이 초래한 과금 참사를 짚어보고, 사용자 모델 직접 고정과 모델 탐색 헬퍼 도구로 전환한 과정을 다룹니다.
   Slug: webtranslator-11-gemini-model-404-and-dynamic-model-fetch
   ---
-  Primary Keyword: Gemini API 404 오류 해결
-  Secondary Keywords: LLM 유료 모델 과금 방어, 크롬 확장 프로그램 동적 모델 탐색, getValidGeminiModel, 사용자 모델 제어권
+  Primary Keyword: LLM API 비용 최적화
+  Secondary Keywords: Gemini 404 에러, GPT 과금 방어, 크롬 확장 프로그램 모델 탐색 헬퍼, gemini-flash-lite-latest, gpt-5.4-nano
   Knowledge Source: Knowledge/webtranslator-11-gemini-model-404-and-dynamic-fetch/Troubleshooting/webtranslator-11-gemini-model-404-and-dynamic-fetch-2026-08-15.md
   Generated Date: 2026-08-19
-  Estimated Read Time: 6분
+  Estimated Read Time: 7분
   Series ID: webtranslator
   Series Title: WebTranslator 개발기
   Prev Slug: webtranslator-10-gemini-rate-limits-and-prompt-builder
@@ -19,7 +19,7 @@
 
   <!-- 이미지 슬롯 1: 대표 이미지 -->
   <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-08/webtranslator-11-gemini-model-404-and-dynamic-model-fetch-img1.jpg"
-       alt="구글 Gemini 실시간 가용 모델 동적 탐색 및 고비용 방어 아키텍처 다이어그램"
+       alt="LLM API 자동 모델 탐색의 과금 위험과 사용자 모델 고정 및 헬퍼 도구 아키텍처 다이어그램"
        style="width:100%; max-width:800px; height:auto; border-radius:8px; margin:1em 0; display:block;">
 
   <p>
@@ -27,11 +27,23 @@
   </p>
 
   <p>
-    프로젝트 초기에는 <code>gemini-2.5-flash</code> 모델명을 코드 내에 고정하여 사용했으나, 사용자가 본인의 용도와 선호에 따라 원하는 모델을 직접 지정할 수 있도록 <strong>옵션 페이지 내 사용자 직접 모델 입력 방식</strong>으로 빠르게 전환했습니다.
+    그러나 번역 엔진 안정화 과정에서 또 다른 복병을 마주했습니다. 구형 모델을 하드코딩하여 쓰다가 발생한 404 에러를 해결하려던 중, AI의 조언대로 도입한 <strong>'실시간 자동 모델 선택' 기능이 되려 고비용 모델을 마구잡이로 호출하여 무료 쿼터를 파괴하고 OpenAI 선결제 크레딧을 순식간에 탕진하는 과금 참사</strong>를 일으킨 것입니다.
   </p>
 
   <p>
-    그러나 사용자가 직접 지정한 프리뷰 모델의 사용량이 모두 소진되거나, 구글 측에서 해당 프리뷰 모델의 엔드포인트를 사전 예고 없이 종료(Deprecated)했을 때 콘솔에 다음과 같은 404 에러가 발생하며 번역이 전면 중단되는 문제가 나타났습니다:
+    이번 글에서는 404 에러의 발생 원인부터, AI가 추천한 자동 탐색 기능이 왜 치명적인 비용 폭탄으로 이어졌는지, 그리고 이를 해결하기 위해 <strong>초가성비 모델 직접 고정 방식과 모델 탐색 헬퍼 도구</strong>로 아키텍처를 전면 전환한 과정을 정리해 보고자 합니다.
+  </p>
+
+  <h2 id="hardcoded-model-problem">
+    1. 하드코딩된 구형 모델의 한계와 404 장애
+  </h2>
+
+  <p>
+    개발 초기에는 Gemini 번역을 위해 코드 내에 <code>gemini-2.5-flash</code> 모델명을 고정 문자열로 하드코딩해 두었습니다.
+  </p>
+
+  <p>
+    그러나 <code>gemini-2.5-flash</code>는 구형 실험용 프리뷰 모델로서 기본 제공되는 무료 허용량이 매우 적었습니다. 결국 웹서핑 중 쿼터가 순식간에 바닥나거나, 공급자 측에서 해당 프리뷰 엔드포인트를 사전 예고 없이 종료(Deprecated)하면서 콘솔에 다음과 같은 404 에러가 쏟아졌습니다:
   </p>
 
   <div class="pre custom" data-text="Console 에러 로그">
@@ -41,128 +53,96 @@ Error: 404 This model models/gemini-2.5-flash is no longer available to new user
   </div>
 
   <p>
-    이번 글에서는 사용자가 지정한 모델의 가용성 소진 문제와, 단순히 임의의 상위 모델로 자동 대체할 때 발생하는 <strong>유료 모델(GPT 등)의 고비용 과금(High-Cost) 리스크</strong>를 살펴보고, 이를 안전하게 통제하는 <strong>비용 방어형 동적 가용성 검증 파이프라인</strong> 구축 과정을 다루어 보겠습니다.
+    이 404 에러를 해결하기 위해 AI 어시스턴트에게 문제 해결을 맡겼고, 여기서부터 예상치 못한 두 번째 참사가 시작되었습니다.
   </p>
 
-  <h2 id="custom-model-and-availability">
-    1. 사용자 직접 입력 모델과 가용성 소진 한계
+  <h2 id="ai-auto-fetch-disaster">
+    2. AI의 '실시간 자동 모델 선택' 추천과 10달러 과금 참사
   </h2>
 
   <p>
-    다양한 LLM 엔진을 지원하기 위해 사용자가 설정창에서 직접 모델명(예: <code>gemini-1.5-flash</code>, <code>gpt-4o-mini</code>)을 입력하도록 구조를 개편했습니다.
+    AI 어시스턴트는 404 에러를 방지하겠다며 구글 API(<code>GET /v1beta/models</code>)를 호출하여 <strong>실시간으로 가용한 모델을 자동으로 탐색하여 번역 런타임에 즉시 꽂아 넣는 자동 모델 선택 모듈</strong>을 제안했습니다.
   </p>
 
-  <div class="table w100 withBg">
-    <table>
-      <thead>
-        <tr>
-          <th>모델 지정 방식</th>
-          <th>장점</th>
-          <th>발생 가능한 장애 상황</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td><strong>사용자 직접 입력</strong></td>
-          <td>원하는 최신 모델 자유 선택 가능</td>
-          <td>지정한 모델의 쿼터 소진 또는 공급자의 모델 폐기 시 404 발생</td>
-        </tr>
-        <tr>
-          <td><strong>무조건적 자동 Fallback</strong></td>
-          <td>중단 없는 번역 지속 가능</td>
-          <td>유료 상위 모델로 임의 우회 시 <strong>예상치 못한 막대한 비용 청구</strong> 발생</td>
-        </tr>
-      </tbody>
-    </table>
+  <div class="pre custom" data-text="JavaScript (AI가 제안한 위험한 런타임 자동 선택 코드 - 오류 코드)">
+    <button aria-label="Copy code">Copy</button>
+    <pre>// translator.js: 모델별 단가/쿼터를 모르는 위험한 자동 선택 (오류 코드)
+async function getRuntimeModel(apiKey) {
+  const models = await fetchAvailableModelsFromAPI(apiKey);
+  // 치명적 결함: 가격이나 쿼터 정책을 전혀 고려하지 않고 아무 모델이나 골라잡음!
+  return models.find(m =&gt; m.supportsGeneration).name; 
+}</pre>
   </div>
 
-  <p>
-    사용자가 입력한 모델이 404 에러나 사용량 제한에 도달했을 때, 단순히 "아무 가용 모델이나 자동으로 찾아서 대체"하도록 설계하면 매우 위험한 부작용이 뒤따릅니다.
-  </p>
-
-  <h2 id="high-cost-risk">
-    2. 무분별한 자동 Fallback의 함정: 유료 모델 고비용 과금 리스크
-  </h2>
+  <h3 id="disaster-analysis">
+    발생한 치명적인 과금 및 쿼터 폭사 분석
+  </h3>
 
   <p>
-    이 문제는 OpenAI GPT나 Anthropic 등 유료 API를 직접 결제하여 사용하는 환경에서 겪은 경험에서 비롯되었습니다.
+    이 자동 탐색 모듈은 <strong>각 AI 모델의 단가(Pricing)와 쿼터(Quota) 정책을 전혀 알지 못했습니다</strong>:
   </p>
 
-  <p>
-    만약 사용자가 저렴한 가성비 모델(예: Mini 또는 Flash 계열)을 지정해 두었는데, 시스템이 에러를 감지하고 임의로 가용한 상위 모델(예: GPT-4o 정식 버전, Gemini Pro 등)로 자동 승격하여 수백 문단의 웹문서를 번역해 버린다면 <strong>단 몇 분 만에 수십 달러 이상의 API 비용이 청구되는 비용 참사</strong>가 발생할 수 있습니다.
-  </p>
+  <ul>
+    <li><strong>Gemini 무료 쿼터 고갈:</strong> <code>gemini-3.5-flash-lite</code>와 <code>gemini-2.5-flash</code>는 단가와 분당 허용량이 완전히 다른데, AI가 임의로 무거운 모델을 선택해 버려 15 RPM 무료 쿼터가 순식간에 고갈되고 또다시 에러가 발생했습니다.</li>
+    <li><strong>OpenAI $10 선결제금 증발:</strong> OpenAI(GPT)의 경우 사태가 훨씬 심각했습니다. 선결제 크레딧 방식인 OpenAI 계정에서, 가장 저렴한 최신 초경량 모델인 <code>gpt-5.4-nano</code>를 사용하지 않고 코드 누락으로 고비용 모델인 <code>gpt-4o</code>가 호출되면서 <strong>충전해 둔 10달러가 순식간에 소진되는 과금 참사</strong>가 발생했습니다.</li>
+  </ul>
 
   <div class="note wr">
-    <strong>⚠️ 핵심 리스크:</strong> 클라이언트 확장 프로그램에서 외부 유료 API 모델을 다룰 때는, 사용자 동의 없는 임의의 모델 상향 대체(Auto-Escalation)를 절대로 허용해서는 안 됩니다.
+    <strong>⚠️ 핵심 교훈:</strong> 클라이언트 번역 루프에서 모델을 임의로 자동 변경(Auto-Escalation)하도록 방치하는 것은 외부 유료 API 환경에서 매우 위험한 과금 사고를 초래합니다.
   </div>
 
-  <h2 id="cost-safe-dynamic-verification">
-    3. 해결 방안: 계정별 가용 모델 실시간 검증 (`getValidGeminiModel`)
+  <h2 id="user-fixed-model-solution">
+    3. 해결책 1: 자동 선택 전면 폐기 및 '사용자 직접 모델 고정' 전환
   </h2>
 
   <p>
-    따라서 동적 모델 탐색은 <strong>사용자의 명시적 제어권을 침해하지 않는 범위 내에서만 엄격히 격리 적용</strong>되도록 아키텍처를 설계했습니다:
+    번역 런타임 내의 위험한 자동 모델 선택기를 전면 폐기하고, <strong>사용자가 검증된 초가성비 모델을 설정창에서 직접 명시하여 고정 사용하는 방식</strong>으로 전환했습니다.
   </p>
 
-  <ol class="step">
-    <li><strong>사용자 지정 모델 1순위 존중:</strong> 사용자가 설정한 모델이 정상 동작할 때는 일체의 자동 변경 없이 해당 모델을 그대로 사용합니다.</li>
-    <li><strong>동일 가성비 티어(Flash) 내 검증:</strong> 모델 사용량 소진이나 404 발생 시, <code>GET /v1beta/models</code> 조회를 통해 <strong>오직 저지연·무료/초저가 Flash 계열 내에서만</strong> 최신 가용 모델을 안전하게 식별합니다.</li>
-    <li><strong>고비용 상위 모델 원천 차단:</strong> Pro나 유료 상위 모델은 자동 대체 후보군에서 원천 배제하여 과금 위험을 0%로 통제합니다.</li>
-  </ol>
+  <p>
+    실제 번역 환경에서는 10편에서 구축한 <strong>지수 백오프와 MutationObserver 디바운스 배치 큐</strong>가 이미 요청 빈도를 촘촘히 제어하고 있으므로, 가성비 모델을 고정하기만 하면 비용과 쿼터 문제가 완벽히 해결되었습니다:
+  </p>
 
   <div class="table w100 withBg">
     <table>
       <thead>
         <tr>
-          <th>필터링 조건</th>
-          <th>검사 로직</th>
-          <th>비용 및 안정성 방어 목적</th>
+          <th>엔진</th>
+          <th>고정 적용 모델</th>
+          <th>실제 운영 결과 및 비용</th>
         </tr>
       </thead>
       <tbody>
         <tr>
-          <td><strong>1. 콘텐츠 생성 지원</strong></td>
-          <td><code>supportedGenerationMethods.includes("generateContent")</code></td>
-          <td>임베딩 등 비번역 모델 제외</td>
+          <td><strong>Google Gemini</strong></td>
+          <td><code>gemini-flash-lite-latest</code></td>
+          <td>15 RPM 무료 쿼터 내에서 429/404 에러 없이 100% 완주 (비용 0원)</td>
         </tr>
         <tr>
-          <td><strong>2. Flash 가성비 티어 한정</strong></td>
-          <td><code>model.name.includes("flash")</code></td>
-          <td>고비용 Pro/상위 모델로의 임의 과금 우회 원천 차단</td>
-        </tr>
-        <tr>
-          <td><strong>3. 레거시/만료 모델 배제</strong></td>
-          <td><code>!model.name.includes("legacy")</code></td>
-          <td>지원 중단 예정인 구형 엔드포인트 제외</td>
+          <td><strong>OpenAI GPT</strong></td>
+          <td><code>gpt-5.4-nano</code></td>
+          <td>10만 자 번역 시 약 <strong>$0.01</strong> 수준의 극도로 저렴한 비용으로 경제적 번역 달성</td>
         </tr>
       </tbody>
     </table>
   </div>
 
-  <h2 id="caching-and-implementation">
-    4. 실시간 모델 검증 및 세션 캐싱 모듈 구현
+  <h2 id="model-helper-tool">
+    4. 해결책 2: 가용 모델 조회를 '옵션 헬퍼 도구'로 변형 분리
   </h2>
 
   <p>
-    매 번역 요청마다 불필요한 네트워크 조회가 발생하지 않도록 <strong>세션 메모리 캐싱</strong>을 적용한 검증 모듈을 완성했습니다.
+    사용자가 직접 모델명을 입력하도록 변경하자, "현재 제공되는 최신 모델명이 정확히 무엇인지 알기 어렵다"는 사용성 문제가 생겼습니다.
   </p>
 
-  <div class="pre custom" data-text="JavaScript (src/background/engines/gemini.js)">
+  <p>
+    이에 AI가 만들었던 실시간 가용 모델 조회 API(<code>GET /v1beta/models</code>)를 번역 실행 경로에서 완전히 떼어내어, <strong>옵션 페이지에서 사용자가 현재 쓸 수 있는 최신 모델 목록을 손쉽게 검색하고 복사할 수 있는 '모델 탐색 헬퍼(Model Helper)' 도구</strong>로 변형 재활용했습니다.
+  </p>
+
+  <div class="pre custom" data-text="JavaScript (src/options/model_helper.js)">
     <button aria-label="Copy code">Copy</button>
-    <pre>// src/background/engines/gemini.js: 고비용 과금 방어형 가용 모델 검증 모듈
-let cachedModelName = null;
-
-export async function getValidGeminiModel(apiKey, userConfiguredModel = "") {
-  // 1. 사용자가 명시적으로 입력한 유효 모델이 있다면 최우선 적용
-  if (userConfiguredModel &amp;&amp; userConfiguredModel.trim().length &gt; 0) {
-    return userConfiguredModel.trim();
-  }
-
-  // 2. 이미 검증된 Flash 모델명이 메모리에 캐시되어 있다면 즉시 반환
-  if (cachedModelName) {
-    return cachedModelName;
-  }
-
+    <pre>// src/options/model_helper.js: 옵션 UI 전용 가용 모델 탐색 헬퍼
+export async function fetchAvailableModelList(apiKey) {
   try {
     const response = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`
@@ -170,36 +150,25 @@ export async function getValidGeminiModel(apiKey, userConfiguredModel = "") {
     const data = await response.json();
 
     if (data.models &amp;&amp; Array.isArray(data.models)) {
-      // 3. 고비용 모델을 배제하고 오직 안전한 Flash 계열 최신 모델만 선별
-      const safeFlashModel = data.models.find(
-        (m) =&gt;
-          m.supportedGenerationMethods?.includes("generateContent") &amp;&amp;
-          m.name.includes("flash") &amp;&amp;
-          !m.name.includes("legacy")
-      );
-
-      if (safeFlashModel) {
-        cachedModelName = safeFlashModel.name.replace("models/", "");
-        console.log(`[WebTranslator] 가용 Flash 모델 자동 확인: ${cachedModelName}`);
-        return cachedModelName;
-      }
+      // 텍스트 생성을 지원하는 모델 목록을 필터링하여 사용자에게 안내
+      return data.models
+        .filter(m =&gt; m.supportedGenerationMethods?.includes("generateContent"))
+        .map(m =&gt; m.name.replace("models/", ""));
     }
   } catch (err) {
-    console.warn("[WebTranslator] 모델 메타데이터 조회 실패, 기본 안전 모델을 사용합니다:", err);
+    console.warn("[ModelHelper] 모델 목록 조회 실패:", err);
+    return ["gemini-flash-lite-latest", "gemini-1.5-flash"];
   }
-
-  // 4. 네트워크 단절 또는 조회 실패 시 최후의 기본 안전 모델
-  return "gemini-1.5-flash";
 }</pre>
   </div>
 
   <h2 id="verification">
-    5. 검증 결과 및 비용 방어 효과
+    5. 검증 결과 및 운영 안정성
   </h2>
 
   <ol class="step">
-    <li><strong>사용자 제어권 완벽 보장:</strong> 사용자가 지정한 모델이 정확히 호출되며, 임의의 모델 승격으로 인한 과금 사고를 완전히 차단했습니다.</li>
-    <li><strong>404 가용성 안전 복원:</strong> 미지정 또는 쿼터 소진 상황에서도 Flash 계열 내에서만 안전하게 가용 모델을 식별하여 비용 부담 없이 번역을 지속했습니다.</li>
+    <li><strong>과금 참사 원천 봉쇄:</strong> 번역 런타임이 무단으로 모델을 바꾸지 않고 지정된 초가성비 모델만 호출하므로, OpenAI 크레딧 소진 리스크를 완전히 제거했습니다.</li>
+    <li><strong>무료 완주 및 사용자 편의성 확보:</strong> Gemini는 <code>gemini-flash-lite-latest</code>로 비용 없이 완주하며, 모델명을 찾고 싶을 때는 옵션 창의 헬퍼를 통해 원클릭으로 최신 모델을 확인하여 지정할 수 있게 되었습니다.</li>
   </ol>
 
   <h2 id="summary">
@@ -207,15 +176,15 @@ export async function getValidGeminiModel(apiKey, userConfiguredModel = "") {
   </h2>
 
   <p>
-    사용자 모델 지정 방식과 비용 방어형 동적 검증 파이프라인을 구축하여 안정성을 확보했으나, 스팀 커뮤니티나 레딧처럼 특수문자, 이모지, 복잡한 인라인 HTML 태그가 다수 포함된 긴 포럼 글을 번역할 때 간헐적으로 "번역 응답이 비어 있습니다"라는 빈 문자열 응답이 오며 번역이 지연되는 현상이 발생했습니다.
+    모델 가용성 헬퍼와 초가성비 모델 고정을 통해 비용과 404 장애를 모두 정복했으나, 스팀 커뮤니티나 레딧처럼 특수문자, 이모지, 복잡한 인라인 HTML 태그가 다수 섞인 긴 포럼 글을 번역할 때 간헐적으로 "번역 응답이 비어 있습니다"라는 빈 문자열 응답이 오며 번역이 멈춰버리는 <strong>무한 로딩 버그</strong>가 나타났습니다.
   </p>
 
   <p>
-    다음 글에서는 빈 응답(Empty Response) 수신 시 원인을 파악하고 안전하게 재시도하는 <strong>Empty Response Retry 메커니즘</strong> 구축 과정을 다루어 보겠습니다.
+    다음 글에서는 빈 응답(Empty Response) 수신 시 원인을 분석하고 안전하게 재시도하는 <strong>Empty Response Retry 메커니즘</strong> 구축 과정을 다루어 보겠습니다.
   </p>
 
   <p>
-    외부 유료 LLM API를 서비스에 연동할 때 예상치 못한 과금 폭탄을 방지하기 위해 어떤 모델 제어 방식을 적용하고 계신지 댓글로 여러분의 경험을 공유해 주시기 바랍니다.
+    외부 유료 LLM API를 연동할 때 발생할 수 있는 예상치 못한 과금 폭탄을 방지하기 위해 어떤 모델 제어 방식을 적용하고 계신지 댓글로 여러분의 경험을 공유해 주시기 바랍니다.
   </p>
 
   <!-- 시리즈 네비게이션 컨테이너 (JS로 동적 렌더링) -->
