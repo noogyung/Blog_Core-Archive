@@ -46,7 +46,6 @@
     </b:if>
   </b:if>
 
-  <script>/*<![CDATA[*/(function(){var t=localStorage.getItem("theme");if(t&&t!=="default"){document.documentElement.setAttribute("data-theme",t)}})();/*]]>*/</script>
   <!--[ Meta for browser ]-->
   <meta charset='UTF-8'/>
   <meta content='width=device-width, initial-scale=1.0' name='viewport'/>
@@ -660,11 +659,11 @@
 
 /* Widget: FeaturedPost */ .itemP.featured article{--gap:20px; align-items:center;gap:var(--gap)} .itemP.featured article .pI{width:var(--thumbnailSize)} .itemP.featured article .pC{width:calc(100% - (var(--gap) + var(--thumbnailSize)))}
 
-/* Widget: PopularPost */ .itemP.popular{--counter:30px; gap:18px;counter-reset:popular} .itemP.popular article.most{gap:18px} .itemP.popular article:not(.most) .pI{display:none!important} .itemP.popular .pH.info .label:not(:first-child)::before{content:'\00B7'; margin-inline:8px 6px} .itemP.popular .pB .pI{margin-block:6px 10px;border-radius:var(--contentBd-radius)} .itemP.popular .pT .name{font-size:var(--postTitle-fontItems)} .itemP.popular .pS{display:block} .itemP.popular .pS .snippet{-webkit-line-clamp:2} .itemP.popular article .pC::before{content:'0' counter(popular);counter-increment:popular; flex:0 0 var(--counter); color:var(--themeC-alt); font:700 1.1rem var(--fontBody-alt); opacity:.6} .itemP.popular article:not(:nth-child(-n+9)) .pC::before{content:counter(popular)} .itemP.popular article .pB{flex-grow:1; width:calc(100% - var(--counter))}
+/* Widget: PopularPost */ .itemP.popular{--counter:30px; gap:18px;counter-reset:popular} .itemP.popular article.most{gap:18px} .itemP.popular .pH.info .label:not(:first-child)::before{content:'\00B7'; margin-inline:8px 6px} .itemP.popular .pB .pI{margin-block:6px 10px;border-radius:var(--contentBd-radius)} .itemP.popular .pT .name{font-size:var(--postTitle-fontItems)} .itemP.popular .pS{display:block} .itemP.popular .pS .snippet{-webkit-line-clamp:2} .itemP.popular article .pC::before{content:'0' counter(popular);counter-increment:popular; flex:0 0 var(--counter); color:var(--themeC-alt); font:700 1.1rem var(--fontBody-alt); opacity:.6} .itemP.popular article:not(:nth-child(-n+9)) .pC::before{content:counter(popular)} .itemP.popular article .pB{flex-grow:1; width:calc(100% - var(--counter))}
 
 /* Widget: Label */ .itemL .labi:checked ~ label::before{content:attr(data-hide)} .itemL .labi:checked ~ label::after, .itemL .labi:not(:checked) ~ .lab >*:not(.s){display:none} .itemL .lab{--gap:10px; gap:var(--gap)} .itemL .lab >*{max-width:100%} .itemL .lab.list >*{width:calc((100% / 2) - (var(--gap) / 2))} .itemL .link{align-items:center;gap:8px; width:100%;padding:10px;border:1px solid var(--contentBg-sec);border-radius:var(--contentBd-radius);background-color:var(--contentBg-sec); line-height:18px} .itemL a.link:is(.c, .noBg){border-color:var(--contentBd-color)} .itemL .link:is(.c, .noBg){background-color:transparent} .itemL a.link:hover, .itemL div.link{border-color:var(--themeLink);box-shadow:0 0 0 .5px var(--themeLink) inset; filter:none} .itemL a.link:hover .count, .itemL div.link .count{color:var(--themeLink)} .itemL a.link:hover .count svg, .itemL div.link .count svg{stroke:none;fill:currentColor;opacity:1} .itemL .count.flexIn{gap:4px} .itemL .count::before{content:attr(data-text)} .itemL label{gap:6px; margin-top:10px;padding-block:8px} .itemL label::before{content:attr(data-show);color:var(--themeLink)} .itemL label::after{content:attr(data-length);font-size:smaller;opacity:.8}
 
-/* Widget: RelatedPost */ .itemR{--cgap:20px;gap:30px var(--cgap)} .itemR article{--gap:20px; align-items:flex-start;gap:var(--gap)} .itemR .pI, .itemR .pC{width:100%} .itemR .pI .image{display:block;position:inherit; padding-top:var(--thumbnailRatio)} .itemR .pI .mi{position:absolute;top:0;left:0;bottom:0;right:0; background-position:center;background-size:cover;background-repeat:no-repeat} .itemR .pH.info .label{display:inline!important;white-space:nowrap} .itemR .pH.info .label:not(:first-child)::before{content:'\00B7';margin-inline:6px;opacity:.8} .itemR .pH.info .label a{display:inline!important;margin:0!important;padding:0!important;color:inherit} .itemR .pH.info .label a:hover{color:var(--themeLink);text-decoration:underline} .itemR .pH.info .label a::before{content:none!important} .itemR .pT .clamp{display:-webkit-box} .itemR .pS .snippet{-webkit-line-clamp:2} .itemR:not(.type-2, .type-3, .type-4){--colGap: 40px ; --thumbnailSize: 65px ; column-gap:var(--colGap)} .itemR:not(.type-2, .type-3, .type-4) >*{width:calc((100% / 2) - (var(--colGap) / 2))} .itemR:not(.type-2, .type-3, .type-4) article{flex-direction:row-reverse} .itemR:not(.type-2, .type-3, .type-4) .pC{width:calc(100% - (var(--gap) + var(--thumbnailSize)))} .itemR:not(.type-2, .type-3, .type-4) .pI{width:var(--thumbnailSize)} .itemR:not(.type-2, .type-3, .type-4) .pI .image{padding-top:var(--thumbnailRatio-box)} .itemR:is(.type-2, .type-3, .type-4) article{width:calc((100% / 3) - (var(--cgap) * 2/3))} .itemR:is(.type-2, .type-3, .type-4) .pT .name:not(.item){--postTitle-fontItems:1.1em}
+/* Widget: RelatedPost */ .itemR{--cgap:20px;gap:30px var(--cgap)} .itemR article{--gap:20px; align-items:flex-start;gap:var(--gap)} .itemR .pI, .itemR .pC{width:100%} .itemR .pI .image{display:block;position:inherit; padding-top:var(--thumbnailRatio)} .itemR .pI .mi{position:absolute;top:0;left:0;bottom:0;right:0; background-position:center;background-size:cover;background-repeat:no-repeat} .itemR .pH.info .label:not(:first-child)::before{content:'\00B7'; margin-inline:8px} .itemR .pT .clamp{display:-webkit-box} .itemR .pS .snippet{-webkit-line-clamp:2} .itemR:not(.type-2, .type-3, .type-4){--colGap: 40px ; --thumbnailSize: 65px ; column-gap:var(--colGap)} .itemR:not(.type-2, .type-3, .type-4) >*{width:calc((100% / 2) - (var(--colGap) / 2))} .itemR:not(.type-2, .type-3, .type-4) article{flex-direction:row-reverse} .itemR:not(.type-2, .type-3, .type-4) .pC{width:calc(100% - (var(--gap) + var(--thumbnailSize)))} .itemR:not(.type-2, .type-3, .type-4) .pI{width:var(--thumbnailSize)} .itemR:not(.type-2, .type-3, .type-4) .pI .image{padding-top:var(--thumbnailRatio-box)} .itemR:is(.type-2, .type-3, .type-4) article{width:calc((100% / 3) - (var(--cgap) * 2/3))} .itemR:is(.type-2, .type-3, .type-4) .pT .name:not(.item){--postTitle-fontItems:1.1em}
 
 /* Widget: ContactForm */ .formB{max-width:480px; font-size:1rem} .formB form{gap:20px} form .area{--paddingB:14px; --paddingI:16px; display:block;position:relative} form .area .n{display:block; position:absolute;top:var(--paddingB); padding-inline:6px;font-size:1rem;line-height:1.5; opacity:.8;transition:top var(--tDuration), padding var(--tDuration), var(--tShowHide), font-size var(--tDuration), background var(--tDuration)} .nB:not(.r) form .area .n{left:calc(var(--paddingI) - 6px)} .nB.r form .area .n{right:calc(var(--paddingI) - 6px)} form .area .sup{display:block; padding-inline:var(--paddingI);padding-block-start:4px;font-size:small;line-height:1.5} form input[type=email]:not([data-filled=true]):focus ~ .sup, form textarea:not([data-filled=true]):focus ~ .sup{color:#d32f2f} form input:is([type=text], [type=email]), form textarea{--themeLink:currentColor; display:block;width:100%; padding:var(--paddingB) var(--paddingI);border:var(--inputBd-line) solid var(--inputBd-color);border-radius:var(--inputBd-radius); color:var(--inputC);background-color:var(--themeBg); font:1rem/1.5 var(--fontBody); transition:border-color var(--tDuration), box-shadow var(--tDuration), min-height var(--tDuration)} form input:is([type=text][data-filled=true], [type=email][data-filled=true]), form textarea[data-filled=true], form input:is([type=text], [type=email]):focus, form textarea:focus{border-color:var(--themeLink);box-shadow:0 0 0 .5px var(--themeLink) inset} form input:is([type=text][data-filled=true], [type=email][data-filled=true]) ~ .n, form textarea[data-filled=true] ~ .n, form .area:focus-within .n{top:-10px;background-color:var(--themeBg);font-size:small; opacity:1} form textarea{min-height:100px} form textarea:focus, form textarea[data-filled=true]{min-height:200px}
 
@@ -674,8 +673,8 @@
 /* Widget: Blog - title + breadcrumbs */ .blogT{align-items:baseline;justify-content:space-between; margin-bottom:var(--widgetTitle-space)} .blogT.home .title{margin:0} .blogT.item{justify-content:flex-start} .blogT.item .tab .n >*{overflow:hidden;text-overflow:ellipsis} .blogT.item .a::before{display:none} .blogT.item .tab:not(:first-child)::before, .blogT:not(.item) .n:not(.s)::before{content:var(--breadcrumbs); flex-shrink:0; margin-inline:8px} .blogT .tab{align-items:baseline; overflow:hidden} .blogT .a{flex-shrink:0; opacity:.8} .blogT .a::before{content:attr(data-text)} .blogT .n.name::after{content:attr(data-text); white-space:nowrap;overflow:hidden;text-overflow:ellipsis} .blogT .n.s{padding-inline-start:5px}
 /* Widget: Blog - pagination */ .blogN, .blogPg{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:10px; margin-block:calc(var(--contentSpace) * 1.5) 0} .blogN.n{justify-content:center} .blogN >*{font-size:inherit} .blogN >*::after{content:attr(data-text)} .blogN .m{cursor:not-allowed; color:var(--themeC-alt);background-color:var(--contentBg-sec)} .blogN .np{flex-direction:row-reverse} .blogN .np::after{content:var(--pageNext)} .blogN .pp{/*align-self:center;*/ margin-inline:-2px auto} .blogN .pp::after{content:var(--pagePrev)} .blogN .pp svg{width:14px;height:14px} .blogN svg.line{stroke-width:1.5} .blogN .j{margin-inline:auto} .blogN .j:not(.m){cursor:pointer} .blogN .j.n{background:transparent}
 /* Widget: Blog - product */ .shop .pPad{margin-block:15px} .shop .pPric{display:flex;flex-direction:column; margin-block-start:30px;color:var(--themeLink);font-size:1.8rem} .shop .pPric i{font-style:normal} .shop .pPric .strike{order:2;color:var(--themeC); font-size:small;opacity:.8} .shop .pPric .price{font-weight:600;line-height:1.4} .shop .pPric::before{content:attr(data-text)} .shop .pPric::before, .shop .pInfo small{display:block;color:var(--themeC); font-size:small; opacity:.8} .shop .pInfo{font-size:1rem} .shop .pInfo:not(.o){--gap:20px; display:flex;gap:var(--gap)} .shop .pInfo:not(.o) >*{width:calc((100% / 2) - (var(--gap) / 2))} .shop .pMart{display:flex;flex-wrap:wrap;gap:8px 10px; margin-block:15px} .shop .pMart small{width:100%} .shop .pMart a{display:flex;align-items:center;justify-content:center; width:34px;height:34px;padding:4px;border:1px solid var(--contentBd-color);border-radius:12px;overflow:hidden}
-/* Widget: Blog - post */ /* thumbnail and comment count */ .pI{position:relative; border-radius:var(--contentBd-radius);background-color:var(--contentBg-alt); overflow:hidden} .pI .thumbnail{display:block;position:inherit; padding-top:var(--thumbnailRatio)} .pI .thumbnail amp-img{position:absolute;top:50%;left:50%; min-width:100%;min-height:100%;max-height:100%; text-align:center;transform:translate(-50%, -50%)} .pI.youtube:not(.noImage) .thumbnail::after{content:''; display:flex;align-items:center;justify-content:center; position:absolute;top:0;left:0;right:0;bottom:0; background:rgb(0 0 0 / 30%) url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' fill='%23fffdfc'><path d='M133 440a35.37 35.37 0 01-17.5-4.67c-12-6.8-19.46-20-19.46-34.33V111c0-14.37 7.46-27.53 19.46-34.33a35.13 35.13 0 0135.77.45l247.85 148.36a36 36 0 010 61l-247.89 148.4A35.5 35.5 0 01133 440z'/></svg>") center / 24px no-repeat; opacity:0;transition:opacity var(--tDuration), -webkit-backdrop-filter var(--tDuration), backdrop-filter var(--tDuration); -webkit-backdrop-filter:saturate(180%) blur(10px); backdrop-filter:saturate(180%) blur(10px)} .pI.youtube:not(.noImage):hover .thumbnail::after{opacity:1} .pI.youtube img{max-width:100%;max-height:none} .pI .img{position:absolute;top:50%;left:50%; max-width:110%;max-height:100%; font-size:.7em;text-align:center; transform:translate(-50%, -50%)} .pI .img.null::before{content:var(--noImage)} .pI .bar{justify-content:flex-end;flex-direction:row-reverse;gap:6px; position:absolute;top:0; padding:8px; font-size:.76em} .pI .bar:not(.r){right:0} .pI .bar.r{left:0} .pI .bar >*{gap:3px; padding:4px 5px;border-radius:12px; color:#0e2045;background-color:#fffdfc; box-shadow:5px 5px 15px 0 rgb(0 0 0 / 10%)} .pI .bar >*:hover{filter:none} .pI .bar >*:not(.tag)::before{content:attr(data-text); text-indent:2px; opacity:.8} .pI .bar >.discount{background-color:#fff6bf} .pI .bar >.discount::before{opacity:1} /* head, time and label */ .time:not(.timeAgo)::before, .jump::before{content:attr(data-text)} .pH .reading::before{content:var(--readtimeBefore) ' '; margin-inline:5px} .pH .reading::after{content:' ' var(--readtimeAfter)} .pH.info{justify-content:flex-start;align-items:baseline; margin-block-end:8px} .pH.info .label, .label.ellips{display:inline-flex;align-items:baseline;gap:0!important;column-gap:0!important;white-space:nowrap} .pH.info .label::before, .label.ellips::before{opacity:.8; margin-inline-end:4px} .pH.info .label[data-text]::before, .label.ellips[data-text]::before{content:attr(data-text) ' '} .pH.info .label [data-text]::before, .label.ellips [data-text]::before{content:attr(data-text)} .pH.info .label > a:not(:first-of-type)[data-text]::before, .label.ellips > a:not(:first-of-type)[data-text]::before{content:', ' attr(data-text)} .pH.info .label > a:not(:first-of-type):not([data-text])::before, .label.ellips > a:not(:first-of-type):not([data-text])::before{content:', '} .pH.info .label >span:not(:first-child)::before, .label.ellips >span:not(:first-child)::before{content:var(--breadcrumbs);opacity:.8} .pH.info .label [data-text], .label.ellips [data-text]{display:inline;padding:0!important;margin:0!important} .pH.info .label a, .label.ellips a{margin:0!important;padding:0!important;display:inline} .pH.info .label a:hover, .label.ellips a:hover{text-decoration:underline} .pH.info .label > a:nth-of-type(n+3), .label.ellips > a:nth-of-type(n+3){display:none!important} .blogT.item .tab[itemprop='itemListElement']:nth-of-type(n+3){display:none!important} .pH:not(.info){--gap:8px;--imgWidth:28px;--fontDate:inherit;--fontDate-phone:.93em; align-items:center;gap:var(--gap); margin-block:20px 25px} .pH:not(.info).tag{margin-block-start:25px} .pH:not(.info) .avatar.im{width:var(--imgWidth);height:var(--imgWidth)} .pH:not(.info) .m{display:inline-block;line-height:1.3} .pH:not(.info) .m::after{content:attr(data-text); margin-inline-end:5px} .pH:not(.info) .date{font-size:var(--fontDate); white-space:nowrap} .pH:not(.info) .time.update:not(.timeAgo)::before{content:var(--latestUpdate) ' ' attr(data-text)} .pH .item{width:calc(100% - (100px + var(--imgWidth)))} .pH .share{gap:10px; max-width:100px; margin-inline-start:auto; font-size:var(--fontDate)} .pH .share [aria-label=Share]{gap:7px; flex-direction:row-reverse} .pH .share [aria-label=Share]::before{content:attr(data-text)} /* title */ .pT .name{margin:0} .pT .name:not(.item){font:var(--postTitle-fontWg) var(--postTitle-fontItems)/1.3 var(--fontBody-alt);} .pT .item{font:var(--postTitle-fontWg) var(--postTitle-font)/1.3 var(--fontBody-alt)} .pT a:hover{text-decoration:underline} /* snippet */ .pS .snippet{margin-block:.75em .5em; line-height:1.5} .pS:not(.noImage) .snippet{display:-webkit-box} /* description */ .pD{margin-block:15px 25px; font:var(--postDescription-font)/1.4 var(--fontBody-alt)} /* foot */ .pF.items{gap:5px; margin-block-start:auto;padding-top:5px} .pF.items.shop{display:none} .pF.item{gap:var(--contentSpace); margin-top:var(--contentSpace)} .pF .jump{margin-inline-start:auto} .pF .jump:not(.sponsor){opacity:0; transition:var(--tShowHide)} .pF .jump:hover{text-decoration:underline} .pF .label{gap:10px} .pF .label >*::before{content:attr(aria-label)} .pF .label >*:hover{text-decoration:underline} .pF .labels .flex{gap:8px;flex-wrap:wrap;align-items:center} .pF .labels .flex >*{padding:8px 14px;border:1px solid var(--contentBd-color);border-radius:20px} .pF .labels .flex >*:not(label):hover{border-color:var(--themeLink);box-shadow:0 0 0 .5px var(--themeLink) inset} .pF .labels .flex >*:not(label)::before{content:attr(aria-label)} .pF .labels .li:not(:checked) ~ .flex >*:not(.s), .pF .labels .li:checked ~ .flex label{display:none} .pF .labels .flex label{padding-inline:0;border:0} .pF .labels .flex label::before{content:attr(data-show)} /* share */ .shared{position:fixed;left:0;right:0; z-index:10} .shareB .popIn{max-width:480px} .shareI{gap:30px} .shareL{display:grid;grid-template-columns:repeat(auto-fit, minmax(50px, 1fr));grid-auto-rows:50px;grid-gap:35px 15px; padding-bottom:30px} .shareL >[data-text]{position:relative} .shareL >[data-text]::after{content:attr(data-text);position:absolute; left:0;right:0;bottom:-18px; text-align:center;opacity:.8} .shareL >[data-text] >*{width:50px;height:50px;margin-inline:auto;border-radius:20px;background-color:var(--contentBg-alt);overflow:hidden} .shareC::before{content:var(--copyLink); opacity:.8} .shareC .copy{--gap:15px; align-items:center;gap:var(--gap); margin-top:15px;padding-inline:15px;border:1px solid var(--contentBd-color);border-radius:var(--contentBd-radius); overflow:hidden; transition:border var(--tDuration), background var(--tDuration), box-shadow var(--tDuration)} .shareC label{flex-shrink:0; padding:10px 0;color:var(--themeLink)} .shareC input{flex-grow:1; padding:16px 0;border:0;outline:0;background-color:transparent;opacity:.6} .shareC input:focus, .shareC .copy:hover input{opacity:1} /* writter */ .authors{gap:10px; padding-block:var(--contentPadding);border-block:1px solid var(--contentBd-color);background-color:var(--contentBg)} .authors .name{width:calc(100% - (40px + 14px));max-width:400px} .authors .m::before{content:attr(data-write) ' '; opacity:.8} .authors .m::after{content:attr(data-text); font-weight:500} .authors .d{margin-top:4px} .authors .namei:not(:checked) ~ .d label::before{content:attr(data-text); color:var(--themeLink)} .authors .namei:not(:checked) ~ .d .clamp{display:-webkit-box;-webkit-line-clamp:1} 
-/* component */ .pE{position:relative;margin-top:40px; font:var(--postBody-font)/var(--lineHeight) var(--fontBody); transition:font var(--tDuration)} /* head */ .pE :is(h1, h2, h3, h4, h5, h6){line-height:1.4;font-family:var(--fontHead);letter-spacing:-0.015em} .pE h2{font-size:1.42rem;font-weight:700;margin-top:2.4em;margin-bottom:0.9em;padding-left:14px;border-left:4.5px solid var(--themeLink);color:inherit} .pE h3{font-size:1.18rem;font-weight:700;margin-top:1.8em;margin-bottom:0.7em;padding-left:11px;border-left:3.5px solid var(--themeBd-color);color:inherit} .pE h4{font-size:1.05rem;font-weight:600;margin-top:1.4em;margin-bottom:0.5em;color:inherit} .pE :is(h1, h2, h3, h4, h5, h6):target{margin-top:0;padding-top:calc(var(--headerHeight) + 15px)} .pE :is(h1, h2, h3, h4, h5, h6).h::before{content:attr(data-text)} /* Paragraph */ .pE p{margin-block:var(--lineSpacing)} .pRef{font:1rem/1.4 var(--fontBody-alt); opacity:.8;word-break:break-word} .pRef ol, .pRef ul{padding-inline-start:30px} .pIndent{text-indent:2.2em} .pE:not(.r) .dropCap{float:left;margin-block-start:5px;margin-inline-end:8px; font:3.4em/45px var(--fontBody-alt)} .pE hr{margin-block:var(--postBreak); border:0; font:24px var(--fontCode)} .pE hr::before{content:'\007E'; display:block; letter-spacing:.6em;text-indent:.6em;text-align:center; opacity:.8;clear:both} .pE hr.dot::before{content:'\2027 \2027 \2027'} .pE hr.line::before{content:'';border-bottom:1px solid var(--contentBd-color)} /* blockquote */ blockquote{position:relative; margin-inline:0;padding-block:8px;padding-inline-start:20px;border-inline-start:1px solid var(--contentBd-color); font-size:.97em;line-height:1.6; opacity:.8} blockquote.s-1, details.sp{padding-block:1.7em;padding-inline-start:40px; border-block:1px solid var(--contentBd-color);border-inline-start:0} blockquote.s-1::before{content:'\201D'; position:absolute;top:5px; font-size:60px;line-height:normal;opacity:.5} .pE:not(.r) blockquote.s-1::before{left:4px} .pE.r blockquote.s-1::before{right:4px}  /* img */ .pE img, .cm img{display:inline-block; border-radius:var(--postImageBd-radius)} /* scroll-img */ .psImg{--gap:14px; display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:center;gap:var(--gap); margin-block:var(--lineSpacing)} .psImg img{display:block} .psImg >*{width:calc((100% / 2) - (var(--gap) / 2)); position:relative} .scImg >*{width:calc((100% / 3) - (var(--gap) * 2/3))} .btImg label{display:flex;align-items:center;justify-content:center; position:absolute;top:0;left:0;right:0;bottom:0; font-size:.93rem;font-family:var(--fontBody-alt); border-radius:var(--postImageBd-radius); color:#d9e2f0;background-color:var(--themeBg-pop); transition:var(--tShowHide); -webkit-backdrop-filter:saturate(180%) blur(10px); backdrop-filter:saturate(180%) blur(10px)} .hdImg .shImg{width:100%; margin-block:0} .inImg:not(:checked) ~ .hdImg .shImg{display:none} .inImg:checked ~ .hdImg .btImg label{opacity:0;visibility:hidden} /* caption */ figure{margin-inline:0} figcaption, .tr-caption, .psCaption{display:block;margin-top:8px; font-size:small;line-height:1.3; opacity:.8} /* ad */ .Blog ~ .LinkList{display:none} .pE .widget, .post .nAd >*{margin-block:40px} /* Note */ .note{position:relative; margin-block:1.6em; padding:18px 20px;padding-inline-start:40px;border-radius:var(--contentBd-radius); color:var(--noteC);background-color:var(--noteBg); font:14px/1.4 var(--fontBody-alt); overflow:hidden} .note::after{content:var(--noteAfter); position:absolute;top:12px; min-width:15px;text-align:center; font-size:1.5rem} .note.wr{color:var(--warnC);background-color:var(--warnBg)} .note.wr::after{content:var(--warnAfter)} .nB:not(.r) .note::after{left:14px} .nB.r .note::after{right:14px} /* list */ .step{list-style:none;margin-block:1.6em;margin-inline-start:0;padding-inline-start:0;counter-reset:num; line-height:1.6} .step >li{list-style:none;position:relative;counter-increment:num; padding-inline-start:45px} .step >li:not(:last-child){padding-bottom:15px} .step >li::before{content:counter(num) '.'; display:flex;align-items:center;justify-content:center; position:absolute;top:0;width:30px;height:30px;border:1px solid var(--stepC);border-radius:50%; color:currentColor;font:small var(--fontBody-alt); transition:background var(--tDuration), color var(--tDuration)} .pE:not(.r) .step >li::before{left:0} .pE.r .step >li::before{right:0} .step >li:hover::before{background-color:var(--stepC);color:var(--stepHover)} .step img{margin-top:1.2em} /* list - pros, cons */ .pros, .cons{margin-block:5px 15px;padding-inline-start:10px; font-size:1.02rem;line-height:1.5} .pros li, .cons li{margin-bottom:10px;padding-inline-start:10px} .pros li::marker{content:'\002B'} .cons li::marker{content:'\2212'} /* related */ .pRelate{margin-block:2.5em;padding-block:1.7em; border-block:var(--contentBd-line) solid var(--contentBd-color); font:14px/1.4 var(--fontBody-alt)} .pRelate b{font-weight:400; opacity:.8} .pRelate ul, .pRelate ol{margin-block:10px 0;padding-inline-start:20px} .pRelate li{padding-block:2px} .pRelate a:hover{text-decoration:underline} /* table */ .table{margin-block:1.6em;padding-block-end:4px; overflow-y:hidden;overflow-x:auto;scroll-behavior:smooth} table{margin-inline-end:auto; font:14px/1.4 var(--fontBody-alt)} table:not(.tr-caption-container){border:1px solid var(--contentBd-color);border-radius:var(--contentBd-radius); overflow:hidden} table:not(.tr-caption-container) td{padding:14px} table:not(.tr-caption-container) tr:not(:last-child) td, table th{border-bottom:1px solid var(--contentBd-color)} table th{padding:15px 14px; font-weight:600;text-align:inherit;background-color:var(--contentBg-sec)} table th:not(:last-child), table:not(.tr-caption-container) td:not(:last-child){border-inline-end:1px solid var(--contentBd-color)} .table.w90 table:not(.tr-caption-container){min-width:90%} .table.w100 table:not(.tr-caption-container){min-width:100%} .table.noLine table th:not(:last-child), .table.noLine table:not(.tr-caption-container) td:not(:last-child){border-inline-color:transparent} .table.withBg table:not(.tr-caption-container) tbody tr:nth-child(2n+1), .table.hoverBg table:not(.tr-caption-container) tbody tr:hover{background-color:var(--tableBg-color)} /* toc */ details.sp{padding:1.5em 1.25em;border-color:var(--themeLink);font-size:.96em} details.sp summary{display:flex;justify-content:space-between;align-items:baseline;column-gap:10px; line-height:1.4} details.sp summary::after{content:'\276F'; flex-shrink:0; color:var(--themeLink);font-size:small; transform:rotate(90deg);cursor:pointer} details.sp[open] summary::after{transform:rotate(-90deg)} details.toc .toC{margin-top:1em} details.toc a:hover{text-decoration:underline} details.toc a{/*display:-webkit-box;*/ display:inline; -webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden; color:inherit} details.toc ol{list-style:none;margin:0;padding:0; counter-reset:toc; overflow:hidden} details.toc ol ol{padding-top:5px} details.toc ol ol ol::before{content:''; position:absolute;top:0; width:15px;height:100%; border-inline-start:1.5px solid var(--contentBd-color)} details.toc ol ol ol ol{display:none} details.toc li{position:relative;padding-inline-start:28px} details.toc li::before{content:counters(toc,'.')'. ';counter-increment:toc; position:absolute;top:0; min-width:24px;font-size:small;line-height:1.8;text-align:end; opacity:.8} details.toc li li{padding-inline-start:17px} details.toc li li::before{content:''; top:-85px; min-width:12px;height:100px;border:1.5px solid var(--themeBd-color);border-block-start:0;border-inline-end:0;} .pE:not(.r) details.toc li::before{left:0; border-radius:0 0 0 8px} .pE.r details.toc li::before{right:0; border-radius:0 0 8px 0} .pE:not(.r) details.toc ol ol ol::before{left:0} .pE.r details.toc ol ol ol::before{right:0} /* accordion */ .showH{margin-block:1.7em; font:.98em/1.6 var(--fontBody)} details.ac{padding:1.5em 1.25em; border-bottom:var(--contentBd-line) solid var(--contentBd-color)} details.ac:first-child{border-top:var(--contentBd-line) solid var(--contentBd-color)} details.ac summary{display:flex;align-items:baseline;justify-content:space-between; transition:color var(--tDuration)} details.ac summary::after{content:'\276F'; flex-shrink:0;display:inline; font-size:small; transform:rotate(90deg);cursor:pointer} details.ac[open] summary{color:var(--themeLink)} details.ac:not(.alt)[open] summary::after{transform:rotate(-90deg)} details.ac.alt summary::after{content:'\002B'; font-size:1.25em;line-height:20px;transform:none} details.ac.alt[open] summary::after{content:'\2212'} details.ac .aC{margin-block:1em} details.ac .aC p:first-child{margin-block-start:0} /* youtube-fullpage */ .videoYt{position:relative; padding-bottom:56.25%; border-radius:var(--contentBd-radius);overflow:hidden} .videoYt iframe{position:absolute;width:100%;height:100%;left:0;right:0} /* youtube-lazy */ .lazyYt{position:relative;padding-top:56.25%;border-radius:var(--contentBd-radius); overflow:hidden} .lazyYt img{top:-16.84%;left:0; width:100%; border:0;border-radius:0;opacity:.95; z-index:-1} .lazyYt img:hover{transform:none;box-shadow:none} .lazyYt img, .lazyYt iframe, .lazyYt .play{position:absolute} .lazyYt iframe{bottom:0;right:0; width:100%;height:100%} .lazyYt .play{display:block;width:70px;height:70px; top:50%;left:50%; transform:translate3d(-50%,-50%,0); transition:all .5s ease} .lazyYt .play svg{width:inherit;height:inherit; fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-width:8} .lazyYt .play .c{stroke:rgba(255,255,255,.85);stroke-dasharray:650;stroke-dashoffset:650; transition:all .4s ease-in-out; opacity:.3} .lazyYt .play .t{stroke:rgba(255,255,255,.75);stroke-dasharray:240;stroke-dashoffset:480; transition:all .6s ease-in-out; transform:translateY(0)} .lazyYt .play:hover .t{animation:nudge .6s ease-in-out;-webkit-animation:nudge .6s ease-in-out} .lazyYt .play:hover .t, .lazyYt .play:hover .c{stroke-dashoffset:0; opacity:.9;stroke:var(--themeLink)} .nAMP .lazyYt{display:none} /* button */ .pE .button{margin-block:.4em} .pE .btnF .button{margin:0} /* button-download */ .dlBox{display:flex;align-items:center; max-width:500px; margin-block:1.6em;padding:.8em; border:1px solid var(--contentBd-color);border-radius:var(--contentBd-radius); font:14px var(--fontBody-alt); transition:box-shadow var(--tDuration), border-color var(--tDuration)} .dlBox:hover{box-shadow:0 15px 50px -20px rgb(0 0 0 / 20%)} .dlBox .fT{display:flex;align-items:center;justify-content:center;flex-shrink:0; width:42px;height:42px;background-color:rgb(152 155 159 / 20%);border-radius:var(--contentBd-radius)} .dlBox .fT::before{content:attr(data-text);opacity:.8} .dlBox .fT.lazy{background-size:cover;background-position:center;background-repeat:no-repeat} .dlBox .fT.lazy::before{display:none} .dlBox .button{flex-shrink:0;height:40px;margin:0;padding:10px 12px;font-size:small} .dlBox .button::after{content:attr(aria-label)} .dlBox .fN{flex-grow:1; width:calc(100% - 200px);padding:0 15px} .dlBox .fN >*{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis} .dlBox .fS{line-height:1.5;font-size:small;opacity:.8} /* lightBox */ .lightBox{position:relative} .lightBox img{display:block; transition:position var(--tDuration), margin var(--tDuration)} .lightBox details .n, .lightBox details[open]{position:absolute;top:0;left:0;bottom:0;right:0; background-color:transparent; transition:position var(--tDuration), background-color var(--tDuration), backdrop-filter var(--tDuration), height var(--tDuration)} .lightBox details .n .c{position:fixed;bottom:-20px;right:-20px;width:42px;height:42px;border-radius:50%; color:currentColor;background-color:var(--contentBg); opacity:0;visibility:hidden;box-shadow:0 5px 20px -5px rgb(0 0 0 / 20%); transition:bottom var(--tDuration), right var(--tDuration), var(--tShowHide)} .lightBox details .n .c::after{content:'\2715'; font-weight:400;font-size:14px} .lightBox details[open]{position:fixed; height:var(--vHeight);background-color:var(--themeBg-pop);backdrop-filter:saturate(180%) blur(10px); z-index:10} .lightBox details[open] .n .c{bottom:20px;right:20px; opacity:1;visibility:visible} .lightBox details[open] ~ *, .lightBox details[open] ~ noscript >*{position:fixed;top:0;left:0;bottom:0;right:0;max-width:calc(100% - (var(--contentPadding) * 2));max-height:calc(100% - (var(--contentPadding) * 2));margin:auto; z-index:10} /* syntax */ .pre{color:var(--synC);background-color:var(--synBg);border:var(--synBd-line) solid var(--synBd-color);border-radius:var(--synBd-radius); direction:ltr} .pre:not(.tb){position:relative; margin:1.7em auto; font-family:var(--fontCode); overflow:hidden} .pre:not(.tb)::before{content:'</>'; display:flex;justify-content:flex-end; position:absolute;top:0;left:0;right:0; padding-inline:10px;color:var(--synGray);background-color:inherit; font-size:11px;line-height:30px; z-index:1; opacity:0;visibility:hidden} .pre:not(.tb).html::before{content:'.html'} .pre:not(.tb).css::before{content:'.css'} .pre:not(.tb).js::before{content:'.js'} .pre:not(.tb).custom::before{content:attr(data-text)} .pre:not(.tb, :hover)::before{opacity:1;visibility:visible; transition-delay: 2s} .pre:not(.tb) button{display:flex;justify-content:flex-end; position:absolute;top:0;right:0; padding:0 10px;border:0;color:var(--synGray);background-color:inherit; font-size:11px;line-height:30px; z-index:2} .pre:not(.tb, :hover) button{opacity:0;visibility:hidden; transition-delay: 2s; z-index:1} .pre pre, .pre.tb pre{margin:0;padding-top:30px; color:inherit;background-color:inherit} pre{display:block; position:relative; font:13px/1.6 var(--fontCode); color:var(--synC);background-color:var(--synBg); margin:1.7em auto;padding:20px;border-radius:var(--contentBd-radius); -moz-tab-size:2;tab-size:2;-webkit-hyphens:none;-moz-hyphens:none;-ms-hyphens:none;hyphens:none; overflow:auto;direction:ltr;white-space:pre-wrap;word-break:break-word} pre i{color:var(--synBlue);font-style:normal} pre i.block{color:#fff;background-color:var(--synBlue)} code, kbd{display:inline; padding:5px;border-radius:2px; font:14px var(--fontCode); background-color:#ebeced;color:#2f3337} /* Multi syntax */ .pre.tb .preH{font-size:.93rem; margin:0} .pre.tb .preH >*{padding-top:15px} .pre.tb .preH::after{content:'</>'; margin-left:auto;padding:15px; font:10px var(--fontCode); color:var(--synGray)} .pre.tb >:not(.preH){display:none} .pE input[id*="1"]:checked ~ div[class*="C-1"], .pE input[id*="2"]:checked ~ div[class*="C-2"], .pE input[id*="3"]:checked ~ div[class*="C-3"], .pE input[id*="4"]:checked ~ div[class*="C-4"]{display:block} /* hljs */ .hljs-comment, .hljs-code, .hljs-meta, pre i.gray{color:var(--synGray)} .hljs-name, .hljs-title, .hljs-bullet, .hljs-variable, .hljs-template-variable, .hljs-selector-id, .hljs-selector-class, .hljs-selector-tag, .hljs-literal, pre i.red{color:var(--synOrange)} .hljs-keyword, .hljs-string, .hljs-type, .hljs-section, .hljs-quote, .hljs-built_in, .hljs-builtin-name, pre i.blue{color:var(--synBlue)} .hljs-attribute{} .hljs-params, pre i.green{color:var(--synGreen)} .hljs-number, .hljs-symbol{color:var(--synRed)} .hljs-regexp, .hljs-link{color:var(--synGold)} .hljs-deletion{background-color:var(--warnBg);color:var(--warnC)} .hljs-addition{background-color:var(--noteBg);color:var(--noteC)} .hljs-strong{font-weight:bold} .hljs-code, .hljs-emphasis{font-style:italic} /* tabs */ .tbHd.stick:not(.preH){position:-webkit-sticky;position:sticky;top:var(--headerHeight);background-color:var(--contentBg); z-index:1} .tbHd{display:flex; margin-bottom:30px;border-bottom:var(--contentBd-line) solid var(--contentBd-color); font:14px/1.6 var(--fontBody-alt); overflow-x:scroll;overflow-y:hidden;scroll-behavior:smooth;scroll-snap-type:x mandatory; -ms-overflow-style:none;-webkit-overflow-scrolling:touch} .tbHd >*{position:relative; padding:12px 15px; transition:opacity var(--tDuration); opacity:.6;white-space:nowrap; scroll-snap-align:start} .tbHd >*::before{content:attr(data-text)} .tbHd >*::after{content:''; position:absolute;left:0;bottom:-1px;right:0; height:2px;border-radius:2px 2px 0 0;background-color:var(--themeLink); opacity:0; transition:var(--tShowHide)} .tbCn >*{display:none;width:100%} .tbCn >* p:first-child{margin-top:0} .pE input[id*="1"]:checked ~ .tbHd label[for*="1"], .pE input[id*="2"]:checked ~ .tbHd label[for*="2"], .pE input[id*="3"]:checked ~ .tbHd label[for*="3"], .pE input[id*="4"]:checked ~ .tbHd label[for*="4"]{color:var(--themeLink);opacity:1; font-weight:500} .pE input[id*="1"]:checked ~ .tbHd label[for*="1"]::after, .pE input[id*="2"]:checked ~ .tbHd label[for*="2"]::after, .pE input[id*="3"]:checked ~ .tbHd label[for*="3"]::after, .pE input[id*="4"]:checked ~ .tbHd label[for*="4"]::after{opacity:1} .pE input[id*="1"]:checked ~ .tbCn div[class*="Text-1"], .pE input[id*="2"]:checked ~ .tbCn div[class*="Text-2"], .pE input[id*="3"]:checked ~ .tbCn div[class*="Text-3"], .pE input[id*="4"]:checked ~ .tbCn div[class*="Text-4"]{display:block} /* split */ .blogPg{font-size:small; align-items:baseline;justify-content:center; gap:0} .blogPg >*:not(.page){display:inline-flex;align-items:center;justify-content:center;gap:8px; position:relative;min-width:40px;height:40px; border-radius:var(--contentBd-radius); color:inherit} .blogPg a{opacity:.6} .blogPg a:hover{opacity:1} .blogPg .current:not(.page)::after, .blogPg .n::after{content:'';display:block; width:20px;border-bottom:1px solid currentColor} .blogPg .n{gap:4px;margin-inline-start:5px; transition:gap var(--tDuration)} .blogPg .n::before{content:var(--pageNext)} .blogPg .n::after{width:1px; opacity:0;visibility:hidden;transition:width var(--tDuration), var(--tShowHide)} .blogPg .n:hover{gap:8px} .blogPg .n:hover::after{width:20px; opacity:1;visibility:visible} .blogPg .a:hover{color:var(--themeLink)} /* component: responsive */ @media screen and (max-width:640px){/* scroll-img */ .scImg{flex-wrap:nowrap;justify-content:flex-start; padding-inline:var(--contentPadding); overflow-y:hidden;overflow-x:scroll;scroll-behavior:smooth;scroll-snap-type:x mandatory; -ms-overflow-style:none;-webkit-overflow-scrolling:touch} .scImg >*{flex:0 0 80%;scroll-snap-align:center} .pE img.full{max-width:none;border-radius:0} /* Table */ .table{display:flex; padding-inline:var(--contentPadding)} /* full-width */ .pE img.full, .scImg, .table{position:relative;width:calc(100% + (var(--contentPadding) * 2)); margin-inline:var(--contentPadding-minus)} } @media screen and (max-width:500px){/* scroll-img */ .hdImg >*, .shImg >*, .grImg >*:first-child, .grImg >*:nth-child(4), .grImg >*:nth-child(7){width:100%} .pE .separator a{display:block!important; margin:0!important} /* button */ .btnF >*{flex-grow:1;justify-content:center} .btnF >*:first-child{flex:0 0 auto} .dlBox a::after{display:none} .dlBox .button{min-width:45px;height:45px;justify-content:center} }
+/* Widget: Blog - post */ /* thumbnail and comment count */ .pI{position:relative; border-radius:var(--contentBd-radius);background-color:var(--contentBg-alt); overflow:hidden} .pI .thumbnail{display:block;position:inherit; padding-top:var(--thumbnailRatio)} .pI .thumbnail amp-img{position:absolute;top:50%;left:50%; min-width:100%;min-height:100%;max-height:100%; text-align:center;transform:translate(-50%, -50%)} .pI.youtube:not(.noImage) .thumbnail::after{content:''; display:flex;align-items:center;justify-content:center; position:absolute;top:0;left:0;right:0;bottom:0; background:rgb(0 0 0 / 30%) url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' fill='%23fffdfc'><path d='M133 440a35.37 35.37 0 01-17.5-4.67c-12-6.8-19.46-20-19.46-34.33V111c0-14.37 7.46-27.53 19.46-34.33a35.13 35.13 0 0135.77.45l247.85 148.36a36 36 0 010 61l-247.89 148.4A35.5 35.5 0 01133 440z'/></svg>") center / 24px no-repeat; opacity:0;transition:opacity var(--tDuration), -webkit-backdrop-filter var(--tDuration), backdrop-filter var(--tDuration); -webkit-backdrop-filter:saturate(180%) blur(10px); backdrop-filter:saturate(180%) blur(10px)} .pI.youtube:not(.noImage):hover .thumbnail::after{opacity:1} .pI.youtube img{max-width:100%;max-height:none} .pI .img{position:absolute;top:50%;left:50%; max-width:110%;max-height:100%; font-size:.7em;text-align:center; transform:translate(-50%, -50%)} .pI .img.null::before{content:var(--noImage)} .pI .bar{justify-content:flex-end;flex-direction:row-reverse;gap:6px; position:absolute;top:0; padding:8px; font-size:.76em} .pI .bar:not(.r){right:0} .pI .bar.r{left:0} .pI .bar >*{gap:3px; padding:4px 5px;border-radius:12px; color:#0e2045;background-color:#fffdfc; box-shadow:5px 5px 15px 0 rgb(0 0 0 / 10%)} .pI .bar >*:hover{filter:none} .pI .bar >*:not(.tag)::before{content:attr(data-text); text-indent:2px; opacity:.8} .pI .bar >.discount{background-color:#fff6bf} .pI .bar >.discount::before{opacity:1} /* head, time and label */ .time:not(.timeAgo)::before, .jump::before{content:attr(data-text)} .pH .reading::before{content:var(--readtimeBefore) ' '; margin-inline:5px} .pH .reading::after{content:' ' var(--readtimeAfter)} .pH.info{justify-content:flex-start;align-items:baseline; margin-block-end:8px} .pH.info .label::before{opacity:.8} .pH.info .label::before, .pH.info .label [data-text]::before{content:attr(data-text)} .pH.info .label >span:not(:first-child)::before{content:var(--breadcrumbs);opacity:.8} .pH.info .label [data-text]{display:inline;padding-block:4px} .pH.info .label a:hover{text-decoration:underline} .pH:not(.info){--gap:8px;--imgWidth:28px;--fontDate:inherit;--fontDate-phone:.93em; align-items:center;gap:var(--gap); margin-block:20px 25px} .pH:not(.info).tag{margin-block-start:25px} .pH:not(.info) .avatar.im{width:var(--imgWidth);height:var(--imgWidth)} .pH:not(.info) .m{display:inline-block;line-height:1.3} .pH:not(.info) .m::after{content:attr(data-text); margin-inline-end:5px} .pH:not(.info) .date{font-size:var(--fontDate); white-space:nowrap} .pH:not(.info) .time.update:not(.timeAgo)::before{content:var(--latestUpdate) ' ' attr(data-text)} .pH .item{width:calc(100% - (100px + var(--imgWidth)))} .pH .share{gap:10px; max-width:100px; margin-inline-start:auto; font-size:var(--fontDate)} .pH .share [aria-label=Share]{gap:7px; flex-direction:row-reverse} .pH .share [aria-label=Share]::before{content:attr(data-text)} /* title */ .pT .name{margin:0} .pT .name:not(.item){font:var(--postTitle-fontWg) var(--postTitle-fontItems)/1.3 var(--fontBody-alt);} .pT .item{font:var(--postTitle-fontWg) var(--postTitle-font)/1.3 var(--fontBody-alt)} .pT a:hover{text-decoration:underline} /* snippet */ .pS .snippet{margin-block:.75em .5em; line-height:1.5} .pS:not(.noImage) .snippet{display:-webkit-box} /* description */ .pD{margin-block:15px 25px; font:var(--postDescription-font)/1.4 var(--fontBody-alt)} /* foot */ .pF.items{gap:5px; margin-block-start:auto;padding-top:5px} .pF.items.shop{display:none} .pF.item{gap:var(--contentSpace); margin-top:var(--contentSpace)} .pF .jump{margin-inline-start:auto} .pF .jump:not(.sponsor){opacity:0; transition:var(--tShowHide)} .pF .jump:hover{text-decoration:underline} .pF .label{gap:10px} .pF .label >*::before{content:attr(aria-label)} .pF .label >*:hover{text-decoration:underline} .pF .labels .flex{gap:8px;flex-wrap:wrap;align-items:center} .pF .labels .flex >*{padding:8px 14px;border:1px solid var(--contentBd-color);border-radius:20px} .pF .labels .flex >*:not(label):hover{border-color:var(--themeLink);box-shadow:0 0 0 .5px var(--themeLink) inset} .pF .labels .flex >*:not(label)::before{content:attr(aria-label)} .pF .labels .li:not(:checked) ~ .flex >*:not(.s), .pF .labels .li:checked ~ .flex label{display:none} .pF .labels .flex label{padding-inline:0;border:0} .pF .labels .flex label::before{content:attr(data-show)} /* share */ .shared{position:fixed;left:0;right:0; z-index:10} .shareB .popIn{max-width:480px} .shareI{gap:30px} .shareL{display:grid;grid-template-columns:repeat(auto-fit, minmax(50px, 1fr));grid-auto-rows:50px;grid-gap:35px 15px; padding-bottom:30px} .shareL >[data-text]{position:relative} .shareL >[data-text]::after{content:attr(data-text);position:absolute; left:0;right:0;bottom:-18px; text-align:center;opacity:.8} .shareL >[data-text] >*{width:50px;height:50px;margin-inline:auto;border-radius:20px;background-color:var(--contentBg-alt);overflow:hidden} .shareC::before{content:var(--copyLink); opacity:.8} .shareC .copy{--gap:15px; align-items:center;gap:var(--gap); margin-top:15px;padding-inline:15px;border:1px solid var(--contentBd-color);border-radius:var(--contentBd-radius); overflow:hidden; transition:border var(--tDuration), background var(--tDuration), box-shadow var(--tDuration)} .shareC label{flex-shrink:0; padding:10px 0;color:var(--themeLink)} .shareC input{flex-grow:1; padding:16px 0;border:0;outline:0;background-color:transparent;opacity:.6} .shareC input:focus, .shareC .copy:hover input{opacity:1} /* writter */ .authors{gap:10px; padding-block:var(--contentPadding);border-block:1px solid var(--contentBd-color);background-color:var(--contentBg)} .authors .name{width:calc(100% - (40px + 14px));max-width:400px} .authors .m::before{content:attr(data-write) ' '; opacity:.8} .authors .m::after{content:attr(data-text); font-weight:500} .authors .d{margin-top:4px} .authors .namei:not(:checked) ~ .d label::before{content:attr(data-text); color:var(--themeLink)} .authors .namei:not(:checked) ~ .d .clamp{display:-webkit-box;-webkit-line-clamp:1} 
+/* component */ .pE{position:relative;margin-top:40px; font:var(--postBody-font)/var(--lineHeight) var(--fontBody); transition:font var(--tDuration)} /* head */ .pE :is(h1, h2, h3, h4, h5, h6){line-height:1.4;font-family:var(--fontHead);letter-spacing:-0.015em} .pE h2{font-size:1.42rem;font-weight:700;margin-top:2.4em;margin-bottom:0.9em;padding-left:14px;border-left:4.5px solid var(--themeLink);color:inherit} .pE h3{font-size:1.18rem;font-weight:700;margin-top:1.8em;margin-bottom:0.7em;padding-left:11px;border-left:3.5px solid var(--themeBd-color);color:inherit} .pE h4{font-size:1.05rem;font-weight:600;margin-top:1.4em;margin-bottom:0.5em;color:inherit} .pE :is(h1, h2, h3, h4, h5, h6):target{margin-top:0;padding-top:calc(var(--headerHeight) + 15px)} .pE :is(h1, h2, h3, h4, h5, h6).h::before{content:attr(data-text)} /* Paragraph */ .pE p{margin-block:var(--lineSpacing)} .pRef{font:1rem/1.4 var(--fontBody-alt); opacity:.8;word-break:break-word} .pRef ol, .pRef ul{padding-inline-start:30px} .pIndent{text-indent:2.2em} .pE:not(.r) .dropCap{float:left;margin-block-start:5px;margin-inline-end:8px; font:3.4em/45px var(--fontBody-alt)} .pE hr{margin-block:var(--postBreak); border:0; font:24px var(--fontCode)} .pE hr::before{content:'\007E'; display:block; letter-spacing:.6em;text-indent:.6em;text-align:center; opacity:.8;clear:both} .pE hr.dot::before{content:'\2027 \2027 \2027'} .pE hr.line::before{content:'';border-bottom:1px solid var(--contentBd-color)} /* blockquote */ blockquote{position:relative; margin-inline:0;padding-block:8px;padding-inline-start:20px;border-inline-start:1px solid var(--contentBd-color); font-size:.97em;line-height:1.6; opacity:.8} blockquote.s-1, details.sp{padding-block:1.7em;padding-inline-start:40px; border-block:1px solid var(--contentBd-color);border-inline-start:0} blockquote.s-1::before{content:'\201D'; position:absolute;top:5px; font-size:60px;line-height:normal;opacity:.5} .pE:not(.r) blockquote.s-1::before{left:4px} .pE.r blockquote.s-1::before{right:4px}  /* img */ .pE img, .cm img{display:inline-block; border-radius:var(--postImageBd-radius)} /* scroll-img */ .psImg{--gap:14px; display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:center;gap:var(--gap); margin-block:var(--lineSpacing)} .psImg img{display:block} .psImg >*{width:calc((100% / 2) - (var(--gap) / 2)); position:relative} .scImg >*{width:calc((100% / 3) - (var(--gap) * 2/3))} .btImg label{display:flex;align-items:center;justify-content:center; position:absolute;top:0;left:0;right:0;bottom:0; font-size:.93rem;font-family:var(--fontBody-alt); border-radius:var(--postImageBd-radius); color:#d9e2f0;background-color:var(--themeBg-pop); transition:var(--tShowHide); -webkit-backdrop-filter:saturate(180%) blur(10px); backdrop-filter:saturate(180%) blur(10px)} .hdImg .shImg{width:100%; margin-block:0} .inImg:not(:checked) ~ .hdImg .shImg{display:none} .inImg:checked ~ .hdImg .btImg label{opacity:0;visibility:hidden} /* caption */ figure{margin-inline:0} figcaption, .tr-caption, .psCaption{display:block;margin-top:8px; font-size:small;line-height:1.3; opacity:.8} /* ad */ .Blog ~ .LinkList{display:none} .pE .widget, .post .nAd >*{margin-block:40px} /* Note */ .note{position:relative; margin-block:1.6em; padding:18px 20px;padding-inline-start:40px;border-radius:var(--contentBd-radius); color:var(--noteC);background-color:var(--noteBg); font:14px/1.4 var(--fontBody-alt); overflow:hidden} .note::after{content:var(--noteAfter); position:absolute;top:12px; min-width:15px;text-align:center; font-size:1.5rem} .note.wr{color:var(--warnC);background-color:var(--warnBg)} .note.wr::after{content:var(--warnAfter)} .nB:not(.r) .note::after{left:14px} .nB.r .note::after{right:14px} /* list */ .step{list-style:none;margin-block:1.6em;margin-inline-start:0;padding-inline-start:0;counter-reset:num; line-height:1.6} .step >li{list-style:none;position:relative;counter-increment:num; padding-inline-start:45px} .step >li:not(:last-child){padding-bottom:15px} .step >li::before{content:counter(num) '.'; display:flex;align-items:center;justify-content:center; position:absolute;top:0;width:30px;height:30px;border:1px solid var(--stepC);border-radius:50%; color:currentColor;font:small var(--fontBody-alt); transition:background var(--tDuration), color var(--tDuration)} .pE:not(.r) .step >li::before{left:0} .pE.r .step >li::before{right:0} .step >li:hover::before{background-color:var(--stepC);color:var(--stepHover)} .step img{margin-top:1.2em} /* list - pros, cons */ .pros, .cons{margin-block:5px 15px;padding-inline-start:10px; font-size:1.02rem;line-height:1.5} .pros li, .cons li{margin-bottom:10px;padding-inline-start:10px} .pros li::marker{content:'\002B'} .cons li::marker{content:'\2212'} /* related */ .pRelate{margin-block:2.5em;padding-block:1.7em; border-block:var(--contentBd-line) solid var(--contentBd-color); font:14px/1.4 var(--fontBody-alt)} .pRelate b{font-weight:400; opacity:.8} .pRelate ul, .pRelate ol{margin-block:10px 0;padding-inline-start:20px} .pRelate li{padding-block:2px} .pRelate a:hover{text-decoration:underline} /* table */ .table{margin-block:1.6em;padding-block-end:4px; overflow-y:hidden;overflow-x:auto;scroll-behavior:smooth} table{margin-inline-end:auto; font:14px/1.4 var(--fontBody-alt)} table:not(.tr-caption-container){border:1px solid var(--contentBd-color);border-radius:var(--contentBd-radius); overflow:hidden} table:not(.tr-caption-container) td{padding:14px} table:not(.tr-caption-container) tr:not(:last-child) td, table th{border-bottom:1px solid var(--contentBd-color)} table th{padding:15px 14px; font-weight:600;text-align:inherit;background-color:var(--contentBg-sec)} table th:not(:last-child), table:not(.tr-caption-container) td:not(:last-child){border-inline-end:1px solid var(--contentBd-color)} .table.w90 table:not(.tr-caption-container){min-width:90%} .table.w100 table:not(.tr-caption-container){min-width:100%} .table.noLine table th:not(:last-child), .table.noLine table:not(.tr-caption-container) td:not(:last-child){border-inline-color:transparent} .table.withBg table:not(.tr-caption-container) tbody tr:nth-child(2n+1), .table.hoverBg table:not(.tr-caption-container) tbody tr:hover{background-color:var(--tableBg-color)} /* toc */ details.sp{padding:1.5em 1.25em;border-color:var(--themeLink);font-size:.96em} details.sp summary{display:flex;justify-content:space-between;align-items:baseline;column-gap:10px; line-height:1.4} details.sp summary::after{content:'\276F'; flex-shrink:0; color:var(--themeLink);font-size:small; transform:rotate(90deg);cursor:pointer} details.sp[open] summary::after{transform:rotate(-90deg)} details.toc .toC{margin-top:1em} details.toc a:hover{text-decoration:underline} details.toc a{/*display:-webkit-box;*/ display:inline; -webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden; color:inherit} details.toc ol{list-style:none;margin:0;padding:0; counter-reset:toc; overflow:hidden} details.toc ol ol{padding-top:5px} details.toc ol ol ol::before{content:''; position:absolute;top:0; width:15px;height:100%; border-inline-start:1.5px solid var(--contentBd-color)} details.toc ol ol ol ol{display:none} details.toc li{position:relative;padding-inline-start:28px} details.toc li::before{content:counters(toc,'.')'. ';counter-increment:toc; position:absolute;top:0; min-width:24px;font-size:small;line-height:1.8;text-align:end; opacity:.8} details.toc li li{padding-inline-start:17px} details.toc li li::before{content:''; top:-85px; min-width:12px;height:100px;border:1.5px solid var(--themeBd-color);border-block-start:0;border-inline-end:0;} .pE:not(.r) details.toc li::before{left:0; border-radius:0 0 0 8px} .pE.r details.toc li::before{right:0; border-radius:0 0 8px 0} .pE:not(.r) details.toc ol ol ol::before{left:0} .pE.r details.toc ol ol ol::before{right:0} /* accordion */ .showH{margin-block:1.7em; font:.98em/1.6 var(--fontBody)} details.ac{padding:1.5em 1.25em; border-bottom:var(--contentBd-line) solid var(--contentBd-color)} details.ac:first-child{border-top:var(--contentBd-line) solid var(--contentBd-color)} details.ac summary{display:flex;align-items:baseline;justify-content:space-between; transition:color var(--tDuration)} details.ac summary::after{content:'\276F'; flex-shrink:0;display:inline; font-size:small; transform:rotate(90deg);cursor:pointer} details.ac[open] summary{color:var(--themeLink)} details.ac:not(.alt)[open] summary::after{transform:rotate(-90deg)} details.ac.alt summary::after{content:'\002B'; font-size:1.25em;line-height:20px;transform:none} details.ac.alt[open] summary::after{content:'\2212'} details.ac .aC{margin-block:1em} details.ac .aC p:first-child{margin-block-start:0} /* youtube-fullpage */ .videoYt{position:relative; padding-bottom:56.25%; border-radius:var(--contentBd-radius);overflow:hidden} .videoYt iframe{position:absolute;width:100%;height:100%;left:0;right:0} /* youtube-lazy */ .lazyYt{position:relative;padding-top:56.25%;border-radius:var(--contentBd-radius); overflow:hidden} .lazyYt img{top:-16.84%;left:0; width:100%; border:0;border-radius:0;opacity:.95; z-index:-1} .lazyYt img:hover{transform:none;box-shadow:none} .lazyYt img, .lazyYt iframe, .lazyYt .play{position:absolute} .lazyYt iframe{bottom:0;right:0; width:100%;height:100%} .lazyYt .play{display:block;width:70px;height:70px; top:50%;left:50%; transform:translate3d(-50%,-50%,0); transition:all .5s ease} .lazyYt .play svg{width:inherit;height:inherit; fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-width:8} .lazyYt .play .c{stroke:rgba(255,255,255,.85);stroke-dasharray:650;stroke-dashoffset:650; transition:all .4s ease-in-out; opacity:.3} .lazyYt .play .t{stroke:rgba(255,255,255,.75);stroke-dasharray:240;stroke-dashoffset:480; transition:all .6s ease-in-out; transform:translateY(0)} .lazyYt .play:hover .t{animation:nudge .6s ease-in-out;-webkit-animation:nudge .6s ease-in-out} .lazyYt .play:hover .t, .lazyYt .play:hover .c{stroke-dashoffset:0; opacity:.9;stroke:var(--themeLink)} .nAMP .lazyYt{display:none} /* button */ .pE .button{margin-block:.4em} .pE .btnF .button{margin:0} /* button-download */ .dlBox{display:flex;align-items:center; max-width:500px; margin-block:1.6em;padding:.8em; border:1px solid var(--contentBd-color);border-radius:var(--contentBd-radius); font:14px var(--fontBody-alt); transition:box-shadow var(--tDuration), border-color var(--tDuration)} .dlBox:hover{box-shadow:0 15px 50px -20px rgb(0 0 0 / 20%)} .dlBox .fT{display:flex;align-items:center;justify-content:center;flex-shrink:0; width:42px;height:42px;background-color:rgb(152 155 159 / 20%);border-radius:var(--contentBd-radius)} .dlBox .fT::before{content:attr(data-text);opacity:.8} .dlBox .fT.lazy{background-size:cover;background-position:center;background-repeat:no-repeat} .dlBox .fT.lazy::before{display:none} .dlBox .button{flex-shrink:0;height:40px;margin:0;padding:10px 12px;font-size:small} .dlBox .button::after{content:attr(aria-label)} .dlBox .fN{flex-grow:1; width:calc(100% - 200px);padding:0 15px} .dlBox .fN >*{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis} .dlBox .fS{line-height:1.5;font-size:small;opacity:.8} /* lightBox */ .lightBox{position:relative} .lightBox img{display:block; transition:position var(--tDuration), margin var(--tDuration)} .lightBox details .n, .lightBox details[open]{position:absolute;top:0;left:0;bottom:0;right:0; background-color:transparent; transition:position var(--tDuration), background-color var(--tDuration), backdrop-filter var(--tDuration), height var(--tDuration)} .lightBox details .n .c{position:fixed;bottom:-20px;right:-20px;width:42px;height:42px;border-radius:50%; color:currentColor;background-color:var(--contentBg); opacity:0;visibility:hidden;box-shadow:0 5px 20px -5px rgb(0 0 0 / 20%); transition:bottom var(--tDuration), right var(--tDuration), var(--tShowHide)} .lightBox details .n .c::after{content:'\2715'; font-weight:400;font-size:14px} .lightBox details[open]{position:fixed; height:var(--vHeight);background-color:var(--themeBg-pop);backdrop-filter:saturate(180%) blur(10px); z-index:10} .lightBox details[open] .n .c{bottom:20px;right:20px; opacity:1;visibility:visible} .lightBox details[open] ~ *, .lightBox details[open] ~ noscript >*{position:fixed;top:0;left:0;bottom:0;right:0;max-width:calc(100% - (var(--contentPadding) * 2));max-height:calc(100% - (var(--contentPadding) * 2));margin:auto; z-index:10} /* syntax */ .pre{color:var(--synC);background-color:var(--synBg);border:var(--synBd-line) solid var(--synBd-color);border-radius:var(--synBd-radius); direction:ltr} .pre:not(.tb){position:relative; margin:1.7em auto; font-family:var(--fontCode); overflow:hidden} .pre:not(.tb)::before{content:'</>'; display:flex;justify-content:flex-end; position:absolute;top:0;left:0;right:0; padding-inline:10px;color:var(--synGray);background-color:inherit; font-size:11px;line-height:30px; z-index:1; opacity:0;visibility:hidden} .pre:not(.tb).html::before{content:'.html'} .pre:not(.tb).css::before{content:'.css'} .pre:not(.tb).js::before{content:'.js'} .pre:not(.tb).custom::before{content:attr(data-text)} .pre:not(.tb, :hover)::before{opacity:1;visibility:visible; transition-delay: 2s} .pre:not(.tb) button{display:flex;justify-content:flex-end; position:absolute;top:0;right:0; padding:0 10px;border:0;color:var(--synGray);background-color:inherit; font-size:11px;line-height:30px; z-index:2} .pre:not(.tb, :hover) button{opacity:0;visibility:hidden; transition-delay: 2s; z-index:1} .pre pre, .pre.tb pre{margin:0;padding-top:30px; color:inherit;background-color:inherit} pre{display:block; position:relative; font:13px/1.6 var(--fontCode); color:var(--synC);background-color:var(--synBg); margin:1.7em auto;padding:20px;border-radius:var(--contentBd-radius); -moz-tab-size:2;tab-size:2;-webkit-hyphens:none;-moz-hyphens:none;-ms-hyphens:none;hyphens:none; overflow:auto;direction:ltr;white-space:pre-wrap;word-break:break-word} pre i{color:var(--synBlue);font-style:normal} pre i.block{color:#fff;background-color:var(--synBlue)} :not(pre) > code, kbd{display:inline;padding:0.15em 0.38em;margin:0 0.15em;font-family:var(--fontCode);font-size:0.88em;font-weight:500;color:#2f3337;background-color:#dfdfdf;border:1px solid #ced4da;border-radius:var(--synBd-radius,4px);vertical-align:baseline;word-break:break-word} .nB[data-theme=dark] :not(pre) > code, .nB[data-theme=dark] kbd{color:#1a1e24;background-color:#e2e8f0;border-color:#cbd5e1} kbd{display:inline-block;padding:0.1em 0.4em;box-shadow:0 1.5px 0 #adb5bd} /* Multi syntax */ .pre.tb .preH{font-size:.93rem; margin:0} .pre.tb .preH >*{padding-top:15px} .pre.tb .preH::after{content:'</>'; margin-left:auto;padding:15px; font:10px var(--fontCode); color:var(--synGray)} .pre.tb >:not(.preH){display:none} .pE input[id*="1"]:checked ~ div[class*="C-1"], .pE input[id*="2"]:checked ~ div[class*="C-2"], .pE input[id*="3"]:checked ~ div[class*="C-3"], .pE input[id*="4"]:checked ~ div[class*="C-4"]{display:block} /* hljs */ .hljs-comment, .hljs-code, .hljs-meta, pre i.gray{color:var(--synGray)} .hljs-name, .hljs-title, .hljs-bullet, .hljs-variable, .hljs-template-variable, .hljs-selector-id, .hljs-selector-class, .hljs-selector-tag, .hljs-literal, pre i.red{color:var(--synOrange)} .hljs-keyword, .hljs-string, .hljs-type, .hljs-section, .hljs-quote, .hljs-built_in, .hljs-builtin-name, pre i.blue{color:var(--synBlue)} .hljs-attribute{} .hljs-params, pre i.green{color:var(--synGreen)} .hljs-number, .hljs-symbol{color:var(--synRed)} .hljs-regexp, .hljs-link{color:var(--synGold)} .hljs-deletion{background-color:var(--warnBg);color:var(--warnC)} .hljs-addition{background-color:var(--noteBg);color:var(--noteC)} .hljs-strong{font-weight:bold} .hljs-code, .hljs-emphasis{font-style:italic} /* tabs */ .tbHd.stick:not(.preH){position:-webkit-sticky;position:sticky;top:var(--headerHeight);background-color:var(--contentBg); z-index:1} .tbHd{display:flex; margin-bottom:30px;border-bottom:var(--contentBd-line) solid var(--contentBd-color); font:14px/1.6 var(--fontBody-alt); overflow-x:scroll;overflow-y:hidden;scroll-behavior:smooth;scroll-snap-type:x mandatory; -ms-overflow-style:none;-webkit-overflow-scrolling:touch} .tbHd >*{position:relative; padding:12px 15px; transition:opacity var(--tDuration); opacity:.6;white-space:nowrap; scroll-snap-align:start} .tbHd >*::before{content:attr(data-text)} .tbHd >*::after{content:''; position:absolute;left:0;bottom:-1px;right:0; height:2px;border-radius:2px 2px 0 0;background-color:var(--themeLink); opacity:0; transition:var(--tShowHide)} .tbCn >*{display:none;width:100%} .tbCn >* p:first-child{margin-top:0} .pE input[id*="1"]:checked ~ .tbHd label[for*="1"], .pE input[id*="2"]:checked ~ .tbHd label[for*="2"], .pE input[id*="3"]:checked ~ .tbHd label[for*="3"], .pE input[id*="4"]:checked ~ .tbHd label[for*="4"]{color:var(--themeLink);opacity:1; font-weight:500} .pE input[id*="1"]:checked ~ .tbHd label[for*="1"]::after, .pE input[id*="2"]:checked ~ .tbHd label[for*="2"]::after, .pE input[id*="3"]:checked ~ .tbHd label[for*="3"]::after, .pE input[id*="4"]:checked ~ .tbHd label[for*="4"]::after{opacity:1} .pE input[id*="1"]:checked ~ .tbCn div[class*="Text-1"], .pE input[id*="2"]:checked ~ .tbCn div[class*="Text-2"], .pE input[id*="3"]:checked ~ .tbCn div[class*="Text-3"], .pE input[id*="4"]:checked ~ .tbCn div[class*="Text-4"]{display:block} /* split */ .blogPg{font-size:small; align-items:baseline;justify-content:center; gap:0} .blogPg >*:not(.page){display:inline-flex;align-items:center;justify-content:center;gap:8px; position:relative;min-width:40px;height:40px; border-radius:var(--contentBd-radius); color:inherit} .blogPg a{opacity:.6} .blogPg a:hover{opacity:1} .blogPg .current:not(.page)::after, .blogPg .n::after{content:'';display:block; width:20px;border-bottom:1px solid currentColor} .blogPg .n{gap:4px;margin-inline-start:5px; transition:gap var(--tDuration)} .blogPg .n::before{content:var(--pageNext)} .blogPg .n::after{width:1px; opacity:0;visibility:hidden;transition:width var(--tDuration), var(--tShowHide)} .blogPg .n:hover{gap:8px} .blogPg .n:hover::after{width:20px; opacity:1;visibility:visible} .blogPg .a:hover{color:var(--themeLink)} /* component: responsive */ @media screen and (max-width:640px){/* scroll-img */ .scImg{flex-wrap:nowrap;justify-content:flex-start; padding-inline:var(--contentPadding); overflow-y:hidden;overflow-x:scroll;scroll-behavior:smooth;scroll-snap-type:x mandatory; -ms-overflow-style:none;-webkit-overflow-scrolling:touch} .scImg >*{flex:0 0 80%;scroll-snap-align:center} .pE img.full{max-width:none;border-radius:0} /* Table */ .table{display:flex; padding-inline:var(--contentPadding)} /* full-width */ .pE img.full, .scImg, .table{position:relative;width:calc(100% + (var(--contentPadding) * 2)); margin-inline:var(--contentPadding-minus)} } @media screen and (max-width:500px){/* scroll-img */ .hdImg >*, .shImg >*, .grImg >*:first-child, .grImg >*:nth-child(4), .grImg >*:nth-child(7){width:100%} .pE .separator a{display:block!important; margin:0!important} /* button */ .btnF >*{flex-grow:1;justify-content:center} .btnF >*:first-child{flex:0 0 auto} .dlBox a::after{display:none} .dlBox .button{min-width:45px;height:45px;justify-content:center} }
 /* comment */ .pR{margin-top:var(--contentSpace)} /* comment-button */ .cmButton .button{justify-content:center; width:100%;max-width:none;padding-block:18px;padding-inline:var(--contentPadding-box); font-family:var(--fontBody-alt)} .cmButton .button span::before{content:attr(data-comment)} .cmButton .button:hover{box-shadow:0 15px 50px -20px rgb(0 0 0 / 20%), 0 0 0 .5px var(--themeLink) inset} /* comment-head */ .cmH .s{gap:5px} .cmH .s::before{content:attr(data-text); opacity:.8} .cmi:checked ~ .cm .cmH .s::before{content:attr(data-new)} .cmi:checked ~ .cm .cmH .s svg{transform:rotate(180deg)} .cmi:checked ~ .cm .cmO{flex-direction:column-reverse} /* comment-func */ .item-control{display:none} #comment:target .cm.popUp{margin-bottom:0;opacity:1;visibility:visible} #comment:target .cm.popUp .fc::after{opacity:1;visibility:visible; background-color:var(--themeBg-pop); -webkit-backdrop-filter:saturate(180%) blur(10px); backdrop-filter:saturate(180%) blur(10px)} #comment:target .popI:not(:checked) ~ .cmButton, .popI:checked ~ .cmButton, #comment:not(:target) .popI:not(:checked) ~ .cmButton ~ .cm:not(.popUp){display:none} #comment:target .popI:checked ~ .cm.popUp{margin-bottom:-100%; opacity:0;visibility:hidden} #comment:target .popI:checked ~ .cm.popUp .fc::after{background-color:transparent; opacity:0;visibility:hidden; backdrop-filter:none} #comment:target .popI:checked ~ .cmButton{display:block} /* comment-title */ .cm .title{margin:0; font-size:1em} /* comment-iframe */ .cm.embed .cmF, .cmO .cmX{position:relative; width:calc(100% + (10px * 2));margin-inline:-10px} .cmm.note{margin-inline:10px;font-size:small} /* comment-list */ .cmO{margin-block-start:var(--contentPadding)} .cmO li{flex-wrap:wrap;gap:10px; padding-bottom:25px} .cmO li li{position:relative;padding-bottom:15px} .cmO .cmI{position:relative; width:calc(100% - (35px + 10px))} .cmT{width:100%} .cmT svg{color:var(--themeLink); margin-inline-start:3px} .cmT .time::before{content:'\00B7';margin-inline:8px} .cmC{color:var(--themeC-alt)} .cmC img{font-size:smaller;margin-block-start:1em} .cmC.delete{display:block;margin-block-start:.5em;padding:15px;border:1px dashed rgb(0 0 0 / 20%);border-radius:3px;text-align:center} .cmC i[rel=image]{display:block;position:relative;min-height:50px;margin-block-start:.5em; white-space:nowrap;overflow:hidden;text-overflow:ellipsis; font-size:.93em;opacity:.8} .cmC i[rel=image]::before{content:'Enable javascript to view image';display:flex;align-items:center;justify-content:center; position:absolute;top:0;left:0;bottom:0;right:0; padding:15px;border:1px dashed rgb(0 0 0 / 20%);border-radius:3px; background-color:var(--contentBg); text-align:center} .cmC i[rel=quote]{display:block;margin-block:1em .5em;padding-block:6px;padding-inline-start:15px;border-inline-start:1px solid var(--contentBd-color); opacity:.8} .cmC i[rel=pre]{display:block;margin-block:1em .5em;padding:15px;border:var(--synBd-line) solid var(--synBd-color);border-radius:var(--contentBd-radius); color:var(--synC);background-color:var(--synBg); font:normal 13px/1.6 var(--fontCode); -moz-tab-size:2;tab-size:2;-webkit-hyphens:none;-moz-hyphens:none;-ms-hyphens:none;hyphens:none; overflow:auto;direction:ltr;white-space:pre-wrap;word-break:break-word} .cmJ:not(.cmc), .cmR{margin-block-start:.75em} .cmJ:not(.cmc) >*::after{content:var(--reply)} .cmJ.cmc >*::after{content:var(--replies)} .cmR summary{align-items:center;padding-block:5px} .cmR summary::before{content:attr(aria-label)} .cmR summary::after{content:'';  display:var(--widgetTitle-afterD);vertical-align:middle; width:30px;margin-inline-start:8px;border-bottom:1px solid var(--widgetTitle-afterC)} .cmR[open] summary::before{content:attr(data-text)} .cmS{margin-block-start:1.5em} .cmS .cmI{width:100%} .cmS .cmA{position:absolute;width:20px} .cmS .cmA .avatar.im{min-width:20px;min-height:20px;max-width:20px;max-height:20px} .cmS .cmT{padding-inline-start:26px} .cmS .cmC{margin-block-start:.5em} 
 
 /* Responsive */ 
@@ -697,272 +696,7 @@
 @media (prefers-color-scheme: dark){/* Set theme: switch */ .nB[data-theme=default] .dc[aria-label=Dark] svg .sun{display:none} .nB[data-theme=default] .dc[aria-label=Dark] svg .moon{display:block} .nB[data-theme=default]{--themeLink: var(--darkLink); --themeC: var(--darkC); --themeC-alt: var(--darkC-alt); --themeBg: var(--darkBg); --themeBg-alt: var(--darkBg-alt); --themeBg-sec: var(--darkBg-sec); --themeBg-pop: var(--darkBg-pop); --themeBd-color: var(--darkBd-color); --synC: var(--themeC-alt); --synBg: var(--themeBg-alt); --synBd-color: var(--themeBd-color); --tableBg-color: rgb(45 49 56 / 80%); /* reset */ --buttonBg: var(--themeLink); --stepC: var(--themeLink); --headerBg: var(--themeBg); --sideBg: var(--themeBg); --sidebarBg: var(--themeBg); --footerBg: var(--themeBg); --postBg: var(--themeBg); --mobileBg: var(--themeBg-alt); --tocBg: var(--themeBg-alt); --contentBg: var(--themeBg); --contentBg-alt: var(--themeBg-alt); --contentBg-sec: var(--themeBg-sec); --buttonBd-color: var(--themeBd-color); --headerBd-color: var(--themeBd-color); --sideBd-color: var(--themeBd-color); --sidebarBd-color: var(--themeBd-color); --footerBd-color: var(--themeBd-color); --postBd-color: var(--themeBd-color); --mobileBd-color: var(--themeBd-color); --tocBd-color: var(--themeBd-color); --contentBd-color: var(--themeBd-color); --headerC: currentColor; --sideC: currentColor; --sidebarC: currentColor; --footerC: currentColor; --postC: currentColor; --mobileC: currentColor; --tocC: currentColor; --contentC: currentColor; } .nB[data-theme=default] .ipopUp, .nB[data-theme=dark] .profilePop{background-color:var(--contentBg-alt)} }
 
 /* Additional (Dummy ad) */ .adB{display:flex; min-height:60px;border:1px solid rgb(0 0 0 /10%);border-radius:2px;font-size:smaller} .adB::before{content:attr(data-text); margin:auto;opacity:.7}
-
-/* Post Content Image Standard Styling */
-#postBody article img,
-#postBody img,
-.postBody article img,
-.postBody img,
-article img {
-  width: 100%;
-  max-width: 800px;
-  height: auto;
-  border-radius: 8px;
-  margin: 1.2em auto;
-  display: block;
-}
-
-/* ============================================================
-   [Series & Related Posts Tabs UI - Median UI Native Clean]
-   ============================================================ */
-.post-nav-tabs-wrapper {
-  margin-top: 45px;
-  background: transparent;
-  border: none;
-}
-.nav-tab-buttons {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  margin-bottom: 22px;
-  padding: 0;
-  border: none;
-}
-.nav-tab-btn {
-  background: none;
-  border: none;
-  padding: 0 0 6px 0;
-  font-size: 1.072rem;
-  font-weight: 500;
-  color: inherit;
-  opacity: 0.55;
-  cursor: pointer;
-  position: relative;
-  transition: opacity 0.2s ease, color 0.2s ease;
-  outline: none;
-}
-.nav-tab-btn:hover {
-  opacity: 0.9;
-}
-.nav-tab-btn.active {
-  font-weight: 700;
-  opacity: 1;
-}
-.nav-tab-btn.active::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background-color: currentColor;
-}
-.nav-tab-panel {
-  display: none;
-}
-.nav-tab-panel.active {
-  display: block;
-}
-
-/* Hide duplicate header inside Related Post widget when inside tabs */
-.post-nav-tabs-wrapper #relatedPost .title {
-  display: none;
-}
-
-/* Series Section Header */
-.series-section-header {
-  margin-bottom: 18px;
-  font-size: 0.9rem;
-  opacity: 0.75;
-}
-
-/* Refined Post Title Font in Cards */
-.post-nav-tabs-wrapper .itemR .pT .name {
-  font-size: 1.1rem !important;
-  font-weight: 500 !important;
-  line-height: 1.4 !important;
-}
-
-/* Disabled Series Card */
-.series-cards-grid article.disabled {
-  opacity: 0.4;
-  pointer-events: none;
-  user-select: none;
-}
-.series-cards-grid article.disabled .mi {
-  background-color: var(--lightBg-sec, rgba(128,128,128,0.12));
-}
-.series-cards-grid article.disabled .pT .name {
-  font-weight: 400 !important;
-}
-
-/* Series TOC Accordion */
-.series-toc-accordion {
-  margin-top: 25px;
-  border: none;
-  background: transparent;
-}
-.series-toc-accordion summary {
-  cursor: pointer;
-  font-size: 0.85rem;
-  opacity: 0.65;
-  padding: 6px 0;
-  user-select: none;
-  outline: none;
-  transition: opacity 0.2s ease;
-}
-.series-toc-accordion summary:hover {
-  opacity: 1;
-  text-decoration: underline;
-}
-.series-toc-list {
-  margin: 12px 0 0 0;
-  padding: 0;
-  list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-.series-toc-item {
-  font-size: 0.88rem;
-  display: flex;
-  align-items: baseline;
-  gap: 10px;
-  line-height: 1.5;
-}
-.series-toc-item .num {
-  font-size: 0.8rem;
-  opacity: 0.5;
-  font-family: var(--fontCode, monospace);
-  min-width: 26px;
-}
-.series-toc-item a {
-  color: inherit;
-  opacity: 0.85;
-  text-decoration: none;
-}
-.series-toc-item a:hover {
-  opacity: 1;
-  text-decoration: underline;
-}
-.series-toc-item.current {
-  font-weight: 700;
-  opacity: 1;
-}
-.series-toc-item.current span {
-  text-decoration: none;
-}
-/* Translate Popup (Exact match with Appearance UI) */
-.transI:checked ~ .settB .iTrans { top: 5px !important; opacity: 1 !important; visibility: visible !important; z-index: 10 !important; }
-.transI:checked ~ .settB .iTrans:not(.r) { right: 0 !important; }
-.transI:checked ~ .settB .iTrans.r { left: 0 !important; }
-.transI:checked ~ .section .tc.fc::after { opacity: 1 !important; visibility: visible !important; z-index: 2 !important; }
-
-.iTrans .inn {
-  display: flex !important;
-  flex-wrap: wrap !important;
-  gap: 12px !important;
-  padding-top: 4px !important;
-}
-.iTrans .inn .trans-card {
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: center !important;
-  flex: 1 1 0 !important;
-  min-width: 65px !important;
-  cursor: pointer !important;
-  color: inherit !important;
-  text-decoration: none !important;
-  user-select: none !important;
-}
-.iTrans .inn .trans-card::after {
-  content: attr(data-text) !important;
-  font-size: 0.88rem !important;
-  margin-top: 6px !important;
-  font-weight: 500 !important;
-  text-align: center !important;
-  white-space: nowrap !important;
-}
-.iTrans .inn .trans-card .i.trans-preview {
-  width: 100% !important;
-  height: 48px !important;
-  border-radius: var(--contentBd-radiusA, 8px) !important;
-  background-color: var(--lightBg-sec, rgba(128,128,128,0.12)) !important;
-  border: 1.5px solid transparent !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  position: relative !important;
-  overflow: hidden !important;
-  transition: all 0.2s ease !important;
-}
-.nB[data-theme=dark] .iTrans .inn .trans-card .i.trans-preview {
-  background-color: var(--darkBg-sec, rgba(255,255,255,0.08)) !important;
-}
-.iTrans .inn .trans-card .tr-badge {
-  font-size: 0.95rem !important;
-  font-weight: 700 !important;
-  letter-spacing: 0.5px !important;
-  font-family: var(--fontCode, monospace) !important;
-  opacity: 0.8 !important;
-}
-.iTrans .inn .trans-card:hover .i.trans-preview {
-  background-color: var(--lightBg-alt, rgba(128,128,128,0.2)) !important;
-}
-.nB[data-theme=dark] .iTrans .inn .trans-card:hover .i.trans-preview {
-  background-color: var(--darkBg-alt, rgba(255,255,255,0.15)) !important;
-}
-
-/* Active State */
-.iTrans .inn .trans-card.active {
-  color: var(--themeLink) !important;
-}
-.iTrans .inn .trans-card.active .i.trans-preview {
-  border-color: var(--themeLink) !important;
-  box-shadow: 0 0 0 1px var(--themeLink) !important;
-}
-.iTrans .inn .trans-card.active .tr-badge {
-  color: var(--themeLink) !important;
-  opacity: 1 !important;
-}
-
-/* Caption */
-.iTrans .inn .trans-caption {
-  width: 100% !important;
-  flex: 1 0 100% !important;
-  font-size: 0.82rem !important;
-  margin-top: 4px !important;
-  opacity: 0.55 !important;
-}
-
-/* Complete annihilation of Google Translate banner & frames */
-.goog-te-banner-frame,
-.goog-te-banner-frame.skiptranslate,
-iframe.goog-te-banner-frame,
-iframe.skiptranslate,
-.VIpgJd-ZVi9od-aZ2wEe-wOHMyf,
-.VIpgJd-ZVi9od-aZ2wEe-OiiCO,
-.VIpgJd-ZVi9od-ORHb,
-#goog-gt-tt,
-.goog-te-balloon-frame,
-.goog-tooltip,
-.goog-tooltip:hover,
-#google_translate_element {
-  display: none !important;
-  visibility: hidden !important;
-  opacity: 0 !important;
-  position: absolute !important;
-  top: -9999px !important;
-  left: -9999px !important;
-  width: 0 !important;
-  height: 0 !important;
-  z-index: -9999 !important;
-}
-.goog-text-highlight { background-color: transparent !important; border: none !important; box-shadow: none !important; }
-body { top: 0px !important; position: static !important; }
-
-/*]]>*/
-</style>
+/*]]>*/</style>
     
     <b:else/>
     <!--[ CSS for Blogger Layout ]-->
@@ -1345,28 +1079,35 @@ body { top: 0px !important; position: static !important; }
                 </b:if>
               </b:loop>
               
-              <!-- 1순위: 대분류 카테고리 매칭 -->
-              <b:loop values='[ &quot;WebTranslator&quot;, &quot;Homelab&quot;, &quot;PersonalDev&quot;, &quot;Blog&quot;, &quot;Server&quot;, &quot;Unity&quot;, &quot;Unreal&quot;, &quot;Shader&quot; ]' var='primaryName'>
-                <b:loop values='data:post.labels' var='label'>
-                  <b:if cond='data:label.name == data:primaryName'>
+              <b:loop index='i' values='data:post.labels' var='label'>
+                <b:if cond='data:post.labels any (label =&gt; label.name in [ &quot;Product&quot;, &quot;Discount10&quot;, &quot;Discount20&quot;, &quot;Discount30&quot;, &quot;Discount40&quot;, &quot;Discount50&quot;, &quot;Discount60&quot;, &quot;Discount70&quot;, &quot;Discount80&quot;, &quot;Discount90&quot; ])'>
+                  
+                  <b:if cond='data:label.name != &quot;Product&quot; and data:label.name != &quot;Discount10&quot; and data:label.name != &quot;Discount20&quot; and data:label.name != &quot;Discount30&quot; and data:label.name != &quot;Discount40&quot; and data:label.name != &quot;Discount50&quot; and data:label.name != &quot;Discount60&quot; and data:label.name != &quot;Discount70&quot; and data:label.name != &quot;Discount80&quot; and data:label.name != &quot;Discount90&quot;'>
+                    <b:if cond='data:i &lt;= 2'>
+                      <b:tag class='tab flexIn shrink noWrap' itemprop='itemListElement' itemscope='itemscope' itemtype='https://schema.org/ListItem' name='div'>
+                        <a class='n flexIn ellips fontM' expr:aria-label='data:label.name' expr:data-text='data:label.name' expr:href='data:label.url' itemprop='item'>
+                          <span itemprop='name'><data:label.name/></span>
+                        </a>
+                        <meta content='3' itemprop='position'/>
+                      </b:tag>
+                    </b:if>
+                  </b:if>
+                  
+                  <b:else/>
+                  <b:comment>Replace the number 0 below with 1 or 2 to show more than 2 labels</b:comment>
+                  <b:if cond='data:i &lt;= 0'>
                     <b:tag class='tab flexIn shrink noWrap' itemprop='itemListElement' itemscope='itemscope' itemtype='https://schema.org/ListItem' name='div'>
                       <a class='n flexIn ellips fontM' expr:aria-label='data:label.name' expr:data-text='data:label.name' expr:href='data:label.url' itemprop='item'>
-                        <span itemprop='name'><data:label.name/></span>
+                        <span itemprop='name'><b:class cond='data:post.labels any (label =&gt; label.name in [ &quot;Sponsored&quot; ])' name='extL opacity'/><data:label.name/></span>
                       </a>
-                      <meta content='2' itemprop='position'/>
+                      <b:if cond='data:post.labels any (label =&gt; label.name in [ &quot;Sponsored&quot; ])'>
+                        <meta content='1' itemprop='position'/>
+                        <b:else/>
+                        <meta expr:content='data:i+2' itemprop='position'/>
+                      </b:if>
                     </b:tag>
                   </b:if>
-                </b:loop>
-              </b:loop>
-              <!-- 2순위: 기타 일반 라벨 폴백 -->
-              <b:loop values='data:post.labels' var='label'>
-                <b:if cond='data:label.name != &quot;Sponsored&quot; and data:label.name != &quot;Product&quot;'>
-                  <b:tag class='tab flexIn shrink noWrap' itemprop='itemListElement' itemscope='itemscope' itemtype='https://schema.org/ListItem' name='div'>
-                    <a class='n flexIn ellips fontM' expr:aria-label='data:label.name' expr:data-text='data:label.name' expr:href='data:label.url' itemprop='item'>
-                      <span itemprop='name'><data:label.name/></span>
-                    </a>
-                    <meta content='2' itemprop='position'/>
-                  </b:tag>
+                  
                 </b:if>
               </b:loop>
               
@@ -1657,7 +1398,7 @@ body { top: 0px !important; position: static !important; }
       <!--[ Comment FB ]-->
       <b:includable id='commentFB'>
         <div id='fb-root'/>
-        <script src='https://connect.facebook.net/en_US/all.js#xfbml=1' type='deferjs'/>
+        <script src='http://connect.facebook.net/en_US/all.js#xfbml=1' type='deferjs'/>
         <div id='commentFB'><fb:comments expr:href='data:post.url' num_posts='10' width='650'/></div>
         <script>/*<![CDATA[*/ /* to remove ?m=1 in mobile */ var uri = window.location.toString(); if (uri.indexOf("?m=1","?m=1") > 0) {var clean_uri = uri.substring(0, uri.indexOf("?m=1"));window.history.replaceState({}, document.title, clean_uri); }; /*]]>*/</script>
       </b:includable>
@@ -1683,297 +1424,13 @@ error: &quot;<div class='j e button' expr:aria-label='data:messages.loadMorePost
 /* Defer image */ Defer.dom(".lazy", 100, "loaded", null, {rootMargin:"1px"}),"undefined"!=typeof infinite_scroll&&infinite_scroll.on("load",function(){Defer.dom(".lazy", 100, "loaded", null, {rootMargin:"1px"}) });
 /* Doc Height */ const docHeight = () => {const doc = document.querySelector(".nB"); doc.style.setProperty("--vHeight", `${window.innerHeight}px`)}; window.addEventListener("resize", docHeight); docHeight(); 
 /* Dark mode */ const d = document, l = localStorage, b = d.querySelector(".nB"), m = d.querySelector("meta[name=theme-color]"), mM = d.querySelector("meta[name=msapplication-navbutton-color]"), mA = d.querySelector("meta[name=apple-mobile-web-app-status-bar-style]"), c = m.getAttribute("content"), cM = mM.getAttribute("content"), cA = mA.getAttribute("content"), iniTheme = "default", setTheme = (theme) => {b.setAttribute("data-theme", theme); if (theme === "dark") {m.setAttribute("content", "#1e1e1e"); mM.setAttribute("content", "#1e1e1e"); mA.setAttribute("content", "#1e1e1e")} else {m.setAttribute("content", c); mM.setAttribute("content", cM); mA.setAttribute("content", cA)} switch (theme) {case "default": l.setItem("theme", "default"); break; case "dark": l.setItem("theme", "dark"); break; case "light": l.setItem("theme", "light"); break}; }, setThemeOn = () => {saveTheme = l.getItem("theme"); saveTheme ? b.setAttribute("data-theme", saveTheme) : setTheme(iniTheme); if (saveTheme === "dark") {m.setAttribute("content", "#1e1e1e"); mM.setAttribute("content", "#1e1e1e"); mA.setAttribute("content", "#1e1e1e")} else {m.setAttribute("content", c); mM.setAttribute("content", cM); mA.setAttribute("content", cA)} }; setThemeOn();
-/* Sidenav State Persistence */ const forNav = d.getElementById('forNav'); if (forNav) { const isDesktop = () => window.innerWidth >= 897; const savedNav = l.getItem('sidenav_state'); if (isDesktop() && savedNav === 'expanded') { forNav.checked = true; } forNav.addEventListener('change', function() { if (isDesktop()) { l.setItem('sidenav_state', this.checked ? 'expanded' : 'collapsed'); } }); }
-/* Submenu State Persistence */ const leftNavDetails = d.querySelectorAll('.leftNav details'); if (leftNavDetails.length > 0) { let savedSub = {}; try { savedSub = JSON.parse(l.getItem('sidenav_submenus') || '{}'); } catch(e) {} leftNavDetails.forEach((dt, idx) => { const sm = dt.querySelector('summary'); const k = (sm && (sm.getAttribute('aria-label') || sm.querySelector('.flexIn span, span')?.innerText.trim())) || ('sub_' + idx); if (savedSub[k] !== undefined) { dt.open = !!savedSub[k]; } dt.addEventListener('toggle', function() { savedSub[k] = this.open; l.setItem('sidenav_submenus', JSON.stringify(savedSub)); }); }); }
-
-/* Google Translate 1-Click Engine */
-(function() {
-  var d = document;
-  var transBtns = d.querySelectorAll('.trans-card');
-  if (transBtns.length === 0) return;
-
-  function getTransCookie() {
-    var match = document.cookie.match(/(?:^|;\s*)googtrans=([^;]+)/);
-    return match ? decodeURIComponent(match[1]) : '';
-  }
-
-  function setTransCookie(lang) {
-    var domain = window.location.hostname;
-    var rootDomain = domain.split('.').slice(-2).join('.');
-    var val = '/ko/' + lang;
-    if (lang === 'ko') {
-      document.cookie = 'googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-      document.cookie = 'googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=.' + domain + ';';
-      document.cookie = 'googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=.' + rootDomain + ';';
-    } else {
-      document.cookie = 'googtrans=' + val + '; path=/;';
-      document.cookie = 'googtrans=' + val + '; path=/; domain=.' + domain + ';';
-      document.cookie = 'googtrans=' + val + '; path=/; domain=.' + rootDomain + ';';
-    }
-  }
-
-  var curCookie = getTransCookie();
-  var curLang = localStorage.getItem('user_lang') || 'ko';
-  if (curCookie.indexOf('/en') !== -1) curLang = 'en';
-  else if (curCookie.indexOf('/ja') !== -1) curLang = 'ja';
-  else if (curCookie === '' || curCookie === '/ko/ko') {
-    curLang = localStorage.getItem('user_lang') || 'ko';
-  }
-
-  transBtns.forEach(function(btn) {
-    btn.classList.remove('active');
-    if (btn.getAttribute('data-lang') === curLang) {
-      btn.classList.add('active');
-    }
-    btn.addEventListener('click', function() {
-      var targetLang = this.getAttribute('data-lang');
-      localStorage.setItem('user_lang', targetLang);
-      setTransCookie(targetLang);
-      window.location.reload();
-    });
-  });
-
-  // Load Google Translate API element
-  window.googleTranslateElementInit = function() {
-    new google.translate.TranslateElement({
-      pageLanguage: 'ko',
-      includedLanguages: 'ko,en,ja',
-      autoDisplay: false
-    }, 'google_translate_element');
-  };
-  var gtDiv = d.createElement('div');
-  gtDiv.id = 'google_translate_element';
-  d.body.appendChild(gtDiv);
-  var gtScript = d.createElement('script');
-  gtScript.src = 'https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
-  gtScript.async = true;
-  d.head.appendChild(gtScript);
-})();
 /*]]>*/</script>
       </b:includable>
         
       <!--[ CopyCode javascript ]-->
       <b:includable id='copyCodeToClipboard'>
         <script> const cCopy = &quot;<data:messages.copyToClipboard/>&quot;; /*<![CDATA[*/ let box = document.querySelectorAll(".pre:not(.tb)"); box.forEach((block) => {if (navigator.clipboard) {let button = document.createElement("button"); button.innerText = cCopy; block.appendChild(button); button.addEventListener("click", async () => {await cCode(block, button);}); } }); async function cCode(block, button) {let code = block.querySelector("pre"), text = code.innerText; await navigator.clipboard.writeText(text); button.innerHTML = cCopy + "<span class='fixN copied'></span>"; setTimeout(() => {button.innerText = cCopy;}, 2200);} /*]]>*/</script>
-      </b:includable>
-      
-      <!--[ Series & Related Posts Navigation JavaScript ]-->
-      <b:includable id='seriesNavigationScript'>
-        <script>/*<![CDATA[*/
-        document.addEventListener("DOMContentLoaded", function() {
-          var navContainer = document.querySelector('.series-nav');
-          if (!navContainer) return;
-
-          var seriesId = navContainer.getAttribute('data-series');
-          var seriesTitle = navContainer.getAttribute('data-series-title') || seriesId;
-          var currentSlug = navContainer.getAttribute('data-current-slug');
-          if (!seriesId) return;
-
-          function getSlug(url) {
-            if (!url) return '';
-            var clean = url.split('?')[0].split('#')[0].replace(/\/+$/, '');
-            var parts = clean.split('/');
-            var last = parts[parts.length - 1] || '';
-            return last.replace(/\.html$/, '');
-          }
-
-          function getThumbnail(entry) {
-            var content = (entry.content && entry.content.$t) ? entry.content.$t : ((entry.summary && entry.summary.$t) ? entry.summary.$t : '');
-            var imgMatch = content.match(/<img[^>]+src=["']([^"']+)["']/i);
-            if (imgMatch && imgMatch[1]) {
-              return imgMatch[1];
-            }
-            if (entry.media$thumbnail && entry.media$thumbnail.url) {
-              return entry.media$thumbnail.url.replace(/\/s\d+(-c)?\//, '/s480/').replace(/s72-c[^\/]*\//, 's480/');
-            }
-            return 'data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
-          }
-
-          function formatDate(entry) {
-            var dt = (entry.published && entry.published.$t || '').substring(0, 10);
-            var dateText = '';
-            var dateFull = dt;
-            if (dt.length === 10) {
-              var Y = dt.substring(0, 4);
-              var M = dt.substring(5, 7);
-              var D = dt.substring(8, 10);
-              var mm = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-              var MM = mm[parseInt(M, 10) - 1] || '';
-              dateText = MM + ' ' + D;
-              dateFull = MM + ' ' + D + ', ' + Y;
-            }
-            return { dateText: dateText, dateFull: dateFull, published: dt };
-          }
-
-          function buildSeriesCard(post, directionText, emptyText) {
-            if (!post) {
-              return '<article class="flex disabled">' +
-                '<div class="pI shrink"><div class="image"><div class="mi"></div></div></div>' +
-                '<div class="pC grow">' +
-                  '<div class="pH info flex fontM"><time class="time ellips opacity shrink" data-text="' + directionText + '"></time></div>' +
-                  '<div class="pT cInherit"><h4 class="name">' + emptyText + '</h4></div>' +
-                '</div>' +
-              '</article>';
-            }
-
-            var d = formatDate(post.entry);
-            var metaText = directionText + ' · ' + d.dateText;
-
-            return '<article class="flex">' +
-              '<div class="pI shrink"><a aria-label="Thumbnail" class="image" href="' + post.url + '"><div class="mi" style="background-image:url(' + post.thumb + ')"></div></a></div>' +
-              '<div class="pC grow">' +
-                '<div class="pH info flex fontM"><time class="time ellips opacity shrink" data-text="' + metaText + '" datetime="' + d.published + '" title="Published on: ' + d.dateFull + '"></time></div>' +
-                '<div class="pT cInherit"><h4 class="name"><a class="clamp" href="' + post.url + '">' + post.title + '</a></h4></div>' +
-              '</div>' +
-            '</article>';
-          }
-
-          function processAndRender(posts) {
-            if (!posts || posts.length === 0) return false;
-
-            posts.sort(function(a, b) {
-              return new Date(a.published.$t) - new Date(b.published.$t);
-            });
-
-            var targetSlug = (currentSlug || getSlug(window.location.pathname)).toLowerCase();
-            var currentIndex = -1;
-            var postList = [];
-
-            for (var i = 0; i < posts.length; i++) {
-              var altLink = posts[i].link.find(function(l) { return l.rel === "alternate"; });
-              if (!altLink) continue;
-              var pUrl = altLink.href;
-              var pTitle = posts[i].title.$t;
-              var pThumb = getThumbnail(posts[i]);
-              var pSlug = getSlug(pUrl).toLowerCase();
-
-              var postObj = {
-                title: pTitle,
-                url: pUrl,
-                thumb: pThumb,
-                entry: posts[i],
-                slug: pSlug
-              };
-              postList.push(postObj);
-
-              if (pSlug === targetSlug) {
-                currentIndex = postList.length - 1;
-              }
-            }
-
-            var tabsWrapper = document.createElement('div');
-            tabsWrapper.className = 'post-nav-tabs-wrapper';
-
-            var prevPost = currentIndex > 0 ? postList[currentIndex - 1] : null;
-            var nextPost = (currentIndex !== -1 && currentIndex < postList.length - 1) ? postList[currentIndex + 1] : null;
-
-            var prevCardHtml = buildSeriesCard(prevPost, '이전 편', '첫 번째 글입니다');
-            var nextCardHtml = buildSeriesCard(nextPost, '다음 편', '마지막 편입니다');
-
-            var tocHtml = '';
-            for (var j = 0; j < postList.length; j++) {
-              var numStr = (j + 1) < 10 ? '0' + (j + 1) : (j + 1);
-              if (j === currentIndex) {
-                tocHtml += '<li class="series-toc-item current"><span class="num">#' + numStr + '</span><span>' + postList[j].title + ' (현재 글)</span></li>';
-              } else {
-                tocHtml += '<li class="series-toc-item"><span class="num">#' + numStr + '</span><a href="' + postList[j].url + '">' + postList[j].title + '</a></li>';
-              }
-            }
-
-            tabsWrapper.innerHTML = 
-              '<div class="nav-tab-buttons" role="tablist">' +
-                '<button type="button" class="nav-tab-btn active" role="tab" aria-selected="true" aria-controls="tab-panel-series" data-tab="series">' +
-                  '<span>시리즈 목록</span>' +
-                '</button>' +
-                '<button type="button" class="nav-tab-btn" role="tab" aria-selected="false" aria-controls="tab-panel-related" data-tab="related">' +
-                  '<span>관심 있을 만한 글</span>' +
-                '</button>' +
-              '</div>' +
-              '<div class="nav-tab-panel active" id="tab-panel-series" role="tabpanel">' +
-                '<div class="series-nav-box">' +
-                  '<div class="series-section-header">' +
-                    '<span>' + seriesTitle + ' (총 ' + postList.length + '편)</span>' +
-                  '</div>' +
-                  '<div class="itemR type-1 flex wrap scrlH series-cards-grid" role="feed">' +
-                    prevCardHtml +
-                    nextCardHtml +
-                  '</div>' +
-                  '<details class="series-toc-accordion">' +
-                    '<summary>시리즈 전체 목록 (' + postList.length + '편)</summary>' +
-                    '<ul class="series-toc-list">' + tocHtml + '</ul>' +
-                  '</details>' +
-                '</div>' +
-              '</div>' +
-              '<div class="nav-tab-panel" id="tab-panel-related"></div>';
-
-            navContainer.parentNode.replaceChild(tabsWrapper, navContainer);
-
-            var relatedWidget = document.getElementById('relatedPost');
-            var relatedPanel = tabsWrapper.querySelector('#tab-panel-related');
-            if (relatedWidget && relatedPanel) {
-              relatedPanel.appendChild(relatedWidget);
-            }
-
-            var tabBtns = tabsWrapper.querySelectorAll('.nav-tab-btn');
-            var panels = tabsWrapper.querySelectorAll('.nav-tab-panel');
-            tabBtns.forEach(function(btn) {
-              btn.addEventListener('click', function() {
-                var targetTab = this.getAttribute('data-tab');
-                tabBtns.forEach(function(b) { b.classList.remove('active'); b.setAttribute('aria-selected', 'false'); });
-                panels.forEach(function(p) { p.classList.remove('active'); });
-                this.classList.add('active');
-                this.setAttribute('aria-selected', 'true');
-                var activePanel = tabsWrapper.querySelector('#tab-panel-' + targetTab);
-                if (activePanel) activePanel.classList.add('active');
-              });
-            });
-            return true;
-          }
-
-          // Use full 'default' feed instead of 'summary' so content/img tags are present!
-          var labelFeedUrl = "/feeds/posts/default/-/" + encodeURIComponent(seriesId) + "?alt=json&max-results=500";
-          fetch(labelFeedUrl)
-            .then(function(res) { return res.json(); })
-            .then(function(data) {
-              var posts = data && data.feed && data.feed.entry;
-              if (posts && posts.length > 0) {
-                processAndRender(posts);
-              } else {
-                fetchAllFallback();
-              }
-            })
-            .catch(function() {
-              fetchAllFallback();
-            });
-
-          function fetchAllFallback() {
-            var allFeedUrl = "/feeds/posts/default?alt=json&max-results=500";
-            fetch(allFeedUrl)
-              .then(function(res) { return res.json(); })
-              .then(function(data) {
-                var allPosts = data && data.feed && data.feed.entry;
-                if (!allPosts) return;
-
-                var sIdLower = seriesId.toLowerCase();
-                var sTitleClean = seriesTitle.replace(/\s+/g, '').toLowerCase();
-
-                var filtered = allPosts.filter(function(entry) {
-                  var title = (entry.title && entry.title.$t || '').replace(/\s+/g, '').toLowerCase();
-                  var alt = entry.link && entry.link.find(function(l) { return l.rel === "alternate"; });
-                  var href = (alt && alt.href || '').toLowerCase();
-                  
-                  return title.indexOf(sTitleClean) !== -1 || href.indexOf(sIdLower) !== -1;
-                });
-
-                processAndRender(filtered);
-              })
-              .catch(function(err) {
-                console.error("Series Fallback Navigation Error: ", err);
-              });
-          }
-        });
-        /*]]>*/</script>
-      </b:includable>
+            </b:includable>
       
       <!--[ bookmarkLoad ]-->
       <b:includable id='bookmarkLoad'>
@@ -1994,234 +1451,29 @@ error: &quot;<div class='j e button' expr:aria-label='data:messages.loadMorePost
         <div class='relatedP noJava' id='relatedPost'>
           <script>
             var labelArray = [<b:if cond='data:post.labels'><b:loop values='data:post.labels' var='label'>&quot;<data:label.name/>&quot;<b:if cond='data:label.isLast != &quot;true&quot;'>,</b:if></b:loop></b:if>];
-            var currentPostUrl = &quot;<data:post.url.canonical/>&quot;;
             var relatedPostConfig = {
               homePage: &quot;<data:blog.homepageUrl.canonical/>&quot;,
+            
+              // Replace <data:messages.youMayLikeThesePosts/> to change Related Posts title
               widgetTitle: &quot;<h2 class='title'><b:if cond='data:post.labels none (label =&gt; label.name in [ &quot;Product&quot; ])'><data:messages.youMayLikeThesePosts/><b:else/>You might like these products</b:if></h2>&quot;,
+            
+              // Change the related post style, there are 4 styles available
               widgetStyle: 1,
-              numPosts: 4,
-              minPosts: 2,
+            
+              numPosts: 6,
               summaryLength: 200,
               titleLength: &quot;auto&quot;,
-              thumbnailSize: 480,
+              thumbnailSize: 300,
               noImage: &quot;data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=&quot;,
-              containerId: &quot;relatedPost&quot;
-            };
+              containerId: &quot;relatedPost&quot;,
+              newTabLink: !1,
+              moreText: &quot;Read more&quot;,
+            
+              callBack:function(){}
+            }
           </script>
-          <script>/*<![CDATA[*/
-          (function() {
-            var container = document.getElementById(relatedPostConfig.containerId);
-            if (!container) return;
-
-            var home = (relatedPostConfig.homePage || window.location.origin).replace(/\/+$/, '');
-            var targetCount = relatedPostConfig.numPosts || 4;
-            var currentPath = window.location.pathname.replace(/\/+$/, '');
-
-            // 1. 현재 본문 주석에서 원본 라벨 추출
-            var getOriginalLabelsFromDOM = function() {
-              try {
-                var iterator = document.createNodeIterator(document.body, NodeFilter.SHOW_COMMENT, null, false);
-                var node;
-                while (node = iterator.nextNode()) {
-                  var val = node.nodeValue || '';
-                  var m = val.match(/(?:BLOG_LABELS|Labels \(Tags\)):\s*([^\r\n]+)/i);
-                  if (m && m[1]) {
-                    var cleanLine = m[1].replace(/-->.*$/, '').trim();
-                    var parsed = cleanLine.split(',').map(function(s) { return s.trim(); }).filter(Boolean);
-                    if (parsed.length > 0) return parsed;
-                  }
-                }
-              } catch (e) {}
-              return null;
-            };
-
-            var getOriginalLabelsFromContent = function(contentHtml) {
-              if (!contentHtml) return [];
-              var m = contentHtml.match(/(?:BLOG_LABELS|Labels \(Tags\)):\s*([^\r\n]+)/i);
-              if (m && m[1]) {
-                var cleanLine = m[1].replace(/-->.*$/, '').trim();
-                return cleanLine.split(',').map(function(s) { return s.trim(); }).filter(Boolean);
-              }
-              return [];
-            };
-
-            var decodeLabel = function(str) {
-              var el = document.createElement('textarea');
-              el.innerHTML = str;
-              return el.value;
-            };
-
-            var fileLabels = getOriginalLabelsFromDOM();
-            var fallbackLabels = (Array.isArray(labelArray) ? labelArray : []).map(decodeLabel).filter(Boolean);
-            var activeLabels = (fileLabels && fileLabels.length > 0) ? fileLabels : fallbackLabels;
-
-            var label1 = activeLabels[0] || null;
-            var label2 = activeLabels[1] || null;
-
-            var normalize = function(s) { return (s || '').replace(/\s+/g, '').toLowerCase(); };
-            var normLabel1 = normalize(label1);
-            var normLabel2 = normalize(label2);
-
-            var collectedPosts = [];
-            var seenUrls = new Set();
-            if (typeof currentPostUrl !== 'undefined' && currentPostUrl) seenUrls.add(currentPostUrl);
-
-            var fetchFeed = function(url) {
-              return fetch(url)
-                .then(function(res) { return res.ok ? res.json() : null; })
-                .then(function(json) { return (json && json.feed && json.feed.entry) ? json.feed.entry : []; })
-                .catch(function() { return []; });
-            };
-
-            var addEntryToCollected = function(entry) {
-              if (collectedPosts.length >= targetCount) return false;
-              var altLink = (entry.link || []).find(function(l) { return l.rel === 'alternate'; });
-              var href = altLink ? altLink.href : '';
-
-              if (!href) return false;
-              try {
-                var entryPath = new URL(href, window.location.origin).pathname.replace(/\/+$/, '');
-                if (currentPath === entryPath || seenUrls.has(href)) return false;
-              } catch(e) {
-                if (seenUrls.has(href)) return false;
-              }
-
-              seenUrls.add(href);
-
-              var title = entry.title ? entry.title.$t : '';
-              var content = (entry.content && entry.content.$t) ? entry.content.$t : ((entry.summary && entry.summary.$t) ? entry.summary.$t : '');
-              var imgMatch = content.match(/<img[^>]+src=["']([^"']+)["']/i);
-              var thumb = relatedPostConfig.noImage;
-              if (imgMatch && imgMatch[1]) {
-                thumb = imgMatch[1];
-              } else if (entry.media$thumbnail && entry.media$thumbnail.url) {
-                thumb = entry.media$thumbnail.url.replace(/\/s\d+(-c)?\//, '/s' + relatedPostConfig.thumbnailSize + '/');
-              }
-
-              var published = entry.published ? entry.published.$t : '';
-              var dt = published.substring(0, 29);
-              var Y = dt.substring(0, 4);
-              var M = dt.substring(5, 7);
-              var D = dt.substring(8, 10);
-              var mm = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-              var MM = mm[parseInt(M, 10) - 1] || '';
-
-              var postFileLabels = getOriginalLabelsFromContent(content);
-              var cat1 = ((postFileLabels[0] || (entry.category && entry.category[0] ? entry.category[0].term : (label1 || '')))).trim();
-              var cat2 = postFileLabels[1] ? postFileLabels[1].trim() : (entry.category && entry.category[1] ? entry.category[1].term.trim() : null);
-
-              var labelHtml = '<a href="' + home + '/search/label/' + encodeURIComponent(cat1) + '" rel="tag">' + cat1 + '</a>';
-              if (cat2 && cat2 !== cat1) {
-                labelHtml += ', <a href="' + home + '/search/label/' + encodeURIComponent(cat2) + '" rel="tag">' + cat2 + '</a>';
-              }
-
-              collectedPosts.push({
-                url: href,
-                title: title,
-                thumb: thumb,
-                published: dt,
-                dateText: MM + ' ' + D,
-                dateFull: MM + ' ' + D + ', ' + Y,
-                categoryHtml: labelHtml
-              });
-              return true;
-            };
-
-            var render = function() {
-              if (collectedPosts.length === 0) {
-                container.style.display = 'none';
-                return;
-              }
-
-              var c = relatedPostConfig.widgetStyle || 1;
-              var html = relatedPostConfig.widgetTitle + '<div class="itemR type-' + c + ' flex wrap scrlH" role="feed">';
-
-              for (var i = 0; i < collectedPosts.length; i++) {
-                var post = collectedPosts[i];
-                var postTitle = (relatedPostConfig.titleLength !== 'auto' && relatedPostConfig.titleLength < post.title.length)
-                  ? post.title.substring(0, relatedPostConfig.titleLength) + '&hellip;'
-                  : post.title;
-
-                html += '<article class="flex">' +
-                  '<div class="pI shrink"><a aria-label="Thumbnail" class="image" href="' + post.url + '"><div class="mi" style="background-image:url(' + post.thumb + ')"></div></a></div>' +
-                  '<div class="pC grow">' +
-                    '<div class="pH info flex fontM"><time class="time ellips opacity shrink" data-text="' + post.dateText + '" datetime="' + post.published + '" title="Published on: ' + post.dateFull + '"></time><div class="label ellips cInherit">' + post.categoryHtml + '</div></div>' +
-                    '<div class="pT cInherit"><h4 class="name"><a class="clamp" href="' + post.url + '">' + postTitle + '</a></h4></div>' +
-                  '</div>' +
-                '</article>';
-              }
-
-              html += '</div>';
-              container.innerHTML = html;
-            };
-
-            // 전체 피드 1회 요청으로 1차(태그 제외/매칭) 및 2차(랜덤 폴백) 처리
-            fetchFeed(home + '/feeds/posts/default?alt=json&start-index=1&max-results=500')
-              .then(function(allEntries) {
-                if (!allEntries || allEntries.length === 0) return;
-
-                var isSeries = !!document.querySelector('.series-nav') || !!document.querySelector('.post-nav-tabs-wrapper');
-
-                if (isSeries) {
-                  // 1단계 (시리즈 글): 태그 1, 2와 겹치지 않는 글 우선 수집
-                  for (var i = 0; i < allEntries.length; i++) {
-                    if (collectedPosts.length >= targetCount) break;
-                    var entry = allEntries[i];
-                    var entryCats = (entry.category || []).map(function(c) { return normalize(c.term); });
-                    var isExcluded = entryCats.some(function(term) {
-                      return (normLabel1 && term === normLabel1) || (normLabel2 && term === normLabel2);
-                    });
-                    if (!isExcluded) {
-                      addEntryToCollected(entry);
-                    }
-                  }
-                } else {
-                  // 1단계 (일반 글): 태그 1 또는 태그 2 관련 글 우선 수집
-                  for (var i = 0; i < allEntries.length; i++) {
-                    if (collectedPosts.length >= targetCount) break;
-                    var entry = allEntries[i];
-                    var entryCats = (entry.category || []).map(function(c) { return normalize(c.term); });
-                    var isMatched = entryCats.some(function(term) {
-                      return (normLabel1 && term === normLabel1) || (normLabel2 && term === normLabel2);
-                    });
-                    if (isMatched) {
-                      addEntryToCollected(entry);
-                    }
-                  }
-                }
-
-                // 2단계 (부족 시 랜덤 폴백): 글이 4개 미만이면 남은 글들 중에서 랜덤 셔플하여 최대 4개까지 무조건 채움!
-                if (collectedPosts.length < targetCount) {
-                  var remainingCandidates = [];
-                  for (var k = 0; k < allEntries.length; k++) {
-                    var alt = (allEntries[k].link || []).find(function(l) { return l.rel === 'alternate'; });
-                    var href = alt ? alt.href : '';
-                    if (href && !seenUrls.has(href)) {
-                      remainingCandidates.append ? remainingCandidates.append(allEntries[k]) : remainingCandidates.push(allEntries[k]);
-                    }
-                  }
-
-                  // Fisher-Yates shuffle
-                  for (var s = remainingCandidates.length - 1; s > 0; s--) {
-                    var r = Math.floor(Math.random() * (s + 1));
-                    var tmp = remainingCandidates[s];
-                    remainingCandidates[s] = remainingCandidates[r];
-                    remainingCandidates[r] = tmp;
-                  }
-
-                  for (var m = 0; m < remainingCandidates.length; m++) {
-                    if (collectedPosts.length >= targetCount) break;
-                    addEntryToCollected(remainingCandidates[m]);
-                  }
-                }
-
-                render();
-              })
-              .catch(function(err) {
-                console.error("Related Posts Load Error: ", err);
-              });
-          })();
-          /*]]>*/</script>
+          <script>/*<![CDATA[*/ /*! Related Post Widget for Blogger by Taufik Nurrohman <https://github.com/taufik-nurrohman> */
+!function(e,t,a){if("object"==typeof labelArray&&labelArray.length)for(var l=t.createElement("em"),i=0,s=labelArray.length;i<s;++i)l.innerHTML=labelArray[i],labelArray[i]=l.textContent;var n=(new Date).getTime(),r={widgetTitle:"<h3 class='title'>Related Posts</h3>",widgetStyle:1,homePage:"//www.jagodesain.com",numPosts:6,summaryLength:180,titleLength:"auto",thumbnailSize:300,noImage:"data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=",containerId:"relatedPost",newTabLink:!1,moreText:"Read more",callBack:function(){}};if("object"==typeof relatedPostConfig)for(var i in relatedPostConfig)r[i]=relatedPostConfig[i];r.homePage=r.homePage.replace(/\/?\?m=\d+(\&|$)|\/+$/,"");var o=function(e){var l=t.createElement("script");l.src=e,a.appendChild(l)},m=function(e){var t,a,l=e.length;if(0===l)return!1;for(;--l;)t=Math.floor(Math.random()*(l+1)),a=e[l],e[l]=e[t],e[t]=a;return e},h="object"==typeof labelArray&&labelArray.length?"/-/"+encodeURIComponent(m(labelArray)[0]):"";e["do_related_post_"+n]=function(e){var a,l,i,s,n,ct,dt,Y,M,D,MM,o=t.getElementById(r.containerId),h=m(e.feed.entry),c=r.widgetStyle,d=r.widgetTitle+'<div class="itemR type-'+c+' flex wrap scrlH" role="feed">',u=r.newTabLink?' target="_blank"':"",mm=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];if(o){for(var p=h.length,A=0;A<r.numPosts&&A!==p;A++){l=h[A].title.$t,i="auto"!==r.titleLength&&r.titleLength<l.length?l.substring(0,r.titleLength)+"&hellip;":l,s="media$thumbnail"in h[A]&&!1!==r.thumbnailSize?h[A].media$thumbnail.url.replace(/\/s\d+(\-c)?\//,"/s"+r.thumbnailSize+"/"):r.noImage,n="summary"in h[A]&&r.summaryLength>0?h[A].summary.$t.replace(/<br *\/?>/gi," ").replace(/<.*?>/g,"").replace(/[<>]/g,"").substring(0,r.summaryLength)+"&hellip;":"",ct=h[A].category[0].term,dt=h[A].published.$t.substring(0, 29),Y=dt.substring(0,4),M=dt.substring(5,7),D=dt.substring(8,10),MM=mm[parseInt(M-1)];for(var f=0,y=h[A].link.length;f<y;f++)if("alternate"==h[A].link[f].rel){a=h[A].link[f].href;break}d+=2==c||3==c?'<article class="flex column"><div class="pI shrink"><a aria-label="Thumbnail" class="image" href="'+a+'"'+u+'><div class="mi lazy" data-style="background-image:url('+s+')"></div></a></div><div class="pC grow flex column"><div class="pH info flex fontM"><time class="time ellips opacity shrink" data-text="'+MM+' '+D+'" datetime="'+dt+'" title="Published on: '+MM+' '+D+', '+Y+'"></time><div class="label ellips cInherit"><a aria-label="Tag" data-text="'+ct+'" href="'+r.homePage+'/search/label/'+ct+'" rel="tag"></a></div></div><div class="pT cInherit"><h4 class="name"><a class="clamp" href="'+a+'"'+u+">"+i+"</a></h4></div></div></article>":4==c?'<article class="flex column shrink"><div class="pI shrink"><a aria-label="Thumbnail" class="image" href="'+a+'"'+u+'><div class="mi lazy" data-style="background-image:url('+s+')"></div></a></div><div class="pC grow flex column"><div class="pH info flex fontM"><time class="time ellips opacity shrink" data-text="'+MM+' '+D+'" datetime="'+dt+'" title="Published on: '+MM+' '+D+', '+Y+'"></time><div class="label ellips cInherit"><a aria-label="Tag" data-text="'+ct+'" href="'+r.homePage+'/search/label/'+ct+'" rel="tag"></a></div></div><div class="pT cInherit"><h4 class="name"><a class="clamp" href="'+a+'"'+u+'>'+i+'</a></h4></div><div class="pS fontM"><div class="snippet clamp opacity">'+n+"</div></div></div></article>":'<article class="flex"><div class="pI shrink"><a aria-label="Thumbnail" class="image" href="'+a+'"'+u+'><div class="mi lazy" data-style="background-image:url('+s+')"></div></a></div><div class="pC grow"><div class="pH info flex fontM"><time class="time ellips opacity shrink" data-text="'+MM+' '+D+'" datetime="'+dt+'" title="Published on: '+MM+' '+D+', '+Y+'"></time><div class="label ellips cInherit"><a aria-label="Tag" data-text="'+ct+'" href="'+r.homePage+'/search/label/'+ct+'" rel="tag"></a></div></div><div class="pT cInherit"><h4 class="name"><a class="clamp" href="'+a+'"'+u+">"+i+"</a></h4></div></div></article>"}o.innerHTML=d+="</div>",r.callBack(e)}},e["do_related_post_start_"+n]=function(e){var t,a,l=e.feed.openSearch$totalResults.$t-r.numPosts,i=(t=1,a=l>0?l:1,Math.floor(Math.random()*(a-t+1))+t);o(r.homePage+"/feeds/posts/summary"+h+"?alt=json-in-script&orderby=updated&start-index="+i+"&max-results="+r.numPosts+"&callback=do_related_post_"+n)},o(r.homePage+"/feeds/posts/summary?alt=json-in-script&orderby=updated&max-results=0&callback=do_related_post_start_"+n)}(window,document,document.getElementsByTagName("head")[0]); /*]]>*/</script>
         </div>
       </b:includable>
       
@@ -2337,7 +1589,34 @@ error: &quot;<div class='j e button' expr:aria-label='data:messages.loadMorePost
               </b:loop>
               
               <b:else/>
-              <!-- 1순위: 대분류 카테고리 매칭 --><b:loop values='[ &quot;WebTranslator&quot;, &quot;Homelab&quot;, &quot;PersonalDev&quot;, &quot;Blog&quot;, &quot;Server&quot;, &quot;Unity&quot;, &quot;Unreal&quot;, &quot;Shader&quot; ]' var='primaryName'><b:loop values='data:post.labels' var='label'><b:if cond='data:label.name == data:primaryName'><a expr:aria-label='data:label.name' expr:data-text='data:label.name' expr:href='data:label.url' rel='tag'/></b:if></b:loop></b:loop><!-- 2순위: 핵심 서브 라벨 매칭 --><b:loop values='[ &quot;ChromeExtension&quot;, &quot;구글블로그스팟&quot;, &quot;AI&quot;, &quot;Gemini&quot;, &quot;Blogger&quot;, &quot;Antigravity&quot;, &quot;Review&quot; ]' var='subName'><b:loop values='data:post.labels' var='label'><b:if cond='data:label.name == data:subName'><a expr:aria-label='data:label.name' expr:data-text='data:label.name' expr:href='data:label.url' rel='tag'/></b:if></b:loop></b:loop><!-- 3순위: 기타 일반 라벨 폴백 --><b:loop values='data:post.labels' var='label'><b:if cond='data:label.name != &quot;Sponsored&quot; and data:label.name != &quot;Product&quot;'><a expr:aria-label='data:label.name' expr:data-text='data:label.name' expr:href='data:label.url' rel='tag'/></b:if></b:loop>
+              <b:loop values='data:post.labels' var='label'>
+                <b:if cond='data:label.name == &quot;Product&quot;'>
+                  <b:tag cond='data:widget.type != &quot;PopularPosts&quot;' name='span'>
+                    <b:tag expr:data-text='data:label.name' expr:name='data:blog.url != data:label.url ? &quot;a&quot; : &quot;span&quot;'>
+                      <b:attr cond='data:blog.url != data:label.url' expr:value='data:label.url' name='href'/>
+                      <b:attr cond='data:blog.url != data:label.url' name='rel' value='tag'/>
+                      <b:attr cond='data:blog.url != data:label.url' expr:value='data:label.name' name='aria-label'/>
+                    </b:tag>
+                  </b:tag>
+                </b:if>
+              </b:loop>
+      
+              <b:loop index='i' values='data:post.labels' var='label'>
+                <b:if cond='data:post.labels none (label =&gt; label.name in [ &quot;Product&quot;, &quot;Discount10&quot;, &quot;Discount20&quot;, &quot;Discount30&quot;, &quot;Discount40&quot;, &quot;Discount50&quot;, &quot;Discount60&quot;, &quot;Discount70&quot;, &quot;Discount80&quot;, &quot;Discount90&quot; ])'>
+                
+                  <b:comment><!--[ Replace data:i &lt;= 0 with data:i &lt;= 0 to display two labels ]--></b:comment>
+                  <b:if cond='data:i &lt;= 0'>
+                    <b:tag cond='data:widget.type != &quot;PopularPosts&quot;' name='span'>
+                      <b:tag expr:data-text='data:label.name' expr:name='data:blog.url != data:label.url ? &quot;a&quot; : &quot;span&quot;'>
+                        <b:attr cond='data:blog.url != data:label.url' expr:value='data:label.url' name='href'/>
+                        <b:attr cond='data:blog.url != data:label.url' name='rel' value='tag'/>
+                        <b:attr cond='data:blog.url != data:label.url' expr:value='data:label.name' name='aria-label'/>
+                      </b:tag>
+                    </b:tag>
+                  </b:if>
+                
+                </b:if>
+              </b:loop>
             </b:if>
           </div>
         </b:if>
@@ -2616,20 +1895,6 @@ error: &quot;<div class='j e button' expr:aria-label='data:messages.loadMorePost
         </div>
       </b:includable>
       <b:includable id='snippetedPosts'>
-        <script>
-          window._bloggerPopularPosts = [
-            <b:loop values='data:posts filter (p =&gt; p.id != data:view.postId)' var='post'>
-              {
-                &quot;id&quot;: &quot;<data:post.id/>&quot;,
-                &quot;url&quot;: &quot;<data:post.url/>&quot;,
-                &quot;title&quot;: &quot;<data:post.title/>&quot;,
-                &quot;thumbnail&quot;: &quot;<data:post.featuredImage/>&quot;,
-                &quot;date&quot;: &quot;<data:post.date.iso8601/>&quot;,
-                &quot;comments&quot;: <data:post.numberOfComments/>
-              }<b:if cond='!data:post.isLast'>,</b:if>
-            </b:loop>
-          ];
-        </script>
         <div class='itemP popular flex column' role='feed'>
           <!-- Don't render the post that we're currently already looking at. -->
           <b:loop index='i' values='data:posts filter (p =&gt; p.id != data:view.postId)' var='post'>
@@ -2765,7 +2030,6 @@ class TableOfContents { constructor({ from, to }) { this.fromElement = from; thi
     <b:if cond='!data:view.isError'>      
       <b:comment><!--[ to activate the function ]--></b:comment>
       <input class='navi hidden' id='forNav' type='checkbox'/>
-      <script>/*<![CDATA[*/(function(){var b=document.body,t=localStorage.getItem("theme")||"default";if(b){b.setAttribute("data-theme",t)}var fn=document.getElementById("forNav");if(fn&&window.innerWidth>=897&&localStorage.getItem("sidenav_state")==="expanded"){fn.checked=true}})();/*]]>*/</script>
       
       <!--[ Wrapper ]-->
       <b:tag class='mainW' name='div'>
@@ -2839,7 +2103,7 @@ class TableOfContents { constructor({ from, to }) { this.fromElement = from; thi
             
             <b:comment>Search input</b:comment>
             <b:section class='headS' id='header-search' maxwidgets='2' showaddelement='false'>
-              <b:widget id='BlogSearch1' locked='true' title='Search...' type='BlogSearch' version='2' visible='true'>
+              <b:widget id='BlogSearch1' locked='true' title='e.g. Typography' type='BlogSearch' version='2' visible='true'>
                 <b:includable id='main'>
                       <b:include name='content'/>
                     </b:includable>
@@ -2878,7 +2142,6 @@ class TableOfContents { constructor({ from, to }) { this.fromElement = from; thi
                 <b:tag class='proI hidden' id='forUsers' name='input' type='checkbox'/>
                 <b:tag class='darkI hidden' id='forDark' name='input' type='checkbox'/>
                 <input class='bookI hidden' id='forBook' type='checkbox'/>
-                <input class='transI hidden' id='forTrans' type='checkbox'/>
               </b:if>
               
               <b:section id='header-icon' maxwidgets='3' showaddelement='false'>
@@ -2931,9 +2194,9 @@ class TableOfContents { constructor({ from, to }) { this.fromElement = from; thi
                         
                         <!--[ Translate ]-->
                         <b:elseif cond='data:item == &quot;Translate&quot;'/>
-                        <label class='tc fc ic op i20 noJava' expr:aria-label='data:item' for='forTrans'>
+                        <div class='tc ic op i20 noJava' expr:aria-label='data:item'>
                           <b:include name='translate-icon'/>
-                        </label>
+                        </div>
                         
                       </b:if>
                       
@@ -3142,38 +2405,11 @@ class TableOfContents { constructor({ from, to }) { this.fromElement = from; thi
                     </b:includable>
                   </b:widget>
                 </b:section>
-                <!--[ Google Translate Popup ]-->
-                <div class='iTrans ipopUp flex column invisible noJava'>
-                  <b:class cond='data:blog.languageDirection == &quot;rtl&quot;' name='r'/>
-                  <label class='h flexIn fontS opacity i14' data-text='Language' for='forTrans'>
-                    <b:if cond='data:blog.languageDirection != &quot;rtl&quot;'>
-                      <b:include name='arrow-left-1-icon'/>
-                      <b:else/>
-                      <b:include name='arrow-right-1-icon'/>
-                    </b:if>
-                  </label>
-                  <div class='inn flex fontS'>
-                    <span aria-label='한국어' class='fontM trans-card' data-lang='ko' data-text='한국어' role='button'>
-                      <span class='i flex trans-preview'>
-                        <span class='tr-badge'>KO</span>
-                      </span>
-                    </span>
-                    <span aria-label='English' class='fontM trans-card' data-lang='en' data-text='English' role='button'>
-                      <span class='i flex trans-preview'>
-                        <span class='tr-badge'>EN</span>
-                      </span>
-                    </span>
-                    <span aria-label='日本語' class='fontM trans-card' data-lang='ja' data-text='日本語' role='button'>
-                      <span class='i flex trans-preview'>
-                        <span class='tr-badge'>JA</span>
-                      </span>
-                    </span>
-                    <span class='fontM opacity trans-caption' data-text='Setting applies to this browser only'/>
-                  </div>
-                </div>
               </div>
             </div>
+            
           </div>
+          
         </header>
           
         <div class='mainN flex'>
@@ -3185,23 +2421,183 @@ class TableOfContents { constructor({ from, to }) { this.fromElement = from; thi
               <div class='leftN'>
               
                 <b:section class='leftM' id='Left-menu' maxwidgets='2' showaddelement='false'>
-                  <b:widget id='HTML000' locked='true' title='Main Menu (Deprecated Hardcoded)' type='HTML' version='2' visible='false'>
+                  <b:widget id='HTML000' locked='true' title='Main Menu' type='HTML' version='2' visible='true'>
                     <b:widget-settings>
-                      <b:widget-setting name='content'><![CDATA[<!--[ Switch to LinkList000 for GUI management ]-->]]></b:widget-setting>
+                      <b:widget-setting name='content'><![CDATA[<!--[ You can only edit this widget from HTML theme ]-->]]></b:widget-setting>
                     </b:widget-settings>
                     <b:includable id='main'>
-                      <!-- Disabled in favor of LinkList000 -->
+                      <ul class='leftNav flex column noList' itemscope='itemscope' itemtype='https://schema.org/SiteNavigationElement'>
+                        <b:class cond='data:blog.languageDirection == &quot;rtl&quot;' name='r'/>
+                        
+                        <!--[ Homepage menu ]-->
+                        <li class='leftC'>
+                          <b:tag class='a flex op i20' expr:name='!data:view.isHomepage ? &quot;a&quot; : &quot;div&quot;'>
+                            <b:class cond='data:view.isHomepage' name='home'/>
+                            <b:attr cond='!data:view.isHomepage' expr:value='data:messages.home' name='aria-label'/>
+                            <b:attr cond='!data:view.isHomepage' expr:value='data:blog.homepageUrl.canonical' name='href'/>
+                            <b:attr cond='!data:view.isHomepage' name='itemprop' value='url'/>
+                              
+                            <!--[ icon ]-->
+                            <b:include name='home-icon'/>
+                            
+                            <!--[ name ]-->
+                            <div class='n text'>
+                              <span>
+                                <b:attr cond='!data:view.isHomepage' name='itemprop' value='name'/>
+                                
+                                <b:comment><!--[ Replace <data:messages.home/> tag with the text you want ]--></b:comment>
+                                <data:messages.home/>
+                              </span>
+                            </div>
+                          </b:tag>
+                        </li>
+                      
+                        <!--[ Dropdown: 게임개발 ]-->
+                        <li class='leftC dr'>
+                          <b:comment><!--[ Add open='' attribute to keep the menu open ]--></b:comment>
+                          <b:tag name='details'>
+                            <b:tag aria-label='게임개발' class='a flex noWrap op i20' name='summary'>
+                              <!--[ icon ]-->
+                              <b:include name='category-2-icon'/>
+                          
+                              <!--[ name ]-->
+                              <b:tag class='flexIn center grow text' name='span'>
+                                <span>게임개발</span>
+                                <b:include name='arrow-down-1-icon'/>
+                              </b:tag>
+                              <span class='pTip'>게임개발</span>
+                            </b:tag>
+                            
+                            <ul class='n'>
+                              <li itemprop='name'>
+                                <a href='/search/label/Unity' itemprop='url'>
+                                  <span>Unity</span>
+                                </a>
+                              </li>
+                              <li itemprop='name'>
+                                <a href='/search/label/Unreal' itemprop='url'>
+                                  <span>Unreal</span>
+                                </a>
+                              </li>
+                              <li itemprop='name'>
+                                <a href='/search/label/Shader' itemprop='url'>
+                                  <span>Shader</span>
+                                </a>
+                              </li>
+                            </ul>
+                            
+                          </b:tag>
+                        </li>
+                      
+                        <!--[ Dropdown: 취미 ]-->
+                        <li class='leftC dr br'>
+                          <b:comment><!--[ Add open='' attribute to keep the menu open ]--></b:comment>
+                          <b:tag name='details'>
+                            <b:tag aria-label='취미' class='a flex noWrap op i20' name='summary'>
+                              <!--[ icon ]-->
+                              <b:include name='folder-2-icon'/>
+                          
+                              <!--[ name ]-->
+                              <b:tag class='flexIn center grow text' name='span'>
+                                <span>취미</span>
+                                <b:include name='arrow-down-1-icon'/>
+                              </b:tag>
+                              <span class='pTip'>취미</span>
+                            </b:tag>
+                            
+                            <ul class='n'>
+                              <li itemprop='name'>
+                                <a href='/search/label/Blog' itemprop='url'>
+                                  <span>블로그</span>
+                                </a>
+                              </li>
+                              <li itemprop='name'>
+                                <a href='/search/label/Server' itemprop='url'>
+                                  <span>서버</span>
+                                </a>
+                              </li>
+                              <li itemprop='name'>
+                                <a href='/search/label/PersonalDev' itemprop='url'>
+                                  <span>개인 개발</span>
+                                </a>
+                              </li>
+                              <li itemprop='name'>
+                                <a href='/search/label/Review' itemprop='url'>
+                                  <span>리뷰</span>
+                                </a>
+                              </li>
+                            </ul>
+                            
+                          </b:tag>
+                        </li>
+                          
+                        <!--[ Standar menu: About ]-->
+                        <li class='leftC'>
+                          <a aria-label='About' class='a flex op i20' href='/p/about.html' itemprop='url'>
+                            <!--[ icon ]-->
+                            <b:include name='profile-2user-icon'/>
+                            
+                            <!--[ name ]-->
+                            <div class='n text'>
+                              <span itemprop='name'>About</span>
+                            </div>
+                          </a>
+                        </li>
+                          
+                        <!--[ Standar menu: Contact (Guestbook) ]-->
+                        <li class='leftC br'>
+                          <a aria-label='Contact' class='a flex op i20' href='/p/guestbook.html' itemprop='url'>
+                            <!--[ icon ]-->
+                            <b:include name='sms-edit-icon'/>
+                            
+                            <!--[ name ]-->
+                            <div class='n text'>
+                              <span itemprop='name'>Contact</span>
+                            </div>
+                          </a>
+                        </li>
+                          
+                        <!--[ Dropdown: 시리즈 (Custom menu) ]-->
+                        <li class='leftC dr'>
+                          <b:tag name='details'>
+                            <b:tag aria-label='시리즈' class='a flex noWrap op i20' name='summary'>
+                              <!--[ icon ]-->
+                              <b:include name='document-icon'/>
+                          
+                              <!--[ name ]-->
+                              <b:tag class='flexIn center grow text' name='span'>
+                                <span>시리즈</span>
+                                <b:include name='arrow-down-1-icon'/>
+                              </b:tag>
+                              <span class='pTip'>시리즈</span>
+                            </b:tag>
+                            
+                            <ul class='n'>
+                              <li itemprop='name'>
+                                <a href='/search/label/WebTranslator' itemprop='url'>
+                                  <span>Web Translator</span>
+                                </a>
+                              </li>
+                              <li itemprop='name'>
+                                <a href='/search/label/Homelab' itemprop='url'>
+                                  <span>Homelab</span>
+                                </a>
+                              </li>
+                            </ul>
+                          </b:tag>
+                        </li>
+                      </ul>
                     </b:includable>
                   </b:widget>
-                  <b:widget id='LinkList000' locked='true' title='Main Menu' type='LinkList' version='2' visible='true'>
+                  <b:widget id='LinkList000' locked='true' title='Main Menu (alternative)' type='LinkList' version='2' visible='false'>
                     <b:widget-settings>
                       <b:widget-setting name='text-10'>About</b:widget-setting>
                       <b:widget-setting name='sorting'>NONE</b:widget-setting>
-                      <b:widget-setting name='link-1'>_</b:widget-setting>
+                      <b:widget-setting name='link-1'>#</b:widget-setting>
                       <b:widget-setting name='link-13'>/search/label/WebTranslator</b:widget-setting>
-                      <b:widget-setting name='link-2'>/search/label/Unity</b:widget-setting>
+                      <b:widget-setting name='link-2'>#</b:widget-setting>
                       <b:widget-setting name='link-12'>_</b:widget-setting>
-                      <b:widget-setting name='link-0'>/</b:widget-setting>
+                      <b:widget-setting name='link-0'>custom_text</b:widget-setting>
                       <b:widget-setting name='link-14'>/search/label/Homelab</b:widget-setting>
                       <b:widget-setting name='link-11'>/p/guestbook.html</b:widget-setting>
                       <b:widget-setting name='link-10'>/p/about.html</b:widget-setting>
@@ -3212,12 +2608,12 @@ class TableOfContents { constructor({ from, to }) { this.fromElement = from; thi
                       <b:widget-setting name='link-8'>/search/label/PersonalDev</b:widget-setting>
                       <b:widget-setting name='link-5'>_</b:widget-setting>
                       <b:widget-setting name='link-6'>/search/label/Blog</b:widget-setting>
-                      <b:widget-setting name='link-3'>/search/label/Unreal</b:widget-setting>
+                      <b:widget-setting name='link-3'>#</b:widget-setting>
                       <b:widget-setting name='link-4'>/search/label/Shader</b:widget-setting>
-                      <b:widget-setting name='text-1'>게임개발</b:widget-setting>
+                      <b:widget-setting name='text-1'>About</b:widget-setting>
                       <b:widget-setting name='text-0'>Home</b:widget-setting>
-                      <b:widget-setting name='text-3'>_Unreal</b:widget-setting>
-                      <b:widget-setting name='text-2'>_Unity</b:widget-setting>
+                      <b:widget-setting name='text-3'>Custom menu</b:widget-setting>
+                      <b:widget-setting name='text-2'>Contact</b:widget-setting>
                       <b:widget-setting name='text-5'>취미</b:widget-setting>
                       <b:widget-setting name='text-4'>_Shader</b:widget-setting>
                       <b:widget-setting name='text-7'>_서버</b:widget-setting>
@@ -3231,162 +2627,64 @@ class TableOfContents { constructor({ from, to }) { this.fromElement = from; thi
                       <b:include name='content'/>
                     </b:includable>
                     <b:includable id='content'>
-                      <ul class='leftNav flex column noList' id='leftNavigation' itemscope='itemscope' itemtype='https://schema.org/SiteNavigationElement'>
+                      <ul class='leftNav flex column noList' itemscope='itemscope' itemtype='https://schema.org/SiteNavigationElement'>
                         <b:class cond='data:blog.languageDirection == &quot;rtl&quot;' name='r'/>
-                        <script>
-                          var rawNavLinks = [<b:loop values='data:links' var='link'>{ name: &quot;<data:link.name/>&quot;, target: &quot;<data:link.target/>&quot; }<b:if cond='data:link.isLast != &quot;true&quot;'>,</b:if></b:loop>];
-                          var isHomePage = <data:view.isHomepage/>;
-                          var homepageUrl = &quot;<data:blog.homepageUrl.canonical/>&quot;;
-                          var homeText = &quot;<data:messages.home/>&quot;;
-                        </script>
+                        
+                        <b:loop values='data:links' var='link'>
+                          <b:if cond='data:link.name == &quot;Home&quot;'>
+                            <!--[ Homepage menu ]-->
+                            <li class='leftC'>
+                              <b:tag class='a flex op i20' expr:name='!data:view.isHomepage ? &quot;a&quot; : &quot;div&quot;'>
+                                <b:class cond='data:view.isHomepage' name='home'/>
+                                <b:attr cond='!data:view.isHomepage' expr:value='data:messages.home' name='aria-label'/>
+                                <b:attr cond='!data:view.isHomepage' expr:value='data:blog.homepageUrl.canonical' name='href'/>
+                                <b:attr cond='!data:view.isHomepage' name='itemprop' value='url'/>
+                              
+                                <!--[ icon ]-->
+                                <b:include name='home-icon'/>
+                            
+                                <!--[ name ]-->
+                                <div class='n text'>
+                                  <span>
+                                    <b:attr cond='!data:view.isHomepage' name='itemprop' value='name'/>
+                                
+                                    <b:if cond='data:link.target != &quot;#&quot; and data:link.target != &quot;custom_text&quot;'>
+                                      <data:link.target/>
+                                      <b:else/>
+                                      <data:link.name/>
+                                    </b:if>
+                                  </span>
+                                </div>
+                              </b:tag>
+                            </li>
+                          </b:if>
+                        </b:loop>
+                        
+                        <b:loop values='data:links' var='link'>
+                          <b:if cond='data:link.name != &quot;Home&quot;'>
+                            <li class='leftC'>
+                              <a aria-label='About' class='a flex op i20' expr:href='data:link.target' itemprop='url'>
+                                <!--[ icon ]-->
+                                <b:if cond='data:link.name == &quot;About&quot;'>
+                                  <b:include name='profile-2user-icon'/>
+                                  
+                                  <b:elseif cond='data:link.name == &quot;Contact&quot;'/>
+                                  <b:include name='sms-edit-icon'/>
+                                  
+                                  <b:else/>
+                                  <b:include name='folder-2-icon'/>
+                                </b:if>
+                            
+                                <!--[ name ]-->
+                                <div class='n text'>
+                                  <span itemprop='name'><data:link.name/></span>
+                                </div>
+                              </a>
+                            </li>
+                          </b:if>
+                        </b:loop>
+                        
                       </ul>
-                      <div id='navIconsTpl' style='display:none'>
-                        <span data-icon='home'><b:include name='home-icon'/></span>
-                        <span data-icon='category'><b:include name='category-2-icon'/></span>
-                        <span data-icon='folder'><b:include name='folder-2-icon'/></span>
-                        <span data-icon='document'><b:include name='document-icon'/></span>
-                        <span data-icon='about'><b:include name='profile-2user-icon'/></span>
-                        <span data-icon='contact'><b:include name='sms-edit-icon'/></span>
-                        <span data-icon='tag'><b:include name='tag-icon'/></span>
-                        <span data-icon='arrow-down'><b:include name='arrow-down-1-icon'/></span>
-                      </div>
-                      <script>/*<![CDATA[*/
-                      (function() {
-                        var navUl = document.getElementById('leftNavigation');
-                        if (!navUl || !Array.isArray(rawNavLinks)) return;
-                        
-                        var getIconSvg = function(iconType) {
-                          var tpl = document.getElementById('navIconsTpl');
-                          if (!tpl) return '';
-                          var el = tpl.querySelector('[data-icon="' + iconType + '"]');
-                          return el ? el.innerHTML : (tpl.querySelector('[data-icon="folder"]') ? tpl.querySelector('[data-icon="folder"]').innerHTML : '');
-                        };
-                        
-                        var resolveIcon = function(name, isDropdown) {
-                          var n = name.toLowerCase();
-                          if (n === 'home' || n === '홈') return 'home';
-                          if (n === 'about' || n === '소개') return 'about';
-                          if (n === 'contact' || n === '방명록' || n === 'guestbook') return 'contact';
-                          if (n.indexOf('시리즈') !== -1 || n.indexOf('series') !== -1) return 'document';
-                          if (n.indexOf('개발') !== -1 || n.indexOf('game') !== -1 || n.indexOf('게임') !== -1) return 'category';
-                          if (isDropdown) return 'category';
-                          return 'folder';
-                        };
-
-                        var items = [];
-                        var currentParent = null;
-
-                        for (var i = 0; i < rawNavLinks.length; i++) {
-                          var raw = rawNavLinks[i];
-                          var rawName = (raw.name || '').trim();
-                          var rawTarget = (raw.target || '').trim();
-
-                          var customIcon = null;
-                          var iconMatch = rawName.match(/^\[(?:icon:)?([a-zA-Z0-9_-]+)\]\s*(.*)$/);
-                          if (iconMatch) {
-                            customIcon = iconMatch[1];
-                            rawName = iconMatch[2].trim();
-                          }
-
-                          var isSub = rawName.startsWith('_');
-                          var cleanName = isSub ? rawName.substring(1).trim() : rawName;
-
-                          if (isSub && currentParent) {
-                            currentParent.subItems.push({
-                              name: cleanName,
-                              target: rawTarget
-                            });
-                          } else {
-                            var isDropdown = (rawTarget === '_' || rawTarget === '#');
-                            if (i + 1 < rawNavLinks.length && (rawNavLinks[i + 1].name || '').trim().startsWith('_')) {
-                              isDropdown = true;
-                            }
-
-                            var parentObj = {
-                              name: cleanName,
-                              target: rawTarget,
-                              icon: customIcon || resolveIcon(cleanName, isDropdown),
-                              isDropdown: isDropdown,
-                              subItems: []
-                            };
-                            items.push(parentObj);
-                            if (isDropdown) {
-                              currentParent = parentObj;
-                            } else {
-                              currentParent = null;
-                            }
-                          }
-                        }
-
-                        var html = '';
-                        for (var j = 0; j < items.length; j++) {
-                          var it = items[j];
-                          var iconSvg = getIconSvg(it.icon);
-                          var arrowSvg = getIconSvg('arrow-down');
-
-                          if (it.name.toLowerCase() === 'home' || it.name.toLowerCase() === '홈') {
-                            if (isHomePage) {
-                              html += '<li class="leftC">' +
-                                '<div class="a flex op i20 home" aria-label="' + homeText + '">' +
-                                  iconSvg +
-                                  '<div class="n text"><span itemprop="name">' + it.name + '</span></div>' +
-                                '</div></li>';
-                            } else {
-                              html += '<li class="leftC">' +
-                                '<a class="a flex op i20" aria-label="' + homeText + '" href="' + (it.target !== '_' && it.target !== '#' ? it.target : homepageUrl) + '" itemprop="url">' +
-                                  iconSvg +
-                                  '<div class="n text"><span itemprop="name">' + it.name + '</span></div>' +
-                                '</a></li>';
-                            }
-                          } else if (it.isDropdown && it.subItems.length > 0) {
-                            var subHtml = '';
-                            for (var s = 0; s < it.subItems.length; s++) {
-                              var sub = it.subItems[s];
-                              subHtml += '<li itemprop="name"><a href="' + sub.target + '" itemprop="url"><span>' + sub.name + '</span></a></li>';
-                            }
-
-                            html += '<li class="leftC dr">' +
-                              '<details>' +
-                                '<summary aria-label="' + it.name + '" class="a flex noWrap op i20">' +
-                                  iconSvg +
-                                  '<span class="flexIn center grow text"><span>' + it.name + '</span>' + arrowSvg + '</span>' +
-                                  '<span class="pTip">' + it.name + '</span>' +
-                                '</summary>' +
-                                '<ul class="n">' + subHtml + '</ul>' +
-                              '</details>' +
-                            '</li>';
-                          } else {
-                            var isBorder = (it.name === 'Contact' || it.name === 'About') ? ' br' : '';
-                            html += '<li class="leftC' + isBorder + '">' +
-                              '<a aria-label="' + it.name + '" class="a flex op i20" href="' + it.target + '" itemprop="url">' +
-                                iconSvg +
-                                '<div class="n text"><span itemprop="name">' + it.name + '</span></div>' +
-                              '</a></li>';
-                          }
-                        }
-
-                        navUl.innerHTML = html;
-
-                        try {
-                          var leftNavDetails = navUl.querySelectorAll('details');
-                          if (leftNavDetails.length > 0) {
-                            var savedSub = {};
-                            try { savedSub = JSON.parse(localStorage.getItem('sidenav_submenus') || '{}'); } catch(e) {}
-                            leftNavDetails.forEach(function(dt, idx) {
-                              var sm = dt.querySelector('summary');
-                              var k = (sm && (sm.getAttribute('aria-label') || sm.querySelector('.flexIn span, span')?.innerText.trim())) || ('sub_' + idx);
-                              if (savedSub[k] !== undefined) {
-                                dt.open = !!savedSub[k];
-                              }
-                              dt.addEventListener('toggle', function() {
-                                savedSub[k] = this.open;
-                                localStorage.setItem('sidenav_submenus', JSON.stringify(savedSub));
-                              });
-                            });
-                          }
-                        } catch(e) {}
-                      })();
-                      /*]]>*/</script>
                     </b:includable>
                   </b:widget>
                 </b:section>
@@ -3617,15 +2915,15 @@ class TableOfContents { constructor({ from, to }) { this.fromElement = from; thi
                       <div class='slideB scrlH fontM noPrint' id='homeSliderWrap'>
                         <!--[ Optional Notice Widget for Layout UI ]-->
                         <b:section class='sliderNoticeSec hidden' id='slider-notice-widget' maxwidgets='1' showaddelement='false'>
-                          <b:widget id='Image1' locked='true' title='[공지사항]' type='Image' version='2' visible='true'>
+                          <b:widget id='Image1' locked='true' title='[1순위 공지 슬라이드] 이미지/설명(제목)/링크 입력' type='Image' version='2' visible='true'>
                             <b:widget-settings>
-                              <b:widget-setting name='displayUrl'>https://mblogthumb-phinf.pstatic.net/MjAxOTA1MDNfMjI3/MDAxNTU2ODcyMTA1NzM3.E-zZpN1fZDfTINHEgQT-f2Pqf4YDbRmaq1xgFZKGXcYg.Xa1EoJDQr9A-nx689IGzPULr-S2RtTvDcluTu7zFt9og.GIF.james0549/6e6819e7efb9daed1086ead18032b4e7.gif?type=w800</b:widget-setting>
-                              <b:widget-setting name='displayHeight'>275</b:widget-setting>
-                              <b:widget-setting name='sectionWidth'>453</b:widget-setting>
-                              <b:widget-setting name='shrinkToFit'>true</b:widget-setting>
-                              <b:widget-setting name='displayWidth'>400</b:widget-setting>
-                              <b:widget-setting name='link'>/p/about.html</b:widget-setting>
-                              <b:widget-setting name='caption'>[공지사항] 블로그가 오픈되었습니다.</b:widget-setting>
+                              <b:widget-setting name='displayUrl'>https://1.bp.blogspot.com/-yMSpgmjn390/YF1Q5CvGIcI/AAAAAAAAQlg/59LxYemhlyEbbhqlpdfypu5OXRav4t-JgCNcBGAsYHQ/s1600/slider-1-min.png</b:widget-setting>
+                              <b:widget-setting name='displayHeight'>648</b:widget-setting>
+                              <b:widget-setting name='sectionWidth'>150</b:widget-setting>
+                              <b:widget-setting name='shrinkToFit'>false</b:widget-setting>
+                              <b:widget-setting name='displayWidth'>1600</b:widget-setting>
+                              <b:widget-setting name='link'/>
+                              <b:widget-setting name='caption'/>
                             </b:widget-settings>
                             <b:includable id='main'>
                               <b:include name='content'/>
@@ -3758,132 +3056,45 @@ class TableOfContents { constructor({ from, to }) { this.fromElement = from; thi
                             return { badge: defaultBadge, title: title, img: img, link: link, comments: comments, id: link };
                           }
 
-                          function cleanImageUrl(url) {
-                            if (!url) return '';
-                            url = url.replace(/^http:\/\//i, 'https://');
-                            if (url.match(/\/s\d+[^/]*\//)) {
-                              url = url.replace(/\/s\d+[^/]*\//, '/s1600/');
-                            } else if (url.match(/\/w\d+[^/]*\//)) {
-                              url = url.replace(/\/w\d+[^/]*\//, '/w1600/');
-                            } else if (url.indexOf('=s') > -1 || url.indexOf('=w') > -1) {
-                              url = url.replace(/=[sw]\d+[^=]*$/, '=w1600');
-                            }
-                            return url;
-                          }
-
-                          function findEntryByUrl(targetUrl) {
-                            if (!targetUrl) return null;
-                            var cleanTarget = targetUrl.split('?')[0].replace(/^https?:\/\//, '').replace(/\/$/, '');
-                            for (var e = 0; e < entries.length; e++) {
-                              var entryUrl = '';
-                              if (entries[e].link) {
-                                for (var l = 0; l < entries[e].link.length; l++) {
-                                  if (entries[e].link[l].rel === 'alternate') { entryUrl = entries[e].link[l].href; break; }
-                                }
-                              }
-                              var cleanEntry = entryUrl.split('?')[0].replace(/^https?:\/\//, '').replace(/\/$/, '');
-                              if (cleanEntry === cleanTarget) {
-                                return entries[e];
-                              }
-                            }
-                            return null;
-                          }
-
-                          // 2. 최신글 1위 (최신 등록 게시글)
-                          var latest = null;
                           if (entries.length > 0) {
-                            latest = parseEntry(entries[0], '최신글');
+                            // 2. 최신 게시글 1위
+                            var latest = parseEntry(entries[0], '최신글');
                             if (latest) slides.push(latest);
-                          }
 
-                          // 3. 인기글 1위 (Popular Posts 위젯의 1위 = 가장 조회수가 높은 글)
-                          var popularPostsList = window._bloggerPopularPosts || [];
-                          if (popularPostsList.length === 0) {
-                            var popDomArticles = document.querySelectorAll('.itemP.popular article.i');
-                            for (var pa = 0; pa < popDomArticles.length; pa++) {
-                              var pLinkEl = popDomArticles[pa].querySelector('a.clamp') || popDomArticles[pa].querySelector('a');
-                              var pImgEl = popDomArticles[pa].querySelector('img');
-                              if (pLinkEl) {
-                                popularPostsList.push({
-                                  title: pLinkEl.innerText || pLinkEl.textContent || '',
-                                  url: pLinkEl.href || '',
-                                  thumbnail: pImgEl ? (pImgEl.getAttribute('data-src') || pImgEl.src) : '',
-                                  comments: 0
-                                });
-                              }
-                            }
-                          }
-
-                          var popular = null;
-                          if (popularPostsList.length > 0) {
-                            var p1 = popularPostsList[0];
-                            var matchedEntry1 = findEntryByUrl(p1.url);
-                            if (matchedEntry1) {
-                              popular = parseEntry(matchedEntry1, '인기글');
-                            } else {
-                              popular = {
-                                badge: '인기글',
-                                title: p1.title,
-                                img: cleanImageUrl(p1.thumbnail),
-                                link: p1.url,
-                                comments: p1.comments || 0,
-                                id: p1.url
-                              };
-                            }
-                          } else if (entries.length > 1) {
-                            popular = parseEntry(entries[1], '인기글');
-                          }
-                          if (popular) slides.push(popular);
-
-                          // 4. 화제의 글 1위 (댓글 가장 많은 글 > 0, 전체 게시글 중 덧글이 아예 없으면 Popular Posts의 2번 글)
-                          var mostCommented = null;
-                          var maxComments = 0;
-                          for (var m = 0; m < entries.length; m++) {
-                            var cCount = parseInt((entries[m].thr$total && entries[m].thr$total.$t) ? entries[m].thr$total.$t : 0, 10);
-                            if (cCount > maxComments) {
-                              maxComments = cCount;
-                            }
-                          }
-
-                          if (maxComments > 0) {
+                            // 3. 화제의 글 1위 (댓글 가장 많은 글)
                             var sortedByComments = entries.slice().sort(function(a, b) {
                               var cA = parseInt((a.thr$total && a.thr$total.$t) ? a.thr$total.$t : 0, 10);
                               var cB = parseInt((b.thr$total && b.thr$total.$t) ? b.thr$total.$t : 0, 10);
                               return cB - cA;
                             });
+                            
+                            var mostCommented = null;
                             for (var c = 0; c < sortedByComments.length; c++) {
-                              var cand = parseEntry(sortedByComments[c], '화제의 글');
-                              if (cand && (!latest || cand.id !== latest.id) && (!popular || cand.id !== popular.id)) {
-                                mostCommented = cand;
+                              var candidate = parseEntry(sortedByComments[c], '화제의 글');
+                              if (!latest || candidate.id !== latest.id || sortedByComments.length === 1) {
+                                mostCommented = candidate;
                                 break;
                               }
                             }
-                            if (!mostCommented && sortedByComments.length > 0) {
-                              mostCommented = parseEntry(sortedByComments[0], '화제의 글');
-                            }
-                          } else {
-                            // 전체 게시글 중 덧글이 아예 없는 경우 -> Popular Posts의 2번 게시글 (조회수 2위)
-                            if (popularPostsList.length > 1) {
-                              var p2 = popularPostsList[1];
-                              var matchedEntry2 = findEntryByUrl(p2.url);
-                              if (matchedEntry2) {
-                                mostCommented = parseEntry(matchedEntry2, '화제의 글');
-                              } else {
-                                mostCommented = {
-                                  badge: '화제의 글',
-                                  title: p2.title,
-                                  img: cleanImageUrl(p2.thumbnail),
-                                  link: p2.url,
-                                  comments: p2.comments || 0,
-                                  id: p2.url
-                                };
-                              }
-                            } else if (entries.length > 2) {
-                              mostCommented = parseEntry(entries[2], '화제의 글');
-                            }
-                          }
 
-                          if (mostCommented) slides.push(mostCommented);
+                            // 4. 인기 게시글 1위 (2번째 최신글 또는 대표글)
+                            var popular = null;
+                            for (var p = 1; p < entries.length; p++) {
+                              var candP = parseEntry(entries[p], '인기글');
+                              if ((!latest || candP.id !== latest.id) && (!mostCommented || candP.id !== mostCommented.id)) {
+                                popular = candP;
+                                break;
+                              }
+                            }
+                            if (!popular && entries.length > 1) {
+                              popular = parseEntry(entries[1], '인기글');
+                            } else if (!popular && entries.length === 1) {
+                              popular = parseEntry(entries[0], '인기글');
+                            }
+
+                            if (popular) slides.push(popular);
+                            if (mostCommented) slides.push(mostCommented);
+                          }
 
                           if (slides.length === 0) {
                             if (container) container.style.display = 'none';
@@ -4033,7 +3244,34 @@ class TableOfContents { constructor({ from, to }) { this.fromElement = from; thi
                                 </b:loop>
               
                                 <b:else/>
-                                <!-- 1순위: 대분류 카테고리 매칭 --><b:loop values='[ &quot;WebTranslator&quot;, &quot;Homelab&quot;, &quot;PersonalDev&quot;, &quot;Blog&quot;, &quot;Server&quot;, &quot;Unity&quot;, &quot;Unreal&quot;, &quot;Shader&quot; ]' var='primaryName'><b:loop values='data:post.labels' var='label'><b:if cond='data:label.name == data:primaryName'><a expr:aria-label='data:label.name' expr:data-text='data:label.name' expr:href='data:label.url' rel='tag'/></b:if></b:loop></b:loop><!-- 2순위: 핵심 서브 라벨 매칭 --><b:loop values='[ &quot;ChromeExtension&quot;, &quot;구글블로그스팟&quot;, &quot;AI&quot;, &quot;Gemini&quot;, &quot;Blogger&quot;, &quot;Antigravity&quot;, &quot;Review&quot; ]' var='subName'><b:loop values='data:post.labels' var='label'><b:if cond='data:label.name == data:subName'><a expr:aria-label='data:label.name' expr:data-text='data:label.name' expr:href='data:label.url' rel='tag'/></b:if></b:loop></b:loop><!-- 3순위: 기타 일반 라벨 폴백 --><b:loop values='data:post.labels' var='label'><b:if cond='data:label.name != &quot;Sponsored&quot; and data:label.name != &quot;Product&quot;'><a expr:aria-label='data:label.name' expr:data-text='data:label.name' expr:href='data:label.url' rel='tag'/></b:if></b:loop>
+                                <b:loop values='data:post.labels' var='label'>
+                                  <b:if cond='data:label.name == &quot;Product&quot;'>
+                                    <b:tag cond='data:widget.type != &quot;PopularPosts&quot;' name='span'>
+                                      <b:tag expr:data-text='data:label.name' expr:name='data:blog.url != data:label.url ? &quot;a&quot; : &quot;span&quot;'>
+                                        <b:attr cond='data:blog.url != data:label.url' expr:value='data:label.url' name='href'/>
+                                        <b:attr cond='data:blog.url != data:label.url' name='rel' value='tag'/>
+                                        <b:attr cond='data:blog.url != data:label.url' expr:value='data:label.name' name='aria-label'/>
+                                      </b:tag>
+                                    </b:tag>
+                                  </b:if>
+                                </b:loop>
+      
+                                <b:loop index='i' values='data:post.labels' var='label'>
+                                  <b:if cond='data:post.labels none (label =&gt; label.name in [ &quot;Product&quot;, &quot;Discount10&quot;, &quot;Discount20&quot;, &quot;Discount30&quot;, &quot;Discount40&quot;, &quot;Discount50&quot;, &quot;Discount60&quot;, &quot;Discount70&quot;, &quot;Discount80&quot;, &quot;Discount90&quot; ])'>
+                
+                                    <b:comment><!--[ Replace data:i &lt;= 0 with data:i &lt;= 1 to display two labels ]--></b:comment>
+                                    <b:if cond='data:i &lt;= 0'>
+                                      <b:tag cond='data:widget.type != &quot;PopularPosts&quot;' name='span'>
+                                        <b:tag expr:data-text='data:label.name' expr:name='data:blog.url != data:label.url ? &quot;a&quot; : &quot;span&quot;'>
+                                          <b:attr cond='data:blog.url != data:label.url' expr:value='data:label.url' name='href'/>
+                                          <b:attr cond='data:blog.url != data:label.url' name='rel' value='tag'/>
+                                          <b:attr cond='data:blog.url != data:label.url' expr:value='data:label.name' name='aria-label'/>
+                                        </b:tag>
+                                      </b:tag>
+                                    </b:if>
+                
+                                  </b:if>
+                                </b:loop>
                               </b:if>
                             </div>
                           </b:if>
@@ -4416,7 +3654,7 @@ class TableOfContents { constructor({ from, to }) { this.fromElement = from; thi
                             <b:attr cond='!data:comment.level.isDeleted' name='itemscope' value='itemscope'/>
                             <b:attr cond='!data:comment.level.isDeleted' name='itemtype' value='https://schema.org/Comment'/>
                         
-                            <div class='cmT comment-author flex baseline'>
+                            <div class='cmT comment-author flexIn baseline ellips'>
                               <b:class cond='data:comment.level.author == data:post.author.name' name='admin'/>
                               <span class='n'>
                                 <b:class cond='data:comment.level.author == data:post.author.name' name='flexIn i16'/>
@@ -4447,12 +3685,6 @@ class TableOfContents { constructor({ from, to }) { this.fromElement = from; thi
                                   <data:comment.level.timestamp/>
                                 </span>
                               </b:if>
-
-                              <b:if cond='!data:comment.level.isDeleted and data:comment.level.deleteUrl'>
-                                <a aria-label='Delete' class='cmDel flex center op i16 shrink' expr:href='data:comment.level.deleteUrl' expr:title='data:messages.deleteComment' rel='noreferrer noopener' style='margin-inline-start:auto;' target='_blank'>
-                                  <svg class='line' viewBox='0 0 24 24'><path d='M21 5.97998C17.67 5.64998 14.32 5.47998 10.98 5.47998C9 5.47998 7.02 5.57998 5.04 5.77998L3 5.97998'/><path d='M8.5 4.97L8.72 3.66C8.88 2.71 9 2 10.69 2H13.31C15 2 15.13 2.75 15.28 3.67L15.5 4.97'/><path d='M18.85 9.14001L18.2 19.21C18.09 20.78 18 22 15.21 22H8.79002C6.00002 22 5.91002 20.78 5.80002 19.21L5.15002 9.14001'/></svg>
-                                </a>
-                              </b:if>
                             </div>
                         
                             <b:tag expr:class='&quot;cmC comment-body&quot; + (data:comment.level.isDeleted ? &quot; delete ellips opacity fontM&quot; : &quot;&quot;)' expr:name='data:comment.level.isDeleted ? &quot;i&quot; : &quot;div&quot;'>
@@ -4476,6 +3708,12 @@ class TableOfContents { constructor({ from, to }) { this.fromElement = from; thi
                                 <b:if cond='data:comment.d and data:post.allowNewComments'>
                                   <a aria-label='Reply' class='r rpT' data-text='Relpy' expr:data-reply-to='data:commentLevel1.id' href='javascript:;' target='_self'/>
                                 </b:if>
+                            
+                                <b:comment>Delete comments button</b:comment>
+                                <!--<span class='r item-control'>
+                                  <b:class expr:name='data:comment.level.adminClass'/>
+                                  <a aria-label='Delete' class='d' data-text='Delete' expr:href='data:comment.level.deleteUrl' expr:title='data:messages.deleteComment' rel='noreferrer noopener' target='_blank'/>
+                                </span>-->
                               </div>
                             </b:if>
                       
@@ -4529,13 +3767,23 @@ class TableOfContents { constructor({ from, to }) { this.fromElement = from; thi
                           </ol>
                         </b:includable>
                         <b:includable id='commentPicker' var='post'>
+                          <b:comment>Input for comment pop-up</b:comment>
+                          <b:tag class='popI hidden' cond='data:post.embedCommentForm or data:post.commentsUrlOnclick' id='forComments' name='input' type='checkbox'/>
                           <b:tag class='cmi hidden' cond='data:post.numberOfComments &gt; 1' id='forAllCm' name='input' type='checkbox'/>
+                          
+                          <b:comment>Delete tag below to disable show/hide comment</b:comment>
+                          <b:if cond='data:post.embedCommentForm or data:post.commentsUrlOnclick'>
+                            <b:include cond='data:post.allowComments' name='commentButton'/>
+                          </b:if>
                           
                           <b:comment>Modified Blogger comments by jagodesain.com</b:comment>
                           <section expr:class='&quot;cm comments&quot; + (data:post.embedCommentForm ? &quot; embed&quot; : &quot; noEmbed&quot;)' expr:data-num-comments='data:post.numberOfComments' id='comments'>
                             
                             <b:attr cond='data:post.showThreadedComments' expr:value='data:post.embedCommentForm' name='data-embed'/>
                             <b:class cond='!data:post.allowNewComments' name='noNew'/>
+                            
+                            <b:comment>Delete tag below to disable Pop-up comments</b:comment>
+                            <b:class cond='data:post.embedCommentForm or data:post.commentsUrlOnclick' name='popUp'/>
                             
                             <b:if cond='data:post.showThreadedComments'>
                               <b:include data='post' name='threadedComments'/>
@@ -4959,7 +4207,34 @@ class TableOfContents { constructor({ from, to }) { this.fromElement = from; thi
                                 </b:loop>
                                 
                                 <b:else/>
-                                <!-- 1순위: 대분류 카테고리 매칭 --><b:loop values='[ &quot;WebTranslator&quot;, &quot;Homelab&quot;, &quot;PersonalDev&quot;, &quot;Blog&quot;, &quot;Server&quot;, &quot;Unity&quot;, &quot;Unreal&quot;, &quot;Shader&quot; ]' var='primaryName'><b:loop values='data:post.labels' var='label'><b:if cond='data:label.name == data:primaryName'><a expr:aria-label='data:label.name' expr:data-text='data:label.name' expr:href='data:label.url' rel='tag'/></b:if></b:loop></b:loop><!-- 2순위: 핵심 서브 라벨 매칭 --><b:loop values='[ &quot;ChromeExtension&quot;, &quot;구글블로그스팟&quot;, &quot;AI&quot;, &quot;Gemini&quot;, &quot;Blogger&quot;, &quot;Antigravity&quot;, &quot;Review&quot; ]' var='subName'><b:loop values='data:post.labels' var='label'><b:if cond='data:label.name == data:subName'><a expr:aria-label='data:label.name' expr:data-text='data:label.name' expr:href='data:label.url' rel='tag'/></b:if></b:loop></b:loop><!-- 3순위: 기타 일반 라벨 폴백 --><b:loop values='data:post.labels' var='label'><b:if cond='data:label.name != &quot;Sponsored&quot; and data:label.name != &quot;Product&quot;'><a expr:aria-label='data:label.name' expr:data-text='data:label.name' expr:href='data:label.url' rel='tag'/></b:if></b:loop>
+                                <b:loop values='data:post.labels' var='label'>
+                                  <b:if cond='data:label.name == &quot;Product&quot;'>
+                                    <b:tag cond='data:widget.type != &quot;PopularPosts&quot;' name='span'>
+                                      <b:tag expr:data-text='data:label.name' expr:name='data:blog.url != data:label.url ? &quot;a&quot; : &quot;span&quot;'>
+                                        <b:attr cond='data:blog.url != data:label.url' expr:value='data:label.url' name='href'/>
+                                        <b:attr cond='data:blog.url != data:label.url' name='rel' value='tag'/>
+                                        <b:attr cond='data:blog.url != data:label.url' expr:value='data:label.name' name='aria-label'/>
+                                      </b:tag>
+                                    </b:tag>
+                                  </b:if>
+                                </b:loop>
+                        
+                                <b:loop index='i' values='data:post.labels' var='label'>
+                                  <b:if cond='data:post.labels none (label =&gt; label.name in [ &quot;Product&quot;, &quot;Discount10&quot;, &quot;Discount20&quot;, &quot;Discount30&quot;, &quot;Discount40&quot;, &quot;Discount50&quot;, &quot;Discount60&quot;, &quot;Discount70&quot;, &quot;Discount80&quot;, &quot;Discount90&quot; ])'>
+                                  
+                                    <b:comment><!--[ Replace data:i &lt;= 0 with data:i &lt;= 0 to display two labels ]--></b:comment>
+                                    <b:if cond='data:i &lt;= 0'>
+                                      <b:tag cond='data:widget.type != &quot;PopularPosts&quot;' name='span'>
+                                        <b:tag expr:data-text='data:label.name' expr:name='data:blog.url != data:label.url ? &quot;a&quot; : &quot;span&quot;'>
+                                          <b:attr cond='data:blog.url != data:label.url' expr:value='data:label.url' name='href'/>
+                                          <b:attr cond='data:blog.url != data:label.url' name='rel' value='tag'/>
+                                          <b:attr cond='data:blog.url != data:label.url' expr:value='data:label.name' name='aria-label'/>
+                                        </b:tag>
+                                      </b:tag>
+                                    </b:if>
+                                  
+                                  </b:if>
+                                </b:loop>
                               </b:if>
                             </div>
                           </b:if>
@@ -5037,7 +4312,7 @@ class TableOfContents { constructor({ from, to }) { this.fromElement = from; thi
                               <b:comment>Hide homePageLink button</b:comment>
                               <b:include cond='data:newerPageUrl' name='previousPageLink'/>
                               <b:include cond='data:view.isHomepage or data:view.url != data:blog.homepageUrl.canonical path &quot;search&quot;' name='homePageLink'/>
-                              <b:include cond='data:olderPageUrl and (!data:view.isLabelSearch or data:posts.size gte 20)' name='nextPageLink'/>
+                              <b:include cond='data:olderPageUrl' name='nextPageLink'/>
                             </b:if>
                           </b:tag>
                         </b:includable>
@@ -5439,8 +4714,34 @@ class TableOfContents { constructor({ from, to }) { this.fromElement = from; thi
                                   </b:loop>
               
                                   <b:else/>
+                                  <b:loop values='data:post.labels' var='label'>
+                                    <b:if cond='data:label.name == &quot;Product&quot;'>
+                                      <b:tag cond='data:widget.type != &quot;PopularPosts&quot;' name='span'>
+                                        <b:tag expr:data-text='data:label.name' expr:name='data:blog.url != data:label.url ? &quot;a&quot; : &quot;span&quot;'>
+                                          <b:attr cond='data:blog.url != data:label.url' expr:value='data:label.url' name='href'/>
+                                          <b:attr cond='data:blog.url != data:label.url' name='rel' value='tag'/>
+                                          <b:attr cond='data:blog.url != data:label.url' expr:value='data:label.name' name='aria-label'/>
+                                        </b:tag>
+                                      </b:tag>
+                                    </b:if>
+                                  </b:loop>
       
-                                  <!-- 1순위: 대분류 카테고리 매칭 --><b:loop values='[ &quot;WebTranslator&quot;, &quot;Homelab&quot;, &quot;PersonalDev&quot;, &quot;Blog&quot;, &quot;Server&quot;, &quot;Unity&quot;, &quot;Unreal&quot;, &quot;Shader&quot; ]' var='primaryName'><b:loop values='data:post.labels' var='label'><b:if cond='data:label.name == data:primaryName'><a expr:aria-label='data:label.name' expr:data-text='data:label.name' expr:href='data:label.url' rel='tag'/></b:if></b:loop></b:loop><!-- 2순위: 핵심 서브 라벨 매칭 --><b:loop values='[ &quot;ChromeExtension&quot;, &quot;구글블로그스팟&quot;, &quot;AI&quot;, &quot;Gemini&quot;, &quot;Blogger&quot;, &quot;Antigravity&quot;, &quot;Review&quot; ]' var='subName'><b:loop values='data:post.labels' var='label'><b:if cond='data:label.name == data:subName'><a expr:aria-label='data:label.name' expr:data-text='data:label.name' expr:href='data:label.url' rel='tag'/></b:if></b:loop></b:loop><!-- 3순위: 기타 일반 라벨 폴백 --><b:loop values='data:post.labels' var='label'><b:if cond='data:label.name != &quot;Sponsored&quot; and data:label.name != &quot;Product&quot;'><a expr:aria-label='data:label.name' expr:data-text='data:label.name' expr:href='data:label.url' rel='tag'/></b:if></b:loop>
+                                  <b:loop index='i' values='data:post.labels' var='label'>
+                                    <b:if cond='data:post.labels none (label =&gt; label.name in [ &quot;Product&quot;, &quot;Discount10&quot;, &quot;Discount20&quot;, &quot;Discount30&quot;, &quot;Discount40&quot;, &quot;Discount50&quot;, &quot;Discount60&quot;, &quot;Discount70&quot;, &quot;Discount80&quot;, &quot;Discount90&quot; ])'>
+                
+                                      <b:comment><!--[ Replace data:i &lt;= 0 with data:i &lt;= 0 to display two labels ]--></b:comment>
+                                      <b:if cond='data:i &lt;= 0'>
+                                        <b:tag cond='data:widget.type != &quot;PopularPosts&quot;' name='span'>
+                                          <b:tag expr:data-text='data:label.name' expr:name='data:blog.url != data:label.url ? &quot;a&quot; : &quot;span&quot;'>
+                                            <b:attr cond='data:blog.url != data:label.url' expr:value='data:label.url' name='href'/>
+                                            <b:attr cond='data:blog.url != data:label.url' name='rel' value='tag'/>
+                                            <b:attr cond='data:blog.url != data:label.url' expr:value='data:label.name' name='aria-label'/>
+                                          </b:tag>
+                                        </b:tag>
+                                      </b:if>
+                
+                                    </b:if>
+                                  </b:loop>
                                 </b:if>
                               </div>
                             </b:if>
@@ -5588,7 +4889,7 @@ class TableOfContents { constructor({ from, to }) { this.fromElement = from; thi
                         </b:widget>
                         <b:widget id='Label00' locked='false' title='Labels' type='Label' version='2' visible='true'>
                           <b:widget-settings>
-                            <b:widget-setting name='sorting'>FREQUENCY</b:widget-setting>
+                            <b:widget-setting name='sorting'>ALPHA</b:widget-setting>
                             <b:widget-setting name='display'>LIST</b:widget-setting>
                             <b:widget-setting name='selectedLabelsList'/>
                             <b:widget-setting name='showType'>ALL</b:widget-setting>
@@ -5705,12 +5006,12 @@ class TableOfContents { constructor({ from, to }) { this.fromElement = from; thi
                             <b:widget-setting name='link-3'>#</b:widget-setting>
                             <b:widget-setting name='sorting'>NONE</b:widget-setting>
                             <b:widget-setting name='text-1'>Disclaimer</b:widget-setting>
-                            <b:widget-setting name='link-1'>/p/disclaimer.html</b:widget-setting>
-                            <b:widget-setting name='text-0'>Privacy</b:widget-setting>
+                            <b:widget-setting name='link-1'>#</b:widget-setting>
+                            <b:widget-setting name='text-0'>Term</b:widget-setting>
                             <b:widget-setting name='link-2'>#</b:widget-setting>
                             <b:widget-setting name='text-3'>Faq</b:widget-setting>
-                            <b:widget-setting name='link-0'>/p/privacy.html</b:widget-setting>
-                            <b:widget-setting name='text-2'>Term</b:widget-setting>
+                            <b:widget-setting name='link-0'>#</b:widget-setting>
+                            <b:widget-setting name='text-2'>Privacy</b:widget-setting>
                           </b:widget-settings>
                           <b:includable id='main'>
                             <b:include name='content'/>
@@ -5877,18 +5178,36 @@ class TableOfContents { constructor({ from, to }) { this.fromElement = from; thi
                   </b:widget>
                   <b:widget id='LinkList88' locked='true' title='Social media' type='LinkList' version='2' visible='true'>
                     <b:widget-settings>
+                      <b:widget-setting name='text-10'>Line</b:widget-setting>
                       <b:widget-setting name='shownum'>4</b:widget-setting>
-                      <b:widget-setting name='link-3'>#</b:widget-setting>
                       <b:widget-setting name='sorting'>NONE</b:widget-setting>
-                      <b:widget-setting name='link-4'>#</b:widget-setting>
-                      <b:widget-setting name='text-1'>LinkedIn</b:widget-setting>
-                      <b:widget-setting name='link-1'>https://www.linkedin.com/in/changyeong-kim-08a555179/</b:widget-setting>
-                      <b:widget-setting name='text-0'>Github</b:widget-setting>
+                      <b:widget-setting name='link-1'>#</b:widget-setting>
+                      <b:widget-setting name='link-13'>#</b:widget-setting>
                       <b:widget-setting name='link-2'>#</b:widget-setting>
+                      <b:widget-setting name='link-12'>#</b:widget-setting>
+                      <b:widget-setting name='link-0'>#</b:widget-setting>
+                      <b:widget-setting name='link-11'>#</b:widget-setting>
+                      <b:widget-setting name='link-10'>#</b:widget-setting>
+                      <b:widget-setting name='text-9'>Tiktok</b:widget-setting>
+                      <b:widget-setting name='link-9'>#</b:widget-setting>
+                      <b:widget-setting name='text-8'>Messenger</b:widget-setting>
+                      <b:widget-setting name='link-7'>#</b:widget-setting>
+                      <b:widget-setting name='link-8'>#</b:widget-setting>
+                      <b:widget-setting name='link-5'>#</b:widget-setting>
+                      <b:widget-setting name='link-6'>#</b:widget-setting>
+                      <b:widget-setting name='link-3'>#</b:widget-setting>
+                      <b:widget-setting name='link-4'>#</b:widget-setting>
+                      <b:widget-setting name='text-1'>Instagram</b:widget-setting>
+                      <b:widget-setting name='text-0'>Facebook</b:widget-setting>
                       <b:widget-setting name='text-3'>Youtube</b:widget-setting>
-                      <b:widget-setting name='link-0'>https://github.com/noogyung</b:widget-setting>
-                      <b:widget-setting name='text-2'>Instagram</b:widget-setting>
-                      <b:widget-setting name='text-4'>Messenger</b:widget-setting>
+                      <b:widget-setting name='text-2'>Twitter</b:widget-setting>
+                      <b:widget-setting name='text-5'>Pinterest</b:widget-setting>
+                      <b:widget-setting name='text-4'>LinkedIn</b:widget-setting>
+                      <b:widget-setting name='text-7'>Telegram</b:widget-setting>
+                      <b:widget-setting name='text-6'>Whatsapp</b:widget-setting>
+                      <b:widget-setting name='text-11'>Dribbble</b:widget-setting>
+                      <b:widget-setting name='text-12'>Tumblr</b:widget-setting>
+                      <b:widget-setting name='text-13'>Github</b:widget-setting>
                     </b:widget-settings>
                     <b:includable id='main'>
                       <b:include name='content'/>
@@ -6089,17 +5408,15 @@ class TableOfContents { constructor({ from, to }) { this.fromElement = from; thi
       <b:include cond='data:view.isHomepage or data:view.url == data:blog.homepageUrl.canonical path &quot;search&quot;' name='postPaginationMore'/>
       
       <script>/*<![CDATA[*/ /*@shinsenter/defer.js*/ !function(c,i,t){var f,o=/^data-(.+)/,u='IntersectionObserver',r=/p/.test(i.readyState),s=[],a=s.slice,d='lazied',n='load',e='pageshow',l='forEach',m='hasAttribute',h='shift';function p(e){i.head.appendChild(e)}function v(e,n){a.call(e.attributes)[l](n)}function y(e,n,t,o){return o=(o=n?i.getElementById(n):o)||i.createElement(e),n&&(o.id=n),t&&(o.onload=t),o}function b(e,n){return a.call((n||i).querySelectorAll(e))}function g(t,e){b('source',t)[l](g),v(t,function(e,n){(n=o.exec(e.name))&&(t[n[1]]=e.value)}),e&&(t.className+=' '+e),n in t&&t[n]()}function I(e){f(function(o){o=b(e||'[type=deferjs]'),function e(n,t){(n=o[h]())&&(n.parentNode.removeChild(n),(t=y(n.nodeName)).text=n.text,v(n,function(e){'type'!=e.name&&(t[e.name]=e.value)}),t.src&&!t[m]('async')?(t.onload=t.onerror=e,p(t)):(p(t),e()))}()})}(f=function(e,n){r?t(e,n):s.push(e,n)}).all=I,f.js=function(n,t,e,o){f(function(e){(e=y('SCRIPT',t,o)).src=n,p(e)},e)},f.css=function(n,t,e,o){f(function(e){(e=y('LINK',t,o)).rel='stylesheet',e.href=n,p(e)},e)},f.dom=function(e,n,t,o,i){function r(e){o&&!1===o(e)||g(e,t)}f(function(t){t=u in c&&new c[u](function(e){e[l](function(e,n){e.isIntersecting&&(n=e.target)&&(t.unobserve(n),r(n))})},i),b(e||'[data-src]')[l](function(e){e[m](d)||(e.setAttribute(d,''),t?t.observe(e):r(e))})},n)},f.reveal=g,c.Defer=f,c.addEventListener('on'+e in c?e:n,function(){for(I();s[0];t(s[h](),s[h]()))r=1})}(this,document,setTimeout),function(e,n){e.defer=n=e.Defer,e.deferscript=n.js,e.deferstyle=n.css,e.deferimg=e.deferiframe=n.dom}(this); /*]]>*/</script>
+      <script id='polyfill-js'>/*<![CDATA[*/ 'IntersectionObserver'in window||document.write('<script src="https://polyfill.io/v3/polyfill.min.js?features=IntersectionObserver"><\/script>'); /*]]>*/</script>
+      
       <b:comment><!--[ Additional script ]--></b:comment>
       <b:include name='allJavascript'/>
       <b:include cond='data:view.isPost' name='copyCodeToClipboard'/>
       <b:include name='bookmarkLoad'/>
-      <b:include cond='data:view.isPost' name='seriesNavigationScript'/>
       
     </b:if>
     
   <!--[ </body> close ]-->
-  
-
-
-</body>
+  <b:if cond='!data:view.isPreview'>&lt;!--</b:if></body><b:if cond='!data:view.isPreview'>--&gt;&lt;/body&gt;</b:if>
 </html>

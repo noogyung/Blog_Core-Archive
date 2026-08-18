@@ -215,13 +215,11 @@ series_prev_slug: antigravity-blog-automation-workflow-v2
 * [x] **슬래시 커맨드(`/1_주제` ~ `/5_블로그추가`) UI 편의성 검증** — Verified 2026-08-18 (스킬 디렉토리 정규화 및 슬래시 커맨드 매핑 정상 작동 확인)
 * [x] **상시 룰 경량화 및 토큰 절감 검증** — Verified 2026-08-18 (`blog-harness-rules.md` 가드레일 압축 및 `3_게시글` 스킬 상세 스펙 내재화 완료)
 * [x] **Blogger Label 정렬 및 대표 라벨 표시 정상화 검증** — Verified 2026-08-18 (테마 라벨 렌더링 로직 수정을 통해 `Labels:`의 1번째, 2번째 라벨이 정상적으로 우선 노출되도록 패치 완료)
+* [x] **유료 Median UI 테마 저작권 보호 및 관리 방식 개선** — Verified 2026-08-18 (유료 테마 XML 원본을 비공개 Control Plane인 `BlogDocs/Instructions/Personas/Core-Archive_Theme_Median-UI-v1.7.0-Custom.xml`로 안전하게 이관하고 페르소나 `core-archive.md`에 `ThemePath` 설정 완료)
 
 **[향후 개선 과제 및 로드맵 (Next Milestones)]**
-* [ ] **유료 Median UI 테마 저작권 보호 및 관리 방식 개선:**
-  * 현재 유료 라이선스 테마 XML이 공개 레포지토리인 `Blog_Core-Archive`에 노출되어 있어 저작권 관리에 유의 필요.
-  * 3-Tier(이미지 전용 레포 분리)는 초기 구성과 관리가 복잡해질 수 있으므로, 현재의 블로그 Data Plane(`Blog_Core-Archive`)은 공개로 유지하되 유료 테마 XML 원본은 비공개(Private) 레포지토리인 `BlogDocs`로 이관하여 중앙 관리하는 등 현실적인 개선 방안 검토.
 * [ ] **테마 XML 내부 미사용 레거시/하드코딩 요소 대청소:**
-  * `_theme-median-ui-...-Custom.xml` 내부에 방치된 구버전 데모용 더미 링크, 불필요한 레거시 위젯 코드, 하드코딩된 인라인 스크립트를 전면 정리하여 XML 경량화 및 렌더링 속도 최적화.
+  * `Core-Archive_Theme_Median-UI-v1.7.0-Custom.xml` 내부에 방치된 구버전 데모용 더미 링크, 불필요한 레거시 위젯 코드, 하드코딩된 인라인 스크립트를 전면 정리하여 XML 경량화 및 렌더링 속도 최적화.
 * [ ] **`/5_블로그추가` 스킬의 실전 엔드투엔드 셋업 검증:**
   * 실제 구글 블로거에서 새로운 2호 블로그를 개설하고 `/5_블로그추가`를 실행하여 페르소나 생성, 정적 페이지 4종 렌더링, 깃 레포 연동이 원클릭으로 완결되는지 실전 필드 테스트 수행.
 * [ ] **가이드라인(Rules/Skills)의 지속적 업데이트:**
@@ -309,6 +307,11 @@ Antigravity, 블로그-자동화, 분산-아키텍처, Control-Plane, Data-Plane
 * **피드백 내용:** 
   1. **소제목 어휘 정제:** 2절 소제목의 과장된 단어 '종말'을 '프롬프트 지시서에서 Native Skill & Rule 시스템으로 전환'으로 수정.
   2. **단락 결합:** 동적 탭 네비게이션 설명 문단을 단일 문단으로 결합하여 흐름 일관성 복원.
+
+### 2026-08-18 (11차) — Test Result: PASS
+
+* **피드백 내용:** 유료 Median UI 테마 저작권 보호 조치 완료 — `_theme-median-ui-v1.7.0 [non-encrypt]-Custom.xml` 파일을 public 레포지토리인 `Blog_Core-Archive`에서 비공개 Control Plane인 `BlogDocs/Instructions/Personas/Core-Archive_Theme_Median-UI-v1.7.0-Custom.xml`로 안전하게 이전하고 페르소나 설정 및 시스템 갱신.
+
 
 
 
