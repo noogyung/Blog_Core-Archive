@@ -16,7 +16,7 @@
 <article>
 
   <!-- 이미지 슬롯 1 (대표 이미지 - 필수) -->
-  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-08/webtranslator-12-empty-response-and-retry-queue-img1.jpg" alt="WebTranslator 큐 기반 재시도 및 장애 격리 아키텍처 다이어그램">
+  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-08/webtranslator-12-empty-response-and-retry-queue-img1.jpg?v=20260819" alt="WebTranslator 큐 기반 재시도 및 장애 격리 아키텍처 다이어그램">
 
   <p>
     스팀 창작마당(Steam Workshop)의 대규모 모드 가이드나 수백 개의 패치 토론 댓글이 얽혀 있는 웹페이지를 번역하다 보면, 이전 글에서 해결한 429 쿼터 초과와는 성격이 전혀 다른 <strong>간헐적인 문단 누락 및 진행 멈춤 결함</strong>을 경험하게 됩니다. 백엔드 API와의 일시적인 연결 끊김이나 LLM의 안전 필터(Safety Filter) 검열 등으로 인해 빈 응답(Empty Response)이 반환될 때, 해당 배치가 통째로 증발하여 화면 중간중간이 영문 원문으로 방치되는 문제가 발생했습니다.
