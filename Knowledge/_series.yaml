@@ -6,6 +6,7 @@ series:
   antigravity-blog-automation:
     series_name: "Antigravity 블로그 포스팅 자동화 구축기"
     topics:
+      - antigravity-blog-automation-workflow
       - antigravity-blog-automation-workflow-v2
       - antigravity-blog-automation-workflow-v3
 
