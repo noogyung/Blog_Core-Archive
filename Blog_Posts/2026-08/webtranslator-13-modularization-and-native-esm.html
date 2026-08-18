@@ -1,12 +1,12 @@
 <!-- ============================================================
   [BLOG POST METADATA - Blogspot 설정창 복사용]
-  Title: [WebTranslator 개발기 #13] 3,000줄 단일 파일 붕괴와 크롬 MV3 네이티브 ES 모듈 전환
+  Title: [WebTranslator 개발기 #13] 3,000줄 단일 파일의 한계와 크롬 MV3 네이티브 ES 모듈 전환
   Labels (Tags): WebTranslator, ChromeExtension, 크롬확장프로그램, 모듈화, ESModules, ESM, boot_js, ManifestV3, 트러블슈팅
   Meta Description: 3,000줄을 돌파한 단일 모놀리스 스크립트의 유지보수 한계를 분석하고, 번들러 없이 크롬 MV3 환경에서 boot.js 동적 부트로더를 통해 네이티브 ES 모듈 아키텍처를 구축한 과정을 정리합니다.
   Slug: webtranslator-13-modularization-and-native-esm
   ---
   Primary Keyword: 크롬 확장 프로그램 모듈화
-  Secondary Keywords: Chrome MV3 ES Modules, boot.js 동적 로딩, web_accessible_resources, content script import, 노빌드 아키텍처
+  Secondary Keywords: Chrome MV3 ES Modules, boot.js 동적 로딩, web_accessible_resources, content script import, 노빌드 모듈화
   Knowledge Source: Knowledge/webtranslator-13-modularization-and-native-esm/Troubleshooting/webtranslator-13-modularization-and-native-esm-2026-08-19.md
   Generated Date: 2026-08-19
   Estimated Read Time: 9분
@@ -19,13 +19,13 @@
   <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-08/webtranslator-13-modularization-and-native-esm-img1.jpg" alt="WebTranslator 3,000줄 단일 파일 분해 및 크롬 MV3 네이티브 ES 모듈 부트로더 아키텍처 다이어그램">
 
   <p>
-    다중 번역 엔진 연동, 듀얼 렌더러, 단어 사전, 큐 기반 재시도 로직까지 살을 붙여 나가다 보니 <code>content.js</code>와 <code>background.js</code>의 코드 길이가 각각 <strong>3,000줄을 돌파</strong>하는 상황을 겪게 되었습니다. 수천 줄짜리 단일 거대 파일(Monolith)에서는 2,800번째 줄의 괄호 하나나 사소한 문법 오타만으로도 확장 프로그램 전체가 작동을 멈췄고, 코드 탐색과 디버깅 비용이 걷잡을 수 없이 커졌습니다. 이번 글에서는 번들러 없이 크롬 Manifest V3 환경에서 <strong>네이티브 ES 모듈(ESM)</strong> 구조로 전환하며 마주한 제약과 해결 과정을 살펴보고자 합니다.
+    다중 번역 엔진 연동, 듀얼 렌더러, 단어 사전, 큐 기반 재시도 로직까지 살을 붙여 나가다 보니 <code>content.js</code>와 <code>background.js</code>의 코드 길이가 각각 <strong>3,000줄을 돌파</strong>하는 상황을 겪게 되었습니다. 특히 AI 에이전트와 페어 프로그래밍을 진행할 때 거대한 단일 파일은 큰 걸림돌이 되었습니다. AI가 파일 전체의 문맥을 한 번에 다루다 보니 엉뚱한 줄의 코드를 건드리거나, 사소한 괄호 오타 하나로 확장 프로그램 전체가 먹통이 되는 디버깅 문제가 빈번하게 일어났습니다. 이번 글에서는 3,000줄 단일 파일을 분리하고, 번들러 없이 크롬 Manifest V3 환경에서 <strong>네이티브 ES 모듈(ESM)</strong> 구조로 전환한 과정을 정리하고자 합니다.
   </p>
 
-  <h2 id="monolith-limitations-and-no-build-philosophy">1. 거대 단일 파일의 한계와 노빌드(No-Build) 철학</h2>
+  <h2 id="monolith-limitations-and-no-build-choice">1. 거대 단일 파일의 한계와 번들러 없는 네이티브 모듈 선택</h2>
 
   <p>
-    3,000줄 모놀리스 스크립트의 한계를 체감한 후 리팩토링 방향성을 고민할 때, 가장 먼저 떠오른 것은 Webpack이나 Vite 같은 모던 번들러 도입이었습니다. 그러나 개인 개발용 웹 확장 프로그램에서 무거운 번들러를 도입하는 것에는 분명한 명암이 존재했습니다:
+    거대 단일 파일의 한계를 체감한 후 리팩토링 방식을 고민할 때, Webpack이나 Vite 같은 모던 번들러 도입과 번들러 없는 네이티브 ES 모듈(ESM) 방식을 비교 검토했습니다:
   </p>
 
   <div class="table w100 withBg">
@@ -39,32 +39,32 @@
       </thead>
       <tbody>
         <tr>
-          <td><strong>빌드 단계</strong></td>
-          <td>코드 수정 시마다 빌드 명령어(<code>npm run build</code>) 필수</td>
-          <td><strong>빌드 단계 없음 (저장 후 즉시 새로고침)</strong></td>
+          <td><strong>장점</strong></td>
+          <td>여러 모듈을 단일 파일로 묶어 배포가 깔끔하고 구형 브라우저 호환성 처리가 수월함</td>
+          <td><strong>별도의 빌드 과정 없이 코드 저장 후 브라우저 새로고침만으로 즉시 반영됨</strong></td>
         </tr>
         <tr>
-          <td><strong>디버깅 편의성</strong></td>
-          <td>Source Map 필요, 번들링 결과물 난독화</td>
-          <td><strong>원본 소스 파일 그대로 브라우저에서 실시간 추적</strong></td>
+          <td><strong>단점</strong></td>
+          <td><strong>코드 한 줄을 고칠 때마다 매번 다시 빌드(<code>npm run build</code>)해야 해서 디버깅이 번거로움</strong></td>
+          <td>모듈 파일이 늘어날수록 파일 간 의존성 연결과 매니페스트 권한을 직접 꼼꼼히 관리해야 함</td>
         </tr>
         <tr>
-          <td><strong>주요 관리 포인트</strong></td>
-          <td>복잡한 번들러 설정 파일 및 의존성 패키지 관리</td>
-          <td>모듈 간 결합도 및 브라우저 권한(<code>web_accessible_resources</code>) 관리</td>
+          <td><strong>개발 환경</strong></td>
+          <td>복잡한 번들러 설정 및 외부 패키지 설치 필요</td>
+          <td><strong>브라우저 표준 문법(<code>import/export</code>)만으로 가볍고 빠르게 동작</strong></td>
         </tr>
       </tbody>
     </table>
   </div>
 
   <p>
-    코드 수정 즉시 브라우저에서 원본 소스 단위로 디버깅할 수 있는 생산성을 확보하기 위해, 별도의 번들러를 쓰지 않고 브라우저 표준 <strong>네이티브 ES 모듈(<code>import/export</code>)</strong>만을 활용하여 구조를 재설계하기로 결정했습니다.
+    개발 과정에서 코드를 수정하자마자 브라우저에서 바로 확인하고 디버깅할 수 있는 빠른 피드백 루프를 갖추기 위해, 별도의 번들러를 쓰지 않고 브라우저 표준 <strong>네이티브 ES 모듈</strong> 방식을 선택했습니다.
   </p>
 
   <h2 id="manifest-v3-content-script-esm-barrier">2. 크롬 MV3 Content Script의 모듈 제약과 전면 마비</h2>
 
   <p>
-    디렉토리를 <code>src/api</code>, <code>src/background</code>, <code>src/content</code>, <code>src/options</code>로 분리하고 코드를 쪼갠 뒤 설레는 마음으로 확장 프로그램을 브라우저에 로드했습니다. 그러나 실행하자마자 확장 프로그램이 전면 마비되었습니다:
+    디렉토리를 <code>src/api</code>, <code>src/background</code>, <code>src/content</code>, <code>src/options</code>로 분리하고 코드를 쪼갠 뒤 확장 프로그램을 브라우저에 로드하자마자 전면 마비 현상이 발생했습니다:
   </p>
 
   <div class="note wr">
@@ -78,7 +78,7 @@
   <h2 id="boot-js-dynamic-loader-architecture">3. boot.js 동적 부트로더와 리소스 권한 연동</h2>
 
   <p>
-    이 제약을 극복하기 위해, 매니페스트에는 아주 가벼운 비모듈 진입점 파일인 <code>src/content/boot.js</code>만 등록하고, 내부에서 비동기 <code>import()</code> 함수를 실행하여 실제 Content Script 모듈 트리를 끌어오는 <strong>부트로더(Bootloader) 아키텍처</strong>를 구축했습니다.
+    이 제약을 해결하기 위해, 매니페스트에는 아주 가벼운 비모듈 진입점 파일인 <code>src/content/boot.js</code>만 등록하고, 내부에서 비동기 <code>import()</code> 함수를 실행하여 실제 Content Script 모듈 트리를 끌어오는 <strong>부트로더(Bootloader) 구조</strong>를 구현했습니다.
   </p>
 
   <ol class="step">
@@ -125,10 +125,10 @@
 }</pre>
   </div>
 
-  <h2 id="refactoring-experience-rollback-vs-breakthrough">4. 리팩토링 디버깅 경험: 롤백과 정면 돌파의 균형</h2>
+  <h2 id="refactoring-experience-rollback-vs-breakthrough">4. 리팩토링 디버깅 경험: 롤백과 정면 돌파의 판단 기준</h2>
 
   <p>
-    부트로더를 뚫어낸 직후에도 모듈 간 참조가 끊기며 <code>ReferenceError: isOurElement is not defined</code>와 같은 오류가 연이어 발생했습니다. 거대한 코드베이스를 분해하는 과정에서 얻은 주요 실전 판단 기준은 다음과 같습니다:
+    부트로더를 뚫어낸 직후에도 모듈 간 참조가 끊기며 <code>ReferenceError</code>가 발생하는 등 시행착오가 이어졌습니다. 대규모 리팩토링 과정에서 얻은 판단 기준은 다음과 같습니다:
   </p>
 
   <ul class="pros">

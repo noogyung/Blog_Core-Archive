@@ -1,6 +1,6 @@
 ---
 topic: webtranslator-13-modularization-and-native-esm
-title_kr: 3,000줄 단일 파일 붕괴와 크롬 MV3 네이티브 ES 모듈 전환
+title_kr: 3,000줄 단일 파일의 한계와 크롬 MV3 네이티브 ES 모듈 전환
 category: Troubleshooting
 sub_category: Architecture-Refactoring
 version: 1.4.0
