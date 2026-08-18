@@ -48,51 +48,49 @@ series_prev_slug: webtranslator-10-gemini-rate-limits-and-prompt-builder
 
 #### 🔑 Core Concepts (핵심 개념)
 
-* **[모델 하드코딩의 404 Not Found 위험]:** `models/gemini-2.5-flash`처럼 특정 모델명을 코드 내에 고정 문자열로 박아두면, 구글이 실험용 모델을 지원 중단(Deprecated)하거나 이름을 바꿀 때 모든 API 호출이 404 에러로 마비되는 결함. [FACT]
-* **[임시 하드코딩 땜질의 한계]:** `gemini-1.5-flash-latest` 등으로 다른 문자열을 하드코딩하는 방식은 다음 버전업 시 똑같이 404 에러를 유발하는 임시방편에 불과함. [FACT]
-* **[실시간 가용 모델 동적 탐색 (`getValidGeminiModel`)]:** 사용자의 API Key로 구글 엔드포인트(`GET /v1beta/models`)를 호출하여, 현재 사용 가능한 모델 중 `supportedGenerationMethods`에 `generateContent`가 포함되고 `flash` 계열인 최신 모델을 실시간으로 자동 선별하는 자가 치유(Self-Healing) 아키텍처. [FACT]
-* **[메모리 캐싱 및 안전 Fallback]:** 한번 조회한 유효 모델명은 세션 메모리에 캐싱하여 불필요한 네트워크 왕복을 제거하고, API 조회 실패 시 안전 기본값(`gemini-1.5-flash`)으로 Fallback 처리. [FACT]
+* **[사용자 지정 모델의 가용성/쿼터 소진 한계]:** 초기 하드코딩에서 사용자 직접 모델명 입력 방식으로 전환했으나, 사용자가 지정한 모델의 무료 쿼터가 소진되거나 구글이 해당 프리뷰 모델을 내렸을 때 404 Not Found 및 호출 중단이 발생하는 문제. [FACT]
+* **[무분별한 자동 Fallback의 고비용(High-Cost) 과금 리스크]:** 모델 오류 발생 시 시스템이 임의로 다른 상위 모델로 자동 대체할 경우, 특히 유료 모델(GPT-4/5 상위 티어, Gemini Pro 등) 환경에서 예상치 못한 막대한 API 비용 청구 참사가 발생할 위험. [FACT]
+* **[고비용 방어형 실시간 모델 검증 (`getValidGeminiModel`)]:** 무조건적인 임의 대체를 금지하고, `GET /v1beta/models` 조회를 통해 사용자가 설정한 계정에서 사용 가능한 저비용/무료 Flash 계열 최신 모델만을 엄격히 선별·검증하여 비용 위험을 원천 차단하는 아키텍처. [FACT]
+* **[메모리 캐싱 및 사용자 통제권 보장]:** 검증된 모델명은 세션 메모리에 캐싱하여 지연을 줄이고, 모델 변경 시 사용자에게 명확한 선택권을 보장. [FACT]
 
 ---
 
 #### 🛠️ Procedures (절차)
 
-##### [1단계: getValidGeminiModel 메모리 캐시 검사] [★★★★★]
-1. `cachedModelName`이 존재하면 즉시 반환.
+##### [1단계: 사용자 설정 모델 및 캐시 검증] [★★★★★]
+1. 사용자가 직접 입력한 모델명을 최우선으로 적용.
+2. `cachedModelName` 메모리 캐시 확인.
 
-##### [2단계: GET /v1beta/models 실시간 조회] [★★★★★]
+##### [2단계: GET /v1beta/models 실시간 검증] [★★★★★]
 1. `https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}` 호출.
-2. `data.models` 배열에서 `generateContent` 지원 및 `flash` 키워드를 포함하는 최신 모델 탐색.
+2. `generateContent` 지원 및 `flash` 키워드가 포함된 안전 가성비 모델 목록 선별.
 
-##### [3단계: 모델명 정제 및 캐싱] [★★★★★]
-1. `models/` 접두사를 제거하고 `cachedModelName`에 저장 후 최종 반환.
-
-##### [4단계: 네트워크 실패 시 안전 Fallback] [★★★★★]
-1. 조회 실패 시 기본 안전 모델(`gemini-1.5-flash`)을 반환하여 중단 방지.
+##### [3단계: 고비용 방어 티어 격리 및 모델 결정] [★★★★★]
+1. 고비용 Pro/상위 모델로의 임의 변경을 엄격히 차단하고 안전한 Flash 모델로만 정제 반환.
 
 ---
 
 #### 🐛 Errors & Solutions (오류 및 해결법)
 
-* **[구글 모델 지원 중단으로 인한 404 Not Found 전면 중단]**
-  * **증상:** `Error: 404 This model models/gemini-2.5-flash is no longer available to new users` 에러로 번역 마비.
-  * **원인:** 특정 모델명을 소스 코드에 고정 문자열로 하드코딩함.
-  * **해결법:** `getValidGeminiModel` 동적 탐색기를 구축하여 실시간 API 목록 조회 기반 자동 모델 선별 및 캐싱 도입. [FACT]
+* **[직접 입력 모델의 가용성 소진 및 404 Not Found 발생]**
+  * **증상:** 사용자가 입력한 프리뷰 모델의 쿼터 소진 또는 구글의 지원 중단으로 번역 중단.
+  * **원인:** 모델 수명 주기 변동 및 단순 자동 Fallback 시 유료 모델 고비용 과금 위험 존재.
+  * **해결법:** `getValidGeminiModel`을 통해 사용자 제어권을 유지하면서 Flash 계열 내에서만 안전하게 가용성을 검증하는 고비용 방어형 동적 탐색 구축. [FACT]
 
 ---
 
 #### 💬 Experiences & Tips (경험 및 팁)
 
-* [FACT] 클라우드 AI 서비스(구글, OpenAI 등)는 모델 라이프사이클이 매우 빠르므로, 클라이언트 사이드에서 특정 모델명을 하드코딩하지 말고 메타데이터 엔드포인트를 통해 동적으로 탐색하는 것이 유지보수에 필수적이다.
+* [FACT] 외부 LLM 연동 시 자동 Fallback은 반드시 동일 가격 티어(무료/초저가 Flash) 내로 엄격히 제한해야 하며, 유료 고성능 모델로의 자동 우회는 비용 폭탄을 유발하므로 절대 금지해야 한다.
 
 ---
 
 #### 📋 Feedback History
-* **2026-08-15:** WebTranslator v1.0.0 개발 로그(`55e0e726`, 커밋 `6abe2db`) 기반 검증 완료 (Status: Verified).
+* **2026-08-19:** 사용자 모델 직접 입력 방식 및 유료 모델 고비용 방어 요구사항 반영 완료 (Status: Verified).
 
 ---
 
 #### 🏷️ Tags
-WebTranslator, ChromeExtension, Gemini, DynamicModelFetch, 404Error, SelfHealing, 트러블슈팅
+WebTranslator, ChromeExtension, Gemini, DynamicModelFetch, 404Error, HighCostPrevention, 트러블슈팅
 
 ===== KNOWLEDGE PACKAGE END =====
