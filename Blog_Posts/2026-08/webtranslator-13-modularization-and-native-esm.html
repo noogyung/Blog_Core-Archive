@@ -16,7 +16,7 @@
 <article>
 
   <!-- 이미지 슬롯 1 (대표 이미지 - 필수) -->
-  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-08/webtranslator-13-modularization-and-native-esm-img1.jpg" alt="WebTranslator 3,000줄 단일 파일 분해 및 크롬 MV3 네이티브 ES 모듈 부트로더 아키텍처 다이어그램">
+  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-08/webtranslator-13-modularization-and-native-esm-img1.jpg?v=202608190814" alt="WebTranslator 3,000줄 단일 파일 분해 및 크롬 MV3 네이티브 ES 모듈 부트로더 아키텍처 다이어그램">
 
   <p>
     다중 번역 엔진 연동, 듀얼 렌더러, 단어 사전, 큐 기반 재시도 로직까지 살을 붙여 나가다 보니 <code>content.js</code>와 <code>background.js</code>의 코드 길이가 각각 <strong>3,000줄을 돌파</strong>하는 상황을 겪게 되었습니다. 특히 AI 에이전트와 페어 프로그래밍을 진행할 때 거대한 단일 파일은 큰 걸림돌이 되었습니다. AI가 파일 전체의 문맥을 한 번에 다루다 보니 엉뚱한 줄의 코드를 건드리거나, 사소한 괄호 오타 하나로 확장 프로그램 전체가 먹통이 되는 디버깅 문제가 빈번하게 일어났습니다. 이번 글에서는 3,000줄 단일 파일을 분리하고, 번들러 없이 크롬 Manifest V3 환경에서 <strong>네이티브 ES 모듈(ESM)</strong> 구조로 전환한 과정을 정리하고자 합니다.
