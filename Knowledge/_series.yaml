@@ -33,3 +33,6 @@ series:
           - webtranslator-10-gemini-rate-limits-and-prompt-builder
           - webtranslator-11-gemini-model-404-and-dynamic-model-fetch
           - webtranslator-12-empty-response-and-retry-queue
+      - chapter: "5장. 아키텍처 리팩토링 및 UI/UX 혁신"
+        topics:
+          - webtranslator-13-modularization-and-native-esm
