@@ -6,7 +6,7 @@
   Slug: webtranslator-11-gemini-model-404-and-dynamic-model-fetch
   ---
   Primary Keyword: LLM API 비용 최적화
-  Secondary Keywords: Gemini RPD 쿼터 관리, GPT 토큰 단가 과금 방어, 크롬 확장 프로그램 모델 헬퍼, gemini-flash-lite-latest, gpt-5.6-luna
+  Secondary Keywords: Gemini RPD 쿼터 관리, GPT 토큰 단가 과금 방어, 크롬 확장 프로그램 모델 헬퍼, gemini-flash-lite-latest, gpt-5.4-nano
   Knowledge Source: Knowledge/webtranslator-11-gemini-model-404-and-dynamic-fetch/Troubleshooting/webtranslator-11-gemini-model-404-and-dynamic-fetch-2026-08-15.md
   Generated Date: 2026-08-19
   Estimated Read Time: 7분
@@ -43,7 +43,7 @@
   </p>
 
   <p>
-    그러나 <code>gemini-2.5-flash</code>는 구형 실험용 프리뷰 모델로서 기본 제공되는 일일 무료 허용량(RPD)이 매우 적었습니다. 결국 웹서핑 중 쿼터가 빠르게 소진되거나, 공급자 측에서 해당 프리뷰 엔드포인트를 사전 예고 없이 종료(Deprecated)하면서 콘솔에 다음과 같은 404 에러가 발생했습니다:
+    그러나 <code>gemini-2.5-flash</code>는 구형 모델로서 기본 제공되는 <strong>일일 무료 허용량(RPD)이 Flash-Lite 모델에 비해 무려 25배나 적었습니다 (Flash 20 RPD vs Flash-Lite 500 RPD)</strong>. 결국 웹서핑 중 쿼터가 빠르게 소진되거나, 공급자 측에서 해당 구형 엔드포인트를 사전 예고 없이 종료(Deprecated)하면서 콘솔에 다음과 같은 404 에러가 발생했습니다:
   </p>
 
   <div class="pre custom" data-text="Console 에러 로그">
@@ -94,7 +94,7 @@ async function getRuntimeModel(apiKey) {
       <tbody>
         <tr>
           <td><strong>Google Gemini</strong></td>
-          <td>모델별로 일일 허용량(RPD)이 다른데, RPD 한도가 극히 적은 실험용/상위 모델을 임의 선택</td>
+          <td>모델별로 일일 허용량(RPD)이 다른데, RPD 한도가 극히 적은 상위/구형 모델을 임의 선택</td>
           <td>전체 계정의 무료 번역 여유가 남아있음에도 <strong>해당 모델의 RPD가 조기 소진</strong>되어 번역 중단</td>
         </tr>
         <tr>
@@ -119,7 +119,7 @@ async function getRuntimeModel(apiKey) {
   </h3>
 
   <p>
-    Gemini 무료 API는 <strong>RPM(분당 요청 수)</strong>, <strong>TPM(분당 토큰 수)</strong>, <strong>RPD(일일 요청 수)</strong>라는 세 가지 축으로 엄격히 관리되며, <strong>Pro $\rightarrow$ Flash $\rightarrow$ Flash-Lite</strong> 순으로 허용량에 큰 차이가 있습니다:
+    Gemini 무료 API는 <strong>RPM(분당 요청 수)</strong>, <strong>TPM(분당 토큰 수)</strong>, <strong>RPD(일일 요청 수)</strong>라는 세 가지 축으로 엄격히 관리되며, <strong>Pro &rarr; Flash &rarr; Flash-Lite</strong> 순으로 허용량에 큰 차이가 있습니다:
   </p>
 
   <div class="table w100 withBg">
@@ -179,28 +179,40 @@ async function getRuntimeModel(apiKey) {
       </thead>
       <tbody>
         <tr>
+          <td><strong>GPT-5.4 Pro</strong></td>
+          <td>$30.00</td>
+          <td>$180.00</td>
+          <td>최고성능 전문가 추론 모델</td>
+        </tr>
+        <tr>
+          <td><strong>GPT-5.4 mini</strong></td>
+          <td>$0.75</td>
+          <td>$4.50</td>
+          <td>성능과 비용 균형형 미드레인지</td>
+        </tr>
+        <tr>
+          <td><strong>GPT-5.4 nano</strong></td>
+          <td><strong>$0.20</strong></td>
+          <td><strong>$1.25</strong></td>
+          <td>초경량 초저가 번역 최적화 모델</td>
+        </tr>
+        <tr>
           <td><strong>GPT-5.6 Sol</strong></td>
           <td>$5.00</td>
           <td>$30.00</td>
-          <td>최신 플래그십, 고성능 추론</td>
+          <td>최신 플래그십 모델</td>
         </tr>
         <tr>
           <td><strong>GPT-5.6 Terra</strong></td>
           <td>$2.00</td>
           <td>$12.00</td>
-          <td>성능과 비용 균형형 미드레인지</td>
+          <td>미드레인지 균형 모델</td>
         </tr>
         <tr>
           <td><strong>GPT-5.6 Luna</strong></td>
           <td><strong>$0.20</strong></td>
           <td><strong>$1.20</strong></td>
-          <td>대량 텍스트 처리용 초저가 모델</td>
-        </tr>
-        <tr>
-          <td><strong>GPT-5.6 Cyber</strong></td>
-          <td>$12.50</td>
-          <td>$75.00</td>
-          <td>특수 보안·고급 연산용</td>
+          <td>대량 처리용 초저가 모델</td>
         </tr>
         <tr>
           <td><strong>GPT-4o</strong></td>
@@ -219,7 +231,7 @@ async function getRuntimeModel(apiKey) {
   </div>
 
   <p>
-    만약 초저가 모델인 <code>GPT-5.6 Luna</code>($0.20) 대신 <code>GPT-4o</code>($2.50)나 <code>GPT-5.6 Sol</code>($5.00)이 호출될 경우, <strong>입력 기준 12배에서 25배 이상의 비용 차이</strong>가 발생하므로 런타임 자동 선택은 반드시 배제되어야 합니다.
+    만약 초저가 모델인 <code>GPT-5.4 nano</code>($0.20)나 <code>GPT-5.6 Luna</code>($0.20) 대신 <code>GPT-4o</code>($2.50)나 <code>GPT-5.4 Pro</code>($30.00)가 호출될 경우, <strong>입력 기준 12배에서 무려 150배 이상의 비용 차이</strong>가 발생하므로 런타임 자동 선택은 반드시 배제되어야 합니다.
   </p>
 
   <h2 id="user-fixed-model-solution">
@@ -232,7 +244,7 @@ async function getRuntimeModel(apiKey) {
 
   <ol class="step">
     <li><strong>Google Gemini:</strong> <code>gemini-flash-lite-latest</code>를 고정하여 500 RPD의 넉넉한 한도 내에서 100% 무료 완주 달성.</li>
-    <li><strong>OpenAI GPT:</strong> <code>gpt-5.6-luna</code> 또는 <code>gpt-4o-mini</code>를 고정하여 토큰 단가를 최소화하고 크레딧 조기 소진 방어.</li>
+    <li><strong>OpenAI GPT:</strong> <code>gpt-5.4-nano</code>, <code>gpt-5.6-luna</code>, 또는 <code>gpt-4o-mini</code>를 고정하여 토큰 단가를 최소화하고 크레딧 조기 소진 방어.</li>
   </ol>
 
   <h2 id="model-helper-tool">
