@@ -46,7 +46,8 @@
         {
           "chapter": "5장. 아키텍처 리팩토링 및 UI/UX 혁신",
           "topics": [
-            "webtranslator-13-modularization-and-native-esm"
+            "webtranslator-13-modularization-and-native-esm",
+            "webtranslator-14-external-dictionary-failure-and-single-llm"
           ]
         }
       ]
