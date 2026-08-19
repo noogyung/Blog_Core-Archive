@@ -10,9 +10,9 @@ last_modified: 2026-08-20
 language: KR+EN
 tags: [WebTranslator, ChromeExtension, 크롬확장프로그램, Kaikki, DictionaryAPI, LLMPipeline, 단어사전, 프롬프트엔지니어링, 트러블슈팅]
 sources_count: 3
-blog_draft_path: null
-blog_draft_date: null
-blog_id: null
+blog_draft_path: Blog_Posts/2026-08/webtranslator-14-external-dictionary-review-and-single-llm.html
+blog_draft_date: 2026-08-20
+blog_id: core-archive
 blog_published: false
 series_id: webtranslator
 ---
