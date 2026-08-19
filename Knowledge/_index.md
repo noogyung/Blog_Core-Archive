@@ -1,5 +1,5 @@
 # Knowledge Base Index
-Last Updated: 2026-08-19
+Last Updated: 2026-08-20
 
 > 📚 **Series Catalog:** [`_series.yaml`](file:///d:/Noogs/NextCloud/Projects/Blog_Core-Archive/Knowledge/_series.yaml)
 
