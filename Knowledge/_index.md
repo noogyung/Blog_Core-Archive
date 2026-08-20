@@ -5,7 +5,7 @@ Last Updated: 2026-08-20
 
 | Topic | Category | Created Date | Last Modified | Status | File Path |
 |-------|----------|:------------:|:-------------:|:------:|-----------|
-| webtranslator-18-image-translation-paddleocr-ram-spike-and-revert | Troubleshooting | 2026-08-20 | 2026-08-20 | Experimental | webtranslator-18-image-translation-paddleocr-ram-spike-and-revert/Troubleshooting/webtranslator-18-image-translation-paddleocr-ram-spike-and-revert-2026-08-20.md |
+| webtranslator-18-image-translation-paddleocr-ram-spike-and-revert | Troubleshooting | 2026-08-20 | 2026-08-20 | Verified | webtranslator-18-image-translation-paddleocr-ram-spike-and-revert/Troubleshooting/webtranslator-18-image-translation-paddleocr-ram-spike-and-revert-2026-08-20.md |
 | webtranslator-17-image-translation-tesseract-and-vision-bbox | Troubleshooting | 2026-08-20 | 2026-08-20 | Verified | webtranslator-17-image-translation-tesseract-and-vision-bbox/Troubleshooting/webtranslator-17-image-translation-tesseract-and-vision-bbox-2026-08-20.md |
 | webtranslator-16-toolbar-quick-popup-and-unified-dropdown | Troubleshooting | 2026-08-20 | 2026-08-20 | Verified | webtranslator-16-toolbar-quick-popup-and-unified-dropdown/Troubleshooting/webtranslator-16-toolbar-quick-popup-and-unified-dropdown-2026-08-20.md |
 | webtranslator-15-dark-mode-effective-bg-and-adaptive-color | Troubleshooting | 2026-08-20 | 2026-08-20 | Verified | webtranslator-15-dark-mode-effective-bg-and-adaptive-color/Troubleshooting/webtranslator-15-dark-mode-effective-bg-and-adaptive-color-2026-08-20.md |
