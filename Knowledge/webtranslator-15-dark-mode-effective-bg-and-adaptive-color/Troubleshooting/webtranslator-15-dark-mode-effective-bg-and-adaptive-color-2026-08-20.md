@@ -10,8 +10,8 @@ last_modified: 2026-08-20
 language: KR+EN
 tags: [WebTranslator, ChromeExtension, 크롬확장프로그램, DarkMode, 다크모드, AdaptiveColor, 유효배경색, YIQ, CSS변수, 가독성옵션, 트러블슈팅]
 sources_count: 4
-blog_draft_path: null
-blog_draft_date: null
+blog_draft_path: Blog_Posts/2026-08/webtranslator-15-dark-mode-effective-bg-and-adaptive-color.html
+blog_draft_date: 2026-08-20
 blog_id: core-archive
 blog_published: false
 series_id: webtranslator

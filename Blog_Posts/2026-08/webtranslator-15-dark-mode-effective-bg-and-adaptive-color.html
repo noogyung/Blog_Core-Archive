@@ -1,0 +1,263 @@
+<!-- ============================================================
+  [BLOG POST METADATA - Blogspot 설정창 복사용]
+  Title: [WebTranslator 개발기 #15] 다크모드 가독성 붕괴 극복과 유효 배경색 역추적: 4종 가독성 옵션과 적응형 보색 엔진
+  Labels (Tags): WebTranslator, ChromeExtension, 크롬확장프로그램, DarkMode, 다크모드, AdaptiveColor, 유효배경색, YIQ, CSS변수, 가독성옵션, 트러블슈팅
+  Meta Description: 다크모드 및 복합 웹페이지에서 번역문 가독성이 붕괴되는 원인을 분석하고, 상위 DOM 유효 배경색 역추적과 YIQ 보색 계산을 거쳐 4대 인라인 가독성 옵션 및 블록 스타일 엔진을 구축한 과정을 정리합니다.
+  Slug: webtranslator-15-dark-mode-effective-bg-and-adaptive-color
+  ---
+  Primary Keyword: 다크모드 가독성 유효 배경색
+  Secondary Keywords: WebTranslator, YIQ 보색 계산, getComputedStyle 배경색 역추적, 크롬 확장프로그램 가독성, 인라인 텍스트 그림자
+  Knowledge Source: Knowledge/webtranslator-15-dark-mode-effective-bg-and-adaptive-color/Troubleshooting/webtranslator-15-dark-mode-effective-bg-and-adaptive-color-2026-08-20.md
+  Generated Date: 2026-08-20
+  Estimated Read Time: 9분
+  Series ID: webtranslator
+  ============================================================ -->
+
+<article>
+
+  <!-- 이미지 슬롯 1 (대표 이미지 - 필수) -->
+  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-08/webtranslator-15-dark-mode-effective-bg-and-adaptive-color-img1.jpg?v=20260820_1006" alt="WebTranslator 상위 DOM 유효 배경색 역추적 및 적응형 가독성 엔진 아키텍처 다이어그램">
+
+  <p>
+    앞서 14편에서는 Kaikki 등 대용량 오픈소스 사전 DB의 인프라적 제약을 짚어보고, 경량 LLM 단일 프롬프트 파이프라인을 통해 0.8초 반응 속도의 일원화된 단어 사전 카드를 완성한 과정을 소개한 바 있습니다.
+  </p>
+  <p>
+    그러나 실제 웹 서핑 환경에서 번역 엔진을 구동해 보면 예상치 못한 시각적 난관을 마주하게 됩니다. 바로 다크모드가 적용된 웹페이지에서의 <strong>가독성 붕괴(Legibility Collapse)</strong> 현상입니다.
+  </p>
+  <p>
+    스팀(Steam) 커뮤니티나 깃허브(GitHub) 다크모드처럼 어두운 배경을 가진 사이트에서 인라인 번역을 실행하면, 번역문 글자가 어두운 배경에 묻혀 식별이 불가능해집니다. 반대로 글자색을 흰색으로 고정하면 위키피디아 같은 밝은 웹페이지에서 텍스트가 사라져 버리는 딜레마가 발생했습니다.
+  </p>
+  <p>
+    이번 글에서는 상위 DOM 트리를 역추적하여 실제 눈에 보이는 유효 배경색을 감지하고, YIQ 보색 계산을 통해 <strong>4종의 인라인 가독성 옵션 및 블록 스타일 엔진</strong>으로 구조화한 엔지니어링 과정을 살펴보고자 합니다.
+  </p>
+
+  <h2 id="dark-mode-legibility-dilemma">1. 다크모드 가독성 붕괴와 수동 컬러피커의 한계</h2>
+
+  <p>
+    웹 브라우징 환경은 사이트마다 배경색과 테마가 극단적으로 다릅니다. 일반적인 라이트 테마 사이트는 흰색 배경(#ffffff)에 검은 글자(#000000)를 사용하지만, 개발자 문서나 게임 커뮤니티 사이트는 짙은 네이비(#0f172a)나 거의 검은색에 가까운 다크 테마를 채택합니다.
+  </p>
+
+  <p>
+    이러한 환경에서 번역 확장 프로그램이 겪는 시각적 문제는 크게 세 가지였습니다:
+  </p>
+
+  <ol class="step">
+    <li><strong>어두운 배경 위 텍스트 묻힘 현상:</strong> 기본 번역 테마 색상(예: #818cf8 보라 계열)이나 짙은 회색 텍스트가 다크모드 배경과 명도 차이가 거의 없어 눈을 피로하게 만들었습니다.</li>
+    <li><strong>고정 색상 방식의 반대편 붕괴:</strong> 다크모드를 위해 밝은 색상으로 글자를 고정하면, 일반 라이트 모드 사이트에서 흰 배경에 밝은 글씨가 찍혀 텍스트를 읽을 수 없었습니다.</li>
+    <li><strong>수동 컬러피커 제안의 실패:</strong> 옵션 페이지에 사용자가 직접 글자 색을 고를 수 있는 컬러피커(Color Picker)를 제공하는 방안도 검토되었으나, 사용자가 어두운 사이트에 들어갈 때마다 설정을 바꾸고 밝은 사이트에 가면 다시 설정을 조작해야 하므로 사용자 경험(UX) 측면에서 부적합하다고 판단하여 전면 배제했습니다.</li>
+  </ol>
+
+  <div class="note wr">
+    <strong>⚠️ 주의:</strong> 확장 프로그램이 사용자에게 매번 수동 설정을 강요하는 것은 명백한 안티패턴입니다. 번역 엔진은 사용자가 어떤 사이트에 진입하더라도 해당 페이지의 배경 명도를 스스로 분석하여 최적의 색상을 자동 적용해야 합니다.
+  </div>
+
+  <h2 id="effective-bg-color-traversal">2. 상위 DOM 유효 배경색(Effective Background Color) 역추적 알고리즘</h2>
+
+  <p>
+    페이지 배경색을 자동으로 감지하기 위해 가장 먼저 시도한 방법은 번역 대상 요소의 <code>window.getComputedStyle(element).backgroundColor</code>를 읽는 것이었습니다. 하지만 대다수의 텍스트 노드나 인라인 태그(<code>&lt;span&gt;</code>, <code>&lt;p&gt;</code>, <code>&lt;a&gt;</code>)는 자체 배경색이 <code>transparent</code> 또는 <code>rgba(0, 0, 0, 0)</code>으로 지정되어 있어 투명 값만 반환되었습니다.
+  </p>
+
+  <p>
+    실제 사용자의 눈에 보이는 불투명 배경색을 찾기 위해서는 현재 텍스트 노드로부터 상위 부모 노드(DOM Tree)를 거슬러 올라가며 실제 배경색을 탐색하는 <strong>역추적 순회 알고리즘</strong>이 필요했습니다.
+  </p>
+
+  <div class="pre custom" data-text="JavaScript">
+    <button aria-label="Copy code">Copy</button>
+    <pre>// src/content/dom.js - 상위 DOM 유효 배경색 탐색 및 예외 처리
+if (state.cachedSettings?.inlineAdaptiveColor) {
+  try {
+    var bgNode = actualTextElement;
+    var bgColor = null;
+
+    while (bgNode &amp;&amp; bgNode.nodeType === Node.ELEMENT_NODE) {
+      var computedBg = window.getComputedStyle(bgNode);
+      var bg = computedBg.backgroundColor;
+      var bgImg = computedBg.backgroundImage;
+      var aMatch = bg.match(/rgba\([^,]+,[^,]+,[^,]+,\s*([^)]+)\)/);
+      
+      // 불투명도가 0.1보다 큰 실제 배경색이 발견되면 확정
+      if (!aMatch || parseFloat(aMatch[1]) &gt; 0.1) {
+        if (bg !== "rgba(0, 0, 0, 0)" &amp;&amp; bg !== "transparent") {
+          bgColor = bg;
+          break;
+        }
+      }
+
+      // 배경 이미지가 깔린 요소를 만나면 왜곡 방지를 위해 즉시 부모 탐색 중단
+      if (bgImg &amp;&amp; bgImg !== "none" &amp;&amp; bgImg !== "initial") {
+        break;
+      }
+      bgNode = bgNode.parentElement;
+    }
+    
+    // 배경색을 찾지 못했거나 배경 이미지가 존재할 경우 원문 글자 색상 기준으로 폴백
+    if (!bgColor) {
+      var textColor = window.getComputedStyle(actualTextElement).color;
+      var tcMatch = textColor.match(/\d+/g);
+      if (tcMatch &amp;&amp; tcMatch.length &gt;= 3) {
+        var tr = parseInt(tcMatch[0]), tg = parseInt(tcMatch[1]), tb = parseInt(tcMatch[2]);
+        var tYiq = (tr * 299 + tg * 587 + tb * 114) / 1000;
+        bgColor = tYiq &gt; 128 ? "rgb(0, 0, 0)" : "rgb(255, 255, 255)";
+      } else {
+        bgColor = "rgb(255, 255, 255)";
+      }
+    }
+    // ... 보색 계산 로직으로 연결
+  } catch(e) {}
+}</pre>
+  </div>
+
+  <p>
+    이 역추적 과정에서 마주친 핵심 예외는 <strong>CSS 그라데이션 및 배경 이미지(<code>background-image</code>)</strong>였습니다. 요소 자체에 그라데이션이 적용되어 있으면 <code>backgroundColor</code> 속성은 투명으로 나오기 때문에, 상위 탐색을 멈추지 않으면 이미지 뒤에 숨겨진 엉뚱한 부모의 배경색을 읽어와 글자색이 반대로 뒤집히는 왜곡이 발생합니다.
+  </p>
+
+  <p>
+    따라서 <code>backgroundImage !== "none"</code>인 요소를 만나면 즉시 부모 탐색을 중단하고, 원문 글자 색상(<code>computedStyle.color</code>)의 명도를 역산하여 가상 배경을 유추하는 정교한 폴백 메커니즘을 구축했습니다.
+  </p>
+
+  <h2 id="yiq-contrast-and-midgray-correction">3. YIQ 상대 명도 분석과 중간 회색(Mid-Gray) 대비 보정</h2>
+
+  <p>
+    유효 배경색의 RGB 값을 확보한 후에는 WCAG 및 NTSC 표준에 기반한 <strong>YIQ 상대 명도 공식</strong>을 활용하여 보색을 계산합니다. 사람의 눈이 인지하는 색상별 가중치(R: 29.9%, G: 58.7%, B: 11.4%)를 반영하여 텍스트의 명도 대비를 계산하는 방식입니다.
+  </p>
+
+  <div class="pre custom" data-text="JavaScript">
+    <button aria-label="Copy code">Copy</button>
+    <pre>// YIQ 명도 계산 및 중간 회색(Mid-gray) 영역 대비 강제 보정
+var rgbMatch = bgColor.match(/\d+/g);
+if (rgbMatch &amp;&amp; rgbMatch.length &gt;= 3) {
+  var r = parseInt(rgbMatch[0]), g = parseInt(rgbMatch[1]), b = parseInt(rgbMatch[2]);
+  
+  // 1차 반전 보색 계산
+  var invR = 255 - r;
+  var invG = 255 - g;
+  var invB = 255 - b;
+  
+  var yiq = (r * 299 + g * 587 + b * 114) / 1000;
+  var invYiq = (invR * 299 + invG * 587 + invB * 114) / 1000;
+  
+  // 배경색이 중간 회색(RGB ~128)에 가까워 반전 색상 간 명도 차이가 부족할 때
+  if (Math.abs(yiq - invYiq) &lt; 60) {
+    var pushAmt = 60;
+    if (yiq &gt; 128) {
+      // 배경이 밝은 회색이면 반전 글자를 더 어둡게 푸시
+      invR = Math.max(0, invR - pushAmt);
+      invG = Math.max(0, invG - pushAmt);
+      invB = Math.max(0, invB - pushAmt);
+    } else {
+      // 배경이 어두운 회색이면 반전 글자를 더 밝게 푸시
+      invR = Math.min(255, invR + pushAmt);
+      invG = Math.min(255, invG + pushAmt);
+      invB = Math.min(255, invB + pushAmt);
+    }
+  }
+  
+  span.style.setProperty("--wt-inline-adaptive-color", `rgb(${invR}, ${invG}, ${invB})`);
+}</pre>
+  </div>
+
+  <p>
+    단순 <code>255 - RGB</code> 반전만 사용할 경우 RGB 값이 128 근처인 중간 회색 배경에서는 반전 색상 역시 128 근처의 회색이 되어 대비 차이가 사라집니다. 이를 방지하기 위해 명도 차이가 60 미만인 구간을 감지하면 배경의 밝기 기준에 따라 RGB 값을 ±60만큼 강제로 밀어내는(Push) 안전장치를 적용했습니다.
+  </p>
+
+  <h2 id="four-legibility-options-and-block-style">4. 최종 귀결: 4종 가독성 옵션과 블록 스타일 엔진</h2>
+
+  <p>
+    이러한 기술적 트러블슈팅 결과는 숨겨진 단일 기능으로 끝나지 않고, 사용자가 사이트 환경과 취향에 따라 자유롭게 선택할 수 있는 <strong>4종의 인라인 가독성 옵션</strong>과 <strong>블록 스타일 엔진</strong>으로 체계화되었습니다.
+  </p>
+
+  <div class="table w100 withBg">
+    <table>
+      <thead>
+        <tr>
+          <th>가독성 옵션</th>
+          <th>동작 메커니즘</th>
+          <th>주요 적용 상황</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>1. 텍스트 이중 그림자<br><code>inlineShadow</code></strong></td>
+          <td>텍스트 명도에 따라 밝은 글로우(0.9) 또는 어두운 글로우(0.85)를 2중 렌더링</td>
+          <td>복잡한 배경 이미지나 불규칙한 패턴 위에서 텍스트 경계 분리</td>
+        </tr>
+        <tr>
+          <td><strong>2. 미세 배경 강조<br><code>inlineHighlight</code></strong></td>
+          <td>인라인 번역문 뒤에 테마 색상 기반의 얇은 반투명 박스(padding 4px) 배치</td>
+          <td>본문 원문과 인라인 번역문의 영역 구분을 명확히 하고자 할 때</td>
+        </tr>
+        <tr>
+          <td><strong>3. 글자색 환경 적응<br><code>inlineAdaptiveColor</code></strong></td>
+          <td>상위 DOM 유효 배경색 역추적 + YIQ 보색 계산을 통한 실시간 색상 주입</td>
+          <td>스팀, 깃허브 등 다크모드와 라이트모드를 수시로 넘나들 때</td>
+        </tr>
+        <tr>
+          <td><strong>4. 원문 글자 색상 상속<br><code>inlineInheritColor</code></strong></td>
+          <td>TreeWalker로 원문 텍스트 컨테이너의 <code>color</code>를 추출하여 자연스럽게 상속</td>
+          <td>웹페이지 고유의 폰트 색상과 일체감 있는 조화를 원할 때</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    Block 형태 번역문의 경우 사용자가 선택한 테마 색상(<code>transColor</code>)을 바탕으로 좌측 하이라이트선(<code>border-left</code>)을 유지하며, <strong>블록 배경 투명도(<code>transBgAlpha</code>, 기본 0.12)</strong> 슬라이더를 통해 배경의 은은함과 강조 정도를 0에서 1까지 자유롭게 조절할 수 있도록 구성했습니다.
+  </p>
+
+  <div class="pre custom" data-text="CSS">
+    <button aria-label="Copy code">Copy</button>
+    <pre>/* content.css - 가독성 옵션 간 CSS 우선순위 제어 */
+/* 옵션 1. 텍스트 이중 그림자 */
+html[data-wt-inline-shadow="true"] .wt-translation {
+  text-shadow: 0 1px 2px var(--wt-inline-glow-color, rgba(255,255,255,0.8)),
+               0 0 3px var(--wt-inline-glow-color, rgba(255,255,255,0.8));
+}
+
+/* 옵션 2. 미세한 인라인 배경 강조 */
+html[data-wt-inline-highlight="true"] .wt-translation.wt-inline {
+  background-color: var(--wt-trans-bg) !important;
+  padding: 0 4px;
+  border-radius: 4px;
+}
+
+/* 옵션 4. 원문 글자 색상 따라가기 (환경 적응 옵션이 꺼져 있을 때만 적용) */
+html[data-wt-inline-inherit="true"]:not([data-wt-inline-adaptive="true"]) .wt-translation {
+  color: var(--wt-inline-inherit-color, inherit) !important;
+}
+
+/* 옵션 3. 환경 적응 인라인 글자 색상 (최우선 적용) */
+html[data-wt-inline-adaptive="true"] .wt-translation {
+  color: var(--wt-inline-adaptive-color, #000) !important;
+}</pre>
+  </div>
+
+  <h2 id="toolbar-quick-popup-synchronization">5. 툴바 빠른 설정 팝업 연동 및 실시간 검증</h2>
+
+  <p>
+    가독성 엔진의 설정을 변경하기 위해 매번 무거운 옵션 탭으로 이동해야 한다면 편의성이 떨어집니다. 이를 극복하기 위해 브라우징 중 툴바 아이콘을 클릭하면 즉시 열리는 <strong>빠른 설정 팝업(<code>optionPopup.html</code>)</strong>을 구축했습니다.
+  </p>
+
+  <p>
+    팝업 내의 드롭다운 체크박스와 슬라이더를 조작하면, <code>chrome.storage.onChanged</code> 이벤트와 <code>notifyPreview</code> 메시지 파이프라인을 통해 현재 활성화된 탭의 <code>document.documentElement</code> 데이터 속성 및 CSS 변수가 즉각 갱신됩니다.
+  </p>
+
+  <ul class="pros">
+    <li><strong>실시간 즉각 반응:</strong> 페이지 새로고침 없이 4종 가독성 옵션 토글 및 배경 투명도 조절이 즉시 화면에 반영됨.</li>
+    <li><strong>CSS 우선순위 격리:</strong> <code>:not()</code> 선택자 설계를 통해 옵션 3(환경 적응)과 옵션 4(원문 상속) 간의 스타일 충돌을 구조적으로 방지.</li>
+    <li><strong>경량 연산 유지:</strong> 무거운 DOM 재조회 없이 CSS 변수 바인딩만으로 가독성 스타일을 실시간 전환.</li>
+  </ul>
+
+  <h2 id="section-conclusion">마무리하며</h2>
+
+  <p>
+    웹 확장 프로그램에서 시각적 가독성을 확보하는 작업은 단순히 하나의 색상을 잘 고르는 문제를 넘어섭니다. 다양한 웹사이트가 가진 DOM 계층 구조와 다크 테마의 특성을 분석하고, 이를 유연하게 대응할 수 있는 옵션 체계로 설계하는 것이 완성도 높은 사용자 경험의 핵심임을 확인했습니다.
+  </p>
+
+  <p>
+    혹시 다양한 다크 테마 웹사이트나 복합 배경을 가진 페이지를 다루면서 활용하셨던 가독성 보정 노하우나 CSS 변수 최적화 경험이 있다면 댓글로 남겨주시면 감사하겠습니다. 다음 글에서는 브라우징 흐름을 끊지 않고 툴바에서 1초 만에 세부 설정을 제어하는 <strong>빠른 설정 팝업(Toolbar Quick Popup) UI 및 드롭다운 통합</strong> 과정을 심도 있게 다루겠습니다.
+  </p>
+
+  <!-- 시리즈 네비게이션 컨테이너 (JS로 동적 렌더링) -->
+  <nav class="series-nav"></nav>
+
+</article>
