@@ -4,9 +4,9 @@ title_kr: 한국어 복사 시 팝업 오작동: 10% 임계값과 CJK 유니코�
 category: Troubleshooting
 sub_category: Drag-Filter-Unicode
 version: 1.0.0
-status: Experimental
+status: Verified
 created_date: 2026-08-20
-last_modified: 2026-08-20
+last_modified: 2026-08-21
 language: KR+EN
 tags: [WebTranslator, ChromeExtension, 크롬확장프로그램, SelectionTranslation, 드래그번역, 단어사전, 유니코드, Unicode, CJK, Regex, 정규식, 트러블슈팅]
 sources_count: 5
@@ -30,7 +30,7 @@ series_id: webtranslator
 * **Category:** Troubleshooting
 * **Sub-Category:** Drag-Filter-Unicode
 * **Version:** 1.0.0
-* **Status:** Experimental
+* **Status:** Verified
 * **Date:** 2026-08-20
 * **Language:** KR+EN
 
@@ -63,7 +63,7 @@ series_id: webtranslator
 
 #### 🛠️ Procedures (절차)
 
-1. **`isAlreadyTargetLang` 함수에 유니코드 정규화(NFC) 및 목표 언어 문자 비율 10% 판정 로직 구현:** [★★★★★]
+1. **`isAlreadyTargetLang` 함수에 유니코드 정규화(NFC) 및 목표 언어 문자 비율 10% 판정 로직 구현:** [★★★★★] ✅ Verified 2026-08-21
    - NFD 분해형 유니코드를 `normalize("NFC")`로 정규화하고, 전체 유니코드 문자(`\p{L}`) 대비 목표 언어 문자 비율을 계산하여 10%(`0.10`) 이상일 경우 사전 팝업을 스킵.
    ```javascript
    // src/content/utils.js
@@ -88,7 +88,7 @@ series_id: webtranslator
    }
    ```
 
-2. **`isValidDictWord` 함수에 CJK 다국어 1글자 예외 처리 및 유니코드 속성(`\p{L}`) 검증 로직 적용:** [★★★★★]
+2. **`isValidDictWord` 함수에 CJK 다국어 1글자 예외 처리 및 유니코드 속성(`\p{L}`) 검증 로직 적용:** [★★★★★] ✅ Verified 2026-08-21
    - 단순 ASCII 정규식을 유니코드 속성(`\p{L}`)으로 대체하고, CJK 한자/가나 1글자 단어를 유효 단어로 인정.
    ```javascript
    // src/content/dictionary.js
@@ -115,7 +115,7 @@ series_id: webtranslator
    }
    ```
 
-3. **마우스 드래그(`mouseup`) 이벤트 핸들러에 지능형 유효성 검사 및 150ms 디바운스 연동:** [★★★★★]
+3. **마우스 드래그(`mouseup`) 이벤트 핸들러에 지능형 유효성 검사 및 150ms 디바운스 연동:** [★★★★★] ✅ Verified 2026-08-21
    - 마우스 드래그 완료 후 `cleanWord` 추출 → `isValidDictWord` 통과 여부 검사 → `isAlreadyTargetLang` 판정 후 유효한 외래어 단어일 때만 팝업 생성.
 
 ---
@@ -151,9 +151,22 @@ series_id: webtranslator
 
 #### ❓ Missing Info (검증 필요 항목)
 
-* [ ] 드래그 텍스트 내 한글 비율 10% 임계값이 `Apple (사과)` 외에 `Python(파이썬)` 등 다양한 괄호 병기 단어에서 사전을 정상 허용하는지 실전 검증 필요
-* [ ] 일본어 1글자 한자(예: `水`, `火`) 및 가타카나 단어 드래그 시 사전 팝업이 누락 없이 호출되는지 브라우저에서 동작 검증 필요
-* [ ] 순수 한국어 문장 드래그 복사 시 팝업이 일체 나타나지 않고 브라우저 기본 복사 동작이 매끄럽게 수행되는지 확인 필요
+* [x] 드래그 텍스트 내 한글 비율 10% 임계값이 `Apple (사과)` 외에 `Python(파이썬)` 등 다양한 괄호 병기 단어에서 사전을 정상 허용함을 확인 — Verified 2026-08-21
+* [x] 일본어 1글자 한자(예: `水`, `火`) 및 가타카나 단어 드래그 시 사전 팝업이 누락 없이 정상 호출됨을 확인 — Verified 2026-08-21
+* [x] 순수 한국어 문장 드래그 복사 시 팝업 간섭 없이 브라우저 기본 복사 동작이 매끄럽게 수행됨을 확인 — Verified 2026-08-21
+
+---
+
+## 📝 Feedback History
+
+### 2026-08-21 (1차) — Test Result: PASS
+* **환경:** Windows 11, Chrome Extension MV3, WebTranslator v1.0.0
+* **검증된 단계:** 1단계 ~ 3단계 전체 검증 완료
+* **피드백 내용:**
+  1. 한국어 웹페이지 텍스트 드래그 복사 시 팝업 간섭 없이 브라우저 기본 복사 동작 정상 수행 확인.
+  2. `Apple (사과)`, `Python(파이썬)` 등 괄호 병기 텍스트에서 10% 임계값 판정을 통한 단어 사전 정상 호출 확인.
+  3. 일본어 1글자 한자(`水`, `火`) 및 가타카나/중국어 단어 드래그 시 CJK 유니코드 속성 정규식을 통한 사전 팝업 정상 노출 확인.
+* **Status 변경:** Experimental → Verified
 
 ---
 

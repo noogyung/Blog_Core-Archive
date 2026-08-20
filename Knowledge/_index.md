@@ -1,11 +1,11 @@
 # Knowledge Base Index
-Last Updated: 2026-08-20
+Last Updated: 2026-08-21
 
 > 📚 **Series Catalog:** [`_series.yaml`](file:///d:/Noogs/NextCloud/Projects/Blog_Core-Archive/Knowledge/_series.yaml)
 
 | Topic | Category | Created Date | Last Modified | Status | File Path |
 |-------|----------|:------------:|:-------------:|:------:|-----------|
-| webtranslator-19-smart-drag-filtering-and-cjk-support | Troubleshooting | 2026-08-20 | 2026-08-20 | Experimental | webtranslator-19-smart-drag-filtering-and-cjk-support/Troubleshooting/webtranslator-19-smart-drag-filtering-and-cjk-support-2026-08-20.md |
+| webtranslator-19-smart-drag-filtering-and-cjk-support | Troubleshooting | 2026-08-20 | 2026-08-21 | Verified | webtranslator-19-smart-drag-filtering-and-cjk-support/Troubleshooting/webtranslator-19-smart-drag-filtering-and-cjk-support-2026-08-20.md |
 | webtranslator-18-image-translation-paddleocr-ram-spike-and-revert | Troubleshooting | 2026-08-20 | 2026-08-20 | Verified | webtranslator-18-image-translation-paddleocr-ram-spike-and-revert/Troubleshooting/webtranslator-18-image-translation-paddleocr-ram-spike-and-revert-2026-08-20.md |
 | webtranslator-17-image-translation-tesseract-and-vision-bbox | Troubleshooting | 2026-08-20 | 2026-08-20 | Verified | webtranslator-17-image-translation-tesseract-and-vision-bbox/Troubleshooting/webtranslator-17-image-translation-tesseract-and-vision-bbox-2026-08-20.md |
 | webtranslator-16-toolbar-quick-popup-and-unified-dropdown | Troubleshooting | 2026-08-20 | 2026-08-20 | Verified | webtranslator-16-toolbar-quick-popup-and-unified-dropdown/Troubleshooting/webtranslator-16-toolbar-quick-popup-and-unified-dropdown-2026-08-20.md |
