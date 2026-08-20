@@ -10,8 +10,8 @@ last_modified: 2026-08-21
 language: KR+EN
 tags: [WebTranslator, ChromeExtension, ChromeWebStore, ManifestV3, StoreAssets, StorePublish, IconDesign, Screenshot, 심사정책, 트러블슈팅, 배포가이드]
 sources_count: 5
-blog_draft_path: null
-blog_draft_date: null
+blog_draft_path: Blog_Posts/2026-08/webtranslator-20-chat-icon-replacement-and-real-screenshot-capture.html
+blog_draft_date: 2026-08-21
 blog_id: core-archive
 blog_published: false
 series_id: webtranslator

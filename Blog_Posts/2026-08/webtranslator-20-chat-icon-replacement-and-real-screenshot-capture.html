@@ -1,0 +1,244 @@
+<!-- ============================================================
+  [BLOG POST METADATA - Blogspot 설정창 복사용]
+  Title: [WebTranslator 개발기 #20] 크롬 웹 스토어 출시를 위한 모든 준비: 아이콘 교체, 실물 스크린샷, 심사 요건 총정리
+  Labels (Tags): WebTranslator, ChromeExtension, ChromeWebStore, ManifestV3, StoreAssets, StorePublish, IconDesign, Screenshot, 심사정책, 트러블슈팅, 배포가이드
+  Meta Description: 크롬 웹 스토어 정식 배포를 위해 갖추어야 할 5대 필수 요건(개발자 계정, MV3 패키지, 아이콘/스크린샷 규격, 스토어 메타데이터, 개인정보 및 권한 소명)을 총정리하고, 임시 말풍선 아이콘 교체와 실물 스크린샷 제작 과정을 정리합니다.
+  Slug: webtranslator-20-chat-icon-replacement-and-real-screenshot-capture
+  ---
+  Primary Keyword: 크롬 웹 스토어 확장 프로그램 출시 준비 요건
+  Secondary Keywords: WebTranslator, Chrome Web Store Developer Dashboard, Manifest V3 배포, 스토어 스크린샷 규격 1280x800, 확장프로그램 아이콘 16 48 128, Single Purpose Policy, Permissions Justification
+  Knowledge Source: Knowledge/webtranslator-20-chat-icon-replacement-and-real-screenshot-capture/Troubleshooting/webtranslator-20-chat-icon-replacement-and-real-screenshot-capture-2026-08-21.md
+  Generated Date: 2026-08-21
+  Estimated Read Time: 9분
+  Series ID: webtranslator
+  ============================================================ -->
+
+<article>
+
+  <!-- 이미지 슬롯 1 (대표 이미지 - 필수) -->
+  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-08/webtranslator-20-chat-icon-replacement-and-real-screenshot-capture-img1_v1.jpg?v=20260821_0312" alt="크롬 웹 스토어 확장 프로그램 정식 출시를 위한 5대 필수 준비 요건 아키텍처">
+
+  <p>
+    앞서 19편에서는 한국어 웹페이지에서 텍스트를 드래그하여 복사할 때 단어 사전 팝업이 커서를 가로막던 문제를 분석하고, <strong>10% 언어 비율 임계값(Threshold) 판정</strong>과 <strong>ECMAScript 최신 유니코드 속성(<code>\p{L}</code>) 정규식 보정</strong>을 통해 스마트 드래그 필터링을 완성한 과정을 살펴보았습니다.
+  </p>
+  <p>
+    이로써 텍스트 인라인 번역부터 단어 사전 팝업, 다크모드 환경 적응 렌더링, 툴바 빠른 설정까지 모든 핵심 기능 구현과 실전 사용성 검증을 마쳤습니다. 이제 로컬 개발 단계를 마무리하고, 전 세계 사용자들이 다운로드할 수 있는 <strong>구글 크롬 웹 스토어(Chrome Web Store) 정식 출시</strong> 단계로 나아갈 차례였습니다.
+  </p>
+  <p>
+    처음에는 단순히 완성된 소스 코드를 압축(<code>.zip</code>)하여 개발자 대시보드에 업로드하면 곧바로 배포가 끝날 것이라 생각하기 쉽습니다. 하지만 실제로 크롬 웹 스토어 등록 절차에 들어가 보면 계정 2단계 인증과 등록비 결제부터, 엄격한 규격의 그래픽 에셋(아이콘 3종, 1280x800 실물 스크린샷), 다국어 메타데이터, 개인정보처리방침, 그리고 까다로운 권한 소명서(Permissions Justification)까지 <strong>사전에 갖추어야 할 필수 준비물이 매우 방대</strong>합니다.
+  </p>
+  <p>
+    이번 글에서는 크롬 웹 스토어에 확장 프로그램을 정식 출시하기 위해 요구되는 <strong>5대 필수 요건을 총망라하여 정리</strong>하고, 기존의 임시 말풍선 아이콘을 번역 전용 아이콘으로 교체한 배경과 AI 가짜 이미지를 배제한 실물 스크린샷 제작 과정을 공유하고자 합니다.
+  </p>
+
+  <h2 id="store-release-five-requirements-checklist">1. 크롬 웹 스토어 정식 출판을 위한 5대 필수 요건 총정리</h2>
+
+  <p>
+    구글 크롬 웹 스토어는 사용자의 보안과 브라우징 품질을 유지하기 위해 <strong>개발자 프로그램 정책(Developer Program Policies)</strong>을 통해 매우 엄격한 심사 기준을 적용하고 있습니다. 스토어 등록을 위해 사전에 완비해야 할 항목들은 크게 5가지 영역으로 나뉩니다.
+  </p>
+
+  <div class="table w100 withBg">
+    <table>
+      <thead>
+        <tr>
+          <th>영역</th>
+          <th>필수 준비 항목</th>
+          <th>세부 규격 및 권장 기준</th>
+          <th>비고</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>1. 개발자 계정</strong></td>
+          <td>구글 2단계 인증(2FA), 등록비 결제, 게시자 이메일</td>
+          <td>- $5 USD 일회성 개발자 등록비<br>- 게시자 연락처 이메일 입력 후 수신 메일 링크 인증 필수</td>
+          <td>미인증 시 게시 불가</td>
+        </tr>
+        <tr>
+          <td><strong>2. 배포 패키지</strong></td>
+          <td>Manifest V3 준수 ZIP 압축 파일</td>
+          <td>- <code>manifest_version: 3</code> 필수<br>- <code>.git</code>, 임시 이미지, 테스트 스크립트가 배제된 순수 빌드 파일</td>
+          <td>원격 코드 실행(RCE) 금지</td>
+        </tr>
+        <tr>
+          <td><strong>3. 그래픽 에셋</strong></td>
+          <td>공식 아이콘 3종, 스토어 스크린샷, 프로모션 타일</td>
+          <td>- 아이콘: <strong>16x16, 48x48, 128x128px</strong> (PNG, 투명 배경 권장)<br>- 스크린샷: <strong>1280x800px</strong> (또는 640x400px), 1~5장 (PNG/JPEG)<br>- 프로모션 타일(선택): 440x280px (작은 타일), 1400x560px (마퀴)</td>
+          <td>가짜 AI 그래픽 등록 시 심사 거절</td>
+        </tr>
+        <tr>
+          <td><strong>4. 스토어 정보</strong></td>
+          <td>다국어 이름, 요약 설명, 상세 설명, 카테고리</td>
+          <td>- 확장 프로그램 이름: 최대 45자<br>- 요약 설명: 최대 132자<br>- 상세 설명: 기능 목록, 단축키 안내, 지원 엔진, 보안성 명시<br>- <code>_locales/</code> 기반 한국어/영어 i18n 지원</td>
+          <td>단일 목적성 명확화</td>
+        </tr>
+        <tr>
+          <td><strong>5. 정책 및 소명</strong></td>
+          <td>단일 목적 설명서, 권한 소명서, 데이터 비수집 인증</td>
+          <td>- 단일 목적 설명(Single Purpose Description)<br>- <code>host_permissions</code> 및 <code>permissions</code> 사용 정당성 영문 소명<br>- 사용자 데이터 비수집(No Data Collection) 선언<br>- 개인정보처리방침(Privacy Policy) URL</td>
+          <td>심사 통과의 최대 분수령</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    이 중 하나라도 누락되거나 규격에 맞지 않으면 개발자 대시보드에서 배포 버튼 자체가 비활성화되거나, 제출 후 심사관에 의해 반려(Rejected) 처리됩니다.
+  </p>
+
+  <h2 id="icon-redesign-and-practical-compromise">2. 그래픽 에셋 1: 임시 말풍선 아이콘 교체와 현실적 타협</h2>
+
+  <p>
+    가장 먼저 해결해야 했던 과제는 프로그램의 얼굴인 <strong>아이콘 에셋의 교체</strong>였습니다.
+  </p>
+  <p>
+    프로젝트 초기 단계에서는 빠른 기능 프로토타이핑을 위해 템플릿에 포함되어 있던 <strong>'채팅 말풍선' 형태의 범용 아이콘</strong>을 그대로 사용하고 있었습니다. 하지만 이 상태로 스토어에 등록할 경우, 사용자가 툴바나 스토어 검색 결과에서 WebTranslator를 번역기가 아닌 메신저나 실시간 채팅 도구로 오인할 위험이 컸습니다.
+  </p>
+
+  <div class="note wr">
+    <strong>⚠️ 문제 원인:</strong> 확장 프로그램 아이콘은 크롬 툴바(16px), 확장 프로그램 관리 목록(48px), 크롬 웹 스토어 검색 카드(128px) 등 다양한 환경에서 노출되므로, 한눈에 서비스의 정체성(Identity)을 드러내야 합니다.
+  </div>
+
+  <p>
+    1인 개발 환경에서 아이콘 디자인에 며칠씩 시간을 쏟을 수는 없었기에, <strong>"사용자가 보았을 때 적당히 번역 아이콘이구나 하는 직관적 인상을 주는 것"</strong>을 목표로 현실적인 타협점을 찾았습니다.
+  </p>
+
+  <ol class="step">
+    <li><strong>시각적 심볼 정립:</strong> 글로벌 웹페이지를 상징하는 <strong>지구본(Globe)</strong>과 다국어 변환을 상징하는 <strong>언어 전환 기호(A/文)</strong>를 결합한 간결한 실루엣 채택.</li>
+    <li><strong>다중 해상도 래스터라이징:</strong> 16x16, 48x48, 128x128 픽셀 크기의 투명 배경 PNG 파일로 각각 내보내어 <code>icons/</code> 폴더에 배치.</li>
+    <li><strong>매니페스트 연동:</strong> <code>manifest.json</code>의 최상위 <code>icons</code> 필드와 브라우저 상단 툴바 액션인 <code>action.default_icon</code>에 동시 매핑.</li>
+  </ol>
+
+  <div class="pre custom" data-text="JSON (manifest.json)">
+    <button aria-label="Copy code">Copy</button>
+    <pre>{
+  "name": "__MSG_appName__",
+  "version": "1.0.0",
+  "description": "__MSG_appDescription__",
+  "default_locale": "ko",
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "action": {
+    "default_title": "__MSG_appName__",
+    "default_popup": "optionPopup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  }
+}</pre>
+  </div>
+
+  <p>
+    화려한 3D 예술 작품은 아니지만, 크롬 툴바의 작은 16px 공간에서도 뭉개짐 없이 선명하게 번역 도구임을 식별할 수 있는 실용적인 아이콘 구성을 완성했습니다.
+  </p>
+
+  <h2 id="real-screenshot-capture-and-ai-layout-assistance">3. 그래픽 에셋 2: AI 가짜 이미지 거부와 실물 스크린샷 1280x800 구성</h2>
+
+  <p>
+    아이콘 다음으로 중요한 그래픽 에셋은 사용자가 스토어 상세 페이지에서 가장 먼저 확인하는 <strong>스토어 스크린샷(Store Screenshots)</strong>입니다. 이 과정에서 한 차례 큰 방향성 수정이 있었습니다.
+  </p>
+
+  <h3 id="misleading-metadata-policy-and-ai-image-rejection">AI 생성 가짜 이미지의 위험성과 정책 준수</h3>
+  <p>
+    개발 지원 AI 도구는 처음에 미드저니나 DALL-E 스타일의 화려한 3D 가상 렌더링 그래픽을 스토어 스크린샷으로 등록하자고 제안했습니다. 사이버틱한 네온 라인과 가상의 브라우저 목업이 들어간 화려한 이미지였습니다.
+  </p>
+  <p>
+    하지만 이는 <strong>구글 크롬 웹 스토어의 "오해 소지가 있는 메타데이터(Misleading Metadata)" 정책을 정면으로 위반하는 행위</strong>였습니다. 구글 정책은 프로그램의 실제 동작 화면과 동떨어진 과장된 마케팅 CG를 허위 정보로 규정하여 심사를 반려합니다.
+  </p>
+
+  <div class="note">
+    <strong>💡 지침 원칙:</strong> AI가 생성한 가상의 UI 이미지를 전면 배제하고, 실제 웹 브라우저에서 WebTranslator가 구동되는 <strong>1280x800 해상도의 실물 캡처본만을 사용</strong>하기로 결정했습니다.
+  </div>
+
+  <h3 id="four-real-screenshots-composition">직접 캡처한 4종의 실물 스크린샷과 AI 배치 보조</h3>
+  <p>
+    실제 웹사이트 환경에서 직접 캡처를 진행한 후, 여러 장의 캡처본을 정돈된 하나의 스토어용 이미지로 배치·합성하는 작업에만 AI를 보조 도구로 활용했습니다:
+  </p>
+
+  <ol class="step">
+    <li><strong>실물 스크린샷 1 (전체 페이지 인라인 번역):</strong> Steam 상점 페이지에서 <code>Alt+A</code>를 눌렀을 때 원래의 레이아웃과 버튼 디자인을 깨뜨리지 않고 자연스러운 한국어로 번역된 실제 화면.</li>
+    <li><strong>실물 스크린샷 2 (드래그 단어 사전 팝업):</strong> 영문 문단에서 단어를 드래그했을 때 0.8초 만에 즉각 렌더링되는 발음 기호, 품사별 뜻, 실생활 예문 사전 카드 화면.</li>
+    <li><strong>실물 스크린샷 3 (옵션 페이지 &amp; 다중 번역 엔진):</strong> Google 번역, Gemini AI, OpenAI GPT, Claude, 로컬 Ollama를 선택할 수 있는 직관적인 옵션 UI 화면.</li>
+    <li><strong>실물 스크린샷 4 (툴바 빠른 설정 팝업):</strong> 툴바 아이콘 클릭 시 나타나는 빠른 번역 토글 및 실시간 폰트 크기 조절 슬라이더 화면.</li>
+  </ol>
+
+  <p>
+    스토어 심사관이 보더라도 실제 동작을 즉시 신뢰할 수 있고, 사용자가 설치 전 기능을 정확히 파악할 수 있는 1280x800px 규격의 정직한 시각 자료 4종을 <code>dist/screenshots/</code>에 구축 완료했습니다.
+  </p>
+
+  <h2 id="packaging-and-multilingual-metadata">4. 배포 패키지 정리 및 다국어 메타데이터 구축</h2>
+
+  <p>
+    그래픽 에셋이 완성된 후, 배포 패키지(<code>dist/web-translator-v1.0.0.zip</code>)의 무결성과 스토어 등록 정보(Store Listing Metadata)를 정리했습니다.
+  </p>
+
+  <h3 id="clean-build-packaging">불필요한 파일이 배제된 클린 패키징</h3>
+  <p>
+    확장 프로그램 소스 폴더 내에 존재하는 <code>.git</code>, 임시 문서(<code>docs/</code>), 원본 PSD/디자인 파일, 미사용 모듈 등이 ZIP 압축에 포함되면 패키지 용량이 불필요하게 커지고 심사 시 의심스러운 코드로 감점 요인이 됩니다.
+  </p>
+  <p>
+    따라서 <code>manifest.json</code>, <code>src/</code>, <code>_locales/</code>, <code>icons/</code>, <code>content.css</code>, HTML 파일들만 포함된 초경량 정규 배포 패키지 <code>web-translator-v1.0.0.zip</code>을 생성했습니다.
+  </p>
+
+  <h3 id="multilingual-i18n-metadata">다국어(i18n) 스토어 설명문 준비</h3>
+  <p>
+    한국 사용자뿐만 아니라 글로벌 사용자를 위해 <code>_locales/ko/messages.json</code>과 <code>_locales/en/messages.json</code>을 완비하여 스토어 상세 설명(Detailed Description)을 이원화했습니다:
+  </p>
+
+  <div class="table w100 withBg">
+    <table>
+      <thead>
+        <tr>
+          <th>구분</th>
+          <th>한국어 (ko)</th>
+          <th>영어 (en)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>확장 프로그램명</strong></td>
+          <td>Web Translator — 웹 페이지 및 드래그 텍스트 번역</td>
+          <td>Web Translator — Inline Webpage &amp; Selection Translation</td>
+        </tr>
+        <tr>
+          <td><strong>요약 설명 (132자 이내)</strong></td>
+          <td>Alt+A 단축키로 웹 페이지 전체를 인라인 번역하고, 텍스트 드래그 시 사전 및 번역 팝업을 제공합니다.</td>
+          <td>Translate entire webpages inline with Alt+A shortcut and look up words instantly with selection popup.</td>
+        </tr>
+        <tr>
+          <td><strong>상세 설명 구성</strong></td>
+          <td>주요 기능 4가지(인라인 번역, 사전 팝업, 다중 LLM 엔진 지원, 커스텀 스타일) + 데이터 비수집 보안 원칙</td>
+          <td>Core features (Inline Translation, Instant Dictionary, Multi-LLM engines, Custom Styles) + Privacy assurance</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2 id="summary-and-next-chapter">5. 마무리하며: 스토어 출시를 앞둔 다음 과제</h2>
+
+  <p>
+    이번 포스팅에서는 크롬 웹 스토어 출시에 필요한 <strong>5대 필수 요건 체크리스트</strong>를 총정리하고, 임시 말풍선 아이콘 교체와 1280x800 실물 스크린샷 제작, 그리고 정규 배포 패키지 구축 과정을 살펴보았습니다.
+  </p>
+  <p>
+    모든 준비물을 완벽하게 갖춘 뒤 드디어 개발자 대시보드에 패키지를 업로드했을 때, 가장 큰 복병을 마주하게 되었습니다. 바로 구글 심사 시스템이 요구하는 <strong>"호스트 권한(<code>&lt;all_urls&gt;</code>) 및 부가 권한에 대한 엄격한 정당성 소명"</strong>이었습니다.
+  </p>
+  <p>
+    단순히 체크리스트를 채우는 것을 넘어, 구글의 <strong>최소 권한 원칙(Least Privilege)</strong>을 만족시키기 위해 불필요한 부가 권한들을 전면 삭제하고 <code>permissions: ["storage"]</code> 단 하나만 남기는 '권한 다이어트'를 단행해야 했습니다.
+  </p>
+  <p>
+    다음 글에서는 개발자 대시보드에서 마주친 권한 소명 요구에 어떻게 대처하여 심사관을 납득시켰는지, 그리고 최종 출시 버튼을 누르기까지의 실전 과정을 상세히 다루겠습니다.
+  </p>
+
+  <p>
+    혹시 크롬 확장 프로그램을 스토어에 출시하면서 그래픽 에셋 규격이나 정책 소명서 작성에서 곤란을 겪으셨던 경험이 있으신가요? 댓글로 공유해 주시면 감사하겠습니다.
+  </p>
+
+  <!-- 시리즈 네비게이션 컨테이너 (JS로 동적 렌더링) -->
+  <nav class="series-nav"></nav>
+
+</article>
