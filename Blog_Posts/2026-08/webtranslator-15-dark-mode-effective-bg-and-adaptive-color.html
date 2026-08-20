@@ -200,6 +200,31 @@ if (rgbMatch &amp;&amp; rgbMatch.length &gt;= 3) {
     </table>
   </div>
 
+  <div class="note">
+    <strong>💡 옵션 조합 및 상호 배타성 규칙:</strong>
+    1번(텍스트 이중 그림자)과 2번(미세 배경 강조) 옵션은 시각적 레이어가 독립적이므로 다른 옵션들과 자유롭게 동시에 조합하여 사용할 수 있습니다. 반면, 3번(글자색 환경 적응)과 4번(원문 글자 색상 상속) 옵션은 텍스트의 폰트 색상 자체를 직접 결정하므로 상호 배타적으로 동작합니다. 즉, 3번 옵션을 활성화하면 4번 옵션이 적용되지 않으며, 4번 옵션을 사용할 때는 3번 옵션이 적용되지 않습니다.
+  </div>
+
+  <p>
+    실제 스팀(Steam) 창작마당 커뮤니티 페이지(어두운 네이비 배경)에서 각 옵션을 개별 활성화했을 때의 렌더링 결과는 다음과 같습니다:
+  </p>
+
+  <!-- 옵션 1 적용 화면 -->
+  <p><strong>[옵션 1] 텍스트 이중 그림자 (inlineShadow) 적용:</strong></p>
+  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-08/webtranslator-15-dark-mode-effective-bg-and-adaptive-color-img2.png?v=20260820_1028" alt="WebTranslator 옵션 1 텍스트 이중 그림자 활성화 실제 화면">
+
+  <!-- 옵션 2 적용 화면 -->
+  <p><strong>[옵션 2] 미세 배경 강조 (inlineHighlight) 적용:</strong></p>
+  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-08/webtranslator-15-dark-mode-effective-bg-and-adaptive-color-img3.png?v=20260820_1028" alt="WebTranslator 옵션 2 미세 배경 강조 활성화 실제 화면">
+
+  <!-- 옵션 3 적용 화면 -->
+  <p><strong>[옵션 3] 글자색 환경 적응 (inlineAdaptiveColor) 적용:</strong></p>
+  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-08/webtranslator-15-dark-mode-effective-bg-and-adaptive-color-img4.png?v=20260820_1028" alt="WebTranslator 옵션 3 글자색 환경 적응 활성화 실제 화면">
+
+  <!-- 옵션 4 적용 화면 -->
+  <p><strong>[옵션 4] 원문 글자 색상 상속 (inlineInheritColor) 적용:</strong></p>
+  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-08/webtranslator-15-dark-mode-effective-bg-and-adaptive-color-img5.png?v=20260820_1028" alt="WebTranslator 옵션 4 원문 글자 색상 상속 활성화 실제 화면">
+
   <p>
     Block 형태 번역문의 경우 사용자가 선택한 테마 색상(<code>transColor</code>)을 바탕으로 좌측 하이라이트선(<code>border-left</code>)을 유지하며, <strong>블록 배경 투명도(<code>transBgAlpha</code>, 기본 0.12)</strong> 슬라이더를 통해 배경의 은은함과 강조 정도를 0에서 1까지 자유롭게 조절할 수 있도록 구성했습니다.
   </p>
@@ -251,6 +276,10 @@ html[data-wt-inline-adaptive="true"] .wt-translation {
 
   <p>
     웹 확장 프로그램에서 시각적 가독성을 확보하는 작업은 단순히 하나의 색상을 잘 고르는 문제를 넘어섭니다. 다양한 웹사이트가 가진 DOM 계층 구조와 다크 테마의 특성을 분석하고, 이를 유연하게 대응할 수 있는 옵션 체계로 설계하는 것이 완성도 높은 사용자 경험의 핵심임을 확인했습니다.
+  </p>
+
+  <p>
+    개인적으로 일상적인 웹 서핑에서 가장 애용하는 설정은 <strong>4번 옵션인 원문 글자 색상 상속</strong>입니다. 웹페이지 본래의 폰트 색상을 그대로 이어받아 이질감이 가장 적으며, Block 형태 번역문에서도 투명도 슬라이더(<code>transBgAlpha</code>) 및 테마 색상(<code>transColor</code>)의 조화와 어우러져 가장 자연스럽고 깔끔한 시각적 균형을 보여주기 때문입니다.
   </p>
 
   <p>
