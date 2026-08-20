@@ -4,7 +4,7 @@ title_kr: 이미지 번역 R&D 1·2차: Tesseract 미검출과 Vision AI Boundin
 category: Troubleshooting
 sub_category: Image-OCR-VisionAI
 version: 1.0.0
-status: Experimental
+status: Verified
 created_date: 2026-08-20
 last_modified: 2026-08-20
 language: KR+EN
@@ -30,7 +30,7 @@ series_id: webtranslator
 * **Category:** Troubleshooting
 * **Sub-Category:** Image-OCR-VisionAI
 * **Version:** 1.0.0
-* **Status:** Experimental
+* **Status:** Verified
 * **Date:** 2026-08-20
 * **Language:** KR+EN
 
@@ -56,20 +56,21 @@ series_id: webtranslator
 * **[2차 시도: Multimodal Vision AI (Gemini / GPT-4o Vision)와 Bounding Box 추출]:**
   * Tesseract.js를 폐기하고 이미지를 Base64 인코딩하여 멀티모달 Vision LLM에 전달, 텍스트 인식(OCR)과 함께 글자 영역의 사각형 좌표(`glyphBox`, `eraseBox`, `containerBox`)를 JSON 규격으로 반환받도록 파이프라인을 재설계함. [FACT]
   * Gemini Vision의 경우 이미지 좌상단 `[0, 0]`부터 우하단 `[1000, 1000]`까지의 정규화된 2D Bounding Box 좌표(`[ymin, xmin, ymax, xmax]`)를 반환함. [FACT]
-* **[Vision AI의 Spatial Grounding(공간 좌표) 한계와 좌표 붕괴]:**
-  * Vision LLM은 텍스트의 맥락적 이해와 번역문 생성 품질은 매우 우수하나, 토큰 기반 공간 분해능의 한계로 인해 픽셀 단위 경계 상자(Bounding Box) 예측에 상당한 오차가 발생함. [FACT]
-  * 글자가 없는 허공에 사각형이 지정되거나, 말풍선 영역을 심하게 벗어나 캔버스 오버레이가 엉뚱한 위치에 그려지는 정렬 붕괴 현상이 빈발함. [FACT]
+* **[Vision AI 프롬프트 방식의 한계와 좌표 불일치 현상]:**
+  * 텍스트 번역 품질은 우수했으나, 당시 AI가 작성한 프롬프트 및 정규화 좌표 파싱 방식의 정밀도 미흡으로 인해 반환된 바운딩 박스 위치가 불규칙하게 어긋나는 좌표 정렬 실패가 빈발함. [FACT]
+  * 이는 모델 자체의 근본적 분해능 한계라기보다는 당시 프롬프트 설계 및 좌표 스케일링 파이프라인의 완성도 문제에 가까우며, 향후 Gemini 기반 Visual Object Grounding/Editing 기법 등을 접목한 심층 R&D를 통해 개선 가능한 영역으로 파악됨. [OPINION]
+  * 크롬 웹 스토어 v1.0.0 정식 출시 일정과 기존 텍스트 번역의 안정성을 최우선으로 확보하기 위해, 불안정한 이미지 번역 기능을 억지로 탑재하지 않고 일단 보류/격리하기로 결정함. [FACT]
+* **[비용 절감 및 오픈소스 레퍼런스 목적의 PaddleOCR 3차 전환]:**
+  * 클라우드 Vision AI API는 지속적인 API 호출 비용이 발생하므로, 비용 부담이 없는 무료 온디바이스 오픈소스 솔루션(기존 다수 오픈소스 프로젝트의 레퍼런스 존재)을 모색하기 위해 PaddleOCR(PP-OCRv5) 기반 3차 R&D로 방향을 전환함. [FACT]
 * **[DeclarativeNetRequest 기반 이미지 보안 제약 우회]:**
   * 외부 CDN이나 핫링크 방지가 걸린 이미지를 Background Script에서 `fetch`할 때 CORS 및 Referer 제약으로 다운로드가 차단되는 문제가 발생함. [FACT]
   * Chrome MV3의 `chrome.declarativeNetRequest.updateSessionRules`를 활용하여 세션 단위로 `Referer` 요청 헤더를 원본 웹페이지 URL로 변조한 후 Base64 Data URL로 변환하는 방식을 구현함 (`src/background/imageService.js`). [FACT]
-* **[PaddleOCR로의 방향 전환 (지시 번복)]:**
-  * 1차(Tesseract)의 인식 불가와 2차(Vision AI)의 좌표 오차를 모두 겪은 후, 정밀 광학 문자 검출 전용 딥러닝 모델인 PaddleOCR(PP-OCRv5)을 브라우저에 임베딩하는 3차 시도로 연구 방향을 전면 수정함. [FACT]
 
 ---
 
 #### 🛠️ Procedures (절차)
 
-1. **DeclarativeNetRequest를 활용한 이미지 다운로드 및 Base64 변환 (`src/background/imageService.js`):** [★★★★★]
+1. **DeclarativeNetRequest를 활용한 이미지 다운로드 및 Base64 변환 (`src/background/imageService.js`):** [★★★★★] ✅ Verified 2026-08-20
    ```javascript
    export async function fetchImageAsBase64(imageUrl, refererUrl) {
      const ruleId = 9999;
@@ -107,10 +108,10 @@ series_id: webtranslator
    }
    ```
 
-2. **Vision LLM 전용 OCR Layout Analyzer 프롬프트 설계 (`src/api/vision.js`):** [★★★★★]
+2. **Vision LLM 전용 OCR Layout Analyzer 프롬프트 설계 (`src/api/vision.js`):** [★★★★★] ✅ Verified 2026-08-20
    - `naturalWidth`, `naturalHeight` 정보와 함께 `glyphBox`, `eraseBox`, `containerBox`(`[ymin, xmin, ymax, xmax]`), `originalText`, `textColor`, `backgroundColor`를 구조화된 JSON으로 반환하도록 System Instruction 정의.
 
-3. **정규화 좌표(0~1000)의 실제 픽셀 매핑 및 캔버스 오버레이 렌더링 시도:** [★★★★★]
+3. **정규화 좌표(0~1000)의 실제 픽셀 매핑 및 캔버스 오버레이 렌더링 시도:** [★★★★★] ✅ Verified 2026-08-20
    - 모델이 반환한 `[ymin, xmin, ymax, xmax]` 값을 원본 이미지의 픽셀 좌표(`Pixel_X = (xmin / 1000) * naturalWidth`)로 환산하여 캔버스에 사각형 마스크 및 번역 텍스트 드로잉.
 
 ---
@@ -123,10 +124,10 @@ series_id: webtranslator
   * 해결법: 브라우저 온디바이스 Tesseract 단독 처리 방식을 중단하고, 시각적 맥락 이해 능력이 뛰어난 멀티모달 Vision LLM으로 전환함. [FACT]
   * 신뢰도: [★★★★★]
 
-* **[Vision AI의 Bounding Box 좌표 부정확성으로 인한 캔버스 오버레이 정렬 붕괴]**
-  * 증상: Vision LLM이 텍스트 내용은 정확히 읽어냈으나, 반환된 Bounding Box 좌표가 실제 글자 위치와 수십~수백 픽셀씩 어긋나 엉뚱한 허공에 캔버스 번역문이 렌더링됨.
-  * 원인: 일반 생성형 멀티모달 LLM은 이미지 전체의 의미를 파악하는 능력은 우수하지만, 픽셀 단위의 정밀한 공간 분해능(Spatial Resolution)이 부족하여 정확한 경계 좌표를 도출하지 못함.
-  * 해결법: Vision LLM 단독 좌표 추출을 포기하고, 전문 광학 문자 검출(Detection) 모델인 PaddleOCR(PP-OCRv5)을 브라우저에 연동하는 3차 연구로 방향 전환을 결정함. [FACT]
+* **[Vision AI의 Bounding Box 좌표 부정확성으로 인한 캔버스 오버레이 정렬 붕괴]** *(사용자 검증 수정 — 2026-08-20)*
+  * 증상: Vision LLM이 텍스트 내용은 비교적 정확히 추출했으나, 반환된 Bounding Box 좌표 오차가 불규칙하여 캔버스 오버레이가 실제 글자 위치와 어긋나 엉뚱한 허공에 렌더링됨.
+  * 원인: 당시 AI가 작성한 프롬프트 설계 및 좌표 스케일링/파싱 로직의 정밀도 미흡. (향후 Visual Object Detection/Editing 연구를 통해 개선 가능성 존재)
+  * 해결법: v1.0.0 정식 출시를 위해 이미지 번역을 잠시 보류하고, 지속적인 API 비용 문제를 해결하면서 검증된 오픈소스 레퍼런스를 활용하기 위해 온디바이스 PaddleOCR(PP-OCRv5) 3차 R&D로 방향 전환을 결정함. [USER VERIFIED]
   * 신뢰도: [★★★★★]
 
 * **[외부 이미지 Fetch 시 CORS 차단 및 Hotlink 보안 에러]**
@@ -144,16 +145,29 @@ series_id: webtranslator
 #### 💬 Experiences & Tips (경험 및 팁)
 
 * [FACT] Tesseract.js는 표준 스캔 문서가 아닌 웹상의 다양한 폰트와 세로쓰기 이미지를 온디바이스로 처리하기에는 모델 가중치와 구조적 한계가 뚜렷하다.
-* [FACT] 범용 멀티모달 Vision AI(Gemini, GPT-4o)는 이미지 설명이나 번역 자체에는 탁월하지만, 픽셀 단위의 정밀한 Bounding Box 좌표를 요구하는 오버레이 작업에는 단독으로 사용하기 어렵다.
-* [OPINION] 복잡한 이미지 번역 파이프라인을 구축할 때는 '문자 위치 검출(Detection)'과 '문자 판독(Recognition)', '맥락 번역(Translation)'을 단일 모델에 모두 의존하기보다 각 영역에 특화된 파이프라인으로 분리하는 것이 안정적이다.
+* [OPINION] Vision AI를 활용한 정밀 Bounding Box 추출은 단순 프롬프팅만으로는 좌표 오차가 불규칙하게 발생할 수 있으므로, Gemini의 Visual Grounding/Editing 기법 등을 접목한 심층적인 파이프라인 R&D가 필요하다.
+* [FACT] 클라우드 Vision API의 호출 비용 부담을 해소하기 위해 온디바이스 오픈소스 OCR(PaddleOCR 등)을 대안으로 검토하는 접근법은 비용 최적화 측면에서 유효한 연구 경로다.
 
 ---
 
 #### ❓ Missing Info (검증 필요 항목)
 
-* [ ] Tesseract.js 및 Vision AI에서 발생했던 실제 오차 범위(픽셀 오차 및 텍스트 누락 빈도)에 대한 추가 정량 데이터 확인 필요
-* [ ] `fetchImageAsBase64`의 DeclarativeNetRequest 세션 룰 삭제 타이밍 및 동시 요청 시 룰 충돌 가능성 검토
-* [ ] 2차 Vision AI 시도에서 프롬프트에 `naturalWidth`/`naturalHeight`를 명시했을 때와 0~1000 정규화 좌표를 사용할 때의 오차 발생 양상 비교
+* [x] Tesseract.js(대다수 미검출) 및 Vision AI(바운딩 박스 위치 불규칙 정렬) 모두 오차 범위가 매우 랜덤하여 정량 측정이 불가할 정도로 신뢰도 미달 확인 — Verified 2026-08-20
+* [x] 프롬프트 내 원본 해상도(naturalWidth/Height) 명시 방식과 0~1000 정규화 방식 모두 유의미한 정밀도 차이 없이 검출 실패 확인 — Verified 2026-08-20
+
+---
+
+## 📝 Feedback History
+
+### 2026-08-20 (1차) — Test Result: PASS
+* **환경:** Windows 11, Chrome Extension MV3, WebTranslator v1.0.0
+* **검증된 단계:** 1단계 ~ 3단계 전체 검증 완료
+* **피드백 내용:**
+  1. Vision AI의 바운딩 박스 검출 실패 원인을 멀티모달 LLM의 자체 분해능 한계가 아닌 당시 프롬프트 설계 및 파싱 방식의 정밀도 미흡으로 정정. 향후 Gemini Visual Grounding R&D를 통한 발전 가능성 명시.
+  2. v1.0.0 정식 출시 일정과 기존 텍스트 번역 안정성을 위해 이미지 번역 기능을 무리하게 탑재하지 않고 보류/격리 결정.
+  3. PaddleOCR 전환 이유를 지속적인 AI API 비용 부담 해소 및 오픈소스 레퍼런스(GitHub 프로젝트) 활용 목적으로 명확화.
+  4. Tesseract 및 Vision AI의 오차 범위가 불규칙(랜덤)하여 정량 측정이 불가함을 확인하고, 해상도 명시 방식과 정규화 방식 간의 유의미한 차이가 없었음을 Missing Info에 반영 완료.
+* **Status 변경:** Experimental → Verified
 
 ---
 

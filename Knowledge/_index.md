@@ -5,7 +5,7 @@ Last Updated: 2026-08-20
 
 | Topic | Category | Created Date | Last Modified | Status | File Path |
 |-------|----------|:------------:|:-------------:|:------:|-----------|
-| webtranslator-17-image-translation-tesseract-and-vision-bbox | Troubleshooting | 2026-08-20 | 2026-08-20 | Experimental | webtranslator-17-image-translation-tesseract-and-vision-bbox/Troubleshooting/webtranslator-17-image-translation-tesseract-and-vision-bbox-2026-08-20.md |
+| webtranslator-17-image-translation-tesseract-and-vision-bbox | Troubleshooting | 2026-08-20 | 2026-08-20 | Verified | webtranslator-17-image-translation-tesseract-and-vision-bbox/Troubleshooting/webtranslator-17-image-translation-tesseract-and-vision-bbox-2026-08-20.md |
 | webtranslator-16-toolbar-quick-popup-and-unified-dropdown | Troubleshooting | 2026-08-20 | 2026-08-20 | Verified | webtranslator-16-toolbar-quick-popup-and-unified-dropdown/Troubleshooting/webtranslator-16-toolbar-quick-popup-and-unified-dropdown-2026-08-20.md |
 | webtranslator-15-dark-mode-effective-bg-and-adaptive-color | Troubleshooting | 2026-08-20 | 2026-08-20 | Verified | webtranslator-15-dark-mode-effective-bg-and-adaptive-color/Troubleshooting/webtranslator-15-dark-mode-effective-bg-and-adaptive-color-2026-08-20.md |
 | webtranslator-14-external-dictionary-failure-and-single-llm | Troubleshooting | 2026-08-20 | 2026-08-20 | Verified | webtranslator-14-external-dictionary-failure-and-single-llm/Troubleshooting/webtranslator-14-external-dictionary-failure-and-single-llm-2026-08-20.md |
