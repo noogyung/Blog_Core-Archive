@@ -10,8 +10,8 @@ last_modified: 2026-08-20
 language: KR+EN
 tags: [WebTranslator, ChromeExtension, 크롬확장프로그램, optionPopup, 빠른설정, 커스텀드롭다운, 실시간미리보기, CSS변수, UIUX, 트러블슈팅]
 sources_count: 5
-blog_draft_path: null
-blog_draft_date: null
+blog_draft_path: Blog_Posts/2026-08/webtranslator-16-toolbar-quick-popup-and-unified-dropdown.html
+blog_draft_date: 2026-08-20
 blog_id: core-archive
 blog_published: false
 series_id: webtranslator
@@ -47,9 +47,10 @@ series_id: webtranslator
 
 #### 🔑 Core Concepts (핵심 개념)
 
-* **[15편 간이 팝업에서 정식 핵심 제어 허브로의 확장]:**
-  * 15편에서는 다크모드 가독성 4대 옵션 및 블록 투명도 슬라이더의 실시간 탭 반영(`notifyPreview`, `chrome.storage.onChanged`) 동작을 테스트하기 위해 `optionPopup.html`을 간이로 연동한 바 있음. [FACT]
-  * 16편에서는 이를 본격적으로 확장하여, 번역 모드(Google, Gemini, OpenAI 등), 목표 언어, 표시 방식, 테마 색상, 글자 크기, 가독성 옵션 등 일상적인 브라우징에 필요한 모든 설정을 대형 옵션 페이지(`options.html`) 이동 없이 툴바 미니 팝업에서 1초 만에 조작할 수 있는 메인 제어 허브로 완성함. [FACT]
+* **[15편 간이 팝업에서 정식 핵심 제어 허브로의 확장 및 AI 개발 특이점]:**
+  * 15편에서는 다크모드 가독성 4대 옵션 및 블록 투명도 슬라이더의 실시간 탭 반영(`notifyPreview`, `chrome.storage.onChanged`) 동작을 검증하기 위해 `optionPopup.html`을 간이로 연동한 바 있음. [FACT]
+  * **AI 개발의 특이점(Over-generation)과 정규화의 필요성:** 당시 AI에게 빠른 설정 팝업을 구현하도록 지시하자, 프롬프트의 의도 범위를 넘어 대형 옵션 페이지에 있던 복잡한 설정들(화면 내 지연 번역, 단축키 입력창 등 비필수 항목들)까지 팝업에 무비판적으로 복제하여 UI가 극도로 난잡해지는 현상이 발생함. [FACT]
+  * 이에 따라 난잡해진 항목들을 과감히 걷어내고 정규화(Normalization)를 진행하여, 일상 브라우징에 필수적인 핵심 제어(번역 모드, 목표 언어, 표시 방식, 테마 색상, 글자 크기, 가독성 4대 옵션)만 320px 컴팩트 다크 UI에 집약한 정식 제어 허브로 전면 재설계함. [FACT]
 * **[대형 옵션 페이지 이동의 UX 병목 극복]:**
   * 기존에는 글자 크기나 투명도를 바꾸기 위해 (1) 우클릭 후 새 탭으로 옵션 창 열기, (2) 설정 변경 후 저장, (3) 원래 탭으로 돌아와 새로고침하는 3단계 번거로움이 존재했음. [FACT]
   * 툴바 아이콘 클릭 시 현재 웹페이지 위에 즉시 오버레이되는 320px 팝업을 메인 인터페이스로 채택하여 웹서핑 흐름을 쾌적하게 유지함. [FACT]
@@ -121,6 +122,10 @@ series_id: webtranslator
 
 #### 🐛 Errors & Solutions (오류 및 해결법)
 
+* **[AI의 임의 기능 과다 생성으로 인한 팝업 UI 난잡화]**
+  * 원인: 팝업 생성을 지시했을 때 AI가 대형 옵션 페이지의 모든 토글과 비필수 설정까지 팝업에 그대로 복제하여 UI가 비대해짐.
+  * 해결법: 자주 쓰지 않는 항목(화면 내 지연 번역 등)을 과감히 제거하고, 일상 조작에 꼭 필요한 번역 엔진, 언어, 표시 방식, 4대 가독성 스타일만 선별 배치하는 정규화(Normalization) 수행. [FACT]
+  * 신뢰도: [★★★★★]
 * **[설정 변경 시 대형 옵션 탭 이동 및 수동 새로고침으로 인한 UX 단절]**
   * 원인: 옵션 설정이 별도 탭(`options.html`)에만 존재하여 스타일 확인을 위해 탭 전환과 새로고침을 반복해야 했음.
   * 해결법: 툴바 클릭 즉시 열리는 320px 미니 팝업(`optionPopup.html`)을 메인 UI로 확장하고, `chrome.tabs.sendMessage` 기반의 실시간 CSS 변수 주입 파이프라인을 구축함. [FACT]
@@ -147,6 +152,7 @@ series_id: webtranslator
 
 #### 💬 Experiences & Tips (경험 및 팁)
 
+* [OPINION] AI에게 복잡한 UI 도구 제작을 지시할 때는 무엇을 추가할지보다 '무엇을 제외할 것인가'를 명확히 선 긋는 정규화 지시가 필수적이다. 그렇지 않으면 AI의 생성 성향상 불필요한 기능까지 무제한 확장되어 UI의 간결함을 해치게 된다.
 * [OPINION] 사용자가 빈번하게 변경하는 UI 요소(글자 크기, 투명도, 번역 엔진)는 옵션 진입 비용(Click Depth)을 1회로 줄이고 변경 결과를 현재 화면에서 즉각 체감할 수 있도록 실시간 피드백을 제공하는 것이 사용자 경험에 도움이 된다.
 * [FACT] Chrome 익스텐션에서 `input` 이벤트(실시간 미리보기용 단방향 메시지)와 `change` 이벤트(스토리지 영구 저장)를 명확히 분리하는 패턴은 부드러운 반응성과 스토리지 API 쿼터 제약 준수를 동시에 달성하는 모범적인 접근법이다.
 * [FACT] 15편에서 가독성 옵션 검증용으로 간이 제작했던 팝업을 16편에서 핵심 엔진 컨트롤러로 확장함으로써, 확장 프로그램의 설정 접근성을 크게 개선할 수 있었다.
@@ -162,6 +168,12 @@ series_id: webtranslator
 ---
 
 ## 📝 Feedback History
+
+### 2026-08-20 (2차) — Test Result: PASS
+* **피드백 내용:**
+  1. 15편에서 간이 제작했던 빠른 설정 팝업을 16편에서 정식 확장하게 된 계기에 'AI 코딩 시 임의 기능 과다 생성(Over-generation) 현상과 이를 걸러내는 UI 정규화(Normalization)' 관점 보강.
+  2. 불필요한 복합 설정들을 제거하고 필수 제어 중심으로 팝업을 재설계한 엔지니어링 의도 명시.
+* **Status 변경:** Verified 유지
 
 ### 2026-08-20 (1차) — Test Result: PASS
 * **환경:** Windows 11, Chrome Extension MV3, WebTranslator v1.0.0
