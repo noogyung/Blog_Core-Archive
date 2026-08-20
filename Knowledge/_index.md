@@ -5,6 +5,7 @@ Last Updated: 2026-08-20
 
 | Topic | Category | Created Date | Last Modified | Status | File Path |
 |-------|----------|:------------:|:-------------:|:------:|-----------|
+| webtranslator-16-toolbar-quick-popup-and-unified-dropdown | Troubleshooting | 2026-08-20 | 2026-08-20 | Experimental | webtranslator-16-toolbar-quick-popup-and-unified-dropdown/Troubleshooting/webtranslator-16-toolbar-quick-popup-and-unified-dropdown-2026-08-20.md |
 | webtranslator-15-dark-mode-effective-bg-and-adaptive-color | Troubleshooting | 2026-08-20 | 2026-08-20 | Verified | webtranslator-15-dark-mode-effective-bg-and-adaptive-color/Troubleshooting/webtranslator-15-dark-mode-effective-bg-and-adaptive-color-2026-08-20.md |
 | webtranslator-14-external-dictionary-failure-and-single-llm | Troubleshooting | 2026-08-20 | 2026-08-20 | Verified | webtranslator-14-external-dictionary-failure-and-single-llm/Troubleshooting/webtranslator-14-external-dictionary-failure-and-single-llm-2026-08-20.md |
 | webtranslator-13-modularization-and-native-esm | Troubleshooting | 2026-08-19 | 2026-08-19 | Verified | webtranslator-13-modularization-and-native-esm/Troubleshooting/webtranslator-13-modularization-and-native-esm-2026-08-19.md |
