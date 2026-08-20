@@ -13,7 +13,7 @@ sources_count: 4
 blog_draft_path: Blog_Posts/2026-08/webtranslator-15-dark-mode-effective-bg-and-adaptive-color.html
 blog_draft_date: 2026-08-20
 blog_id: core-archive
-blog_published: false
+blog_published: true
 series_id: webtranslator
 ---
 
