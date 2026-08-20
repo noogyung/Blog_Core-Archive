@@ -5,6 +5,7 @@ Last Updated: 2026-08-21
 
 | Topic | Category | Created Date | Last Modified | Status | File Path |
 |-------|----------|:------------:|:-------------:|:------:|-----------|
+| webtranslator-20-chat-icon-replacement-and-real-screenshot-capture | Troubleshooting | 2026-08-21 | 2026-08-21 | Experimental | webtranslator-20-chat-icon-replacement-and-real-screenshot-capture/Troubleshooting/webtranslator-20-chat-icon-replacement-and-real-screenshot-capture-2026-08-21.md |
 | webtranslator-19-smart-drag-filtering-and-cjk-support | Troubleshooting | 2026-08-20 | 2026-08-21 | Verified | webtranslator-19-smart-drag-filtering-and-cjk-support/Troubleshooting/webtranslator-19-smart-drag-filtering-and-cjk-support-2026-08-20.md |
 | webtranslator-18-image-translation-paddleocr-ram-spike-and-revert | Troubleshooting | 2026-08-20 | 2026-08-20 | Verified | webtranslator-18-image-translation-paddleocr-ram-spike-and-revert/Troubleshooting/webtranslator-18-image-translation-paddleocr-ram-spike-and-revert-2026-08-20.md |
 | webtranslator-17-image-translation-tesseract-and-vision-bbox | Troubleshooting | 2026-08-20 | 2026-08-20 | Verified | webtranslator-17-image-translation-tesseract-and-vision-bbox/Troubleshooting/webtranslator-17-image-translation-tesseract-and-vision-bbox-2026-08-20.md |
