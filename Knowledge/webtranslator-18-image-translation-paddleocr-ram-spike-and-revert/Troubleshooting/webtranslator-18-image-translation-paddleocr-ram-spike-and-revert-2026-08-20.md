@@ -10,8 +10,8 @@ last_modified: 2026-08-20
 language: KR+EN
 tags: [WebTranslator, ChromeExtension, 크롬확장프로그램, ImageTranslation, 이미지번역, OCR, PaddleOCR, ONNXRuntime, WASM, WebAssembly, MemorySpike, 롤백, 트러블슈팅]
 sources_count: 5
-blog_draft_path: null
-blog_draft_date: null
+blog_draft_path: Blog_Posts/2026-08/webtranslator-18-image-translation-paddleocr-ram-spike-and-revert.html
+blog_draft_date: 2026-08-20
 blog_id: core-archive
 blog_published: false
 series_id: webtranslator
