@@ -55,7 +55,8 @@
         {
           "chapter": "6장. 이미지 번역 R&D 및 온디바이스 AI 한계",
           "topics": [
-            "webtranslator-17-image-translation-tesseract-and-vision-bbox"
+            "webtranslator-17-image-translation-tesseract-and-vision-bbox",
+            "webtranslator-18-image-translation-paddleocr-ram-spike-and-revert"
           ]
         }
       ]
