@@ -58,6 +58,12 @@
             "webtranslator-17-image-translation-tesseract-and-vision-bbox",
             "webtranslator-18-image-translation-paddleocr-ram-spike-and-revert"
           ]
+        },
+        {
+          "chapter": "7장. 사용성 고도화 및 스토어 정식 배포",
+          "topics": [
+            "webtranslator-19-smart-drag-filtering-and-cjk-support"
+          ]
         }
       ]
     }
