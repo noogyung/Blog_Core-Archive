@@ -1,0 +1,276 @@
+<!-- ============================================================
+  [BLOG POST METADATA - Blogspot 설정창 복사용]
+  Title: [WebTranslator 개발기 #17] 이미지 번역 R&D 1·2차: Tesseract 미검출과 Vision AI Bounding Box 좌표 붕괴
+  Labels (Tags): WebTranslator, ChromeExtension, 크롬확장프로그램, ImageTranslation, 이미지번역, OCR, Tesseract, VisionAI, GeminiVision, GPT4oVision, BoundingBox, 캔버스오버레이, 트러블슈팅
+  Meta Description: 웹페이지 내 이미지(img, canvas, background-image) 번역을 위해 시도했던 WebAssembly Tesseract.js와 멀티모달 Vision AI의 Bounding Box 검출 실험, 좌표 불일치 문제와 해결 방향을 정리합니다.
+  Slug: webtranslator-17-image-translation-tesseract-and-vision-bbox
+  ---
+  Primary Keyword: 크롬 확장프로그램 이미지 번역 OCR
+  Secondary Keywords: WebTranslator, Tesseract.js WASM, Gemini Vision Bounding Box, GPT-4o Vision, 캔버스 오버레이, DeclarativeNetRequest Referer
+  Knowledge Source: Knowledge/webtranslator-17-image-translation-tesseract-and-vision-bbox/Troubleshooting/webtranslator-17-image-translation-tesseract-and-vision-bbox-2026-08-20.md
+  Generated Date: 2026-08-20
+  Estimated Read Time: 9분
+  Series ID: webtranslator
+  ============================================================ -->
+
+<article>
+
+  <!-- 이미지 슬롯 1 (대표 이미지 - 필수) -->
+  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-08/webtranslator-17-image-translation-tesseract-and-vision-bbox-img1_v1.jpg?v=20260820_1145" alt="WebTranslator 이미지 번역 파이프라인 아키텍처 및 Tesseract OCR과 Vision AI Bounding Box 검출 비교 다이어그램">
+
+  <p>
+    앞서 16편에서는 15편에서 간이 제작했던 빠른 설정 팝업을 정규화(Normalization)하여, 대형 옵션 창 이동 없이도 툴바 미니 팝업에서 번역 모드, 언어, 테마 색상, 가독성 4대 옵션을 1초 만에 조작할 수 있는 일원화된 드롭다운 인터페이스를 완성했습니다.
+  </p>
+  <p>
+    이로써 웹페이지 내 일반 텍스트에 대한 번역 품질과 편의성은 상당 수준 안정화되었습니다. 하지만 해외 게임 패치 노트의 인게임 스크린샷, 해외 웹툰(만화)의 말풍선, 글로벌 쇼핑몰 배너처럼 <strong>이미지 파일(&lt;img&gt;, &lt;canvas&gt;, background-image) 속에 박혀 있는 외국어 문자</strong>는 기존의 DOM 텍스트 노드 순회 파서(<code>TreeWalker</code>)로는 전혀 읽어올 수 없었습니다.
+  </p>
+  <p>
+    이미지 요소 위로 마우스를 올렸을 때 <code>[번역]</code> 플로팅 버튼을 띄우고, 원본 이미지의 텍스트 위치를 파악하여 번역문으로 덮어씌우는 <strong>이미지 번역 R&amp;D</strong>의 1차(Tesseract.js WASM) 및 2차(Multimodal Vision AI Bounding Box) 시도 과정과 여기서 마주한 기술적 한계를 공유하고자 합니다.
+  </p>
+
+  <h2 id="browser-image-fetch-and-declarative-net-request">1. 브라우저 이미지 로드 제약 극복: DeclarativeNetRequest와 Base64 파이프라인</h2>
+
+  <p>
+    이미지 번역의 첫 번째 관문은 웹페이지에 렌더링된 이미지를 분석 엔진으로 안전하게 가져오는 것이었습니다. 타사 도메인이나 외부 CDN에 호스팅된 이미지를 Background Service Worker에서 직접 <code>fetch()</code>할 경우, 핫링크(Hotlink) 방지나 CORS 보안 정책으로 인해 <code>403 Forbidden</code> 에러가 발생하며 다운로드가 차단되는 문제가 나타났습니다.
+  </p>
+
+  <p>
+    이를 해결하기 위해 Chrome Extension Manifest V3의 <code>chrome.declarativeNetRequest</code> API를 활용하여, 이미지 다운로드 순간에만 요청 헤더의 <code>Referer</code>를 현재 탭의 웹페이지 URL로 동적 변조한 후 즉시 규칙을 해제하는 안전한 Base64 변환 파이프라인을 구축했습니다.
+  </p>
+
+  <div class="pre custom" data-text="JavaScript">
+    <button aria-label="Copy code">Copy</button>
+    <pre>/* src/background/imageService.js - Referer 변조 및 Base64 이미지 변환 */
+export async function fetchImageAsBase64(imageUrl, refererUrl) {
+  const ruleId = 9999;
+
+  // 1. 요청 도메인의 Referer 보안 검증 우회를 위한 동적 세션 규칙 추가
+  if (refererUrl &amp;&amp; chrome.declarativeNetRequest) {
+    try {
+      await chrome.declarativeNetRequest.updateSessionRules({
+        removeRuleIds: [ruleId],
+        addRules: [{
+          id: ruleId,
+          priority: 1,
+          action: {
+            type: "modifyHeaders",
+            requestHeaders: [{ header: "Referer", operation: "set", value: refererUrl }]
+          },
+          condition: {
+            urlFilter: imageUrl,
+            resourceTypes: ["xmlhttprequest", "image", "other"]
+          }
+        }]
+      });
+    } catch (ruleErr) {
+      console.warn("[WebTranslator] DeclarativeNetRequest 규칙 설정 실패:", ruleErr);
+    }
+  }
+
+  // 2. 이미지 바이너리 다운로드 및 Base64 Data URL 인코딩
+  try {
+    const response = await fetch(imageUrl);
+    if (!response.ok) {
+      throw new Error(`이미지 다운로드 실패 (HTTP ${response.status})`);
+    }
+
+    const blob = await response.blob();
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result);
+      reader.onerror = () => reject(new Error("이미지 Base64 변환 실패"));
+      reader.readAsDataURL(blob);
+    });
+  } finally {
+    // 3. 보안 및 상태 오염 방지를 위해 세션 규칙 즉시 제거
+    if (chrome.declarativeNetRequest) {
+      try {
+        await chrome.declarativeNetRequest.updateSessionRules({
+          removeRuleIds: [ruleId]
+        });
+      } catch {}
+    }
+  }
+}</pre>
+  </div>
+
+  <p>
+    이 파이프라인을 통해 웹페이지 내 거의 모든 원격 이미지 자원을 순수 Base64 Data URL 문자열로 안전하게 추출할 수 있는 기반이 마련되었습니다.
+  </p>
+
+  <h2 id="trial-1-tesseract-wasm-limitations">2. 1차 시도: Tesseract.js (WASM 온디바이스 OCR)와 비정형 텍스트 미검출의 한계</h2>
+
+  <p>
+    가장 먼저 시도한 방식은 외부 API 호출 비용이 들지 않고 개인정보 유출 우려가 없는 <strong>온디바이스 WebAssembly(WASM) OCR</strong> 엔진인 <code>Tesseract.js</code>를 브라우저에 탑재하는 것이었습니다.
+  </p>
+
+  <p>
+    하지만 실제 웹 이미지들을 대상으로 테스트를 진행하자마자 심각한 인식 실패가 발생했습니다:
+  </p>
+
+  <ol class="step">
+    <li><strong>종서(세로쓰기) 문자열 미인식:</strong> 일본 만화나 동아시아 웹툰의 말풍선에 흔히 쓰이는 세로쓰기 텍스트를 인식하지 못하고 문자를 심하게 누락하거나 분절시켰습니다.</li>
+    <li><strong>게임 폰트 및 아트 텍스트 검출 불가:</strong> Tesseract의 사전 훈련 가중치는 표준 인쇄 문서(300 DPI 가로 텍스트) 중심으로 학습되어 있어, 게임 패치 이미지의 비정형 폰트, 외곽선(Stroke), 그림자가 들어간 텍스트를 감지하지 못했습니다.</li>
+    <li><strong>복합 배경 속 노이즈 취약성:</strong> 일러스트나 그라데이션 배경이 깔린 이미지에서는 텍스트 영역을 배경과 분리해내지 못하고 콘솔에 빈 결과(0% 인식률)만 반환했습니다.</li>
+  </ol>
+
+  <div class="note wr">
+    <strong>⚠️ 한계 확인:</strong> 별도의 복잡한 OpenCV 이미지 전처리(이진화, 노이즈 제거, 투영 변환 등) 파이프라인 없이 Tesseract.js 단독 모델만으로는 웹 환경의 다양한 비정형 이미지를 처리하기 어렵다는 점을 확인했습니다.
+  </div>
+
+  <h2 id="trial-2-multimodal-vision-ai-and-bounding-box">3. 2차 시도: Multimodal Vision AI (Gemini / GPT-4o Vision)와 Bounding Box 추출</h2>
+
+  <p>
+    Tesseract.js의 한계를 확인한 후, 시각적 맥락 이해와 다국어 번역 능력이 뛰어난 <strong>최신 멀티모달 Vision AI(Gemini 2.0 / GPT-4o Vision)</strong>를 연동하는 2차 파이프라인으로 전환했습니다.
+  </p>
+
+  <p>
+    이미지를 Base64로 전송하면서, 단순 번역문뿐만 아니라 이미지 내 텍스트의 <strong>정밀 경계 상자(Bounding Box) 좌표</strong>, 글자색, 배경색, 텍스트 방향(가로/세로)을 구조화된 JSON으로 반환하도록 고도화된 시스템 프롬프트를 설계했습니다.
+  </p>
+
+  <div class="pre custom" data-text="JavaScript">
+    <button aria-label="Copy code">Copy</button>
+    <pre>/* src/api/vision.js - Vision AI 레이아웃 분석 및 좌표 추출 프롬프트 */
+const ocrSystemInstruction = 
+  `You are a high-precision OCR Layout Analyzer for image translation.\n\n` +
+  imageDimNotice +
+  `Detect every visible text block in the image and return layout information for accurate text replacement.\n\n` +
+  `Rules:\n` +
+  `- Detect all text regardless of language.\n` +
+  `- Treat each independent text region as a separate object.\n` +
+  `- Never merge unrelated text.\n` +
+  `- Classify each block as one of: container, text, sfx, ui, caption.\n` +
+  `- Preserve original text exactly, including punctuation and line breaks.\n` +
+  `- Split every visual line into the "lines" array.\n` +
+  `- Return actual image pixel coordinates [ymin, xmin, ymax, xmax] matching the original image dimensions.\n` +
+  `- glyphBox must tightly enclose only visible glyph pixels in actual pixel coordinates.\n` +
+  `- eraseBox must fully cover the text for clean removal in actual pixel coordinates.\n` +
+  `- containerBox is the drawable region for translated text in actual pixel coordinates, or null if unavailable.\n` +
+  `- Detect orientation: horizontal, vertical or rotated.\n` +
+  `- Estimate textColor, backgroundColor and strokeColor when visible.\n` +
+  `- Return only valid JSON without markdown or explanation.\n\n` +
+  `Output format:\n` +
+  `[\n` +
+  `  {\n` +
+  `    "type": "container",\n` +
+  `    "glyphBox": [ymin, xmin, ymax, xmax],\n` +
+  `    "eraseBox": [ymin, xmin, ymax, xmax],\n` +
+  `    "containerBox": [ymin, xmin, ymax, xmax] | null,\n` +
+  `    "orientation": "horizontal|vertical|rotated",\n` +
+  `    "originalText": "...",\n` +
+  `    "textColor": "#000000",\n` +
+  `    "backgroundColor": "#FFFFFF"\n` +
+  `  }\n` +
+  `]`;</pre>
+  </div>
+
+  <p>
+    Gemini Vision API의 경우 이미지 좌상단 <code>[0, 0]</code>부터 우하단 <code>[1000, 1000]</code>까지의 정규화된 2D Bounding Box 좌표를 반환하므로, 이를 원본 이미지의 실제 해상도(<code>naturalWidth</code>, <code>naturalHeight</code>)에 맞춰 픽셀 단위로 스케일링 복원하는 변환 로직을 연동했습니다.
+  </p>
+
+  <div class="pre custom" data-text="JavaScript">
+    <button aria-label="Copy code">Copy</button>
+    <pre>/* 정규화 좌표(0~1000)를 원본 픽셀 크기로 매핑 */
+function scaleNormalizedBoxToPixels(box, width, height) {
+  const [ymin, xmin, ymax, xmax] = box;
+  return {
+    top: Math.round((ymin / 1000) * height),
+    left: Math.round((xmin / 1000) * width),
+    width: Math.round(((xmax - xmin) / 1000) * width),
+    height: Math.round(((ymax - ymin) / 1000) * height),
+  };
+}</pre>
+  </div>
+
+  <h2 id="trial-2-bounding-box-misalignment-failure">4. 마주한 기술적 난관: 불규칙한 Bounding Box 좌표 오차와 캔버스 정렬 붕괴</h2>
+
+  <p>
+    멀티모달 Vision AI를 연동하자 텍스트의 맥락 파악 및 번역문 생성 품질은 매우 뛰어난 결과를 보여주었습니다. 하지만 정작 <strong>캔버스 오버레이 렌더링 단계에서 좌표 정렬이 심각하게 어긋나는 문제</strong>가 발생했습니다.
+  </p>
+
+  <div class="table w100 withBg">
+    <table>
+      <thead>
+        <tr>
+          <th>비교 항목</th>
+          <th>1차 시도 (Tesseract.js WASM)</th>
+          <th>2차 시도 (Multimodal Vision AI)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>구동 방식</strong></td>
+          <td>브라우저 온디바이스 (WASM)</td>
+          <td>클라우드 멀티모달 API (Gemini / GPT-4o)</td>
+        </tr>
+        <tr>
+          <td><strong>텍스트 번역 품질</strong></td>
+          <td>별도 번역 파이프라인 필요</td>
+          <td>자연스러운 고품질 번역문 직접 생성</td>
+        </tr>
+        <tr>
+          <td><strong>문자 인식률 (OCR)</strong></td>
+          <td>비정형/세로쓰기 폰트 검출 불가 (0% 수준)</td>
+          <td>복잡한 배경 및 예술 폰트도 정확히 판독</td>
+        </tr>
+        <tr>
+          <td><strong>좌표 정밀도 (BBox)</strong></td>
+          <td>텍스트 미검출로 좌표 추출 불가</td>
+          <td>바운딩 박스 위치가 무작위로 어긋나 오버레이 붕괴</td>
+        </tr>
+        <tr>
+          <td><strong>비용 및 리소스</strong></td>
+          <td>무료 (단, WASM 구동 시 CPU 부하)</td>
+          <td>이미지 토큰 소비로 인한 지속적 API 비용 발생</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    발생한 핵심 이슈는 다음과 같았습니다:
+  </p>
+
+  <ol class="step">
+    <li><strong>무작위 좌표 오차:</strong> Vision AI가 반환한 사각형 좌표가 실제 글자가 있는 위치보다 수십~수백 픽셀씩 빗나가 엉뚱한 허공에 박스가 그려지거나 글자의 절반만 잘려 덮이는 현상이 나타났습니다.</li>
+    <li><strong>해상도 명시 vs 정규화 무차별:</strong> 프롬프트에 이미지 원본 해상도(<code>naturalWidth</code>, <code>naturalHeight</code>)를 직접 명시하는 방식과 0~1000 정규화 방식을 모두 테스트했으나, 두 방식 모두 오차 범위가 매우 불규칙하여 정량적인 오차 보정 상수를 도출하기 불가능했습니다.</li>
+    <li><strong>캔버스 오버레이 미흡:</strong> Bounding Box가 어긋나자 원본 글자를 배경색으로 지우는 마스크와 그 위에 번역문을 덮어씌우는 캔버스 드로잉이 완전히 망가지며 실사용이 불가능한 수준이었습니다.</li>
+  </ol>
+
+  <h2 id="engineering-decision-and-paddleocr-pivot">5. 엔지니어링 의사결정: v1.0.0 출시 우선과 PaddleOCR(3차) 전환</h2>
+
+  <p>
+    이러한 실패 원인을 분석했을 때, 멀티모달 LLM 자체의 근본적인 공간 분해능 한계라기보다는 <strong>당시 AI가 작성했던 프롬프트 구조와 좌표 파싱/스케일링 파이프라인의 완성도 미흡</strong>에 기인한 것으로 파악되었습니다. 최근 구글의 Spatial Grounding 및 시각적 객체 조작 연구(Visual Object Detection &amp; Editing) 사례들처럼, 고도화된 프롬프트 엔지니어링과 객체 세분화 기법을 적용한다면 충분히 극복 가능한 영역입니다.
+  </p>
+
+  <p>
+    하지만 당면한 상황에서 두 가지 중요한 엔지니어링 결정을 내려야 했습니다:
+  </p>
+
+  <ol class="step">
+    <li><strong>크롬 웹 스토어 v1.0.0 정식 출시 일정 우선:</strong> 이미 안정화된 텍스트 번역 및 단어 사전 팝업 기능의 배포를 지연시킬 수 없었으므로, 불안정한 이미지 번역 기능을 v1.0.0에 억지로 포함하지 않고 임시 보류/격리하기로 결정했습니다.</li>
+    <li><strong>API 비용 절감 및 오픈소스 레퍼런스 목적의 PaddleOCR 전환:</strong> 지속적인 클라우드 Vision API 호출 비용 부담을 덜고, GitHub 등에서 다수 레퍼런스가 검증된 온디바이스 광학 문자 검출(Detection) 전문 모델인 <strong>PaddleOCR(PP-OCRv5)</strong>을 브라우저에 임베딩하는 3차 R&amp;D로 연구 방향을 전환했습니다.</li>
+  </ol>
+
+  <div class="note">
+    <strong>💡 요약:</strong> 제품 릴리즈에서는 완성도가 검증되지 않은 실험적 기능을 과감히 분리하여 기존 텍스트 번역의 안정성을 지키는 것이 중요하며, 이미지 번역은 별도의 심층 R&amp;D 트랙으로 관리하는 것이 바람직합니다.
+  </div>
+
+  <h2 id="section-conclusion">마무리하며</h2>
+
+  <p>
+    이번 17편에서는 웹페이지 내 비정형 이미지 텍스트를 번역하기 위해 시도했던 Tesseract.js WASM과 멀티모달 Vision AI의 Bounding Box 추출 실험, 그리고 캔버스 오버레이 좌표 정렬 붕괴 현상을 가감 없이 기록했습니다.
+  </p>
+
+  <p>
+    비록 1차와 2차 시도는 실사용 가능한 수준의 결과물로 이어지지 못했으나, <code>declarativeNetRequest</code>를 통한 안전한 Referer 우회 이미지 로더를 확보하고 멀티모달 Vision AI의 좌표 반환 특성을 실증적으로 분석할 수 있는 귀중한 기술 자산이 되었습니다.
+  </p>
+
+  <p>
+    혹시 웹 브라우저 익스텐션 환경에서 이미지 내 텍스트 영역을 정밀하게 추출하고 캔버스 오버레이를 정렬하기 위해 활용하셨던 라이브러리나 실전 경험이 있다면 댓글로 의견을 남겨주시면 감사하겠습니다. 다음 글에서는 온디바이스에서 정밀 좌표를 확보하고 API 비용을 절감하기 위해 야심 차게 도입했던 <strong>PaddleOCR의 메모리 폭증 실패와 v1.0.0 출시를 위해 코드를 최종 롤백/격리한 과정</strong>을 다루겠습니다.
+  </p>
+
+  <!-- 시리즈 네비게이션 컨테이너 (JS로 동적 렌더링) -->
+  <nav class="series-nav"></nav>
+
+</article>

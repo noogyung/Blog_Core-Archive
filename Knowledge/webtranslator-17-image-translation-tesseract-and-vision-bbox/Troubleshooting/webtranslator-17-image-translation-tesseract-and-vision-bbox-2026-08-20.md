@@ -10,8 +10,8 @@ last_modified: 2026-08-20
 language: KR+EN
 tags: [WebTranslator, ChromeExtension, 크롬확장프로그램, ImageTranslation, 이미지번역, OCR, Tesseract, VisionAI, GeminiVision, GPT4oVision, BoundingBox, 캔버스오버레이, 트러블슈팅]
 sources_count: 5
-blog_draft_path: null
-blog_draft_date: null
+blog_draft_path: Blog_Posts/2026-08/webtranslator-17-image-translation-tesseract-and-vision-bbox.html
+blog_draft_date: 2026-08-20
 blog_id: core-archive
 blog_published: false
 series_id: webtranslator
