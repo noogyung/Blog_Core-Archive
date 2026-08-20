@@ -45,10 +45,10 @@ series_id: webtranslator
 
 #### 🔑 Core Concepts (핵심 개념)
 
-* **[Kaikki 및 오픈소스 사전 도입 검토 배경]:** 웹페이지 내 텍스트 드래그 시 발생하는 단어 번역 API 비용을 줄이고 상세한 사전 정보를 제공하기 위해, Wiktionary 기반 오픈소스 사전 데이터(Kaikki.org) 및 외부 무료 사전 API 활용 방안을 기술적으로 검토. [FACT]
+* **[Kaikki 및 오픈소스 사전 도입 검토 배경]:** 6편에서 구현한 선택 영역 번역(드래그 번역) 기능을 바탕으로, 단순 번역을 넘어 발음, 품사, 핵심 뜻, 예문까지 한눈에 보여주는 단어 사전 기능을 강화하여 UI/UX 경험을 고도화하고자 함. 단어 조회 시마다 발생하는 LLM API 호출 비용을 절감하고 상세 어학 데이터를 제공하기 위해 Wiktionary 기반 오픈소스 사전 데이터(Kaikki.org) 및 외부 무료 사전 API 연동 방안을 기술적으로 검토. [FACT]
 * **[Kaikki 및 외부 사전의 아키텍처적 한계]:**
   * **방대한 데이터 크기와 인프라 부담:** Kaikki의 전체 덤프 데이터는 무압축 기준 약 26GB, 압축 파일 기준 약 2GB에 달함. 크롬 확장 프로그램 클라이언트 내에 수 GB 규모의 대용량 사전 데이터를 직접 내장하는 것은 브라우저 메모리 및 확장 프로그램 용량 제약상 불가능함. 이를 활용하려면 별도의 검색 DB(SQLite/Elasticsearch)와 자체 백엔드 API 서버를 구축하고 유지보수해야 하므로, API 비용 절감보다 서버 호스팅 및 관리 리소스(비용)가 더 커지는 문제가 발생함. [FACT]
-  * **외부 무료 API의 차단 및 커버리지 리스크:** Free Dictionary API 같은 서드파티 서비스를 호출할 경우 빈도수 제한(Rate Limit)에 따른 차단 위험이 있고, 일본어·중국어(CJK) 등 비영어권 다국어 데이터가 부실함. [FACT]
+  * **외부 무료 API의 차단 및 커버리지 리스크:** Free Dictionary API 같은 서드파티 서비스를 호출할 경우 빈도수 제한(Rate Limit)에 따른 차단 위험이 있고, 일본어·중국어(CJK) 등 비영어권 다국어 데이터가 부실함. 과거 Google Translate(비공식 웹 크롤링 방식) 연동에서도 동일한 Rate Limit 문제가 있었으나, Google Translate는 무료 이용자를 위한 보조 수단이었고 실사용은 Gemini Flash 등 무료 티어 LLM API가 주로 담당하여 문제가 되지 않았던 반면, 사전 기능은 드래그 시마다 호출되는 핵심 UX이므로 불안정한 외부 무료 API에 의존할 수 없었음. [FACT]
 * **[단일 LLM JSON 파이프라인 (Single LLM Pipeline) 채택]:**
   * 별도 서버 인프라 구축이나 불안정한 무료 API 연동 대신, 경량 LLM(Gemini Flash, GPT-4o-mini)에 1회 프롬프트 요청으로 원문 분석, 발음 음차(한글 표기), 품사, 핵심 뜻(최대 3개), 예문/번역을 **0.8초 내에 JSON 단일 객체로 반환**받는 직관적인 아키텍처를 최종 확정. [FACT]
 * **[단어/문장 팝업 UI 통합 (`dictionaryPopup.js`)]:**
@@ -59,7 +59,7 @@ series_id: webtranslator
 #### 🛠️ Procedures (절차)
 
 1. **Kaikki 사전 데이터 및 외부 API 기술 타당성 분석:** [★★★★★] ✅ Verified 2026-08-20
-   - 클라이언트 제약(무압축 26GB / 압축 2GB 크기로 인한 확장 프로그램 직접 내장 불가, 자체 백엔드 서버 구축 필요성)과 외부 무료 API의 호출 차단 리스크 검토 후 도입 보류 결정.
+   - 클라이언트 제약(무압축 26GB / 압축 2GB 크기로 인한 확장 프로그램 직접 내장 불가, 자체 백엔드 서버 구축 필요성)과 외부 무료 API의 호출 차단 리스크(과거 Google Translate 연동 대비 사전 호출 빈도의 중요성) 검토 후 도입 보류 결정.
 2. **단일 LLM 사전 프롬프트(`buildDictionaryPrompt`) 설계:** [★★★★★] ✅ Verified 2026-08-20
    - 단어 입력 시: 상위 3개 핵심 뜻(2~5단어) 및 실전 예문 1개 강제.
    - 구/문장 입력 시: 품사를 '구'/'문장'으로 설정하고 예문(`null`) 생략 후 직접 번역문 반환.
@@ -73,28 +73,18 @@ series_id: webtranslator
 // src/api/prompts.js (사전 프롬프트 빌더)
 export function buildDictionaryPrompt(word, langName) {
   return `Provide a concise dictionary entry for the input text "${word}" translated into ${langName}.
-` +
-    `CRITICAL INSTRUCTIONS:
-` +
-    `1. If the input is a single word: Provide AT MOST THE TOP 3 MOST COMMON definitions.
-` +
-    `   - Each definition MUST have a short, concise ${langName} meaning (2 to 5 words only).
-` +
-    `   - Provide a realistic example sentence matching the definition.
-` +
-    `2. If the input is a PHRASE or FULL SENTENCE (not a single word):
-` +
-    `   - Set "pos" to "구" (Phrase) or "문장" (Sentence).
-` +
-    `   - Provide the direct, natural translation of the entire phrase/sentence in the "meaning" field.
-` +
-    `   - DO NOT generate or invent an "example". Set the "example" field to null.
-` +
-    `3. "pronunciation": Provide the phonetic pronunciation of the ORIGINAL SOURCE TEXT, transliterated into the characters of the target language (${langName}).
-` +
-    `4. Return ONLY a valid JSON object matching this schema:
-` +
-    `{"word":"${word}","pronunciation":"[Phonetic characters in ${langName}]","definitions":[{"pos":"Part of speech","meaning":"Meaning or Translation","example":{"source":"Original example sentence","target":"Translated example sentence"}}]}`;
+
+CRITICAL INSTRUCTIONS:
+1. If the input is a single word: Provide AT MOST THE TOP 3 MOST COMMON definitions.
+   - Each definition MUST have a short, concise ${langName} meaning (2 to 5 words only).
+   - Provide a realistic example sentence matching the definition.
+2. If the input is a PHRASE or FULL SENTENCE (not a single word):
+   - Set "pos" to "구" (Phrase) or "문장" (Sentence).
+   - Provide the direct, natural translation of the entire phrase/sentence in the "meaning" field.
+   - DO NOT generate or invent an "example". Set the "example" field to null.
+3. "pronunciation": Provide the phonetic pronunciation of the ORIGINAL SOURCE TEXT, transliterated into the characters of the target language (${langName}).
+4. Return ONLY a valid JSON object matching this schema:
+{"word":"${word}","pronunciation":"[Phonetic characters in ${langName}]","definitions":[{"pos":"Part of speech","meaning":"Meaning or Translation","example":{"source":"Original example sentence","target":"Translated example sentence"}}]}`;
 }
 ```
 
@@ -109,7 +99,7 @@ export function buildDictionaryPrompt(word, langName) {
   * **신뢰도:** [★★★★★]
 * **[외부 무료 사전 API(Free Dictionary API 등) 활용 시의 한계]**
   * **증상(검토 결과):** 비영어권(일본어, 중국어 등) 어휘 데이터 지원이 부실하고, 빈번한 호출 시 서비스 차단(Rate Limit) 리스크가 존재함.
-  * **원인:** 무료 외부 API 서비스의 자체 쿼터 제약 및 사전 데이터베이스의 언어 편중.
+  * **원인:** 과거 Google Translate 연동에서도 나타났던 무료 서드파티 서비스의 쿼터 제약 및 차단 문제. 번역 엔진은 Gemini Flash 등 무료 티어 API가 주력으로 사용되어 Google Translate의 Rate Limit이 문제되지 않았으나, 사전 기능은 드래그 시마다 호출되므로 차단 리스크가 치명적임.
   * **해결법:** 외부 사전 API 의존성을 배제하고, 사용자 개인 API Key 기반의 단일 LLM 프롬프트 파이프라인으로 일원화하여 다국어 지원과 호출 안정성을 확보. [FACT]
   * **신뢰도:** [★★★★★]
 
@@ -134,8 +124,10 @@ export function buildDictionaryPrompt(word, langName) {
 
 ### 2026-08-20 — Test Result: PASS
 * **피드백 내용:**
-  1. Kaikki 사전 데이터 용량 수치 구체화: 무압축 통 덤프 기준 약 26GB, 압축 모델 기준 약 2GB에 달해 크롬 확장 프로그램 클라이언트에 직접 탑재하는 것이 불가능하다는 기술적 근거 상세 반영.
-  2. 지식 베이스 및 블로그 HTML 게시글 양방향 동기화.
+  1. 서론 문단 분리 및 6편 선택 영역 번역(드래그 번역) 기능과의 연계/UI·UX 강화 배경 명시.
+  2. 외부 무료 API의 Rate Limit 한계를 과거 Google Translate 연동 경험(무료 티어 LLM 대비 사전 호출 빈도의 중요성)과 비교하여 설명 보강.
+  3. 프롬프트 코드 블록의 문자열 연결 연산자(`+`) 제거 및 템플릿 리터럴 형태로 클린업.
+  4. 지식 베이스 및 블로그 HTML 게시글 양방향 동기화.
 * **Status 변경:** Verified 유지
 
 ### 2026-08-20 (이전 이력) — Test Result: PASS

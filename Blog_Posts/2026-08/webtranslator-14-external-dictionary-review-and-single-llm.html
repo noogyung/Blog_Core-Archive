@@ -19,7 +19,10 @@
   <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-08/webtranslator-14-external-dictionary-review-and-single-llm-img1.jpg?v=20260820_0823" alt="WebTranslator Kaikki 외부 사전 검토 및 단일 LLM 고속 사전 파이프라인 아키텍처 다이어그램">
 
   <p>
-    웹 서핑 중 낯선 외국어 단어를 마우스로 드래그했을 때 발음, 품사, 핵심 뜻, 예문까지 한눈에 보여주는 단어 사전 기능을 강화하고자 했습니다. 초기에는 단어를 조회할 때마다 발생하는 LLM API 호출 비용을 줄이고 상세한 어학 데이터를 제공하기 위해 Wiktionary 기반 오픈소스 사전인 <strong>Kaikki.org</strong> 데이터베이스나 외부 무료 사전 API를 연동하는 방안을 기술적으로 검토했습니다. 그러나 인프라 구축 공수와 데이터 제약으로 인해 단일 LLM 프롬프트 방식으로 전환하게 되었습니다. 이번 글에서는 그 분석 과정과 최종 아키텍처를 정리하고자 합니다.
+    웹 서핑 중 낯선 외국어 단어를 마우스로 드래그했을 때 발음, 품사, 핵심 뜻, 예문까지 한눈에 보여주는 단어 사전 기능을 강화하고자 했습니다. 앞서 6편에서 다룬 선택 영역 번역(드래그 번역) 기능을 바탕으로, 단순 번역을 넘어선 풍부한 어학 정보를 제공하여 사용자 UI/UX 경험을 한층 더 높이려는 목적이었습니다. 초기에는 단어를 조회할 때마다 발생하는 LLM API 호출 비용을 줄이고 상세한 어학 데이터를 제공하기 위해 Wiktionary 기반 오픈소스 사전인 <strong>Kaikki.org</strong> 데이터베이스나 외부 무료 사전 API를 연동하는 방안을 기술적으로 검토했습니다.
+  </p>
+  <p>
+    그러나 인프라 구축 공수와 데이터 제약으로 인해 단일 LLM 프롬프트 방식으로 전환하게 되었습니다. 이번 글에서는 그 분석 과정과 최종 아키텍처를 정리하고자 합니다.
   </p>
 
   <h2 id="external-dictionary-limitations">1. Kaikki 및 외부 무료 사전 API의 기술적 한계 분석</h2>
@@ -30,7 +33,7 @@
 
   <ol class="step">
     <li><strong>방대한 사전 데이터 크기(무압축 26GB / 압축 2GB)와 클라이언트 탑재 불가:</strong> Kaikki의 전체 덤프 데이터는 무압축 기준 약 26GB에 달하며, 압축된 모델/파일조차 약 2GB 수준입니다. 수 GB에 이르는 대용량 데이터를 크롬 확장 프로그램 클라이언트에 직접 내장하는 것은 브라우저 메모리 및 확장 프로그램 배포 용량 제약상 불가능했습니다. 이를 활용하려면 별도의 검색용 DB와 자체 백엔드 API 서버를 구축하고 유지보수해야 하므로, API 호출 비용을 줄이려다 서버 호스팅 비용과 관리 공수가 더 커지는 문제가 발생했습니다.</li>
-    <li><strong>외부 무료 API의 차단 및 다국어 부실:</strong> Free Dictionary API 같은 무료 서드파티 서비스를 호출할 경우 호출 빈도 제한(Rate Limit)으로 인한 서비스 차단 위험이 존재했고, 일본어·중국어(CJK) 등 비영어권 데이터베이스 지원이 부실했습니다.</li>
+    <li><strong>외부 무료 API의 차단 및 다국어 부실:</strong> Free Dictionary API 같은 무료 서드파티 서비스를 호출할 경우 호출 빈도 제한(Rate Limit)으로 인한 서비스 차단 위험이 존재했고, 일본어·중국어(CJK) 등 비영어권 데이터베이스 지원이 부실했습니다. 과거 Google Translate(비공식 웹 크롤링 방식) 연동에서도 동일한 Rate Limit 문제가 있었으나, Google Translate는 무료 이용자를 위한 보조 수단이었고 실사용은 Gemini Flash 등 무료 티어 LLM API가 주로 담당하여 큰 문제가 되지 않았습니다. 반면 사전 기능은 단어를 드래그할 때마다 빈번하게 호출되는 핵심 UX이므로, 호출 차단 위험이 상존하는 불안정한 외부 무료 API에 의존할 수 없었습니다.</li>
     <li><strong>정적 사전 데이터의 본질적 한계:</strong> 오픈소스 사전은 데이터베이스에 미리 입력된 표제어만 정적으로 조회할 수 있어, 신조어나 다양한 어형 변화(활용형), 웹페이지 문맥에 맞는 유연한 번역을 제공하기 어려웠습니다.</li>
   </ol>
 
@@ -49,28 +52,18 @@
     <pre>// src/api/prompts.js - 단일 LLM 사전 프롬프트 빌더
 export function buildDictionaryPrompt(word, langName) {
   return `Provide a concise dictionary entry for the input text "${word}" translated into ${langName}.
-` +
-    `CRITICAL INSTRUCTIONS:
-` +
-    `1. If the input is a single word: Provide AT MOST THE TOP 3 MOST COMMON definitions.
-` +
-    `   - Each definition MUST have a short, concise ${langName} meaning (2 to 5 words only).
-` +
-    `   - Provide a realistic example sentence matching the definition.
-` +
-    `2. If the input is a PHRASE or FULL SENTENCE (not a single word):
-` +
-    `   - Set "pos" to "구" (Phrase) or "문장" (Sentence).
-` +
-    `   - Provide the direct, natural translation of the entire phrase/sentence in the "meaning" field.
-` +
-    `   - DO NOT generate or invent an "example". Set the "example" field to null.
-` +
-    `3. "pronunciation": Provide the phonetic pronunciation of the ORIGINAL SOURCE TEXT, transliterated into the characters of the target language (${langName}).
-` +
-    `4. Return ONLY a valid JSON object matching this schema:
-` +
-    `{"word":"${word}","pronunciation":"[Phonetic characters in ${langName}]","definitions":[{"pos":"Part of speech","meaning":"Meaning or Translation","example":{"source":"Original example sentence","target":"Translated example sentence"}}]}`;
+
+CRITICAL INSTRUCTIONS:
+1. If the input is a single word: Provide AT MOST THE TOP 3 MOST COMMON definitions.
+   - Each definition MUST have a short, concise ${langName} meaning (2 to 5 words only).
+   - Provide a realistic example sentence matching the definition.
+2. If the input is a PHRASE or FULL SENTENCE (not a single word):
+   - Set "pos" to "구" (Phrase) or "문장" (Sentence).
+   - Provide the direct, natural translation of the entire phrase/sentence in the "meaning" field.
+   - DO NOT generate or invent an "example". Set the "example" field to null.
+3. "pronunciation": Provide the phonetic pronunciation of the ORIGINAL SOURCE TEXT, transliterated into the characters of the target language (${langName}).
+4. Return ONLY a valid JSON object matching this schema:
+{"word":"${word}","pronunciation":"[Phonetic characters in ${langName}]","definitions":[{"pos":"Part of speech","meaning":"Meaning or Translation","example":{"source":"Original example sentence","target":"Translated example sentence"}}]}`;
 }</pre>
   </div>
 
