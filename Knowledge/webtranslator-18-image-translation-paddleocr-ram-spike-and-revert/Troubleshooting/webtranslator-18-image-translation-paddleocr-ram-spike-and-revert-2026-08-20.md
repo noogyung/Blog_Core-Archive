@@ -13,7 +13,7 @@ sources_count: 5
 blog_draft_path: Blog_Posts/2026-08/webtranslator-18-image-translation-paddleocr-ram-spike-and-revert.html
 blog_draft_date: 2026-08-20
 blog_id: core-archive
-blog_published: false
+blog_published: true
 series_id: webtranslator
 ---
 
