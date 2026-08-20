@@ -51,6 +51,12 @@
             "webtranslator-15-dark-mode-effective-bg-and-adaptive-color",
             "webtranslator-16-toolbar-quick-popup-and-unified-dropdown"
           ]
+        },
+        {
+          "chapter": "6장. 이미지 번역 R&D 및 온디바이스 AI 한계",
+          "topics": [
+            "webtranslator-17-image-translation-tesseract-and-vision-bbox"
+          ]
         }
       ]
     }
