@@ -10,9 +10,9 @@ last_modified: 2026-08-21
 language: KR+EN
 tags: [WebTranslator, ChromeExtension, 크롬확장프로그램, SelectionTranslation, 드래그번역, 단어사전, 유니코드, Unicode, CJK, Regex, 정규식, 트러블슈팅]
 sources_count: 5
-blog_draft_path: null
-blog_draft_date: null
-blog_id: null
+blog_draft_path: Blog_Posts/2026-08/webtranslator-19-smart-drag-filtering-and-cjk-support.html
+blog_draft_date: 2026-08-21
+blog_id: core-archive
 blog_published: false
 series_id: webtranslator
 ---
