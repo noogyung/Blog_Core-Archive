@@ -72,6 +72,9 @@ series_id: webtranslator
   * **화이트리스트 격리 복사:** `manifest.json`, `_locales/`, `icons/`, `src/`, HTML/CSS 등 9개 필수 항목만 `dist/temp_build/` 임시 스테이징 디렉토리에 복사하여 `docs/`, `images/`, `.git/`, `package.json` 등 비배포 파일의 유출을 원천 차단. [FACT]
   * **OS 내장 무의존성 압축:** 별도의 외부 npm 압축 라이브러리 없이, Node.js ESM에서 Windows 내장 PowerShell `Compress-Archive` 명령을 호출하여 44개 런타임 파일 전용 경량 패키지 생성. [FACT]
   * **자동 환경 정리:** 압축 완료 직후 `finally` 블록에서 임시 스테이징 폴더(`dist/temp_build/`)를 즉시 제거하여 작업 트리를 항상 깨끗하게 유지. [FACT]
+* **[시리즈 연속성: 20편(출시 요건 총정리) → 21편(최소 권한 다이어트, 반려 극복 및 정식 출시)]:**
+  * 20편에서 공식 아이콘 교체, 실물 스크린샷 에셋 정돈 및 5대 심사 체크리스트를 확립함. [FACT]
+  * 21편에서는 매니페스트 내 불필요 권한을 모두 걷어내는 권한 다이어트를 거쳐, No-Build 네이티브 ESM 기반 순수 패키징 파이프라인 정립, 1차 심사 반려 원인이었던 개인정보처리방침(Privacy Policy)의 GitHub Gist 즉각 해결, 그리고 8월 21일 최종 정식 출시로 v1.0.0 개발 여정을 일단락함. [FACT]
 
 ---
 
