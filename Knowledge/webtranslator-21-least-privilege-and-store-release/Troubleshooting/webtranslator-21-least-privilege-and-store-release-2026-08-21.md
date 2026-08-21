@@ -8,7 +8,7 @@ status: Verified
 created_date: 2026-08-21
 last_modified: 2026-08-21
 language: KR+EN
-tags: [WebTranslator, ChromeExtension, ChromeWebStore, ManifestV3, LeastPrivilege, PermissionsDiet, HostPermissions, StoragePermission, PrivacyPolicy, GitHubGist, StoreRelease, Published]
+tags: [WebTranslator, ChromeExtension, ChromeWebStore, ManifestV3, LeastPrivilege, PrivacyPolicy, StoreRelease]
 sources_count: 7
 blog_draft_path: Blog_Posts/2026-08/webtranslator-21-least-privilege-and-store-release.html
 blog_draft_date: 2026-08-21
@@ -216,6 +216,6 @@ series_id: webtranslator
 ---
 
 #### 🏷️ Tags
-WebTranslator, ChromeExtension, ChromeWebStore, ManifestV3, LeastPrivilege, PermissionsDiet, HostPermissions, StoragePermission, PrivacyPolicy, GitHubGist, StoreRelease, Published
+WebTranslator, ChromeExtension, ChromeWebStore, ManifestV3, LeastPrivilege, PrivacyPolicy, StoreRelease
 
 ===== KNOWLEDGE PACKAGE END =====
