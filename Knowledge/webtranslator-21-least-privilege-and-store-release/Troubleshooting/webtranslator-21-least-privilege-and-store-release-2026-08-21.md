@@ -6,14 +6,14 @@ sub_category: Store-Release-Least-Privilege
 version: 1.0.0
 status: Verified
 created_date: 2026-08-21
-last_modified: 2026-08-21
+last_modified: 2026-08-22
 language: KR+EN
 tags: [WebTranslator, ChromeExtension, ChromeWebStore, ManifestV3, LeastPrivilege, PrivacyPolicy, StoreRelease]
 sources_count: 7
 blog_draft_path: Blog_Posts/2026-08/webtranslator-21-least-privilege-and-store-release.html
 blog_draft_date: 2026-08-21
 blog_id: core-archive
-blog_published: false
+blog_published: true
 series_id: webtranslator
 ---
 
