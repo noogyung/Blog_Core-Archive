@@ -1,12 +1,12 @@
 <!-- ============================================================
   [BLOG POST METADATA - Blogspot 설정창 복사용]
-  Title: [WebTranslator 개발기 #20] 크롬 웹 스토어 출시를 위한 모든 준비: 아이콘 교체, 실물 스크린샷, 심사 요건 총정리
+  Title: [WebTranslator 개발기 #20] 크롬 웹 스토어 출시를 위한 모든 준비: 아이콘 교체, 실물 스크린샷, 심사 필수 요건 총정리
   Labels (Tags): WebTranslator, ChromeExtension, ChromeWebStore, ManifestV3, StoreAssets, StorePublish, IconDesign, Screenshot, 심사정책, 트러블슈팅, 배포가이드
-  Meta Description: 크롬 웹 스토어 정식 배포를 위해 갖추어야 할 5대 필수 요건(개발자 계정, MV3 패키지, 아이콘/스크린샷 규격, 스토어 메타데이터, 개인정보 및 권한 소명)을 총정리하고, 임시 말풍선 아이콘 교체와 실물 스크린샷 제작 과정을 정리합니다.
+  Meta Description: 크롬 웹 스토어 정식 배포를 위해 갖추어야 할 5대 필수 요건(개발자 계정, MV3 패키지, 아이콘/스크린샷 규격, 스토어 메타데이터, 개인정보 보호 항목)을 총정리하고, 임시 말풍선 아이콘 교체와 실물 스크린샷 제작 과정을 정리합니다.
   Slug: webtranslator-20-chat-icon-replacement-and-real-screenshot-capture
   ---
   Primary Keyword: 크롬 웹 스토어 확장 프로그램 출시 준비 요건
-  Secondary Keywords: WebTranslator, Chrome Web Store Developer Dashboard, Manifest V3 배포, 스토어 스크린샷 규격 1280x800, 확장프로그램 아이콘 16 48 128, Single Purpose Policy, Permissions Justification
+  Secondary Keywords: WebTranslator, Chrome Web Store Developer Dashboard, Manifest V3 배포, 스토어 스크린샷 규격 1280x800, 확장프로그램 아이콘 16 48 128, Single Purpose Policy, Privacy Practices
   Knowledge Source: Knowledge/webtranslator-20-chat-icon-replacement-and-real-screenshot-capture/Troubleshooting/webtranslator-20-chat-icon-replacement-and-real-screenshot-capture-2026-08-21.md
   Generated Date: 2026-08-21
   Estimated Read Time: 9분
@@ -25,7 +25,7 @@
     이로써 텍스트 인라인 번역부터 단어 사전 팝업, 다크모드 환경 적응 렌더링, 툴바 빠른 설정까지 모든 핵심 기능 구현과 실전 사용성 검증을 마쳤습니다. 이제 로컬 개발 단계를 마무리하고, 전 세계 사용자들이 다운로드할 수 있는 <strong>구글 크롬 웹 스토어(Chrome Web Store) 정식 출시</strong> 단계로 나아갈 차례였습니다.
   </p>
   <p>
-    처음에는 단순히 완성된 소스 코드를 압축(<code>.zip</code>)하여 개발자 대시보드에 업로드하면 곧바로 배포가 끝날 것이라 생각하기 쉽습니다. 하지만 실제로 크롬 웹 스토어 등록 절차에 들어가 보면 계정 2단계 인증과 등록비 결제부터, 엄격한 규격의 그래픽 에셋(아이콘 3종, 1280x800 실물 스크린샷), 다국어 메타데이터, 개인정보처리방침, 그리고 까다로운 권한 소명서(Permissions Justification)까지 <strong>사전에 갖추어야 할 필수 준비물이 매우 방대</strong>합니다.
+    처음에는 단순히 완성된 소스 코드를 압축(<code>.zip</code>)하여 개발자 대시보드에 업로드하면 곧바로 배포가 끝날 것이라 생각하기 쉽습니다. 하지만 실제로 크롬 웹 스토어 등록 절차에 들어가 보면 계정 2단계 인증과 등록비 결제부터, 엄격한 규격의 그래픽 에셋(아이콘 3종, 1280x800 실물 스크린샷), 다국어 메타데이터, 개인정보 보호 관행 작성까지 <strong>사전에 갖추어야 할 필수 준비물이 매우 방대</strong>합니다.
   </p>
   <p>
     이번 글에서는 크롬 웹 스토어에 확장 프로그램을 정식 출시하기 위해 요구되는 <strong>5대 필수 요건을 총망라하여 정리</strong>하고, 기존의 임시 말풍선 아이콘을 번역 전용 아이콘으로 교체한 배경과 AI 가짜 이미지를 배제한 실물 스크린샷 제작 과정을 공유하고자 합니다.
@@ -34,7 +34,7 @@
   <h2 id="store-release-five-requirements-checklist">1. 크롬 웹 스토어 정식 출판을 위한 5대 필수 요건 총정리</h2>
 
   <p>
-    구글 크롬 웹 스토어는 사용자의 보안과 브라우징 품질을 유지하기 위해 <strong>개발자 프로그램 정책(Developer Program Policies)</strong>을 통해 매우 엄격한 심사 기준을 적용하고 있습니다. 스토어 등록을 위해 사전에 완비해야 할 항목들은 크게 5가지 영역으로 나뉩니다.
+    구글 크롬 웹 스토어는 사용자의 보안과 브라우징 품질을 유지하기 위해 <strong>개발자 프로그램 정책(Developer Program Policies)</strong>을 통해 심사 기준을 적용하고 있습니다. 스토어 등록을 위해 사전에 준비해야 할 항목들은 크게 5가지 영역으로 나뉩니다.
   </p>
 
   <div class="table w100 withBg">
@@ -73,10 +73,10 @@
           <td>단일 목적성 명확화</td>
         </tr>
         <tr>
-          <td><strong>5. 정책 및 소명</strong></td>
-          <td>단일 목적 설명서, 권한 소명서, 데이터 비수집 인증</td>
-          <td>- 단일 목적 설명(Single Purpose Description)<br>- <code>host_permissions</code> 및 <code>permissions</code> 사용 정당성 영문 소명<br>- 사용자 데이터 비수집(No Data Collection) 선언<br>- 개인정보처리방침(Privacy Policy) URL</td>
-          <td>심사 통과의 최대 분수령</td>
+          <td><strong>5. 개인정보 보호</strong></td>
+          <td>단일 목적 설명서, 권한 사유 작성, 데이터 비수집 인증</td>
+          <td>- 단일 목적 설명(Single Purpose Description)<br>- 선언된 권한별(<code>storage</code>, <code>host_permissions</code>) 사용 사유 작성<br>- 사용자 데이터 비수집(No Data Collection) 선언<br>- 개인정보처리방침(Privacy Policy) URL</td>
+          <td>권한 수에 비례하여 작성 항목 증가</td>
         </tr>
       </tbody>
     </table>
@@ -148,7 +148,7 @@
     개발 지원 AI 도구는 처음에 미드저니나 DALL-E 스타일의 화려한 3D 가상 렌더링 그래픽을 스토어 스크린샷으로 등록하자고 제안했습니다. 사이버틱한 네온 라인과 가상의 브라우저 목업이 들어간 화려한 이미지였습니다.
   </p>
   <p>
-    하지만 이는 <strong>구글 크롬 웹 스토어의 "오해 소지가 있는 메타데이터(Misleading Metadata)" 정책을 정면으로 위반하는 행위</strong>였습니다. 구글 정책은 프로그램의 실제 동작 화면과 동떨어진 과장된 마케팅 CG를 허위 정보로 규정하여 심사를 반려합니다.
+    하지만 이는 <strong>구글 크롬 웹 스토어의 "오해 소지가 있는 메타데이터(Misleading Metadata)" 정책을 위반하는 행위</strong>였습니다. 구글 정책은 프로그램의 실제 동작 화면과 동떨어진 과장된 마케팅 이미지를 허위 정보로 규정하여 심사를 반려합니다.
   </p>
 
   <div class="note">
@@ -179,7 +179,7 @@
 
   <h3 id="clean-build-packaging">불필요한 파일이 배제된 클린 패키징</h3>
   <p>
-    확장 프로그램 소스 폴더 내에 존재하는 <code>.git</code>, 임시 문서(<code>docs/</code>), 원본 PSD/디자인 파일, 미사용 모듈 등이 ZIP 압축에 포함되면 패키지 용량이 불필요하게 커지고 심사 시 의심스러운 코드로 감점 요인이 됩니다.
+    확장 프로그램 소스 폴더 내에 존재하는 <code>.git</code>, 임시 문서(<code>docs/</code>), 원본 PSD/디자인 파일, 미사용 모듈 등이 ZIP 압축에 포함되면 패키지 용량이 불필요하게 커지고 심사 시 감점 요인이 됩니다.
   </p>
   <p>
     따라서 <code>manifest.json</code>, <code>src/</code>, <code>_locales/</code>, <code>icons/</code>, <code>content.css</code>, HTML 파일들만 포함된 초경량 정규 배포 패키지 <code>web-translator-v1.0.0.zip</code>을 생성했습니다.
@@ -219,23 +219,23 @@
     </table>
   </div>
 
-  <h2 id="summary-and-next-chapter">5. 마무리하며: 스토어 출시를 앞둔 다음 과제</h2>
+  <h2 id="summary-and-next-chapter">5. 마무리하며: 권한 축소와 다음 편 예고</h2>
 
   <p>
     이번 포스팅에서는 크롬 웹 스토어 출시에 필요한 <strong>5대 필수 요건 체크리스트</strong>를 총정리하고, 임시 말풍선 아이콘 교체와 1280x800 실물 스크린샷 제작, 그리고 정규 배포 패키지 구축 과정을 살펴보았습니다.
   </p>
   <p>
-    모든 준비물을 완벽하게 갖춘 뒤 드디어 개발자 대시보드에 패키지를 업로드했을 때, 가장 큰 복병을 마주하게 되었습니다. 바로 구글 심사 시스템이 요구하는 <strong>"호스트 권한(<code>&lt;all_urls&gt;</code>) 및 부가 권한에 대한 엄격한 정당성 소명"</strong>이었습니다.
+    스토어 등록 정보 중 <strong>'개인정보 보호 관행(Privacy Practices)'</strong> 탭은 매니페스트에 선언된 권한에 따라 작성해야 하는 데이터 사용 항목과 사유가 달라집니다. 권한이 많아질수록 각각의 데이터 수집 여부와 정당한 이유를 개별적으로 작성해야 하므로 불필요한 권한은 최대한 줄여야 합니다.
   </p>
   <p>
-    단순히 체크리스트를 채우는 것을 넘어, 구글의 <strong>최소 권한 원칙(Least Privilege)</strong>을 만족시키기 위해 불필요한 부가 권한들을 전면 삭제하고 <code>permissions: ["storage"]</code> 단 하나만 남기는 '권한 다이어트'를 단행해야 했습니다.
+    WebTranslator에서 실제로 사용하는 권한은 설정 저장을 위한 <code>storage</code>와 웹페이지 텍스트 감지 및 번역 API 통신을 위한 <code>host_permissions</code>(<code>&lt;all_urls&gt;</code>) <strong>단 2개뿐</strong>입니다. 하지만 초기 개발 과정에서 AI 에이전트가 편의상 실제 쓰지도 않는 부가 권한들을 덕지덕지 붙여놓은 상태였습니다.
   </p>
   <p>
-    다음 글에서는 개발자 대시보드에서 마주친 권한 소명 요구에 어떻게 대처하여 심사관을 납득시켰는지, 그리고 최종 출시 버튼을 누르기까지의 실전 과정을 상세히 다루겠습니다.
+    다음 글에서는 AI가 추가했던 불필요한 권한들을 모두 걷어내고 <code>storage</code>와 <code>host_permissions</code> 2개만 남겨 개인정보 보호 항목을 깔끔하게 작성하고, 최종 출시 버튼을 누르기까지의 실전 대처 과정을 다루겠습니다.
   </p>
 
   <p>
-    혹시 크롬 확장 프로그램을 스토어에 출시하면서 그래픽 에셋 규격이나 정책 소명서 작성에서 곤란을 겪으셨던 경험이 있으신가요? 댓글로 공유해 주시면 감사하겠습니다.
+    혹시 크롬 확장 프로그램을 스토어에 출시하면서 권한 설정이나 스토어 에셋 준비 과정에서 겪으셨던 경험이 있으신가요? 댓글로 의견을 남겨주시면 감사하겠습니다.
   </p>
 
   <!-- 시리즈 네비게이션 컨테이너 (JS로 동적 렌더링) -->
