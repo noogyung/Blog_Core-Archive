@@ -13,7 +13,7 @@ sources_count: 5
 blog_draft_path: Blog_Posts/2026-08/webtranslator-20-chat-icon-replacement-and-real-screenshot-capture.html
 blog_draft_date: 2026-08-21
 blog_id: core-archive
-blog_published: false
+blog_published: true
 series_id: webtranslator
 ---
 
