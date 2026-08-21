@@ -63,7 +63,8 @@
           "chapter": "7장. 사용성 고도화 및 스토어 정식 배포",
           "topics": [
             "webtranslator-19-smart-drag-filtering-and-cjk-support",
-            "webtranslator-20-chat-icon-replacement-and-real-screenshot-capture"
+            "webtranslator-20-chat-icon-replacement-and-real-screenshot-capture",
+            "webtranslator-21-least-privilege-and-store-release"
           ]
         }
       ]

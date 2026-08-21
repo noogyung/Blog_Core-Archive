@@ -47,4 +47,6 @@ series:
         topics:
           - webtranslator-19-smart-drag-filtering-and-cjk-support
           - webtranslator-20-chat-icon-replacement-and-real-screenshot-capture
+          - webtranslator-21-least-privilege-and-store-release
+
 
