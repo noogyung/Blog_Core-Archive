@@ -1,0 +1,360 @@
+<!-- ============================================================
+  [BLOG POST METADATA - Blogspot 설정창 복사용]
+  Title: [WebTranslator 개발기 #21] MV3 최소 권한 다이어트와 크롬 웹 스토어 v1.0.0 정식 심사 제출
+  Labels (Tags): WebTranslator, ChromeExtension, ChromeWebStore, ManifestV3, LeastPrivilege, PermissionsDiet, HostPermissions, StoragePermission, StoreSubmission, NoBuild, NativeESM, InReview
+  Meta Description: 크롬 웹 스토어 심사 단일 승인을 위해 MV3 불필요 권한을 과감히 제거한 최소 권한 다이어트 과정, No-Build Native ESM 기반 화이트리스트 자동 패키징 스크립트 구축, 그리고 호스트 권한(<all_urls>) 영문 소명서 작성과 최종 스토어 제출 과정을 정리합니다.
+  Slug: webtranslator-21-least-privilege-and-store-release
+  ---
+  Primary Keyword: 크롬 웹 스토어 확장 프로그램 최소 권한 심사 제출
+  Secondary Keywords: WebTranslator, Chrome Web Store Least Privilege, Manifest V3 권한 다이어트, host_permissions all_urls 사유서, No-Build Native ESM, package.js 화이트리스트 압축, Chrome Extension In Review
+  Knowledge Source: Knowledge/webtranslator-21-least-privilege-and-store-release/Troubleshooting/webtranslator-21-least-privilege-and-store-release-2026-08-21.md
+  Generated Date: 2026-08-21
+  Estimated Read Time: 10분
+  Series ID: webtranslator
+  ============================================================ -->
+
+<article>
+
+  <!-- 이미지 슬롯 1 (대표 이미지 - 필수) -->
+  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-08/webtranslator-21-least-privilege-and-store-release-img1_v1.jpg?v=20260821_1613" alt="크롬 웹 스토어 확장 프로그램 최소 권한 다이어트와 v1.0.0 정식 심사 제출 아키텍처">
+
+  <p>
+    앞서 20편에서는 크롬 웹 스토어 정식 출시를 위해 요구되는 <strong>5대 필수 요건(개발자 계정, 배포 패키지, 그래픽 에셋, 스토어 등록 정보, 개인정보 보호 관행)</strong>을 체계적으로 정리하고, 임시 말풍선 아이콘을 번역 전용 아이콘으로 교체하며 실물 스크린샷 4종을 정돈한 과정을 살펴보았습니다.
+  </p>
+  <p>
+    스토어 등록에 필요한 외형적 에셋과 메타데이터 준비가 끝났다면, 이제 실제로 구글 심사관의 엄격한 검토를 통과할 수 있도록 확장 프로그램의 내부 구조를 점검하고 최종 배포 패키지를 업로드해야 하는 마지막 단계에 도달했습니다.
+  </p>
+  <p>
+    크롬 웹 스토어 개발자 대시보드에 확장 프로그램을 등록하는 과정에서 가장 까다로운 장벽 중 하나는 바로 <strong>개인정보 보호 관행(Privacy Practices) 탭</strong>입니다. 구글은 확장 프로그램이 선언한 권한(Permissions) 하나하나에 대해 엄격한 정당화 사유와 데이터 비수집 인증을 요구하며, 기능에 비해 조금이라도 과도한 권한이 포함되어 있으면 심사가 수주일 지연되거나 즉시 반려(Rejected) 처리됩니다.
+  </p>
+  <p>
+    이번 글에서는 구글의 <strong>최소 권한의 원칙(Principle of Least Privilege)</strong>에 맞추어 매니페스트에서 불필요한 부가 권한들을 전면 삭제한 권한 다이어트 과정, 번들러 없이 네이티브 ES 모듈을 유지하면서 필요한 파일만 묶어내는 화이트리스트 패키징 스크립트(<code>scripts/package.js</code>)의 구조, 그리고 구글 심사용 영문 소명서 작성과 최종 <strong>검토 대기(In Review)</strong> 상태 진입까지의 전 과정을 정리하고자 합니다.
+  </p>
+
+  <h2 id="least-privilege-policy-and-review-risks">1. 구글 심사의 핵심 관문: 최소 권한의 원칙과 과다 권한의 위험</h2>
+
+  <p>
+    구글 크롬 웹 스토어는 사용자의 개인정보와 브라우징 보안을 보호하기 위해 <strong>개발자 프로그램 정책(Developer Program Policies)</strong> 내에서 두 가지 핵심 원칙을 강력하게 강제하고 있습니다.
+  </p>
+
+  <ol class="step">
+    <li>
+      <strong>단일 목적의 원칙 (Single Purpose Policy):</strong> 확장 프로그램은 명확하고 좁게 정의된 하나의 주 기능만을 수행해야 하며, 관련 없는 부가 기능이나 광고 주입 등을 결합해서는 안 됩니다.
+    </li>
+    <li>
+      <strong>최소 권한의 원칙 (Use of Permissions / Least Privilege):</strong> 확장 프로그램이 명시한 단일 목적을 수행하는 데 필요한 최소한의 데이터와 브라우저 권한만을 요청해야 합니다. '향후 추가될 기능'을 대비해 미리 권한을 선언해 두는 행위는 엄격히 금지됩니다.
+    </li>
+  </ol>
+
+  <p>
+    문제는 기능 개발을 진행하는 과정에서 편의를 위해 매니페스트에 추가해 두었던 임시 권한들이었습니다. AI 어시스턴트와 대화하며 프로토타입을 확장하다 보면 우클릭 컨텍스트 메뉴, 탭 활성화 감지 등 다양한 가능성을 열어두기 위해 권한들이 무분별하게 누적되곤 합니다.
+  </p>
+
+  <div class="note wr">
+    <strong>⚠️ 과다 권한 잔존 시의 위험:</strong> 매니페스트에 권한이 1개 추가될 때마다 개발자 대시보드의 '개인정보 보호 관행' 탭에서 해당 권한으로 사용자 데이터를 수집하는지 여부와 구체적인 정당화 사유를 개별 작성해야 합니다. 사용하지도 않는 권한이 남아 있으면 구글 심사관에게 "기능과 무관한 과도한 권한 요청(Excessive Permissions)"으로 지적받아 즉시 반려될 위험이 매우 큽니다.
+  </div>
+
+  <h2 id="manifest-permissions-diet">2. 과감한 권한 다이어트: permissions 1개와 host_permissions의 정당성</h2>
+
+  <p>
+    단 한 번의 심사로 지연 없이 승인받기 위해, 실제 WebTranslator의 런타임 동작을 면밀히 분석하여 <strong>불필요한 권한을 전면 삭제하는 권한 다이어트</strong>를 단행했습니다.
+  </p>
+
+  <div class="table w100 withBg">
+    <table>
+      <thead>
+        <tr>
+          <th>권한 구분</th>
+          <th>기존 선언 권한</th>
+          <th>최종 정리 결과</th>
+          <th>조치 사유 및 기술적 근거</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>contextMenus</code></td>
+          <td>선언됨</td>
+          <td><strong>삭제</strong></td>
+          <td>마우스 드래그 기반 인라인 팝업 카드로 UI가 확정되어 우클릭 메뉴를 일절 사용하지 않음</td>
+        </tr>
+        <tr>
+          <td><code>scripting</code></td>
+          <td>선언됨</td>
+          <td><strong>삭제</strong></td>
+          <td>동적 코드 주입 대신 <code>content_scripts</code>의 <code>boot.js</code>를 통해 네이티브 ESM을 정적 로드하므로 불필요</td>
+        </tr>
+        <tr>
+          <td><code>activeTab</code></td>
+          <td>선언됨</td>
+          <td><strong>삭제</strong></td>
+          <td>글로벌 단축키(Alt+A) 기반 백그라운드 메시징 및 <code>host_permissions</code>로 전역 제어하므로 중복 권한 배제</td>
+        </tr>
+        <tr>
+          <td><code>declarativeNetRequest</code></td>
+          <td>선언됨</td>
+          <td><strong>삭제</strong></td>
+          <td>네트워크 헤더 변조 기능이 없으며 백그라운드 Service Worker에서 <code>fetch</code> 통신만 수행하므로 불필요</td>
+        </tr>
+        <tr>
+          <td><code>permissions</code></td>
+          <td>-</td>
+          <td><strong><code>["storage"]</code> (유지)</strong></td>
+          <td>사용자의 번역 엔진 선택, 커스텀 API 키, 폰트/색상 스타일 설정, 로컬 단어 캐시를 브라우저에 안전하게 저장하기 위한 필수 권한</td>
+        </tr>
+        <tr>
+          <td><code>host_permissions</code></td>
+          <td>-</td>
+          <td><strong><code>["&lt;all_urls&gt;"]</code> (유지)</strong></td>
+          <td>사용자가 방문하는 모든 웹페이지에서 Alt+A 단축키로 번역을 트리거하고, 사용자 지정 로컬 LLM(Ollama: <code>localhost:11434</code>) 및 클라우드 번역 API와 통신하기 위해 필수적임</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    이로써 <code>manifest.json</code>의 권한 선언부는 오직 <code>permissions: ["storage"]</code> 단 하나와 <code>host_permissions: ["&lt;all_urls&gt;"]</code>만 남긴 간결한 구조로 재편되었습니다.
+  </p>
+
+  <div class="pre custom" data-text="JSON"><button aria-label="Copy code">Copy</button><pre>{
+  "manifest_version": 3,
+  "name": "__MSG_appName__",
+  "version": "1.0.0",
+  "description": "__MSG_appDescription__",
+  "default_locale": "ko",
+  "permissions": [
+    "storage"
+  ],
+  "host_permissions": [
+    "&lt;all_urls&gt;"
+  ],
+  "background": {
+    "service_worker": "src/background/index.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "&lt;all_urls&gt;"
+      ],
+      "js": [
+        "src/content/boot.js"
+      ],
+      "css": [
+        "content.css"
+      ],
+      "run_at": "document_idle"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "src/content/*"
+      ],
+      "matches": [
+        "&lt;all_urls&gt;"
+      ]
+    }
+  ],
+  "commands": {
+    "translate-page": {
+      "suggested_key": {
+        "default": "Alt+A"
+      },
+      "description": "현재 페이지 번역 토글"
+    }
+  },
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": true
+  },
+  "action": {
+    "default_title": "Web Translator 설정",
+    "default_popup": "optionPopup.html"
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  }
+}</pre></div>
+
+  <h2 id="no-build-native-esm-and-packaging-script">3. No-Build Native ESM 철학 유지와 화이트리스트 패키징 스크립트</h2>
+
+  <p>
+    권한 정리가 완료된 후, 크롬 웹 스토어에 업로드할 배포용 압축 파일(<code>.zip</code>)을 생성하는 파이프라인을 점검했습니다.
+  </p>
+
+  <h3 id="no-build-philosophy">No-Build 개발 환경과 패키징의 본질</h3>
+  <p>
+    앞서 13편에서 모놀리스 코드를 리팩토링할 당시, Webpack이나 Vite 같은 복잡한 번들러 도입을 배제하고 브라우저 표준 <strong>네이티브 ES 모듈(<code>type: module</code>, <code>boot.js</code>의 동적 <code>import()</code>)</strong>을 직접 실행하는 구조를 확립한 바 있습니다.
+  </p>
+  <p>
+    이 방식을 통해 개발 중에는 번들러 컴파일이나 트랜스파일 대기 시간 없이, 소스 코드를 수정하고 크롬 확장 프로그램 관리 페이지에서 새로고침(<code>Ctrl+R</code>)만 누르면 즉시 디버깅할 수 있는 쾌적한 개발 루프를 누릴 수 있었습니다.
+  </p>
+  <p>
+    따라서 본 프로젝트에서 배포 단계의 '빌드'는 코드를 변환·난독화하는 번들러가 아니라, <strong>개발용 문서나 대용량 이미지, 테스트 스크립트를 격리하고 순수 런타임 파일만 골라 담는 화이트리스트 아카이빙(Pure Staging &amp; Packaging)</strong>으로 정의됩니다.
+  </p>
+
+  <h3 id="package-script-architecture">scripts/package.js 화이트리스트 자동화 구조</h3>
+  <p>
+    전체 프로젝트 폴더에서 불필요한 파일을 하나씩 지워나가는 블랙리스트 방식은 향후 새로운 문서나 테스트 코드가 추가되었을 때 배포 패키지에 누출될 위험이 큽니다. 따라서 명시된 <strong>9개 런타임 항목만 임시 스테이징 폴더로 복사</strong>하는 화이트리스트 기반의 <code>scripts/package.js</code>를 구현했습니다.
+  </p>
+
+  <div class="pre custom" data-text="JavaScript"><button aria-label="Copy code">Copy</button><pre>import fs from "fs";
+import path from "path";
+import { execSync } from "child_process";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const rootDir = path.resolve(__dirname, "..");
+const distDir = path.resolve(rootDir, "dist");
+
+// 1. manifest.json에서 버전 동적 추출
+const manifestPath = path.resolve(rootDir, "manifest.json");
+const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf-8"));
+const version = manifest.version || "1.0.0";
+const zipName = `web-translator-v${version}.zip`;
+const zipPath = path.resolve(distDir, zipName);
+const tempBuildDir = path.resolve(distDir, "temp_build");
+
+// 2. 화이트리스트 9개 런타임 필수 항목 정의
+const includeItems = [
+  "manifest.json",
+  "_locales",
+  "content.css",
+  "optionPopup.css",
+  "optionPopup.html",
+  "options.css",
+  "options.html",
+  "icons",
+  "src"
+];
+
+// 3. 임시 스테이징 디렉토리에 재귀 복사 (docs/, images/, .git/ 원천 차단)
+// ...
+
+// 4. Windows 내장 PowerShell Compress-Archive로 무의존성 zip 생성
+try {
+  const psCommand = `powershell -Command "Compress-Archive -Path '${tempBuildDir}\\*' -DestinationPath '${zipPath}' -Force"`;
+  execSync(psCommand, { stdio: "inherit" });
+} finally {
+  // 임시 스테이징 폴더 즉시 삭제
+  if (fs.existsSync(tempBuildDir)) {
+    fs.rmSync(tempBuildDir, { recursive: true, force: true });
+  }
+}</pre></div>
+
+  <div class="note">
+    <strong>💡 무의존성 아카이빙의 장점:</strong> <code>archiver</code> 같은 무거운 외부 npm 모듈을 의존성에 추가하지 않고, OS 내장 PowerShell <code>Compress-Archive</code> 명령을 활용함으로써 빌드 도구 의존성 관리 비용을 없애고 런타임 파일 44개만을 담은 초경량 배포본(<code>dist/web-translator-v1.0.0.zip</code>)을 완성했습니다.
+  </div>
+
+  <h2 id="chrome-web-store-dashboard-justifications">4. 개발자 대시보드 실전 입력: 영문 소명서 및 개인정보 보호 서약</h2>
+
+  <p>
+    생성된 <code>dist/web-translator-v1.0.0.zip</code>을 개발자 대시보드에 업로드한 후, <strong>개인정보 보호 관행(Privacy Practices)</strong> 탭에서 구글 심사관에게 제출한 공식 영문 소명서와 데이터 정책 서약 내용입니다.
+  </p>
+
+  <h3 id="single-purpose-description">1) 단일 목적 설명 (Single Purpose Description)</h3>
+  <div class="pre custom" data-text="Text"><button aria-label="Copy code">Copy</button><pre>Web Translator is designed solely to provide inline web page translation and text-selection dictionary lookup using multiple translation engines (Google Translate, Gemini AI, OpenAI, Claude, and local LLMs).</pre></div>
+  <p>
+    <em>(국문 요약: Web Translator는 다양한 번역 엔진을 활용하여 웹 페이지 텍스트를 인라인으로 번역하고 선택한 단어의 사전 뜻을 제공하는 단일 목적의 번역 도구입니다.)</em>
+  </p>
+
+  <h3 id="host-permissions-justification">2) 호스트 권한 (&lt;all_urls&gt;) 사유서</h3>
+  <div class="pre custom" data-text="Text"><button aria-label="Copy code">Copy</button><pre>The extension requires &lt;all_urls&gt; permission to detect and translate text content across websites the user visits upon pressing the translation shortcut (Alt+A), and to communicate with user-configured translation API endpoints (Google Translate, Gemini API, OpenAI API, Anthropic API, and local Ollama server).</pre></div>
+  <p>
+    <em>(국문 요약: 사용자가 방문하는 모든 웹페이지에서 Alt+A 단축키를 눌렀을 때 텍스트를 즉시 감지하여 번역하고, 사용자가 설정한 로컬/클라우드 API 엔드포인트와 통신하기 위해 필요합니다.)</em>
+  </p>
+
+  <h3 id="storage-permission-justification">3) storage 권한 사유서</h3>
+  <div class="pre custom" data-text="Text"><button aria-label="Copy code">Copy</button><pre>Used to save user preferences, custom style options, API keys, and local translation dictionary cache securely in the browser.</pre></div>
+  <p>
+    <em>(국문 요약: 사용자의 번역 엔진 선택, API 키, 스타일 옵션, 로컬 단어 캐시를 브라우저에 안전하게 보관하기 위해 사용됩니다.)</em>
+  </p>
+
+  <h3 id="data-usage-certification">4) 데이터 사용 인증</h3>
+  <ul>
+    <li><strong>사용자 데이터 수집 여부:</strong> <code>아니요, 사용자 데이터를 수집하거나 사용하지 않습니다</code> 선택</li>
+    <li><strong>개발자 프로그램 정책 준수 인증:</strong> 데이터 판매 및 비인가 전송 금지 서약 체크 완료</li>
+  </ul>
+
+  <h2 id="final-submission-and-series-wrapup">5. 최종 심사 제출과 WebTranslator v1.0.0 개발 대장정의 마무리</h2>
+
+  <p>
+    모든 스토어 정보(다국어 제목 및 설명, 16/48/128px 공식 아이콘, 1280x800 실물 스크린샷 4종)와 개인정보 보호 항목 작성을 마친 후, 개발자 대시보드 우측 상단의 <strong>[검토를 위해 제출 (Submit for Review)]</strong> 버튼을 클릭했습니다.
+  </p>
+
+  <p>
+    확장 프로그램의 상태는 즉시 <strong>검토 대기 (In Review)</strong>로 전환되었으며, 이제 구글 자동 보안 스캔과 담당 심사관의 수동 검토를 거쳐 전 세계 크롬 웹 스토어에 정식 게시되는 절차만 남게 되었습니다.
+  </p>
+
+  <div class="table w100 withBg">
+    <table>
+      <thead>
+        <tr>
+          <th>개발 단계</th>
+          <th>주요 마일스톤 및 다룬 핵심 과제</th>
+          <th>연계 회차</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>1단계: 통신 &amp; 아키텍처</strong></td>
+          <td>MV3 CSP 우회 통신, 단축키 레이스 컨디션 및 스토리지 분리</td>
+          <td>01편 ~ 02편</td>
+        </tr>
+        <tr>
+          <td><strong>2단계: DOM &amp; 렌더링</strong></td>
+          <td>Steam 인라인 링크 색상 복원, 버튼 붕괴 방지 및 듀얼 렌더러 구축</td>
+          <td>03편 ~ 05편</td>
+        </tr>
+        <tr>
+          <td><strong>3단계: LLM 다중 엔진</strong></td>
+          <td>선택 영역 번역 상태 격리, JSON 응답 정제, 단어 사전 전문화 프롬프트</td>
+          <td>06편 ~ 09편</td>
+        </tr>
+        <tr>
+          <td><strong>4단계: API 장애 복원력</strong></td>
+          <td>Gemini Rate Limit 한도 극복, 모델 404 동적 탐색, 빈 응답 재시도 큐</td>
+          <td>10편 ~ 12편</td>
+        </tr>
+        <tr>
+          <td><strong>5단계: 모듈화 &amp; UI 혁신</strong></td>
+          <td>3,000줄 모놀리스 ESM 리팩토링, 환경 적응형 보색 계산, 툴바 빠른 설정</td>
+          <td>13편 ~ 16편</td>
+        </tr>
+        <tr>
+          <td><strong>6단계: 이미지 번역 R&amp;D</strong></td>
+          <td>Tesseract 한계, PaddleOCR 메모리 폭증 격리와 v2.0 분리</td>
+          <td>17편 ~ 18편</td>
+        </tr>
+        <tr>
+          <td><strong>7단계: 고도화 &amp; 스토어 출시</strong></td>
+          <td>스마트 드래그 필터링, 정식 에셋 제작, MV3 최소 권한 다이어트 및 스토어 제출</td>
+          <td>19편 ~ 21편</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    프로젝트 기획부터 시작해 21편의 개발기를 거치며 수많은 DOM 레이아웃 붕괴, API 한도 초과, 모델 삭제, 아키텍처 전면 리팩토링, 그리고 이미지 번역의 기술적 한계와 격리까지 수많은 엔지니어링 과제들을 차분하게 해결해 왔습니다.
+  </p>
+  <p>
+    크롬 웹 스토어 심사 승인이 완료되는 대로, 앞서 안전하게 격리해 둔 이미지 번역 엔진 고도화를 재개하여 <strong>v2.0 메이저 업데이트</strong>로 다시 찾아뵙겠습니다.
+  </p>
+
+  <h2 id="section-closing">마무리하며</h2>
+
+  <p>
+    크롬 확장 프로그램을 개발하면서 가장 크게 깨달은 점 중 하나는, 훌륭한 기능 구현만큼이나 <strong>스토어 심사 정책에 부합하는 최소 권한 설계와 체계적인 패키징 파이프라인</strong>이 프로덕트 출시에 결정적인 역할을 한다는 사실입니다.
+  </p>
+  <p>
+    혹시 크롬 웹 스토어에 확장 프로그램을 배포하는 과정에서 과도한 권한 문제로 심사 반려를 겪으셨거나, <code>&lt;all_urls&gt;</code> 같은 고위험 호스트 권한을 소명하는 데 어려움을 겪으셨던 경험이 있으신가요? 여러분만의 권한 관리 노하우나 패키징 팁이 있다면 댓글로 자유롭게 공유해 주시면 감사하겠습니다.
+  </p>
+
+  <!-- 시리즈 네비게이션 컨테이너 (시리즈 글인 경우에만 삽입, JS로 동적 렌더링) -->
+  <nav class="series-nav"></nav>
+
+</article>

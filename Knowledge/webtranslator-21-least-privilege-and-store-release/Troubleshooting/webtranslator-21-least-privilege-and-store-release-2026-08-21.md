@@ -10,9 +10,9 @@ last_modified: 2026-08-21
 language: KR+EN
 tags: [WebTranslator, ChromeExtension, ChromeWebStore, ManifestV3, LeastPrivilege, PermissionsDiet, HostPermissions, StoragePermission, StoreSubmission, NoBuild, NativeESM, PackageScript, InReview]
 sources_count: 6
-blog_draft_path: null
-blog_draft_date: null
-blog_id: null
+blog_draft_path: Blog_Posts/2026-08/webtranslator-21-least-privilege-and-store-release.html
+blog_draft_date: 2026-08-21
+blog_id: core-archive
 blog_published: false
 series_id: webtranslator
 ---
