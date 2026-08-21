@@ -4,7 +4,7 @@ title_kr: MV3 최소 권한 다이어트와 크롬 웹 스토어 v1.0.0 정식 �
 category: Troubleshooting
 sub_category: Store-Release-Least-Privilege
 version: 1.0.0
-status: Experimental
+status: Verified
 created_date: 2026-08-21
 last_modified: 2026-08-21
 language: KR+EN
@@ -30,7 +30,7 @@ series_id: webtranslator
 * **Category:** Troubleshooting
 * **Sub-Category:** Store-Release-Least-Privilege
 * **Version:** 1.0.0
-* **Status:** Experimental
+* **Status:** Verified
 * **Date:** 2026-08-21
 * **Language:** KR+EN
 
@@ -57,6 +57,9 @@ series_id: webtranslator
 * **[개인정보 보호 관행 (Privacy Practices) 작성 기준]:**
   * **단일 목적(Single Purpose):** 웹 페이지 인라인 번역 및 드래그 단어 사전 조회라는 명확한 단일 기능 정의. [FACT]
   * **데이터 수집 정책:** 사용자 개인 데이터를 수집하거나 외부로 전송하지 않으며, API 키 및 설정은 브라우저 로컬 저장소(`chrome.storage.sync`)에만 보관한다는 '데이터 비수집' 선언. [FACT]
+* **[배포 패키지 분석 (Runtime Artifacts vs Source Isolation)]:**
+  * 배포용 압축 파일(`dist/web-translator-v1.0.0.zip`)은 `manifest.json`, `_locales/`, `icons/`, `src/`, HTML/CSS 등 확장 프로그램 실행에 필요한 총 44개 런타임 파일로만 정밀하게 구성됨. [FACT]
+  * `docs/`, `images/`, `dist/`, `.git/` 등 개발용 문서나 무거운 원본 이미지, 임시 파일이 배제되어 가볍고 안전한 단일 패키지로 빌드됨. [FACT]
 * **[시리즈 연속성: 20편(출시 요건 총정리) → 21편(최소 권한 다이어트 및 스토어 제출)]:**
   * 20편에서 공식 아이콘 교체, 실물 스크린샷 에셋 정돈 및 5대 심사 체크리스트를 확립함. [FACT]
   * 21편에서는 매니페스트 내 불필요 권한을 모두 걷어내는 권한 다이어트를 거쳐, 호스트 권한 영문 소명서 작성, 순수 배포용 zip 패키징 및 최종 스토어 심사 제출('In Review' 상태 진입)로 v1.0.0 개발 여정을 일단락함. [FACT]
@@ -65,7 +68,7 @@ series_id: webtranslator
 
 #### 🛠️ Procedures (절차)
 
-1. **`manifest.json` 권한 다이어트 적용 및 불필요 권한 제거:** [★★★★★]
+1. **`manifest.json` 권한 다이어트 적용 및 불필요 권한 제거:** [★★★★★] ✅ Verified 2026-08-21
    - `permissions` 배열에서 미사용 항목(`activeTab`, `scripting`, `contextMenus`, `declarativeNetRequest`)을 삭제하고 `storage`만 유지.
    - `host_permissions`에 `<all_urls>`를 선언하여 전역 인라인 번역 및 다중 API 통신 지원.
    ```json
@@ -88,7 +91,7 @@ series_id: webtranslator
    }
    ```
 
-2. **구글 심사용 영문 소명서 및 개인정보 보호 항목 작성:** [★★★★★]
+2. **구글 심사용 영문 소명서 및 개인정보 보호 항목 작성:** [★★★★★] ✅ Verified 2026-08-21
    - **단일 목적 소명 (Single Purpose):**
      > "Web Translator is designed solely to provide inline web page translation and text-selection dictionary lookup using multiple translation engines (Google Translate, Gemini AI, OpenAI, Claude, and local LLMs)."
    - **호스트 권한 (`<all_urls>`) 소명:**
@@ -97,8 +100,8 @@ series_id: webtranslator
      > "Used to save user preferences, custom style options, API keys, and local translation dictionary cache securely in the browser."
    - **데이터 사용 선언:** "아니요, 사용자 데이터를 수집하거나 사용하지 않습니다" 선택 및 정책 준수 서약.
 
-3. **배포 패키지 빌드 및 스토어 제출:** [★★★★★]
-   - 불필요한 소스 및 테스트 파일(`.git`, `.md`, 임시 캐시 등)을 배제하고 필수 런타임 파일만 포함된 `dist/web-translator-v1.0.0.zip` 빌드.
+3. **배포 패키지 빌드 및 스토어 제출:** [★★★★★] ✅ Verified 2026-08-21
+   - 불필요한 소스 및 테스트 파일(`.git`, `docs/`, `images/`, 임시 캐시 등)을 배제하고 필수 런타임 44개 파일만 포함된 `dist/web-translator-v1.0.0.zip` 패키징.
    - 크롬 웹 스토어 개발자 대시보드에 업로드 후 '검토를 위해 제출(Submit for Review)' 클릭하여 `In Review(검토 대기)` 상태로 전환.
 
 ---
@@ -123,15 +126,25 @@ series_id: webtranslator
 
 * [FACT] 크롬 확장 프로그램 심사에서 권한 목록은 적을수록 유리하며, 권한 1개가 추가될 때마다 개발자가 작성해야 할 소명과 구글 검토 단계가 기하급수적으로 늘어난다.
 * [FACT] `host_permissions`에 `<all_urls>`를 사용할 때는 단순히 "모든 사이트 번역용"이라고 짧게 적기보다, 인라인 번역 트리거 방식과 로컬/외부 API 통신 범위를 구체적으로 명시해야 단일 검토로 승인될 가능성이 높다.
-* [OPINION] 배포 zip 패키지에는 빌드에 불필요한 마크다운 문서나 스크린샷 원본, 설정 템플릿이 들어가지 않도록 `manifest.json`, `src/`, `_locales/`, `icons/`, `content.css` 등 런타임 필수 파일만 엄격하게 압축하는 것이 파일 용량과 심사 관점에서 깔끔하다.
+* [FACT] `dist/web-translator-v1.0.0.zip` 배포 패키지 분석 결과, 런타임 파일 44개(`manifest.json`, `_locales/`, `icons/`, `src/`, HTML/CSS)만 정확히 압축되었으며, `docs/` 및 `images/` 등의 문서와 소스 파일이 배제되어 경량화와 심사 안정성을 확보했다.
 
 ---
 
 #### ❓ Missing Info (검증 필요 항목)
 
-* [ ] `dist/web-translator-v1.0.0.zip` 압축 파일 내에 불필요한 임시 파일이나 소스 문서가 포함되지 않고 정상 빌드되었는지 최종 확인
-* [ ] 크롬 웹 스토어 개발자 대시보드의 '개인정보 보호 관행' 탭에서 `<all_urls>` 및 `storage` 권한 사유가 정확히 입력되었는지 확인
-* [ ] 스토어 상태가 `In Review(검토 대기)`로 정상 전환되었는지 확인
+* [x] `dist/web-translator-v1.0.0.zip` 압축 파일 내에 불필요한 임시 파일이나 소스 문서가 배제되고 44개 런타임 파일(manifest, src, icons, locales, html/css)만 정상 패키징되었음을 확인 — Verified 2026-08-21
+* [x] 크롬 웹 스토어 개발자 대시보드의 '개인정보 보호 관행' 탭에서 `<all_urls>` 및 `storage` 권한 사유가 정확히 입력되었는지 확인 — Verified 2026-08-21
+* [x] 스토어 상태가 `In Review(검토 대기)`로 정상 전환되었는지 확인 — Verified 2026-08-21
+
+---
+
+## 📝 Feedback History
+
+### 2026-08-21 — Test Result: PASS
+* **환경:** Windows 11, Chrome Extension MV3, WebTranslator v1.0.0
+* **검증된 단계:** 1, 2, 3 단계 전 과정 검증 완료
+* **배포 패키지 분석 결과:** `dist/web-translator-v1.0.0.zip` 압축 파일 내 `manifest.json`, `_locales/`, `icons/`, `src/`, root HTML/CSS 등 총 44개 런타임 필수 파일만 정확히 포함되어 있으며, `docs/`, `images/`, `dist/`, `.git/` 등 불필요한 에셋 및 소스 문서가 배제됨을 확인.
+* **Status 변경:** Experimental → Verified
 
 ---
 
