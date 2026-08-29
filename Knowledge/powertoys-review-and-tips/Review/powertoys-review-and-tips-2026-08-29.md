@@ -1,6 +1,6 @@
 ---
 topic: powertoys-review-and-tips
-title_kr: Microsoft PowerToys 개발 역사와 실전 활용 리뷰: 창 관리부터 다중 PC 제어까지
+title_kr: Microsoft PowerToys 리뷰: 역사와 자주 사용하는 기능 정리
 category: Review
 sub_category: Productivity
 version: 2026-08-29
@@ -22,7 +22,7 @@ series_id: null
 ### 📦 [Knowledge Package]
 
 * **Topic:** powertoys-review-and-tips
-* **Title_KR:** Microsoft PowerToys 개발 역사와 실전 활용 리뷰: 창 관리부터 다중 PC 제어까지
+* **Title_KR:** Microsoft PowerToys 리뷰: 역사와 자주 사용하는 기능 정리
 * **Category:** Review
 * **Sub-Category:** Productivity
 * **Version:** 2026-08-29
