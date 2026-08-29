@@ -1,0 +1,228 @@
+<!-- ============================================================
+  [BLOG POST METADATA - Blogspot 설정창 복사용]
+  Title: Microsoft PowerToys 개발 역사와 실전 활용 리뷰: 창 분할부터 다중 PC 제어까지
+  Labels (Tags): Review, PowerToys, Windows11, FancyZones, MouseWithoutBorders, Productivity, Utilities
+  Meta Description: Windows 파워 유저를 위한 필수 도구 PowerToys의 개발 역사와 실전 활용 리뷰입니다. FancyZones 창 분할, 경계 없는 마우스 연동 및 네트워크 설정 팁을 정리합니다.
+  Slug: powertoys-review-and-tips
+  ---
+  Primary Keyword: PowerToys
+  Secondary Keywords: FancyZones, 경계 없는 마우스, Color Picker, Peek, 윈도우 유틸리티
+  Knowledge Source: Knowledge/powertoys-review-and-tips/Review/powertoys-review-and-tips-2026-08-29.md
+  Generated Date: 2026-08-30
+  Estimated Read Time: 8분
+  Series ID: null
+  ============================================================ -->
+
+<article>
+  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-08/powertoys-review-and-tips-img1_v1.jpg?v=20260830_0110" alt="Microsoft PowerToys 생산성 유틸리티 종합 구성도">
+
+  <p>Windows 환경에서 개발 및 다양한 작업을 진행하다 보면, 운영체제 기본 기능만으로는 창 배치나 다중 작업 흐름을 효율적으로 관리하기 어려운 상황을 자주 마주하게 됩니다. Microsoft PowerToys는 윈도우 파워 유저와 개발자의 작업 환경을 세밀하게 제어할 수 있도록 설계된 오픈소스 유틸리티 모음입니다.</p>
+
+  <p>이번 글에서는 PowerToys가 Windows 95 시절부터 시작하여 현대의 오픈소스 프로젝트로 발전해 온 개발 역사를 살펴보고, 다중 모니터 창 관리부터 듀얼 네트워크 기반의 다중 PC 제어까지 실제 작업 환경에서 유용하게 활용하고 있는 핵심 기능과 설정 팁을 정리해 보고자 합니다.</p>
+
+  <h2 id="powertoys-history">1. PowerToys 개발 역사와 탄생 배경</h2>
+  
+  <p>PowerToys는 최근에 새로 등장한 도구가 아니라, Windows의 발전 과정과 오랜 시간을 함께해 온 유서 깊은 프로젝트입니다.</p>
+
+  <h3 id="history-timeline">시대별 개발 역사</h3>
+  <ol class="step">
+    <li><strong>Windows 95 태동기:</strong> Windows 95 출시 당시, 윈도우 셸(Shell) 개발팀 엔지니어들이 개인 업무 편의와 새로운 기능 실험을 위해 비공식적으로 개발하던 소형 유틸리티 모음으로 출발했습니다. 시스템 세부 설정을 변경할 수 있는 <code>TweakUI</code>나 폴더에서 바로 콘솔을 여는 <code>Command Prompt Here</code> 등이 파워 유저들 사이에서 큰 인기를 얻었습니다.</li>
+    <li><strong>Windows XP 전성기:</strong> Windows XP 시대로 접어들며 파워 유저 전용 공식 부가 유틸리티 팩으로 자리 잡았습니다. <code>ClearType Tuner</code>, <code>Image Resizer</code>, <code>Virtual Desktop Manager</code> 등이 활발히 사용되었으나, Windows Vista와 Windows 7, 8 시기를 거치며 공식 유지보수가 중단되고 오랜 기간 휴면기에 들어갔습니다.</li>
+    <li><strong>Windows 10/11 오픈소스 부활 (Build 2019):</strong> 2019년 5월 Microsoft Build 개발자 컨퍼런스를 통해 오픈소스 프로젝트로의 공식 부활이 선언되었습니다. Microsoft 주도하에 GitHub 리포지토리가 개설되었으며, C++, C#, WinUI 3 기술 스택을 기반으로 현대적 Windows 10/11 환경에 맞춰 전면 재작성되었습니다.</li>
+  </ol>
+
+  <h3 id="design-philosophy">존재 목적과 설계 철학</h3>
+  <p>PowerToys가 운영체제 기본 기능에 흡수되지 않고 독립된 도구 모음으로 유지되는 이유는 명확합니다.</p>
+  <ul>
+    <li><strong>OS 비대화 방지:</strong> 모든 부가 기능을 윈도우 코어에 통합할 경우 발생할 수 있는 시스템 비대화와 안정성 저하를 방지하면서, 파워 유저가 원하는 심층 제어 기능을 독립된 모듈로 제공합니다.</li>
+    <li><strong>기능 인큐베이터 역할:</strong> 커뮤니티의 피드백을 실시간으로 수용하며 실험적 기능을 빠르게 검증하고, 검증된 사용자 경험을 향후 정식 Windows 빌드에 반영하는 테스트베드 역할을 수행합니다.</li>
+  </ul>
+
+  <h2 id="frequently-used-utilities">2. 개인적으로 자주 사용하는 유틸리티 실사용 리뷰</h2>
+
+  <p>현재 제공되는 30여 종의 유틸리티 중 실제 작업 환경에서 가장 높은 빈도로 활용하고 있는 5가지 도구의 실사용 경험과 커스텀 설정 방법입니다.</p>
+
+  <h3 id="fancyzones">FancyZones: 다중 모니터 작업 영역 세분화</h3>
+  <p>개인적으로 PowerToys를 설치하게 된 가장 핵심적인 이유입니다. Windows 기본 스냅 기능은 단순 2분할 또는 4분할에 그치지만, FancyZones를 이용하면 모니터 해상도와 작업 특성에 맞춘 커스텀 그리드를 자유롭게 구성할 수 있습니다.</p>
+
+  <div class="note">
+    <strong>💡 단축키 커스텀 팁:</strong> FancyZones 설정의 '창 동작'에서 <strong>Windows 스냅 단축키 재정의</strong>를 활성화하고, 이동 방식을 <strong>상대 위치 기준(<code>Win + 방향키</code>)</strong>으로 지정하여 사용하고 있습니다. 기본 좌우 스냅을 넘어 상하로 영역을 분할해 세로형 창에서의 화면 활용성을 높일 수 있습니다.
+  </div>
+
+  <h3 id="mouse-without-borders">경계 없는 마우스 (Mouse Without Borders): 단일 입력장치로 다중 PC 제어</h3>
+  <p>로컬 네트워크에 연결된 최대 4대의 Windows PC를 물리적 KVM 스위치 없이 하나의 마우스와 키보드로 제어할 수 있는 가상 KVM 기능입니다.</p>
+
+  <ul class="pros">
+    <li>마우스 커서 이동 시 키보드 입력 포커스가 자동으로 대상 PC로 전환됩니다.</li>
+    <li>클립보드 텍스트 동기화 및 파일 복사/붙여넣기, 드래그 앤 드롭이 매끄럽게 작동합니다.</li>
+    <li>연결 시 방화벽 차단 문제는 설정 내 '테두리 없는 마우스에 대한 방화벽 규칙 추가' 버튼으로 간편하게 처리할 수 있습니다.</li>
+  </ul>
+
+  <ul class="cons">
+    <li>최신 버전에서도 모니터 배치를 상하(2D 그리드)로 구성할 수 없으며, 화면의 좌우 끝으로만 커서 이동이 가능한 1차원 배치 제약이 있습니다.</li>
+  </ul>
+
+  <div class="note wr">
+    <strong>⚠️ 듀얼 네트워크(유선 랜 외부망 + Wi-Fi 내부망) 특수 환경 연동 팁:</strong><br>
+    일반적인 단일 공유기 환경에서는 보안 키 입력만으로 정상 연결되지만, 메인 PC가 인터넷용 외부 유선 랜과 서브 PC 통신용 내부 Wi-Fi로 분리된 특수 환경에서는 브로드캐스트 패킷이 유선 랜으로 나가 서브 PC를 찾지 못할 수 있습니다.<br>
+    이 경우 PowerToys 설정의 <strong>IP 매핑(IP Mapping)</strong>에서 <code>[서브PC이름] [서브PC_Wi-Fi_IP]</code>를 등록하고, 필요 시 네트워크 연결 속성(<code>ncpa.cpl</code>)의 IPv4 고급 설정에서 유선 랜의 인터페이스 메트릭을 <code>10</code>, Wi-Fi의 인터페이스 메트릭을 <code>20</code>으로 수동 지정하면 기본 인터넷 경로 혼선 없이 확실하게 통신 경로를 분리할 수 있습니다.
+  </div>
+
+  <h3 id="peek">미리보기 (Peek): 빠른 코드 및 압축 파일 확인</h3>
+  <p>파일 탐색기에서 파일을 선택하고 <code>Space</code> 키(기본값 <code>Ctrl + Space</code>에서 변경)를 눌러 무거운 전용 프로그램을 띄우지 않고 팝업으로 내용을 즉시 확인하는 경량 뷰어입니다.</p>
+  <ul>
+    <li>Visual Studio가 설치되어 있지 않은 보조 PC이거나 무거운 IDE를 열기 번거로울 때 <code>.cpp</code>, <code>.h</code>, <code>.cs</code> 등의 소스 코드를 빠르게 확인할 때 유용합니다.</li>
+    <li>압축 파일(<code>.zip</code>)의 경우 별도의 압축 해제 없이 내부 폴더 트리 구조와 파일별 용량을 즉시 확인할 수 있습니다.</li>
+    <li>미리보기 창이 활성화된 상태에서 키보드 방향키를 누르면 이전/다음 파일로 연속 전환 탐색이 가능합니다.</li>
+  </ul>
+
+  <h3 id="color-picker">색 선택기 (Color Picker): 전역 픽셀 색상 추출</h3>
+  <p>단축키(<code>Win + Shift + C</code>)를 눌러 화면 상의 임의 픽셀 색상을 즉시 스포이트로 추출하는 유틸리티입니다.</p>
+  <ul>
+    <li>웹 개발 시 주로 사용되는 <strong>HEX</strong> 포맷뿐만 아니라, Unity 게임 엔진 및 셰이더 개발 파이프라인에서 필수적인 <strong>RGB, HSL, HSV</strong> 포맷을 동시에 활성화해 두어 별도 그래픽 편집기를 띄우는 번거로움 없이 필요한 수치 값을 즉시 복사하여 사용하고 있습니다.</li>
+  </ul>
+
+  <h3 id="always-on-top">항상 위에 표시 (Always on Top): 특정 창 Z-Order 최상단 고정</h3>
+  <p>단축키(기본 <code>Win + Ctrl + T</code>에서 <code>Win + T</code>로 변경)를 눌러 작업 중인 창을 화면 최상단에 고정하는 기능입니다.</p>
+  <ul>
+    <li>초기에는 참조용 유튜브 영상 창을 고정하는 용도로 주로 활용했으나, Firefox 브라우저의 자체 PiP(팝업) 기능을 이용하게 되면서 최근에는 특정 독립 애플리케이션 창을 참조해야 할 때 선별적으로 활용하고 있습니다.</li>
+  </ul>
+
+  <h2 id="other-utilities-overview">3. 공식 31종 유틸리티 생태계 요약</h2>
+
+  <p>Microsoft PowerToys는 창 관리 외에도 시스템 전반에 걸친 다양한 생산성 유틸리티를 제공합니다. 공식 문서에 명시된 기능별 핵심 요약입니다.</p>
+
+  <div class="table w100 withBg">
+    <table>
+      <thead>
+        <tr>
+          <th>유틸리티명</th>
+          <th>주요 기능 및 역할</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>고급 붙여넣기 (Advanced Paste)</td>
+          <td>클립보드 텍스트를 마크다운, JSON 등으로 변환하거나 OpenAI API 기반 텍스트 재구성 지원</td>
+        </tr>
+        <tr>
+          <td>Awake</td>
+          <td>전원 및 절전 모드 설정을 유지하면서 시스템이 절전 상태로 들어가지 않도록 트레이에서 유지</td>
+        </tr>
+        <tr>
+          <td>명령을 찾을 수 없음 (Command Not Found)</td>
+          <td>PowerShell 7에서 알 수 없는 명령어 입력 시 설치 가능한 WinGet 패키지 제안</td>
+        </tr>
+        <tr>
+          <td>명령 팔레트 (Command Palette)</td>
+          <td>자주 사용하는 명령, 앱, 도구에 접근할 수 있는 통합 명령 실행 인터페이스</td>
+        </tr>
+        <tr>
+          <td>자르기 및 잠금 (Crop and Lock)</td>
+          <td>실행 중인 창의 일부분만 잘라내어 대화형 미니 창 또는 썸네일로 고정 표시</td>
+        </tr>
+        <tr>
+          <td>환경 변수 (Environment Variables)</td>
+          <td>시스템 및 사용자 환경 변수를 GUI 기반 프로필로 관리하고 편집</td>
+        </tr>
+        <tr>
+          <td>File Explorer 추가 기능</td>
+          <td>탐색기 미리 보기 창에서 SVG, Markdown, PDF, G-code, QOI, STL 등 렌더링 지원</td>
+        </tr>
+        <tr>
+          <td>파일 잠금 장치 (File Locksmith)</td>
+          <td>파일이 다른 프로세스에 점유되어 있을 때 컨텍스트 메뉴에서 프로세스 조회 및 강제 종료</td>
+        </tr>
+        <tr>
+          <td>잡기 및 이동 (Grab and Move)</td>
+          <td>단축키를 누른 채 창 내부 아무 곳이나 드래그하여 창 이동 및 크기 조절</td>
+        </tr>
+        <tr>
+          <td>호스트 파일 편집기 (Hosts File Editor)</td>
+          <td>Windows Hosts 파일의 도메인 및 IP 매핑을 안전하게 편집하는 전용 GUI 도구</td>
+        </tr>
+        <tr>
+          <td>이미지 리사이저 (Image Resizer)</td>
+          <td>탐색기 우클릭 메뉴에서 이미지 해상도와 크기를 일괄 변환</td>
+        </tr>
+        <tr>
+          <td>키보드 관리자 (Keyboard Manager)</td>
+          <td>단일 키 또는 단축키 조합을 시스템 전역 또는 특정 앱별로 리매핑</td>
+        </tr>
+        <tr>
+          <td>라이트 스위치 (Light Switch)</td>
+          <td>시간대에 따라 Windows 시스템 테마를 라이트 모드와 다크 모드로 자동 전환</td>
+        </tr>
+        <tr>
+          <td>마우스 유틸리티 (Mouse Utilities)</td>
+          <td>커서 찾기(Ctrl 2회), 형광펜 클릭 표시, 다중 모니터 마우스 점프, 십자선 표시 지원</td>
+        </tr>
+        <tr>
+          <td>새로 만들기+ (New+)</td>
+          <td>사전에 정의한 템플릿 파일/폴더 구조로 새 항목을 빠르게 생성</td>
+        </tr>
+        <tr>
+          <td>전원 표시 (Power Display)</td>
+          <td>트레이 플라이아웃에서 DDC/CI 지원 외부 모니터의 밝기, 대비, 볼륨 제어</td>
+        </tr>
+        <tr>
+          <td>PowerRename</td>
+          <td>정규식, 텍스트 치환, 대소문자 변환을 지원하는 대량 파일 이름 일괄 변경 도구</td>
+        </tr>
+        <tr>
+          <td>PowerToys Run</td>
+          <td><code>Alt + Space</code>로 실행되는 빠른 앱 실행기 및 계산기/단위 변환 검색창</td>
+        </tr>
+        <tr>
+          <td>빠른 강조 (Quick Accent)</td>
+          <td>키보드 키를 길게 눌러 악센트 문자가 포함된 외국어 문자 입력</td>
+        </tr>
+        <tr>
+          <td>레지스트리 미리 보기 (Registry Preview)</td>
+          <td><code>.reg</code> 파일의 내용을 시각적 GUI 트리로 확인하고 편집 및 병합</td>
+        </tr>
+        <tr>
+          <td>화면 눈금자 (Screen Ruler)</td>
+          <td>화면 상의 픽셀 거리, 영역 크기 및 이미지 에지 검출 기반 자동 크기 측정</td>
+        </tr>
+        <tr>
+          <td>바로 가기 가이드 (Shortcut Guide)</td>
+          <td>현재 화면에서 사용 가능한 Windows 바로 가기 단축키 오버레이 표시</td>
+        </tr>
+        <tr>
+          <td>텍스트 추출기 (Text Extractor)</td>
+          <td>화면 임의 영역을 캡처하여 즉시 OCR로 텍스트를 추출하고 클립보드에 복사</td>
+        </tr>
+        <tr>
+          <td>창 호퍼 (Window Hopper)</td>
+          <td>동일 애플리케이션의 여러 창 사이를 단축키로 빠르게 전환</td>
+        </tr>
+        <tr>
+          <td>작업 영역 (Workspaces)</td>
+          <td>특정 작업에 필요한 여러 프로그램의 위치와 배치를 한 번에 일괄 실행</td>
+        </tr>
+        <tr>
+          <td>ZoomIt</td>
+          <td>프레젠테이션 및 시연을 위한 화면 확대, 펜 주석 및 타이머 기능</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2 id="settings-backup-and-onedrive">4. 설정 백업 방식과 OneDrive 연동 팁</h2>
+
+  <p>PowerToys는 다양한 커스텀 단축키와 그리드 설정을 포함하고 있어, PC를 포맷하거나 여러 대의 컴퓨터를 구성할 때 설정을 다시 입력하는 과정이 번거로울 수 있습니다.</p>
+
+  <ol class="step">
+    <li><strong>전용 백업 포맷 (<code>.ptb</code>):</strong> PowerToys 설정의 <code>일반</code> &gt; <code>백업 및 복원</code> 메뉴에서 백업을 실행하면 모든 설정이 단일 <code>.ptb</code>(PowerToys Backup) 파일로 생성됩니다.</li>
+    <li><strong>기본 저장 위치:</strong> 생성된 백업 파일은 <code>%USERPROFILE%\Documents\PowerToys\Backup</code> 경로에 저장됩니다.</li>
+    <li><strong>OneDrive 무료 5GB 동기화 활용:</strong> Windows 설치 시 기본적으로 활성화되는 OneDrive 문서 폴더 동기화를 이용하면, 별도의 유료 클라우드 서비스 없이도 백업 파일이 안전하게 보관됩니다.</li>
+    <li><strong>원클릭 복원:</strong> 새 PC에 PowerToys를 설치한 후 일반 옵션에서 백업 위치를 해당 OneDrive 폴더로 지정하고 <strong>복원</strong> 버튼을 누르면 이전 작업 환경이 즉시 복구됩니다.</li>
+  </ol>
+
+  <h2 id="conclusion">5. 마무리하며</h2>
+
+  <p>Microsoft PowerToys는 단순한 부가 프로그램을 넘어, Windows 작업 환경의 세부적인 마찰을 줄이고 개인화된 작업 흐름을 완성할 수 있도록 돕는 실용적인 도구 모음입니다. 특히 다중 모니터 환경에서의 FancyZones 그리드 분할과 여러 PC를 연결하는 경계 없는 마우스 기능은 개발 및 데스크톱 작업의 편의성을 높이는 데 큰 역할을 합니다.</p>
+
+  <p>다양한 환경에서 PowerToys를 활용하고 계신다면, 여러분만의 필수 유틸리티나 커스텀 단축키 구성 팁이 있으신가요? 댓글로 자유롭게 의견을 공유해 주시면 감사하겠습니다.</p>
+</article>
