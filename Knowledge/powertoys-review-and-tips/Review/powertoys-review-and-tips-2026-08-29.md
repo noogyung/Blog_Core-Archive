@@ -34,6 +34,7 @@ series_id: null
 
 #### 📚 Sources & Confidence
   * [★★★★★] Microsoft Learn 공식 문서: https://learn.microsoft.com/ko-kr/windows/powertoys/?WT.mc_id=twitter-0000-docsmsft
+  * [★★★★★] Wikipedia - Microsoft PowerToys: https://en.wikipedia.org/wiki/Microsoft_PowerToys
   * [★★★★★] Microsoft PowerToys GitHub Repository: https://github.com/microsoft/PowerToys
   * [★★★★☆] Microsoft DevBlogs & Build 2019 Conference Announcement: https://devblogs.microsoft.com/
   * [★★★★★] 필자 실무 개발 및 듀얼 네트워크/멀티 모니터 환경 실측 검증 (2026-08-30)
@@ -43,9 +44,11 @@ series_id: null
 #### 🔑 Core Concepts (핵심 개념)
 
 ##### 1. PowerToys의 역사와 탄생 배경 (Development History & Evolution)
-* **Windows 95 태동기 (The Origin):** Windows 95 출시 당시, 윈도우 셸(Shell) 개발팀 엔지니어들이 사내 실험 및 개인 업무 편의를 위해 개발하던 비공식 유틸리티 모음으로 시작됨. `TweakUI`, `Command Prompt Here` 등 OS 기본 기능으로 제공하기에는 무겁거나 실험적인 도구들을 파워 유저에게 별도 제공하며 폭발적인 인기를 얻음. [FACT]
-* **Windows XP 전성기 (The Golden Age):** Windows XP 출시와 함께 공식 지원되지 않는 파워 유저 전용 유틸리티 팩으로 확장됨. `ClearType Tuner`, `Image Resizer`, `Virtual Desktop Manager`, `Alt-Tab Replacement` 등이 대표적이었으나, Windows Vista, 7, 8 시대를 거치며 점차 공식 유지보수가 중단되고 동면 상태에 들어감. [FACT]
-* **Windows 10/11 오픈소스 부활 (Build 2019 Reboot):** 2019년 5월 Microsoft Build 개발자 컨퍼런스에서 오픈소스 프로젝트로의 부활을 공식 선언함. Microsoft 개발팀 주도하에 GitHub(`microsoft/PowerToys`)에 리포지토리를 개설하고, C++, C#, WinUI 3 기술 스택을 기반으로 전 세계 오픈소스 커뮤니티와 협업하여 현대적 윈도우 환경에 맞게 전면 재작성됨. [FACT]
+* **Windows 95 태동기 (The Genesis & 15 Tools):** 1996년 Windows 95 출시 직후, 윈도우 셸(Shell) 개발팀 엔지니어들이 개인적 필요와 신기능 실험을 위해 제작한 15종의 소형 유틸리티 세트로 공식 데뷔함. 윈도우 레지스트리를 직접 편집하지 않고도 숨겨진 UI/시스템 설정을 세밀하게 조정할 수 있는 `Tweak UI`를 비롯하여 `CabView`(CAB 압축 파일을 일반 폴더처럼 탐색), `Command Prompt Here`(폴더 우클릭 시 CMD 열기), `CDAutoPlay`, `Fast Folder Contents`, `Quick Res`(해상도/색상 깊이 빠른 변경), `Xmouse`(클릭 없이 마우스 호버로 창 활성화) 등이 큰 반향을 일으킴. [FACT]
+* **Windows 95 Kernel Toys의 등장:** 셸 팀의 성공에 자극받아 Windows 커널 개발팀에서도 파워 유저를 위한 6종의 시스템 제어 도구 세트(`Kernel Toys`)를 별도 배포함. `MS-DOS Mode Configuration Wizard`(부팅 파일 CONFIG.SYS/AUTOEXEC.BAT 구성), `Keyboard Remap`(키보드 키 재매핑), `Logo Key Control`(게임 플레이 및 DOS 환경에서 Windows 키 비활성화) 등이 포함됨. [FACT]
+* **Windows XP 전성기 (2nd Generation Expansion):** Windows XP(2001년) 출시와 함께 2세대 파워토이 세트가 정식 공개됨. 실시간 윈도우 썸네일 미리보기를 지원하는 `Alt-Tab Replacement (Task Switcher)`, 작업 표시줄에서 최대 4개의 가상 데스크톱을 전환하는 `Virtual Desktop Manager`, 탐색기 우클릭 일괄 리사이징 `Image Resizer`, 고성능 그래프 계산기 `Power Calculator`, LCD 폰트 가독성을 보정하는 `ClearType Tuner`, 파일 동기화 도구 `SyncToy` 등이 널리 사용됨. 태블릿 PC 및 미디어 센터 에디션용 특화 도구도 함께 제공됨. [FACT]
+* **Windows Vista, 7, 8 시기의 동면과 표준 기능 편입 (Dormancy & Integration):** 윈도우 비스타부터 윈도우 8 시기까지 통합 PowerToys 패키지 배포가 중단됨. 이는 프로젝트의 폐기라기보다는 `ClearType 조정기`, `가상 데스크톱`, `ISO 레코딩`, `캡처 도구(Snipping Tool)`, `Shift + 우클릭 시 여기서 명령 창 열기` 등 파워토이에서 검증된 핵심 유틸리티들이 Windows OS의 정식 표준 기능으로 직접 흡수·내장되었기 때문임. [FACT]
+* **Windows 10/11 오픈소스 부활 (Build 2019 Reboot):** 2019년 5월 Microsoft Build 개발자 컨퍼런스에서 오픈소스 프로젝트로의 부활을 공식 선언함. MIT 라이선스 기반의 GitHub(`microsoft/PowerToys`) 리포지토리를 개설하고, Clint Rutkas와 Windows 개발자 커뮤니티가 주도하여 C++, C#, WinUI 3, Modern XAML 기술 스택으로 전면 재설계함. 단순 복원이 아닌 `FancyZones`, `Mouse Without Borders`, `Peek`, `PowerToys Run` 등 현대적 멀티태스킹과 고해상도/다중 모니터 작업 환경에 최적화된 모듈형 생태계로 진화함. [FACT]
 
 ##### 2. PowerToys의 존재 목적과 설계 철학 (Purpose & Philosophy)
 * **OS 기본 셸의 한계 극복:** 윈도우 기본 셸에 모든 기능을 직접 통합할 경우 발생하는 OS 비대화(Bloatware) 및 안정성 저하를 방지하면서도, 개발자 및 파워 유저가 요구하는 심층 커스터마이징 기능을 독립된 모듈 형태로 민첩하게 제공함. [FACT]
@@ -182,7 +185,15 @@ PowerToys, Windows11, FancyZones, MouseWithoutBorders, Productivity, Development
 
 ## 📝 Feedback History
 
-### 2026-08-30 — Test Result: PASS
+### 2026-08-30 (2차) — Test Result: PASS
+* **환경:** Windows 11, Dual Network (Wi-Fi 내부망 + Wired LAN 외부망), Multi-Monitor
+* **검증된 단계:** 전 단계 검증 완료
+* **수정 및 반영 사항:**
+  - Wikipedia 문서를 기반으로 PowerToys 개발 역사 상세 보강 (Windows 95 15종 도구, Kernel Toys 6종, Windows XP 2세대 확장, Vista/7/8 시기의 표준 기능 흡수, 2019 GitHub 오픈소스 부활)
+  - 사용자가 제공한 실사용 설정 스크린샷 5종(경계 없는 마우스, 미리보기, 색 선택기, 항상 위에 표시, OneDrive .ptb 백업 폴더) 추가 및 연계
+* **Status:** Verified
+
+### 2026-08-30 (1차) — Test Result: PASS
 * **환경:** Windows 11, Dual Network (Wi-Fi 내부망 + Wired LAN 외부망), Multi-Monitor
 * **검증된 단계:** 1, 2, 3, 4, 5, 6, 7 전 단계 검증 완료
 * **수정 및 반영 사항:**
