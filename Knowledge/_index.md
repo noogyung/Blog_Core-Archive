@@ -5,7 +5,7 @@ Last Updated: 2026-08-31
 
 | Topic | Category | Created Date | Last Modified | Status | File Path |
 |-------|----------|:------------:|:-------------:|:------:|-----------|
-| unity6-urp-rendergraph | Concept | 2026-08-31 | 2026-08-31 | Experimental | unity6-urp-rendergraph/Concept/unity6-urp-rendergraph-v6000.md |
+| unity6-urp-rendergraph | Concept | 2026-08-31 | 2026-08-31 | Verified | unity6-urp-rendergraph/Concept/unity6-urp-rendergraph-v6000.md |
 | powertoys-review-and-tips | Review | 2026-08-29 | 2026-08-30 | Verified | powertoys-review-and-tips/Review/powertoys-review-and-tips-2026-08-29.md |
 | webtranslator-21-least-privilege-and-store-release | Troubleshooting | 2026-08-21 | 2026-08-22 | Verified | webtranslator-21-least-privilege-and-store-release/Troubleshooting/webtranslator-21-least-privilege-and-store-release-2026-08-21.md |
 | webtranslator-20-chat-icon-replacement-and-real-screenshot-capture | Troubleshooting | 2026-08-21 | 2026-08-21 | Verified | webtranslator-20-chat-icon-replacement-and-real-screenshot-capture/Troubleshooting/webtranslator-20-chat-icon-replacement-and-real-screenshot-capture-2026-08-21.md |
