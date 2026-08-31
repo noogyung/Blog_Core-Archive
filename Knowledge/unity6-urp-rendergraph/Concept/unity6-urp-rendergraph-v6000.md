@@ -1,6 +1,6 @@
 ---
 topic: unity6-urp-rendergraph
-title_kr: Unity 6 URP RenderGraph 완전 분석: 아키텍처와 실전 API 가이드
+title_kr: Unity 6 URP RenderGraph 핵심 분석: 아키텍처와 실전 API 가이드
 category: Concept
 sub_category: Graphics
 version: v6000.0
@@ -22,7 +22,7 @@ series_id: null
 ### 📦 [Knowledge Package]
 
 * **Topic:** unity6-urp-rendergraph
-* **Title_KR:** Unity 6 URP RenderGraph 완전 분석: 아키텍처와 실전 API 가이드
+* **Title_KR:** Unity 6 URP RenderGraph 핵심 분석: 아키텍처와 실전 API 가이드
 * **Category:** Concept
 * **Sub-Category:** Graphics
 * **Version:** v6000.0
@@ -269,7 +269,7 @@ public override void RecordRenderGraph(RenderGraph renderGraph, ContextContainer
 
 #### 💬 Experiences & Tips (경험 및 팁)
 
-* [FACT] **Compatibility Mode는 임시 전환용:** URP Asset 인스펙터에서 `Render Graph` 체크박스를 해제하면 기존 `ScriptableRenderPass.Execute()` 방식으로 롤백할 수 있으나, 향후 Unity 메이저 버전에서 제거될 예정이므로 신규 개발은 100% RenderGraph 기반으로 작성해야 함.
+* [FACT] **Compatibility Mode는 임시 전환용:** URP Asset 인스펙터에서 `Render Graph` 체크박스를 해제하면 기존 `ScriptableRenderPass.Execute()` 방식으로 롤백할 수 있으나, 향후 Unity 메이저 버전에서 제거될 예정이므로 신규 개발은 RenderGraph 기반으로 작성해야 함.
 * [FACT] **Blitter API 활용:** `cmd.Blit()`은 타일 기반 GPU에서 불필요한 Resolve 및 성능 저하를 유발하므로 반드시 `Blitter.BlitCameraTexture()` 또는 `Blitter.BlitTexture()`를 사용해야 함.
 * [FACT] **RenderGraph Viewer 활용:** 드로우콜 병합 및 메모리 Aliasing이 정상 작동하는지 `Window > Analysis > Render Graph Viewer`에서 프레임별 리소스 그래프를 직접 점검하는 습관이 중요함.
 
@@ -285,3 +285,10 @@ public override void RecordRenderGraph(RenderGraph renderGraph, ContextContainer
 Unity, Unity6, URP, RenderGraph, Graphics, Shader, RenderingPipeline, Optimization, ScriptableRenderPass, FrameGraph
 
 ===== KNOWLEDGE PACKAGE END =====
+
+---
+## 📝 Feedback History
+
+### 2026-08-31 — Content Refinement
+* **수정 내용:** 전역 가드레일 준수를 위한 과장 및 단정적 수식어 수정 ('완전' → '핵심', '100%' 제거)
+* **Status 변경:** Experimental 유지
