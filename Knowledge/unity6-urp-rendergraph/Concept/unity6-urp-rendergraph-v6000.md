@@ -80,7 +80,44 @@ series_id: null
 
 #### 🛠️ Procedures (절차)
 
-##### 1. 기본 Custom RenderPass 구조 작성 (Unity 6 표준)
+##### 1. Post-processing Shader 작성 (Hidden/CustomColorInvert.shader)
+```hlsl
+Shader "Hidden/CustomColorInvert"
+{
+    HLSLINCLUDE
+    #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+    #include "Packages/com.unity.render-pipelines.core/Runtime/Utilities/Blit.hlsl"
+
+    half4 Frag(Varyings input) : SV_Target
+    {
+        UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
+        float4 color = SAMPLE_TEXTURE2D_X(_BlitTexture, sampler_LinearClamp, input.texcoord);
+        return half4(1.0 - color.rgb, color.a);
+    }
+    ENDHLSL
+
+    SubShader
+    {
+        Tags { "RenderType" = "Opaque" "RenderPipeline" = "UniversalPipeline" }
+        LOD 100
+        ZWrite Off
+        Cull Off
+
+        Pass
+        {
+            Name "ColorInvertPass"
+            ZTest Always
+
+            HLSLPROGRAM
+            #pragma vertex Vert
+            #pragma fragment Frag
+            ENDHLSL
+        }
+    }
+}
+```
+
+##### 2. 기본 Custom RenderPass 구조 작성 (Unity 6 표준)
 ```csharp
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -159,7 +196,7 @@ public class CustomColorInvertPass : ScriptableRenderPass
 }
 ```
 
-##### 1-1. ScriptableRendererFeature 작성 및 패스 등록 (Unity 6 연동)
+##### 3. ScriptableRendererFeature 작성 (Shader 인스펙터 바인딩 및 런타임 머티리얼 관리)
 ```csharp
 using System;
 using UnityEngine;
@@ -169,14 +206,20 @@ using UnityEngine.Rendering.Universal;
 [Serializable]
 public class CustomColorInvertFeature : ScriptableRendererFeature
 {
-    [SerializeField] private Material _material;
+    [SerializeField] private Shader _shader;
     [SerializeField] private RenderPassEvent _renderPassEvent = RenderPassEvent.AfterRenderingPostProcessing;
 
+    private Material _material;
     private CustomColorInvertPass _customPass;
 
-    // 1. Feature 초기화 및 Pass 인스턴스 생성
+    // 1. Shader 기반 머티리얼 생성 및 Pass 인스턴스 초기화
     public override void Create()
     {
+        if (_shader != null)
+        {
+            _material = CoreUtils.CreateEngineMaterial(_shader);
+        }
+
         _customPass = new CustomColorInvertPass(_material)
         {
             renderPassEvent = _renderPassEvent
@@ -192,19 +235,19 @@ public class CustomColorInvertFeature : ScriptableRendererFeature
         renderer.EnqueuePass(_customPass);
     }
 
-    // 3. 리소스 해제
+    // 3. 런타임 생성 머티리얼 메모리 해제
     protected override void Dispose(bool disposing)
     {
-        // 필요 시 Material 및 네이티브 리소스 정리
+        CoreUtils.Destroy(_material);
     }
 }
 ```
-* **Material 필드가 존재하는 이유:**
-  1. 포스트 프로세싱 셰이더 바인딩: `Blitter.BlitTexture()` 실행 시 색상 반전 등 렌더링 효과를 처리할 셰이더 머티리얼이 필요함.
-  2. 인스펙터 에셋 참조 & 셰이더 스트리핑 방지: `Shader.Find()`를 코드에 하드코딩하면 빌드 시 셰이더 누락(Stripping)이 발생할 수 있으므로, Feature의 `[SerializeField]`로 에디터 인스펙터에 노출하여 머티리얼 에셋을 안전하게 연결함.
-  3. RenderGraph 데이터 전달: Feature에서 주입받은 머티리얼을 Pass의 `PassData.passMaterial`로 전달하여 `SetRenderFunc` 내부에서 GC 및 스코프 간섭 없이 사용함.
+* **Shader 직접 바인딩 방식의 이점:**
+  1. 머티리얼 에셋 관리 단순화: 별도의 `.mat` 에셋 파일을 프로젝트에 생성하지 않고 `Shader` 에셋만 인스펙터에 드래그앤드롭하여 즉시 사용 가능.
+  2. 안전한 라이프사이클 관리: `CoreUtils.CreateEngineMaterial()`로 런타임 머티리얼을 생성하고 `Dispose()`에서 `CoreUtils.Destroy()`를 호출하여 메모리 누수 방지.
+  3. 셰이더 스트리핑 방지: `Shader.Find()` 대신 Feature의 직렬화 필드로 셰이더 참조를 명시하여 빌드 시 스트리핑 방지.
 
-##### 2. Compute Shader Pass 등록 절차
+##### 4. Compute Shader Pass 등록 절차
 ```csharp
 private class ComputePassData
 {
@@ -341,6 +384,10 @@ Unity, Unity6, URP, RenderGraph, Graphics, Shader, RenderingPipeline, Optimizati
 
 ---
 ## 📝 Feedback History
+
+### 2026-08-31 — Test Result: PASS
+* **수정 내용:** URP 포스트 프로세싱 전용 HLSL 셰이더(`Hidden/CustomColorInvert.shader`) 코드 추가 및 ScriptableRendererFeature를 Material 직접 입력 대신 Shader 에셋 바인딩 후 `CoreUtils.CreateEngineMaterial()`로 런타임 관리하는 방식으로 개선
+* **Status 변경:** Verified 유지
 
 ### 2026-08-31 — Test Result: PASS
 * **수정 내용:** ScriptableRendererFeature 내 `Material` 필드의 존재 이유(포스트 프로세싱 셰이더 바인딩, 인스펙터 에셋 노출을 통한 셰이더 스트리핑 방지, PassData 연동) 설명 보강

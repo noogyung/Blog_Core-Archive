@@ -136,10 +136,47 @@ Blitter.BlitCameraTexture(ctx.cmd, sourceHandle, destinationHandle, material, pa
 Blitter.BlitTexture(ctx.cmd, sourceHandle, new Vector4(1, 1, 0, 0), material, passIndex);</pre></div>
 
   <h2 id="practical-implementation">5. 실전 커스텀 RenderPass 및 RendererFeature 구현</h2>
-  <p>Unity 6 URP에서 커스텀 렌더링을 완전히 동작시키기 위해서는 <strong>ScriptableRenderPass</strong>(패스 로직)와 이를 렌더러에 주입하는 <strong>ScriptableRendererFeature</strong>(인스펙터 및 등록 컨테이너)의 2개 클래스를 함께 구성해야 합니다.</p>
+  <p>Unity 6 URP에서 커스텀 렌더링을 완전히 동작시키기 위해서는 <strong>셰이더(Shader)</strong>, <strong>ScriptableRenderPass</strong>(패스 로직), 그리고 이를 렌더러에 주입하는 <strong>ScriptableRendererFeature</strong>(인스펙터 바인딩 및 머티리얼 관리)의 3단계를 함께 구성해야 합니다.</p>
 
-  <h3 id="custom-render-pass">5-1. Custom ScriptableRenderPass 작성</h3>
-  <p>다음은 화면 색상을 반전시키는 포스트 프로세싱 커스텀 렌더 패스 코드입니다.</p>
+  <h3 id="custom-shader">5-1. 포스트 프로세싱 셰이더 작성 (HLSL)</h3>
+  <p>화면의 컬러 버퍼(<code>_BlitTexture</code>)를 읽어와 색상을 반전시키는 URP 표준 풀스크린 셰이더입니다.</p>
+
+  <div class="pre custom" data-text="HLSL"><button aria-label="Copy code">Copy</button><pre>Shader "Hidden/CustomColorInvert"
+{
+    HLSLINCLUDE
+    #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+    #include "Packages/com.unity.render-pipelines.core/Runtime/Utilities/Blit.hlsl"
+
+    half4 Frag(Varyings input) : SV_Target
+    {
+        UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
+        float4 color = SAMPLE_TEXTURE2D_X(_BlitTexture, sampler_LinearClamp, input.texcoord);
+        return half4(1.0 - color.rgb, color.a);
+    }
+    ENDHLSL
+
+    SubShader
+    {
+        Tags { "RenderType" = "Opaque" "RenderPipeline" = "UniversalPipeline" }
+        LOD 100
+        ZWrite Off
+        Cull Off
+
+        Pass
+        {
+            Name "ColorInvertPass"
+            ZTest Always
+
+            HLSLPROGRAM
+            #pragma vertex Vert
+            #pragma fragment Frag
+            ENDHLSL
+        }
+    }
+}</pre></div>
+
+  <h3 id="custom-render-pass">5-2. Custom ScriptableRenderPass 작성</h3>
+  <p>RenderGraph API(<code>RecordRenderGraph</code>)를 활용하여 중간 텍스처를 생성하고 블릿 및 쓰기 복귀를 수행하는 렌더 패스입니다.</p>
 
   <div class="pre custom" data-text="C#"><button aria-label="Copy code">Copy</button><pre>using UnityEngine;
 using UnityEngine.Rendering;
@@ -217,8 +254,8 @@ public class CustomColorInvertPass : ScriptableRenderPass
     }
 }</pre></div>
 
-  <h3 id="custom-renderer-feature">5-2. ScriptableRendererFeature 작성 및 파이프라인 등록</h3>
-  <p>작성한 <code>CustomColorInvertPass</code>를 URP 파이프라인에 등록하기 위해 <code>ScriptableRendererFeature</code>를 구현합니다. Unity 6에서도 <code>AddRenderPasses</code> 내부에서 <code>renderer.EnqueuePass()</code>를 호출하여 패스를 큐잉하는 흐름은 동일하게 유지됩니다.</p>
+  <h3 id="custom-renderer-feature">5-3. ScriptableRendererFeature 작성 (Shader 에셋 바인딩)</h3>
+  <p>머티리얼 에셋을 별도로 생성할 필요 없이, Feature의 <code>Shader</code> 필드에 셰이더만 드래그앤드롭하여 연결하면 런타임에 머티리얼을 자동 생성 및 관리하는 구조입니다.</p>
 
   <div class="pre custom" data-text="C#"><button aria-label="Copy code">Copy</button><pre>using System;
 using UnityEngine;
@@ -228,14 +265,20 @@ using UnityEngine.Rendering.Universal;
 [Serializable]
 public class CustomColorInvertFeature : ScriptableRendererFeature
 {
-    [SerializeField] private Material _material;
+    [SerializeField] private Shader _shader;
     [SerializeField] private RenderPassEvent _renderPassEvent = RenderPassEvent.AfterRenderingPostProcessing;
 
+    private Material _material;
     private CustomColorInvertPass _customPass;
 
-    // 1. Feature 초기화 및 Pass 인스턴스 생성
+    // 1. Shader 기반 인메모리 머티리얼 생성 및 Pass 초기화
     public override void Create()
     {
+        if (_shader != null)
+        {
+            _material = CoreUtils.CreateEngineMaterial(_shader);
+        }
+
         _customPass = new CustomColorInvertPass(_material)
         {
             renderPassEvent = _renderPassEvent
@@ -251,23 +294,23 @@ public class CustomColorInvertFeature : ScriptableRendererFeature
         renderer.EnqueuePass(_customPass);
     }
 
-    // 3. 리소스 해제
+    // 3. 런타임 머티리얼 메모리 해제
     protected override void Dispose(bool disposing)
     {
-        // 필요 시 Material 및 네이티브 리소스 정리
+        CoreUtils.Destroy(_material);
     }
 }</pre></div>
 
   <div class="note">
-    <strong>💡 머티리얼(Material) 필드가 Feature에 선언된 이유:</strong><br>
+    <strong>💡 머티리얼 대신 Shader를 직접 받는 방식의 이점:</strong><br>
     <ul>
-      <li><strong>포스트 프로세싱 셰이더 연동:</strong> 화면 컬러 버퍼를 변환할 때 <code>Blitter.BlitTexture()</code>에서 사용할 색상 반전 셰이더 머티리얼이 필요합니다.</li>
-      <li><strong>인스펙터 에셋 바인딩 &amp; 셰이더 스트리핑 방지:</strong> 코드 내부에서 <code>Shader.Find()</code>로 하드코딩하면 빌드 시 셰이더가 누락(Stripping)될 위험이 있습니다. Feature의 <code>[SerializeField]</code>로 인스펙터에 노출하면 에디터에서 에셋을 직접 연결할 수 있어 빌드 안정성이 보장됩니다.</li>
-      <li><strong>PassData 전달:</strong> Feature에서 참조한 머티리얼은 Pass 생성자를 통해 <code>PassData.passMaterial</code>로 전달되며, RenderGraph의 <code>SetRenderFunc</code> 람다 내에서 안전하게 사용됩니다.</li>
+      <li><strong>에셋 관리 단순화:</strong> 별도의 <code>.mat</code> 머티리얼 에셋 파일을 프로젝트에 생성하지 않고 <code>.shader</code> 파일만 인스펙터에 연결하여 바로 사용할 수 있습니다.</li>
+      <li><strong>안전한 수명 주기 관리:</strong> URP 내장 유틸리티인 <code>CoreUtils.CreateEngineMaterial()</code>로 런타임 머티리얼을 생성하고, <code>Dispose()</code>에서 <code>CoreUtils.Destroy()</code>를 호출하여 메모리 누수를 방지합니다.</li>
+      <li><strong>셰이더 스트리핑 방지:</strong> <code>Shader.Find()</code> 하드코딩 대신 직렬화 필드로 셰이더 에셋을 명시하므로 빌드 시 셰이더가 누락되지 않습니다.</li>
     </ul>
   </div>
 
-  <p>스크립트 작성 후 Unity Editor의 <strong>Universal Renderer Data</strong>(예: <code>UniversalRenderer_Asset</code>) 인스펙터 창 하단의 <strong>Add Renderer Feature</strong> 버튼을 누르고 <code>CustomColorInvertFeature</code>를 추가한 뒤, 반전 효과 셰이더가 적용된 머티리얼을 할당하면 렌더 그래프 파이프라인에 즉시 반영됩니다.</p>
+  <p>스크립트 작성 후 Unity Editor의 <strong>Universal Renderer Data</strong>(예: <code>UniversalRenderer_Asset</code>) 인스펙터 창 하단의 <strong>Add Renderer Feature</strong> 버튼을 누르고 <code>CustomColorInvertFeature</code>를 추가한 뒤, <code>CustomColorInvert.shader</code>를 할당하면 렌더 그래프 파이프라인에 즉시 반영됩니다.</p>
 
   <h2 id="troubleshooting-and-pitfalls">6. 트러블슈팅 및 주요 주의점</h2>
   <p>RenderGraph 기반 코드를 작성하면서 마주치기 쉬운 대표적인 문제들과 해결 방안입니다.</p>
