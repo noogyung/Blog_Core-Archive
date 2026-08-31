@@ -258,7 +258,16 @@ public class CustomColorInvertFeature : ScriptableRendererFeature
     }
 }</pre></div>
 
-  <p>스크립트 작성 후 Unity Editor의 <strong>Universal Renderer Data</strong>(예: <code>UniversalRenderer_Asset</code>) 인스펙터 창 하단의 <strong>Add Renderer Feature</strong> 버튼을 누르고 <code>CustomColorInvertFeature</code>를 추가하면 렌더 그래프 파이프라인에 즉시 반영됩니다.</p>
+  <div class="note">
+    <strong>💡 머티리얼(Material) 필드가 Feature에 선언된 이유:</strong><br>
+    <ul>
+      <li><strong>포스트 프로세싱 셰이더 연동:</strong> 화면 컬러 버퍼를 변환할 때 <code>Blitter.BlitTexture()</code>에서 사용할 색상 반전 셰이더 머티리얼이 필요합니다.</li>
+      <li><strong>인스펙터 에셋 바인딩 &amp; 셰이더 스트리핑 방지:</strong> 코드 내부에서 <code>Shader.Find()</code>로 하드코딩하면 빌드 시 셰이더가 누락(Stripping)될 위험이 있습니다. Feature의 <code>[SerializeField]</code>로 인스펙터에 노출하면 에디터에서 에셋을 직접 연결할 수 있어 빌드 안정성이 보장됩니다.</li>
+      <li><strong>PassData 전달:</strong> Feature에서 참조한 머티리얼은 Pass 생성자를 통해 <code>PassData.passMaterial</code>로 전달되며, RenderGraph의 <code>SetRenderFunc</code> 람다 내에서 안전하게 사용됩니다.</li>
+    </ul>
+  </div>
+
+  <p>스크립트 작성 후 Unity Editor의 <strong>Universal Renderer Data</strong>(예: <code>UniversalRenderer_Asset</code>) 인스펙터 창 하단의 <strong>Add Renderer Feature</strong> 버튼을 누르고 <code>CustomColorInvertFeature</code>를 추가한 뒤, 반전 효과 셰이더가 적용된 머티리얼을 할당하면 렌더 그래프 파이프라인에 즉시 반영됩니다.</p>
 
   <h2 id="troubleshooting-and-pitfalls">6. 트러블슈팅 및 주요 주의점</h2>
   <p>RenderGraph 기반 코드를 작성하면서 마주치기 쉬운 대표적인 문제들과 해결 방안입니다.</p>

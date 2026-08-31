@@ -199,6 +199,10 @@ public class CustomColorInvertFeature : ScriptableRendererFeature
     }
 }
 ```
+* **Material 필드가 존재하는 이유:**
+  1. 포스트 프로세싱 셰이더 바인딩: `Blitter.BlitTexture()` 실행 시 색상 반전 등 렌더링 효과를 처리할 셰이더 머티리얼이 필요함.
+  2. 인스펙터 에셋 참조 & 셰이더 스트리핑 방지: `Shader.Find()`를 코드에 하드코딩하면 빌드 시 셰이더 누락(Stripping)이 발생할 수 있으므로, Feature의 `[SerializeField]`로 에디터 인스펙터에 노출하여 머티리얼 에셋을 안전하게 연결함.
+  3. RenderGraph 데이터 전달: Feature에서 주입받은 머티리얼을 Pass의 `PassData.passMaterial`로 전달하여 `SetRenderFunc` 내부에서 GC 및 스코프 간섭 없이 사용함.
 
 ##### 2. Compute Shader Pass 등록 절차
 ```csharp
@@ -337,6 +341,10 @@ Unity, Unity6, URP, RenderGraph, Graphics, Shader, RenderingPipeline, Optimizati
 
 ---
 ## 📝 Feedback History
+
+### 2026-08-31 — Test Result: PASS
+* **수정 내용:** ScriptableRendererFeature 내 `Material` 필드의 존재 이유(포스트 프로세싱 셰이더 바인딩, 인스펙터 에셋 노출을 통한 셰이더 스트리핑 방지, PassData 연동) 설명 보강
+* **Status 변경:** Verified 유지
 
 ### 2026-08-31 — Test Result: PASS
 * **수정 내용:** Unity 6 URP에서 커스텀 렌더 패스를 실제 파이프라인에 주입하기 위한 `ScriptableRendererFeature` 구현 및 등록 절차 추가
