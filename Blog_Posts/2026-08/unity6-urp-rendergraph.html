@@ -1,8 +1,8 @@
 <!-- ============================================================
   [BLOG POST METADATA - Blogspot 설정창 복사용]
-  Title: Unity 6 URP RenderGraph 핵심 분석: 아키텍처와 실전 API 가이드
+  Title: Unity 6 URP RenderGraph 알아보기: 아키텍처와 핵심 API 정리
   Labels (Tags): Unity, URP, RenderGraph, Graphics, Shader, RenderingPipeline, Optimization
-  Meta Description: Unity 6 URP의 기본 백엔드로 채택된 RenderGraph의 선언형 3단계 아키텍처와 ContextContainer, Blitter 등 핵심 실전 API 가이드를 정리합니다.
+  Meta Description: Unity 6 URP의 기본 백엔드로 채택된 RenderGraph의 선언형 3단계 아키텍처와 ContextContainer, Blitter 등 핵심 변경점을 살펴봅니다.
   Slug: unity6-urp-rendergraph
   ---
   Primary Keyword: Unity 6 RenderGraph
@@ -19,7 +19,7 @@
 
   <p>Unity 6로 전환하면서 가장 큰 변화를 체감하게 되는 영역은 단연 렌더링 파이프라인의 백엔드 아키텍처입니다. 기존 Universal Render Pipeline(URP)에서 커스텀 렌더 패스를 작성할 때 사용하던 명령형(Imperative) 방식의 <code>ScriptableRenderPass.Execute()</code> 구조가 레거시로 분류되고, <strong>RenderGraph(프레임 그래프)</strong> 시스템이 기본 렌더링 백엔드로 전면 활성화되었습니다.</p>
 
-  <p>이번 글에서는 RenderGraph가 도입된 구조적 배경과 3단계 파이프라인의 동작 원리를 살펴보고, 기존 URP 시스템에서 마이그레이션할 때 반드시 파악해야 할 핵심 API(<code>ContextContainer</code>, <code>Blitter</code>, <code>TextureHandle</code>) 및 실전 구현 패턴을 정리해 드리고자 합니다.</p>
+  <p>이번 글에서는 RenderGraph가 도입된 구조적 배경과 3단계 파이프라인의 동작 원리를 살펴보고, 기존 URP 시스템에서 전환할 때 알아두어야 할 핵심 API(<code>ContextContainer</code>, <code>Blitter</code>, <code>TextureHandle</code>) 및 기본 구현 패턴을 차근차근 정리해 드리고자 합니다.</p>
 
   <h2 id="background-and-paradigm">1. RenderGraph 도입 배경과 패러다임의 전환</h2>
   <p>기존 URP의 커스텀 렌더 패스 작성 방식은 CPU에서 GPU 커맨드를 순차적으로 빌드하여 즉시 커맨드 버퍼에 기록하는 <strong>명령형(Imperative)</strong> 모델이었습니다. 이 방식은 코드가 직관적이라는 장점이 있었으나, 복잡한 렌더 파이프라인에서 다음과 같은 구조적 한계를 노출했습니다.</p>

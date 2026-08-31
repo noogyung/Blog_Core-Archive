@@ -1,6 +1,6 @@
 ---
 topic: unity6-urp-rendergraph
-title_kr: Unity 6 URP RenderGraph 핵심 분석: 아키텍처와 실전 API 가이드
+title_kr: Unity 6 URP RenderGraph 알아보기: 아키텍처와 핵심 API 정리
 category: Concept
 sub_category: Graphics
 version: v6000.0
@@ -22,7 +22,7 @@ series_id: null
 ### 📦 [Knowledge Package]
 
 * **Topic:** unity6-urp-rendergraph
-* **Title_KR:** Unity 6 URP RenderGraph 핵심 분석: 아키텍처와 실전 API 가이드
+* **Title_KR:** Unity 6 URP RenderGraph 알아보기: 아키텍처와 핵심 API 정리
 * **Category:** Concept
 * **Sub-Category:** Graphics
 * **Version:** v6000.0
@@ -43,8 +43,8 @@ series_id: null
 
 #### 🔑 Core Concepts (핵심 개념)
 
-##### 0. 문서 목적 및 마이그레이션 가이드 (Purpose & Migration)
-* **문서 목적:** RenderGraph의 기본 개념 및 아키텍처를 정리하고, Unity 6 이전의 레거시 URP 렌더 파이프라인(명령형 ScriptableRenderPass)에서 RenderGraph 기반(선언형 패러다임)으로 전환하는 개발자들의 이해를 돕기 위한 실전 안내서. [FACT]
+##### 0. 문서 목적 및 마이그레이션 배경 (Purpose & Migration)
+* **문서 목적:** RenderGraph의 기본 개념 및 아키텍처를 알아보고, Unity 6 이전의 레거시 URP 렌더 파이프라인(명령형 ScriptableRenderPass)에서 RenderGraph 기반(선언형 패러다임)으로 전환하는 개발자들의 이해를 돕기 위한 개요 및 핵심 정리. [FACT]
 * **핵심 마이그레이션 매핑:**
   * `ScriptableRenderPass.Execute()` → `RecordRenderGraph()` (의존성/자원 선언) + `SetRenderFunc()` (실제 GPU 커맨드 기록)
   * `RenderingData` → 세분화된 `ContextContainer` (`UniversalResourceData`, `UniversalCameraData` 등 타입 안전 조회)
@@ -296,6 +296,10 @@ Unity, Unity6, URP, RenderGraph, Graphics, Shader, RenderingPipeline, Optimizati
 
 ---
 ## 📝 Feedback History
+
+### 2026-08-31 — Test Result: PASS
+* **수정 내용:** 사용자 피드백 반영하여 문서의 성격을 심층 가이드에서 'RenderGraph 개념 및 핵심 API 알아보기(개요 정리)'로 톤앤매너 및 제목 조정
+* **Status 변경:** Verified 유지
 
 ### 2026-08-31 — Test Result: PASS
 * **검증 내용:** 
