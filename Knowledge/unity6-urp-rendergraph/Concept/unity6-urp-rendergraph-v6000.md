@@ -429,7 +429,7 @@ Unity, Unity6, URP, RenderGraph, Graphics, Shader, RenderingPipeline, Optimizati
 ## 📝 Feedback History
 
 ### 2026-08-31 — Test Result: PASS
-* **수정 내용:** 게시글 내 과도하게 연속 삽입되어 가독성을 저해하던 콜아웃 노트 박스들을 제거하고, 일반 단락 및 소제목(`<h3>`) 기반의 정갈한 본문 타이포그래피 구조로 전면 정리
+* **수정 내용:** 핵심 가치를 지닌 항목(5-3 셰이더 직접 바인딩 이점, 6절 람다/핸들 크래시 주의사항, Render Graph Viewer 시각화 팁)을 선별하여 3개의 콜아웃 노트 박스로 재구성하고, 본문 흐름과 균형을 맞춤
 * **Status 변경:** Verified 유지
 
 ### 2026-08-31 — Test Result: PASS
