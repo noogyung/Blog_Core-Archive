@@ -420,6 +420,15 @@ public override void RecordRenderGraph(RenderGraph renderGraph, ContextContainer
 
 ---
 
+#### 🖼️ Visuals & References (시각 자료 및 레퍼런스)
+* `unity6-urp-rendergraph-img1.jpg`: Unity 6 URP RenderGraph 3-Step Pipeline 아키텍처 다이어그램 (대표 이미지)
+* `unity6-urp-rendergraph-img2.png`: CustomColorInvertFeature 인스펙터 설정 화면 (Shader 에셋 및 Intensity 슬라이더)
+* `unity6-urp-rendergraph-img3.png`: Unity Editor Render Graph Viewer를 통한 패스 의존성 및 리소스 연결 시각화 화면
+* `unity6-urp-rendergraph-img4.png`: 포스트 프로세싱 색상 반전 적용 전 원본 3D 씬 (Intensity 0)
+* `unity6-urp-rendergraph-img5.png`: CustomColorInvertFeature 색상 반전 효과가 적용된 3D 씬 (Intensity 1)
+
+---
+
 #### 🏷️ Tags
 Unity, Unity6, URP, RenderGraph, Graphics, Shader, RenderingPipeline, Optimization, ScriptableRenderPass, FrameGraph
 
@@ -427,6 +436,10 @@ Unity, Unity6, URP, RenderGraph, Graphics, Shader, RenderingPipeline, Optimizati
 
 ---
 ## 📝 Feedback History
+
+### 2026-08-31 — Test Result: PASS
+* **수정 내용:** 실제 Unity Editor 구동 스크린샷 4종(인스펙터 설정, 렌더링 전/후 비교, Render Graph Viewer 시각화)을 블로그 포스트 및 지식 베이스의 적절한 위치(5-3, 5-4, 6절)에 배치 및 CDN 연결
+* **Status 변경:** Verified 유지
 
 ### 2026-08-31 — Test Result: PASS
 * **수정 내용:** 핵심 가치를 지닌 항목(5-3 셰이더 직접 바인딩 이점, 6절 람다/핸들 크래시 주의사항, Render Graph Viewer 시각화 팁)을 선별하여 3개의 콜아웃 노트 박스로 재구성하고, 본문 흐름과 균형을 맞춤
