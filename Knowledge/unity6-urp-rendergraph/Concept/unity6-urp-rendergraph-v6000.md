@@ -159,6 +159,47 @@ public class CustomColorInvertPass : ScriptableRenderPass
 }
 ```
 
+##### 1-1. ScriptableRendererFeature 작성 및 패스 등록 (Unity 6 연동)
+```csharp
+using System;
+using UnityEngine;
+using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
+
+[Serializable]
+public class CustomColorInvertFeature : ScriptableRendererFeature
+{
+    [SerializeField] private Material _material;
+    [SerializeField] private RenderPassEvent _renderPassEvent = RenderPassEvent.AfterRenderingPostProcessing;
+
+    private CustomColorInvertPass _customPass;
+
+    // 1. Feature 초기화 및 Pass 인스턴스 생성
+    public override void Create()
+    {
+        _customPass = new CustomColorInvertPass(_material)
+        {
+            renderPassEvent = _renderPassEvent
+        };
+    }
+
+    // 2. 렌더러에 Pass 큐잉 (Unity 6에서도 동일하게 EnqueuePass 사용)
+    public override void AddRenderPasses(ScriptableRenderer renderer, ref RenderingData renderingData)
+    {
+        if (_material == null)
+            return;
+
+        renderer.EnqueuePass(_customPass);
+    }
+
+    // 3. 리소스 해제
+    protected override void Dispose(bool disposing)
+    {
+        // 필요 시 Material 및 네이티브 리소스 정리
+    }
+}
+```
+
 ##### 2. Compute Shader Pass 등록 절차
 ```csharp
 private class ComputePassData
@@ -296,6 +337,10 @@ Unity, Unity6, URP, RenderGraph, Graphics, Shader, RenderingPipeline, Optimizati
 
 ---
 ## 📝 Feedback History
+
+### 2026-08-31 — Test Result: PASS
+* **수정 내용:** Unity 6 URP에서 커스텀 렌더 패스를 실제 파이프라인에 주입하기 위한 `ScriptableRendererFeature` 구현 및 등록 절차 추가
+* **Status 변경:** Verified 유지
 
 ### 2026-08-31 — Test Result: PASS
 * **수정 내용:** 사용자 피드백 반영하여 문서의 성격을 심층 가이드에서 'RenderGraph 개념 및 핵심 API 알아보기(개요 정리)'로 톤앤매너 및 제목 조정
