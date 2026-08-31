@@ -88,11 +88,19 @@ Shader "Hidden/CustomColorInvert"
     #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
     #include "Packages/com.unity.render-pipelines.core/Runtime/Utilities/Blit.hlsl"
 
-    half4 Frag(Varyings input) : SV_Target
+    // Pass 0: Color Invert
+    half4 FragInvert(Varyings input) : SV_Target
     {
         UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
         float4 color = SAMPLE_TEXTURE2D_X(_BlitTexture, sampler_LinearClamp, input.texcoord);
         return half4(1.0 - color.rgb, color.a);
+    }
+
+    // Pass 1: Copy (Writeback)
+    half4 FragCopy(Varyings input) : SV_Target
+    {
+        UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
+        return SAMPLE_TEXTURE2D_X(_BlitTexture, sampler_LinearClamp, input.texcoord);
     }
     ENDHLSL
 
@@ -102,15 +110,23 @@ Shader "Hidden/CustomColorInvert"
         LOD 100
         ZWrite Off
         Cull Off
+        ZTest Always
 
         Pass
         {
             Name "ColorInvertPass"
-            ZTest Always
-
             HLSLPROGRAM
             #pragma vertex Vert
-            #pragma fragment Frag
+            #pragma fragment FragInvert
+            ENDHLSL
+        }
+
+        Pass
+        {
+            Name "CopyPass"
+            HLSLPROGRAM
+            #pragma vertex Vert
+            #pragma fragment FragCopy
             ENDHLSL
         }
     }
@@ -361,6 +377,11 @@ public override void RecordRenderGraph(RenderGraph renderGraph, ContextContainer
   * 해결법: 최종 컬러 버퍼로 Writeback을 수행하거나, 디버깅 목적일 경우 `builder.AllowPassCulling(false)`를 호출하여 컬링을 강제 비활성화. [FACT]
   * 신뢰도: [★★★★★]
 
+* **RenderingCommandBuffer: shader ... invalid pass index N in DrawProcedural** *(사용자 검증 추가 — 2026-08-31)*
+  * 원인: `Blitter.BlitTexture()` 호출 시 인자로 전달한 `pass` 인덱스(예: `1`)가 셰이더 내부에 선언된 `Pass` 블록의 총 개수(인덱스 0부터 시작)를 초과하여 발생.
+  * 해결법: 셰이더 파일 내에 해당 인덱스의 서브 패스(예: `Pass { Name "CopyPass" ... }`)를 추가 정의하거나, 단일 패스 셰이더인 경우 `Blitter.BlitTexture`의 pass 매개변수를 실제 셰이더 패스 번호(`0`)에 맞추어 지정. [USER VERIFIED]
+  * 신뢰도: [★★★★★]
+
 ---
 
 #### 💬 Experiences & Tips (경험 및 팁)
@@ -384,6 +405,10 @@ Unity, Unity6, URP, RenderGraph, Graphics, Shader, RenderingPipeline, Optimizati
 
 ---
 ## 📝 Feedback History
+
+### 2026-08-31 — Test Result: PASS
+* **수정 내용:** `invalid pass index 1 in DrawProcedural` 에러 원인(셰이더 내 선언된 Pass 개수 초과 호출) 규명, 셰이더에 Pass 1(CopyPass) 추가 및 트러블슈팅 가이드에 에러/해결법 등록
+* **Status 변경:** Verified 유지
 
 ### 2026-08-31 — Test Result: PASS
 * **수정 내용:** URP 포스트 프로세싱 전용 HLSL 셰이더(`Hidden/CustomColorInvert.shader`) 코드 추가 및 ScriptableRendererFeature를 Material 직접 입력 대신 Shader 에셋 바인딩 후 `CoreUtils.CreateEngineMaterial()`로 런타임 관리하는 방식으로 개선

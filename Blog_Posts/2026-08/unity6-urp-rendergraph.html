@@ -139,7 +139,7 @@ Blitter.BlitTexture(ctx.cmd, sourceHandle, new Vector4(1, 1, 0, 0), material, pa
   <p>Unity 6 URP에서 커스텀 렌더링을 완전히 동작시키기 위해서는 <strong>셰이더(Shader)</strong>, <strong>ScriptableRenderPass</strong>(패스 로직), 그리고 이를 렌더러에 주입하는 <strong>ScriptableRendererFeature</strong>(인스펙터 바인딩 및 머티리얼 관리)의 3단계를 함께 구성해야 합니다.</p>
 
   <h3 id="custom-shader">5-1. 포스트 프로세싱 셰이더 작성 (HLSL)</h3>
-  <p>화면의 컬러 버퍼(<code>_BlitTexture</code>)를 읽어와 색상을 반전시키는 URP 표준 풀스크린 셰이더입니다.</p>
+  <p>화면의 컬러 버퍼(<code>_BlitTexture</code>)를 읽어와 색상을 반전시키는 Pass 0과 최종 복귀를 위한 Pass 1로 구성된 URP 표준 풀스크린 셰이더입니다.</p>
 
   <div class="pre custom" data-text="HLSL"><button aria-label="Copy code">Copy</button><pre>Shader "Hidden/CustomColorInvert"
 {
@@ -147,11 +147,19 @@ Blitter.BlitTexture(ctx.cmd, sourceHandle, new Vector4(1, 1, 0, 0), material, pa
     #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
     #include "Packages/com.unity.render-pipelines.core/Runtime/Utilities/Blit.hlsl"
 
-    half4 Frag(Varyings input) : SV_Target
+    // Pass 0: 색상 반전
+    half4 FragInvert(Varyings input) : SV_Target
     {
         UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
         float4 color = SAMPLE_TEXTURE2D_X(_BlitTexture, sampler_LinearClamp, input.texcoord);
         return half4(1.0 - color.rgb, color.a);
+    }
+
+    // Pass 1: 단순 복사 (Writeback)
+    half4 FragCopy(Varyings input) : SV_Target
+    {
+        UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
+        return SAMPLE_TEXTURE2D_X(_BlitTexture, sampler_LinearClamp, input.texcoord);
     }
     ENDHLSL
 
@@ -161,15 +169,23 @@ Blitter.BlitTexture(ctx.cmd, sourceHandle, new Vector4(1, 1, 0, 0), material, pa
         LOD 100
         ZWrite Off
         Cull Off
+        ZTest Always
 
         Pass
         {
             Name "ColorInvertPass"
-            ZTest Always
-
             HLSLPROGRAM
             #pragma vertex Vert
-            #pragma fragment Frag
+            #pragma fragment FragInvert
+            ENDHLSL
+        }
+
+        Pass
+        {
+            Name "CopyPass"
+            HLSLPROGRAM
+            #pragma vertex Vert
+            #pragma fragment FragCopy
             ENDHLSL
         }
     }
@@ -323,6 +339,11 @@ public class CustomColorInvertFeature : ScriptableRendererFeature
   <div class="note wr">
     <strong>⚠️ 주의 2: TextureHandle 인스턴스 보관 금지</strong><br>
     <code>TextureHandle</code>은 해당 프레임의 <code>RecordRenderGraph</code> 스코프 내에서만 유효합니다. 클래스 멤버 변수에 핸들을 캐싱하여 다음 프레임에 재사용하려 할 경우 <code>Invalid Handle</code> 예외가 발생하므로, 매 프레임 <code>RecordRenderGraph</code> 내에서 새로 획득해야 합니다.
+  </div>
+
+  <div class="note wr">
+    <strong>⚠️ 주의 3: Blitter.BlitTexture의 pass 인덱스 범위 초과 (invalid pass index)</strong><br>
+    <code>Blitter.BlitTexture(..., material, passIndex)</code> 호출 시 전달한 <code>passIndex</code>가 셰이더 내부에 선언된 <code>Pass</code> 블록의 총 개수(인덱스 0부터 시작)를 초과하면 <code>RenderingCommandBuffer: shader ...: invalid pass index N in DrawProcedural</code> 런타임 에러가 발생합니다. 셰이더 파일에 해당 인덱스의 서브 패스(예: Pass 1 <code>CopyPass</code>)가 실제로 선언되어 있는지 반드시 확인해야 합니다.
   </div>
 
   <div class="note">
