@@ -429,6 +429,10 @@ Unity, Unity6, URP, RenderGraph, Graphics, Shader, RenderingPipeline, Optimizati
 ## 📝 Feedback History
 
 ### 2026-08-31 — Test Result: PASS
+* **수정 내용:** 게시글 내 과도하게 연속 삽입되어 가독성을 저해하던 콜아웃 노트 박스들을 제거하고, 일반 단락 및 소제목(`<h3>`) 기반의 정갈한 본문 타이포그래피 구조로 전면 정리
+* **Status 변경:** Verified 유지
+
+### 2026-08-31 — Test Result: PASS
 * **수정 내용:** 색상 반전 강도를 조절할 수 있도록 Shader(`_Intensity` 프로퍼티 및 `lerp` 블렌딩), Pass(`PassData.intensity` 바인딩), Feature(`[Range(0f, 1f)] _intensity` 필드 및 `Setup()`)에 0~1 float 파라미터 연동 추가
 * **Status 변경:** Verified 유지
 
