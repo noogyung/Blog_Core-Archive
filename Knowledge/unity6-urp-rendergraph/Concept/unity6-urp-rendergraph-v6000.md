@@ -84,16 +84,27 @@ series_id: null
 ```hlsl
 Shader "Hidden/CustomColorInvert"
 {
+    Properties
+    {
+        _Intensity ("Invert Intensity", Range(0.0, 1.0)) = 1.0
+    }
+
     HLSLINCLUDE
     #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
     #include "Packages/com.unity.render-pipelines.core/Runtime/Utilities/Blit.hlsl"
 
-    // Pass 0: Color Invert
+    CBUFFER_START(UnityPerMaterial)
+        float _Intensity;
+    CBUFFER_END
+
+    // Pass 0: Color Invert (Intensity 블렌딩)
     half4 FragInvert(Varyings input) : SV_Target
     {
         UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
         float4 color = SAMPLE_TEXTURE2D_X(_BlitTexture, sampler_LinearClamp, input.texcoord);
-        return half4(1.0 - color.rgb, color.a);
+        half3 inverted = 1.0 - color.rgb;
+        half3 finalColor = lerp(color.rgb, inverted, _Intensity);
+        return half4(finalColor, color.a);
     }
 
     // Pass 1: Copy (Writeback)
@@ -143,6 +154,7 @@ using UnityEngine.Rendering.RenderGraphModule;
 public class CustomColorInvertPass : ScriptableRenderPass
 {
     private Material _material;
+    private float _intensity = 1.0f;
 
     // 1. PassData는 반드시 참조 형식(class)으로 선언
     private class PassData
@@ -150,12 +162,18 @@ public class CustomColorInvertPass : ScriptableRenderPass
         public TextureHandle sourceTexture;
         public TextureHandle destinationTexture;
         public Material passMaterial;
+        public float intensity;
     }
 
     public CustomColorInvertPass(Material mat)
     {
         _material = mat;
         renderPassEvent = RenderPassEvent.AfterRenderingPostProcessing;
+    }
+
+    public void Setup(float intensity)
+    {
+        _intensity = intensity;
     }
 
     // 2. Unity 6 RenderGraph 진입점 구현
@@ -181,6 +199,7 @@ public class CustomColorInvertPass : ScriptableRenderPass
             passData.sourceTexture = source;
             passData.destinationTexture = intermediate;
             passData.passMaterial = _material;
+            passData.intensity = _intensity;
 
             // 의존성 명시
             builder.UseTexture(source, AccessFlags.Read);
@@ -189,6 +208,7 @@ public class CustomColorInvertPass : ScriptableRenderPass
             // 5. 실행 함수 (람다 캡처 금지, passData만 사용)
             builder.SetRenderFunc((PassData data, RasterGraphContext ctx) =>
             {
+                data.passMaterial.SetFloat("_Intensity", data.intensity);
                 Blitter.BlitTexture(ctx.cmd, data.sourceTexture, new Vector4(1, 1, 0, 0), data.passMaterial, 0);
             });
         }
@@ -223,6 +243,7 @@ using UnityEngine.Rendering.Universal;
 public class CustomColorInvertFeature : ScriptableRendererFeature
 {
     [SerializeField] private Shader _shader;
+    [Range(0f, 1f)] [SerializeField] private float _intensity = 1.0f;
     [SerializeField] private RenderPassEvent _renderPassEvent = RenderPassEvent.AfterRenderingPostProcessing;
 
     private Material _material;
@@ -242,12 +263,13 @@ public class CustomColorInvertFeature : ScriptableRendererFeature
         };
     }
 
-    // 2. 렌더러에 Pass 큐잉 (Unity 6에서도 동일하게 EnqueuePass 사용)
+    // 2. 렌더러에 Pass 큐잉 및 파라미터 전달 (Unity 6에서도 동일하게 EnqueuePass 사용)
     public override void AddRenderPasses(ScriptableRenderer renderer, ref RenderingData renderingData)
     {
         if (_material == null)
             return;
 
+        _customPass.Setup(_intensity);
         renderer.EnqueuePass(_customPass);
     }
 
@@ -405,6 +427,10 @@ Unity, Unity6, URP, RenderGraph, Graphics, Shader, RenderingPipeline, Optimizati
 
 ---
 ## 📝 Feedback History
+
+### 2026-08-31 — Test Result: PASS
+* **수정 내용:** 색상 반전 강도를 조절할 수 있도록 Shader(`_Intensity` 프로퍼티 및 `lerp` 블렌딩), Pass(`PassData.intensity` 바인딩), Feature(`[Range(0f, 1f)] _intensity` 필드 및 `Setup()`)에 0~1 float 파라미터 연동 추가
+* **Status 변경:** Verified 유지
 
 ### 2026-08-31 — Test Result: PASS
 * **수정 내용:** `invalid pass index 1 in DrawProcedural` 에러 원인(셰이더 내 선언된 Pass 개수 초과 호출) 규명, 셰이더에 Pass 1(CopyPass) 추가 및 트러블슈팅 가이드에 에러/해결법 등록
