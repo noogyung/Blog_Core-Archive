@@ -1,0 +1,244 @@
+<!-- ============================================================
+  [BLOG POST METADATA - Blogspot 설정창 복사용]
+  Title: Unity 6 URP RenderGraph 핵심 분석: 아키텍처와 실전 API 가이드
+  Labels (Tags): Unity, URP, RenderGraph, Graphics, Shader, RenderingPipeline, Optimization
+  Meta Description: Unity 6 URP의 기본 백엔드로 채택된 RenderGraph의 선언형 3단계 아키텍처와 ContextContainer, Blitter 등 핵심 실전 API 가이드를 정리합니다.
+  Slug: unity6-urp-rendergraph
+  ---
+  Primary Keyword: Unity 6 RenderGraph
+  Secondary Keywords: URP RenderGraph, ScriptableRenderPass, ContextContainer, Blitter API, RasterRenderPass, ComputePass
+  Knowledge Source: Knowledge/unity6-urp-rendergraph/Concept/unity6-urp-rendergraph-v6000.md
+  Generated Date: 2026-08-31
+  Estimated Read Time: 8분
+  Series ID: null
+  ============================================================ -->
+
+<article>
+  <!-- 이미지 슬롯 1 (대표 이미지) -->
+  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-08/unity6-urp-rendergraph-img1.jpg?v=20260831_2125" alt="Unity 6 URP RenderGraph 아키텍처 다이어그램">
+
+  <p>Unity 6로 전환하면서 가장 큰 변화를 체감하게 되는 영역은 단연 렌더링 파이프라인의 백엔드 아키텍처입니다. 기존 Universal Render Pipeline(URP)에서 커스텀 렌더 패스를 작성할 때 사용하던 명령형(Imperative) 방식의 <code>ScriptableRenderPass.Execute()</code> 구조가 레거시로 분류되고, <strong>RenderGraph(프레임 그래프)</strong> 시스템이 기본 렌더링 백엔드로 전면 활성화되었습니다.</p>
+
+  <p>이번 글에서는 RenderGraph가 도입된 구조적 배경과 3단계 파이프라인의 동작 원리를 살펴보고, 기존 URP 시스템에서 마이그레이션할 때 반드시 파악해야 할 핵심 API(<code>ContextContainer</code>, <code>Blitter</code>, <code>TextureHandle</code>) 및 실전 구현 패턴을 정리해 드리고자 합니다.</p>
+
+  <h2 id="background-and-paradigm">1. RenderGraph 도입 배경과 패러다임의 전환</h2>
+  <p>기존 URP의 커스텀 렌더 패스 작성 방식은 CPU에서 GPU 커맨드를 순차적으로 빌드하여 즉시 커맨드 버퍼에 기록하는 <strong>명령형(Imperative)</strong> 모델이었습니다. 이 방식은 코드가 직관적이라는 장점이 있었으나, 복잡한 렌더 파이프라인에서 다음과 같은 구조적 한계를 노출했습니다.</p>
+
+  <ul>
+    <li><strong>리소스 수명 주기의 불투명성:</strong> 여러 렌더 패스 간에 중간 렌더 타깃(RTHandle)이 언제 생성되고 파기되는지 프레임워크가 전체적으로 파악하기 어려워 메모리 재사용(Aliasing)이 제한되었습니다.</li>
+    <li><strong>불필요한 패스 실행:</strong> 특정 패스의 출력 결과가 후속 패스나 최종 화면에 기여하지 않더라도 렌더 큐에 등록된 이상 무조건 GPU 연산이 수행되었습니다.</li>
+    <li><strong>동기화 배리어 오버헤드:</strong> 리소스 간의 읽기/쓰기 의존성이 명시적이지 않아 보수적인 GPU 동기화 배리어가 빈번하게 발생했습니다.</li>
+  </ul>
+
+  <p>RenderGraph는 이러한 문제를 해결하기 위해 <strong>선언형(Declarative)</strong> 패러다임을 도입했습니다. 렌더 패스를 즉시 실행하는 대신, 패스가 요구하는 입력(Read)과 출력(Write) 리소스를 먼저 프레임워크에 선언하고, 컴파일러가 의존성 방향성 비순환 그래프(DAG)를 분석하여 최적의 실행 계획을 수립합니다.</p>
+
+  <div class="table w100 withBg">
+    <table>
+      <thead>
+        <tr>
+          <th>구분</th>
+          <th>레거시 ScriptableRenderPass</th>
+          <th>Unity 6 RenderGraph</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>실행 방식</strong></td>
+          <td>명령형 (즉시 CommandBuffer 기록)</td>
+          <td>선언형 (의존성 선언 후 일괄 컴파일/디스패치)</td>
+        </tr>
+        <tr>
+          <td><strong>진입점 API</strong></td>
+          <td><code>Execute(ScriptableRenderContext, ref RenderingData)</code></td>
+          <td><code>RecordRenderGraph(RenderGraph, ContextContainer)</code></td>
+        </tr>
+        <tr>
+          <td><strong>데이터 전달</strong></td>
+          <td><code>RenderingData</code> (단일 거대 구조체)</td>
+          <td><code>ContextContainer</code> (타입 안전 분할 컨테이너)</td>
+        </tr>
+        <tr>
+          <td><strong>화면 복사</strong></td>
+          <td><code>cmd.Blit()</code></td>
+          <td><code>Blitter.BlitCameraTexture()</code> / <code>Blitter.BlitTexture()</code></td>
+        </tr>
+        <tr>
+          <td><strong>메모리 관리</strong></td>
+          <td>수동 RTHandle 생성 및 Pool 관리</td>
+          <td>Transient 리소스 및 자동 Memory Aliasing</td>
+        </tr>
+        <tr>
+          <td><strong>최적화</strong></td>
+          <td>수동 최적화 필요</td>
+          <td>자동 패스 컬링(Culling) 및 모바일 Subpass 병합</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2 id="three-stage-pipeline">2. RenderGraph 3단계 실행 파이프라인</h2>
+  <p>RenderGraph 기반 렌더링은 매 프레임 CPU와 GPU 사이에서 명확히 분리된 3단계를 거쳐 처리됩니다.</p>
+
+  <ol class="step">
+    <li>
+      <strong>Record (의존성 선언 단계):</strong><br>
+      CPU에서 실행되며, 각 렌더 패스가 어떤 리소스를 생성하고, 어떤 버퍼/텍스처를 읽고 쓰는지 <code>builder.UseTexture()</code> 및 <code>builder.SetRenderAttachment()</code> 등의 API로 선언합니다. 이 단계에서는 실제 GPU 드로우콜을 기록하지 않습니다.
+    </li>
+    <li>
+      <strong>Compile (그래프 분석 및 최적화 단계):</strong><br>
+      렌더 그래프 컴파일러가 전체 패스와 리소스 의존 관계를 DAG 형태로 분석합니다. 최종 카메라 백버퍼에 도달하지 않는 불필요한 패스를 자동으로 제거(Pass Culling)하고, 생명 주기가 겹치지 않는 임시 리소스들의 GPU 물리 메모리를 서로 병합(Memory Aliasing)합니다.
+    </li>
+    <li>
+      <strong>Execute (GPU 커맨드 디스패치 단계):</strong><br>
+      컴파일된 최적 순서에 따라 <code>SetRenderFunc()</code>에 등록된 렌더링 람다 함수를 실행하고, 네이티브 컨텍스트에 GPU 커맨드를 일괄 기록하여 디스패치합니다.
+    </li>
+  </ol>
+
+  <h2 id="core-building-blocks">3. 패스 유형 및 리소스 수명 주기</h2>
+  <p>RenderGraph 시스템에서 커스텀 렌더링을 구성할 때 사용하는 핵심 패스 유형과 리소스 핸들 체계는 다음과 같습니다.</p>
+
+  <h3 id="pass-types">주요 패스 유형</h3>
+  <ul>
+    <li><strong>Raster Render Pass (<code>AddRasterRenderPass</code>):</strong> 일반적인 지오메트리 렌더링 및 포스트 프로세싱에 사용됩니다. 모바일 타일 GPU에서 Vulkan/Metal의 Native Render Pass 및 Subpass와 결합하여 대역폭을 최적화합니다.</li>
+    <li><strong>Compute Pass (<code>AddComputePass</code>):</strong> Compute Shader를 디스패치하고 UAV 버퍼 및 텍스처를 조작하는 전용 패스입니다.</li>
+    <li><strong>Unsafe Pass (<code>AddUnsafePass</code>):</strong> 네이티브 그래픽스 컨텍스트나 저수준 CommandBuffer에 직접 접근해야 하는 특수 목적용 패스입니다. 자동 의존성 분석과 최적화가 제한되므로 필요한 경우에만 제한적으로 사용합니다.</li>
+  </ul>
+
+  <h3 id="resource-handles">리소스 핸들과 수명 주기</h3>
+  <p>RenderGraph에서는 <code>RenderTexture</code> 인스턴스를 직접 참조하지 않고 가벼운 핸들 객체인 <code>TextureHandle</code>을 통해 리소스를 제어합니다.</p>
+
+  <ul>
+    <li><strong>Transient Resources (임시 리소스):</strong> <code>renderGraph.CreateTexture()</code>로 선언되는 프레임 내부 리소스입니다. 프레임이 종료되면 내부 텍스처 풀로 반납되며, 메모리 Aliasing에 의해 다른 패스의 임시 버퍼와 메모리를 공유합니다.</li>
+    <li><strong>Imported Resources (외부 리소스):</strong> 카메라 타깃이나 백버퍼처럼 그래프 외부에서 유지되는 리소스로, <code>renderGraph.ImportTexture()</code>를 통해 그래프 내 핸들로 변환하여 사용합니다.</li>
+    <li><strong>AccessFlags:</strong> <code>AccessFlags.Read</code>, <code>AccessFlags.Write</code>, <code>AccessFlags.ReadWrite</code>를 명시하여 패스 간 리소스 접근 순서와 배리어를 프레임워크가 명확히 인지하도록 합니다.</li>
+  </ul>
+
+  <h2 id="unity6-key-apis">4. Unity 6에서 갱신된 핵심 API</h2>
+  <p>Unity 6 URP로 넘어오면서 기존에 널리 사용되던 전역 구조체와 블릿 함수가 새로운 API로 교체되었습니다.</p>
+
+  <h3 id="context-container">ContextContainer 프레임 데이터</h3>
+  <p>기존의 <code>ref RenderingData</code>는 파이프라인의 모든 데이터가 한곳에 집중된 거대 구조체였습니다. Unity 6에서는 <code>ContextContainer</code>를 통해 데이터가 세분화되어 필요한 객체만 타입 안전하게 조회할 수 있습니다.</p>
+
+  <div class="pre custom" data-text="C#"><button aria-label="Copy code">Copy</button><pre>// 기존: renderingData.cameraData.cameraTargetDescriptor
+// Unity 6:
+UniversalCameraData cameraData = frameData.Get&lt;UniversalCameraData&gt;();
+UniversalResourceData resourceData = frameData.Get&lt;UniversalResourceData&gt;();
+UniversalRenderingData renderingData = frameData.Get&lt;UniversalRenderingData&gt;();
+UniversalLightData lightData = frameData.Get&lt;UniversalLightData&gt;();</pre></div>
+
+  <h3 id="blitter-api">Blitter API 표준화</h3>
+  <p>레거시 <code>cmd.Blit()</code>은 타일 기반 GPU에서 불필요한 Resolve 동작을 유발하여 성능 저하의 원인이 되었습니다. Unity 6에서는 <code>Blitter</code> 정적 클래스를 표준으로 사용합니다.</p>
+
+  <div class="pre custom" data-text="C#"><button aria-label="Copy code">Copy</button><pre>// 카메라 컬러 텍스처 간 풀스크린 블릿
+Blitter.BlitCameraTexture(ctx.cmd, sourceHandle, destinationHandle, material, passIndex);
+
+// 일반 TextureHandle 간 블릿
+Blitter.BlitTexture(ctx.cmd, sourceHandle, new Vector4(1, 1, 0, 0), material, passIndex);</pre></div>
+
+  <h2 id="practical-implementation">5. 실전 커스텀 RenderPass 구현 예제</h2>
+  <p>다음은 Unity 6 URP 표준 규격에 맞추어 화면 색상을 반전시키는 포스트 프로세싱 커스텀 렌더 패스의 구현 코드입니다.</p>
+
+  <div class="pre custom" data-text="C#"><button aria-label="Copy code">Copy</button><pre>using UnityEngine;
+using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
+using UnityEngine.Rendering.RenderGraphModule;
+
+public class CustomColorInvertPass : ScriptableRenderPass
+{
+    private Material _material;
+
+    // 1. PassData는 풀링을 위해 반드시 참조 형식(class)으로 선언
+    private class PassData
+    {
+        public TextureHandle sourceTexture;
+        public TextureHandle destinationTexture;
+        public Material passMaterial;
+    }
+
+    public CustomColorInvertPass(Material mat)
+    {
+        _material = mat;
+        renderPassEvent = RenderPassEvent.AfterRenderingPostProcessing;
+    }
+
+    // 2. Unity 6 RenderGraph 레코드 진입점
+    public override void RecordRenderGraph(RenderGraph renderGraph, ContextContainer frameData)
+    {
+        UniversalResourceData resourceData = frameData.Get&lt;UniversalResourceData&gt;();
+        UniversalCameraData cameraData = frameData.Get&lt;UniversalCameraData&gt;();
+
+        if (resourceData.isActiveTargetBackBuffer)
+            return;
+
+        TextureHandle source = resourceData.activeColorTexture;
+
+        // 3. Transient 중간 텍스처 생성
+        TextureDesc desc = renderGraph.GetTextureDesc(source);
+        desc.name = "Invert_Intermediate";
+        desc.clearBuffer = false;
+        TextureHandle intermediate = renderGraph.CreateTexture(desc);
+
+        // 4. Pass 1: Source -> Intermediate (반전 처리)
+        using (var builder = renderGraph.AddRasterRenderPass&lt;PassData&gt;("Invert Color Pass", out var passData))
+        {
+            passData.sourceTexture = source;
+            passData.destinationTexture = intermediate;
+            passData.passMaterial = _material;
+
+            // 의존성 명시
+            builder.UseTexture(source, AccessFlags.Read);
+            builder.SetRenderAttachment(intermediate, 0, AccessFlags.Write);
+
+            // 5. 실행 함수 (람다 외부 변수 캡처 금지, passData만 활용)
+            builder.SetRenderFunc((PassData data, RasterGraphContext ctx) =&gt;
+            {
+                Blitter.BlitTexture(ctx.cmd, data.sourceTexture, new Vector4(1, 1, 0, 0), data.passMaterial, 0);
+            });
+        }
+
+        // 6. Pass 2: Intermediate -> Source (최종 복귀)
+        using (var builder = renderGraph.AddRasterRenderPass&lt;PassData&gt;("Invert Writeback Pass", out var passData))
+        {
+            passData.sourceTexture = intermediate;
+            passData.destinationTexture = source;
+            passData.passMaterial = _material;
+
+            builder.UseTexture(intermediate, AccessFlags.Read);
+            builder.SetRenderAttachment(source, 0, AccessFlags.Write);
+
+            builder.SetRenderFunc((PassData data, RasterGraphContext ctx) =&gt;
+            {
+                Blitter.BlitTexture(ctx.cmd, data.sourceTexture, new Vector4(1, 1, 0, 0), data.passMaterial, 1);
+            });
+        }
+    }
+}</pre></div>
+
+  <h2 id="troubleshooting-and-pitfalls">6. 트러블슈팅 및 주요 주의점</h2>
+  <p>RenderGraph 기반 코드를 작성하면서 마주치기 쉬운 대표적인 문제들과 해결 방안입니다.</p>
+
+  <div class="note wr">
+    <strong>⚠️ 주의 1: 람다 식 내부의 외부 변수 캡처 금지</strong><br>
+    <code>builder.SetRenderFunc</code>에 전달하는 람다 함수 내에서 클래스 멤버 변수(<code>_material</code>, <code>this</code>)를 직접 참조하면, Execute 시점의 컨텍스트 분리로 인해 GC 할당 및 경쟁 상태가 발생합니다. 반드시 <code>PassData</code> 객체의 필드로 값을 전달한 후 람다 매개변수의 <code>data</code>를 통해서만 접근해야 합니다.
+  </div>
+
+  <div class="note wr">
+    <strong>⚠️ 주의 2: TextureHandle 인스턴스 보관 금지</strong><br>
+    <code>TextureHandle</code>은 해당 프레임의 <code>RecordRenderGraph</code> 스코프 내에서만 유효합니다. 클래스 멤버 변수에 핸들을 캐싱하여 다음 프레임에 재사용하려 할 경우 <code>Invalid Handle</code> 예외가 발생하므로, 매 프레임 <code>RecordRenderGraph</code> 내에서 새로 획득해야 합니다.
+  </div>
+
+  <div class="note">
+    <strong>💡 팁: 패스가 화면에 렌더링되지 않는 현상 (Pass Culling)</strong><br>
+    커스텀 패스를 작성했음에도 결과가 나타나지 않는다면, RenderGraph 컴파일러가 해당 패스의 출력 리소스를 후속 작업에서 읽지 않는 불필요한 패스로 판단하여 컬링했을 가능성이 높습니다. 최종 컬러 버퍼로 Writeback을 수행하거나, 디버깅 목적이라면 <code>builder.AllowPassCulling(false)</code>를 호출하여 컬링을 방지할 수 있습니다.
+  </div>
+
+  <div class="note">
+    <strong>💡 팁: Render Graph Viewer로 그래프 시각화 점검</strong><br>
+    Unity Editor 메뉴의 <code>Window &gt; Analysis &gt; Render Graph Viewer</code>를 열면 프레임별 패스 연결 관계, 컬링 여부, 리소스 메모리 Aliasing 현황을 시각적으로 확인할 수 있어 최적화 디버깅에 매우 유용합니다.
+  </div>
+
+  <h2 id="closing">마무리하며</h2>
+  <p>Unity 6 URP의 RenderGraph 시스템은 초기 학습 곡선과 패러다임 전환이 다소 낯설게 느껴질 수 있으나, 프레임 그래프 아키텍처가 제공하는 명시적 리소스 관리와 자동 최적화 이점은 대규모 그래픽스 파이프라인에서 매우 큰 효율성을 제공합니다.</p>
+
+  <p>기존 프로젝트에서 커스텀 렌더 패스를 마이그레이션하면서 겪으신 특이 케이스나 <code>ContextContainer</code> 구조 활용에 대한 추가적인 팁이 있으시다면 댓글로 자유롭게 의견을 나누어 주시기 바랍니다.</p>
+</article>

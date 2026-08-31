@@ -10,8 +10,8 @@ last_modified: 2026-08-31
 language: KR+EN
 tags: [Unity, Unity6, URP, RenderGraph, Graphics, Shader, RenderingPipeline, Optimization]
 sources_count: 5
-blog_draft_path: null
-blog_draft_date: null
+blog_draft_path: Blog_Posts/2026-08/unity6-urp-rendergraph.html
+blog_draft_date: 2026-08-31
 blog_id: core-archive
 blog_published: false
 series_id: null
