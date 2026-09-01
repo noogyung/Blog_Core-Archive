@@ -1,4 +1,4 @@
-﻿<!-- ============================================================
+<!-- ============================================================
   [BLOG POST METADATA - Blogspot 설정창 복사용]
   Title: 윈도우 10 스피커 전환 유틸리티 개발기: Python 프로토타입부터 C++ 1.5MB 최적화까지
   Labels (Tags): PersonalDev, C++, Python, Win32, 트러블슈팅, 최적화, 개발기
@@ -68,14 +68,14 @@
   <p>AI는 Windows Core Audio의 미문서화 COM 인터페이스인 <code>IPolicyConfig</code>를 <code>comtypes</code> 모듈로 래핑하고, <code>pystray</code>(시스템 트레이)와 <code>keyboard</code>(단축키 캡처)를 결합한 스크립트를 작성하여 배포용 실행 파일(<code>dist/main.exe</code>)을 빌드했습니다.</p>
 
   <div class="pre mermaid" data-text="Mermaid"><button aria-label="Copy code">Copy</button><pre class="mermaid">flowchart TD
-    User([사용자 / 매크로 키보드]) --&gt;|Alt+Ctrl+Shift+Win+S| Hotkey[keyboard 모듈]
-    Hotkey --&gt;|스위칭 트리거| Main[main.py 컨트롤러]
-    Main --&gt;|설정 조회| Config[(config.json&lt;br/&gt;즐겨찾기 목록)]
-    Main --&gt;|장치 순환 요청| AudioMgr[audio_manager.py]
-    AudioMgr --&gt;|COM 인터페이스| CoreAudio[Windows Core Audio API&lt;br/&gt;IPolicyConfig / IMMDevice]
-    CoreAudio --&gt;|기본 엔드포인트 변경| Speaker[스피커 / 헤드셋 출력]
-    Main --&gt;|상태 피드백| Tray[pystray 시스템 트레이]
-    Tray --&gt;|토스트 알림| OSNotification[Windows 툴팁 알림]</pre></div>
+    User(["사용자 / 매크로 키보드"]) --&gt;|"Alt+Ctrl+Shift+Win+S"| Hotkey["keyboard 모듈"]
+    Hotkey --&gt;|"스위칭 트리거"| Main["main.py 컨트롤러"]
+    Main --&gt;|"설정 조회"| Config[("config.json&lt;br/&gt;즐겨찾기 목록")]
+    Main --&gt;|"장치 순환 요청"| AudioMgr["audio_manager.py"]
+    AudioMgr --&gt;|"COM 인터페이스"| CoreAudio["Windows Core Audio API&lt;br/&gt;IPolicyConfig / IMMDevice"]
+    CoreAudio --&gt;|"기본 엔드포인트 변경"| Speaker["스피커 / 헤드셋 출력"]
+    Main --&gt;|"상태 피드백"| Tray["pystray 시스템 트레이"]
+    Tray --&gt;|"토스트 알림"| OSNotification["Windows 툴팁 알림"]</pre></div>
 
   <p>그러나 첫 번째 빌드를 실행했을 때, 백그라운드 프로세스는 구동되었으나 작업 표시줄 시스템 트레이에 아이콘이 나타나지 않아 상태를 제어할 수 없는 현상이 발생했습니다.</p>
 
@@ -176,7 +176,7 @@
   <p>AI를 활용한 언어 마이그레이션은 놀라울 정도로 빠르고 매끄럽게 진행되었습니다. 이미 확립된 상태 머신과 COM 제어 로직이 존재했기 때문에, C++ 표준 라이브러리와 순수 Win32 API로 구조를 옮겨 담는 작업이 즉각 완료되었습니다.</p>
 
   <div class="pre mermaid" data-text="Mermaid"><button aria-label="Copy code">Copy</button><pre class="mermaid">graph TD
-    subgraph Win32 Native Application [WindowSpeakerChanger_Cpp.exe - 439 KB]
+    subgraph AppSub ["Win32 Native Application (439 KB)"]
         MainProc["main.cpp&lt;br/&gt;(Win32 Message Pump &amp; WndProc)"]
         TrayUI["tray_app.cpp&lt;br/&gt;(Shell_NotifyIconW &amp; TrackPopupMenuEx)"]
         HotkeyProc["hotkey_manager.cpp&lt;br/&gt;(RegisterHotKey &amp; Modal Dialog)"]
@@ -184,7 +184,7 @@
         ConfigCore["config_manager.cpp&lt;br/&gt;(nlohmann/json.hpp)"]
         AutoCore["autostart.cpp&lt;br/&gt;(RegSetValueExW)"]
     end
-    subgraph Windows 11 OS Subsystem [RAM 1.5 MB]
+    subgraph OSSub ["Windows 11 OS Subsystem (RAM 1.5 MB)"]
         Taskbar["Windows Taskbar System Tray"]
         Registry["HKCU Run Registry"]
         CoreAudioAPI["Windows Core Audio Endpoint Engine"]
