@@ -67,7 +67,7 @@
 
   <p>AI는 Windows Core Audio의 미문서화 COM 인터페이스인 <code>IPolicyConfig</code>를 <code>comtypes</code> 모듈로 래핑하고, <code>pystray</code>(시스템 트레이)와 <code>keyboard</code>(단축키 캡처)를 결합한 스크립트를 작성하여 배포용 실행 파일(<code>dist/main.exe</code>)을 빌드했습니다.</p>
 
-  <div class="pre custom" data-text="Mermaid"><button aria-label="Copy code">Copy</button><pre class="mermaid">flowchart TD
+  <div class="pre mermaid" data-text="Mermaid"><button aria-label="Copy code">Copy</button><pre class="mermaid">flowchart TD
     User([사용자 / 매크로 키보드]) --&gt;|Alt+Ctrl+Shift+Win+S| Hotkey[keyboard 모듈]
     Hotkey --&gt;|스위칭 트리거| Main[main.py 컨트롤러]
     Main --&gt;|설정 조회| Config[(config.json&lt;br/&gt;즐겨찾기 목록)]
@@ -118,7 +118,7 @@
   <h3 id="concurrency-architecture">스레드 경합 제어 및 프로세스 분리</h3>
   <p>단축키를 빠르게 연타했을 때 COM 인터페이스가 중복 호출되어 충돌하는 문제를 방지하기 위해 플래그 기반 동시성 락(<code>is_switching</code>)을 도입했습니다.</p>
 
-  <div class="pre custom" data-text="Mermaid"><button aria-label="Copy code">Copy</button><pre class="mermaid">sequenceDiagram
+  <div class="pre mermaid" data-text="Mermaid"><button aria-label="Copy code">Copy</button><pre class="mermaid">sequenceDiagram
     autonumber
     actor User as 사용자
     participant HK as HotkeyManager (pynput)
@@ -146,7 +146,7 @@
 
   <p>또한 Tkinter 설정 팝업이 트레이 아이콘의 메인 이벤트 루프를 방해하지 않도록 <code>subprocess.run([exe, "--dialog"])</code> 형태로 독립 프로세스를 생성하여 실행하도록 격리했습니다.</p>
 
-  <div class="pre custom" data-text="Mermaid"><button aria-label="Copy code">Copy</button><pre class="mermaid">sequenceDiagram
+  <div class="pre mermaid" data-text="Mermaid"><button aria-label="Copy code">Copy</button><pre class="mermaid">sequenceDiagram
     autonumber
     actor User as 사용자
     participant Tray as TrayApp
@@ -175,7 +175,7 @@
 
   <p>AI를 활용한 언어 마이그레이션은 놀라울 정도로 빠르고 매끄럽게 진행되었습니다. 이미 확립된 상태 머신과 COM 제어 로직이 존재했기 때문에, C++ 표준 라이브러리와 순수 Win32 API로 구조를 옮겨 담는 작업이 즉각 완료되었습니다.</p>
 
-  <div class="pre custom" data-text="Mermaid"><button aria-label="Copy code">Copy</button><pre class="mermaid">graph TD
+  <div class="pre mermaid" data-text="Mermaid"><button aria-label="Copy code">Copy</button><pre class="mermaid">graph TD
     subgraph Win32 Native Application [WindowSpeakerChanger_Cpp.exe - 439 KB]
         MainProc["main.cpp&lt;br/&gt;(Win32 Message Pump &amp; WndProc)"]
         TrayUI["tray_app.cpp&lt;br/&gt;(Shell_NotifyIconW &amp; TrackPopupMenuEx)"]
@@ -219,7 +219,7 @@
   <h3 id="wh-keyboard-ll-isolation">WH_KEYBOARD_LL을 통한 이벤트 격리</h3>
   <p>기존 <code>RegisterHotKey</code> 방식은 단축키 설정 창이 떠 있는 동안 사용자가 입력하는 조합키를 OS가 먼저 낚아채는 문제가 있었습니다. 이를 차단하기 위해 <strong>저수준 키보드 훅(<code>WH_KEYBOARD_LL</code>)</strong>을 설정 창 라이프사이클에만 임시로 부착하는 설계를 적용했습니다.</p>
 
-  <div class="pre custom" data-text="Mermaid"><button aria-label="Copy code">Copy</button><pre class="mermaid">sequenceDiagram
+  <div class="pre mermaid" data-text="Mermaid"><button aria-label="Copy code">Copy</button><pre class="mermaid">sequenceDiagram
     autonumber
     actor User as 사용자
     participant Dlg as 단축키 설정 창 (Win32 Dialog)
