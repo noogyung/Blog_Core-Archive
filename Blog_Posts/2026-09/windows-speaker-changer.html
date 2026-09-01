@@ -121,24 +121,23 @@
   <div class="pre mermaid" data-text="Mermaid"><button aria-label="Copy code">Copy</button><pre class="mermaid">sequenceDiagram
     autonumber
     actor User as 사용자
-    participant HK as HotkeyManager&lt;br/&gt;(pynput)
-    participant App as Main App&lt;br/&gt;(main.py)
+    participant HK as HotkeyManager
+    participant App as Main App
     participant Worker as Worker Thread
-    participant Audio as AudioManager&lt;br/&gt;(COM API)
-    participant Tray as TrayApp&lt;br/&gt;(알림)
+    participant Audio as AudioManager
+    participant Tray as TrayApp
 
     User-&gt;&gt;HK: 단축키 입력
-    HK-&gt;&gt;App: switch_device() 트리거
-    
-    alt is_switching == True (작업 중)
+    HK-&gt;&gt;App: switch_device()
+    alt is_switching == True
         App--&gt;&gt;HK: 요청 무시 (연타 방어)
     else is_switching == False
         App-&gt;&gt;App: is_switching = True
-        App-&gt;&gt;Worker: 스레드 생성 (daemon=True)
+        App-&gt;&gt;Worker: 스레드 생성 (daemon)
         activate Worker
         Worker-&gt;&gt;Worker: CoInitialize()
         Worker-&gt;&gt;Audio: 기본 스피커 조회
-        Worker-&gt;&gt;Audio: IPolicyConfig.SetDefaultEndpoint()
+        Worker-&gt;&gt;Audio: SetDefaultEndpoint()
         Worker-&gt;&gt;Tray: 변경 완료 알림 발송
         Worker-&gt;&gt;App: is_switching = False
         deactivate Worker
@@ -150,17 +149,17 @@
     autonumber
     actor User as 사용자
     participant Tray as TrayApp
-    participant Sub as Subprocess&lt;br/&gt;(--dialog)
-    participant Tk as Tkinter UI&lt;br/&gt;(Key Listener)
+    participant Sub as Subprocess (--dialog)
+    participant Tk as Tkinter UI (Listener)
     participant Main as Main App
 
     User-&gt;&gt;Tray: [단축키 설정] 클릭
     Tray-&gt;&gt;Main: change_hotkey() 호출
     Main-&gt;&gt;Sub: subprocess.run([exe, "--dialog"])
-    Sub-&gt;&gt;Tk: 설정 창 생성 및 키 리스너 활성화
+    Sub-&gt;&gt;Tk: 설정 창 생성 &amp; 리스너 활성화
     User-&gt;&gt;Tk: 모든 키에서 손을 뗌 (Release)
     Tk-&gt;&gt;Sub: 임시 파일에 단축키 기록 후 종료
-    Main-&gt;&gt;Main: config.json 저장 및 HotkeyManager 갱신</pre></div>
+    Main-&gt;&gt;Main: config.json 저장 &amp; 핫키 갱신</pre></div>
 
   <h3 id="python-memory-limits">파이썬 런타임 메모리의 한계와 부작용</h3>
   <p>하지만 리소스 측면에서는 파이썬 런타임의 한계가 명확했습니다. 단순 백그라운드 트레이 유틸리티임에도 <strong>상주 메모리가 23MB</strong>에 달했고, PyInstaller 패키징 결과물 크기도 32MB가 넘었습니다.</p>
@@ -177,28 +176,23 @@
 
   <div class="pre mermaid" data-text="Mermaid"><button aria-label="Copy code">Copy</button><pre class="mermaid">graph TD
     subgraph AppSub ["Win32 Native C++ Application (439 KB)"]
-        MainProc["main.cpp&lt;br/&gt;(Win32 Message Pump)"]
-        TrayUI["tray_app.cpp&lt;br/&gt;(Shell_NotifyIconW)"]
-        HotkeyProc["hotkey_manager.cpp&lt;br/&gt;(RegisterHotKey)"]
-        AudioCore["audio_manager.cpp&lt;br/&gt;(Core Audio COM)"]
-        ConfigCore["config_manager.cpp&lt;br/&gt;(JSON Manager)"]
-        AutoCore["autostart.cpp&lt;br/&gt;(Registry AutoRun)"]
+        MainProc["main.cpp (Message Pump)"]
+        MainProc --&gt; TrayUI["tray_app.cpp (Tray Icon)"]
+        MainProc --&gt; AudioCore["audio_manager.cpp (COM API)"]
+        MainProc --&gt; HotkeyProc["hotkey_manager.cpp (Hotkey)"]
+        MainProc --&gt; ConfigCore["config_manager.cpp (JSON)"]
+        MainProc --&gt; AutoCore["autostart.cpp (AutoRun)"]
     end
     subgraph OSSub ["Windows 10 / 11 OS Subsystem (RAM 1.5 MB)"]
-        Taskbar["작업 표시줄 시스템 트레이"]
-        Registry["HKCU 시작프로그램 레지스트리"]
-        CoreAudioAPI["Core Audio Endpoint Engine"]
-        KeyboardSubsys["Win32 Raw Input Manager"]
+        Taskbar["시스템 트레이"]
+        CoreAudioAPI["Core Audio Engine"]
+        KeyboardSubsys["Raw Input Manager"]
+        Registry["HKCU 시작프로그램"]
     end
-    MainProc --&gt; TrayUI
-    MainProc --&gt; HotkeyProc
-    MainProc --&gt; AudioCore
-    MainProc --&gt; ConfigCore
-    MainProc --&gt; AutoCore
     TrayUI &lt;--&gt; Taskbar
-    AutoCore &lt;--&gt; Registry
     AudioCore &lt;--&gt; CoreAudioAPI
-    HotkeyProc &lt;--&gt; KeyboardSubsys</pre></div>
+    HotkeyProc &lt;--&gt; KeyboardSubsys
+    AutoCore &lt;--&gt; Registry</pre></div>
 
   <h3 id="benchmark-results">파이썬 vs C++ 성능 측정 결과</h3>
   <p>C++ 네이티브 빌드로 전환한 결과, 백그라운드 유틸리티에 걸맞은 극적인 성능 개선을 달성할 수 있었습니다.</p>
@@ -222,15 +216,15 @@
   <div class="pre mermaid" data-text="Mermaid"><button aria-label="Copy code">Copy</button><pre class="mermaid">sequenceDiagram
     autonumber
     actor User as 사용자
-    participant Dlg as 단축키 설정 창&lt;br/&gt;(Win32 Dialog)
-    participant Hook as 저수준 키보드 훅&lt;br/&gt;(WH_KEYBOARD_LL)
+    participant Dlg as 단축키 설정 창 (Win32)
+    participant Hook as LowLevelKeyboardProc
     participant OS as Windows OS / 타 앱
-    participant Main as Main&lt;br/&gt;(HotkeyManager)
+    participant Main as Main (HotkeyManager)
 
     User-&gt;&gt;Dlg: 단축키 설정 대화상자 오픈
     Dlg-&gt;&gt;Hook: SetWindowsHookExW 설치
     rect rgba(56, 189, 248, 0.12)
-        note over User, OS: 키 입력 가로채기 및 시스템 전파 완전 차단 구간
+        note over User, OS: 키 입력 가로채기 &amp; 시스템 전파 차단
         User-&gt;&gt;Hook: 복합키 입력 (Win + S 등)
         Hook--&gt;&gt;OS: return 1 (OS 전파 차단 / 검색창 방지)
     end
