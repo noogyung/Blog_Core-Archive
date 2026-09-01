@@ -55,7 +55,7 @@
     </table>
   </div>
 
-  <h2 id="phase-1-python-prototype">1. Phase 1: 파이썬 기반 초기 기획 및 프로토타이핑 (v1.0 ~ v2.0)</h2>
+  <h2 id="phase-1-python-prototype">1. 파이썬 기반 초기 기획 및 프로토타이핑 (v1.0 ~ v2.0)</h2>
   <p>첫 단계의 목표는 Windows Core Audio API를 제어하여 실제로 출력 장치가 즉시 전환되는지 최소 기능 제품(PoC)을 빠르게 검증하는 것이었습니다.</p>
 
   <h3 id="v1-initial-design">v1.0 — 최초 요구사항 지시와 설계</h3>
@@ -92,7 +92,7 @@
     <strong>⚠️ 증상 및 원인 분석:</strong> <code>keyboard</code> 라이브러리가 윈도우 OS의 저수준 키보드 훅을 등록하고 해제하는 과정에서 스레드 락이 비정상적으로 걸려, 단축키를 누른 직후 운영체제 전체의 키보드 입력이 완전히 마비되는 치명적인 문제가 발생했습니다.
   </div>
 
-  <h2 id="phase-2-ux-enhancement">2. Phase 2: 키보드 엔진 교체 및 UX 고도화 (v3.0 ~ v6.0)</h2>
+  <h2 id="phase-2-ux-enhancement">2. 키보드 엔진 교체 및 UX 고도화 (v3.0 ~ v6.0)</h2>
   <p>글로벌 훅 마비 현상을 해결하고, 실사용에 적합하도록 단축키 캡처 알고리즘을 대대적으로 개편했습니다.</p>
 
   <div class="note">
@@ -108,7 +108,10 @@
     <li><strong>키 릴리즈 기반 상태 머신:</strong> 키를 누르는 중간에 단축키가 불완전하게 저장되는 문제를 방지하기 위해, 수식어 키를 누르고 일반 키를 누른 뒤 <strong>모든 키에서 손을 완전히 떼었을 때(Key Release)</strong> 입력을 확정하는 상태 머신을 구현했습니다.</li>
   </ol>
 
-  <h2 id="phase-3-concurrency-and-limits">3. Phase 3: 동시성 락 적용과 파이썬 런타임의 한계 (v7.0)</h2>
+  <!-- [IMAGE SLOT 2] ALT: 윈도우 작업 표시줄 시스템 트레이 우클릭 컨텍스트 메뉴 UI -->
+  <img alt="윈도우 작업 표시줄 시스템 트레이 우클릭 컨텍스트 메뉴 UI" loading="lazy" src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-09/windows-speaker-changer-img2.png?v=20260901_1400">
+
+  <h2 id="phase-3-concurrency-and-limits">3. 동시성 락 적용과 파이썬 런타임의 한계 (v7.0)</h2>
   <p>기능적 안정성을 확보한 뒤 전체 코드 최적화 및 리소스 검토를 진행했습니다.</p>
 
   <div class="note">
@@ -165,7 +168,7 @@
   <p>하지만 리소스 측면에서는 파이썬 런타임의 한계가 명확했습니다. 단순 백그라운드 트레이 유틸리티임에도 <strong>상주 메모리가 23MB</strong>에 달했고, PyInstaller 패키징 결과물 크기도 32MB가 넘었습니다.</p>
   <p>이를 줄이고자 Windows API의 <code>SetProcessWorkingSetSize</code>를 호출해 메모리를 강제로 페이징 아웃(Trimming)시키는 트릭을 적용해 보았으나, <code>pystray</code>의 메시지 펌프가 멈춰버려 트레이가 다시 먹통이 되는 치명적인 부작용이 발생했습니다. 억지스러운 메모리 트레이닝 대신 기반 언어를 교체해야 할 시점이었습니다.</p>
 
-  <h2 id="phase-4-cpp-rewrite">4. Phase 4: C++ Win32 Native API로의 전면 재작성 (v8.0)</h2>
+  <h2 id="phase-4-cpp-rewrite">4. C++ Win32 Native API로의 전면 재작성 (v8.0)</h2>
   <p>파이썬으로 모든 로직과 예외 케이스를 이미 검증했으므로, AI에게 C++ Win32 Native API로의 전면 전환을 지시했습니다.</p>
 
   <div class="note">
@@ -173,6 +176,9 @@
   </div>
 
   <p>AI를 활용한 언어 마이그레이션은 놀라울 정도로 빠르고 매끄럽게 진행되었습니다. 이미 확립된 상태 머신과 COM 제어 로직이 존재했기 때문에, C++ 표준 라이브러리와 순수 Win32 API로 구조를 옮겨 담는 작업이 즉각 완료되었습니다.</p>
+
+  <!-- [IMAGE SLOT 3] ALT: 스피커 및 헤드셋 오디오 출력 장치 즐겨찾기 선택 서브메뉴 -->
+  <img alt="스피커 및 헤드셋 오디오 출력 장치 즐겨찾기 선택 서브메뉴" loading="lazy" src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-09/windows-speaker-changer-img3.png?v=20260901_1400">
 
   <div class="pre mermaid" data-text="Mermaid"><button aria-label="Copy code">Copy</button><pre class="mermaid">graph TD
     subgraph AppSub ["Win32 Native C++ Application (439 KB)"]
@@ -203,7 +209,7 @@
     <li><strong>최초 실행 딜레이:</strong> 1.5초(인터프리터 로딩) → <strong>0.0초(즉각 반응)</strong></li>
   </ul>
 
-  <h2 id="phase-5-low-level-hook">5. Phase 5: 저수준 키보드 훅(WH_KEYBOARD_LL)과 최종 검증 (v8.1)</h2>
+  <h2 id="phase-5-low-level-hook">5. 저수준 키보드 훅(WH_KEYBOARD_LL)과 최종 검증 (v8.1)</h2>
   <p>C++ 전환으로 모든 성능 문제가 해결되었으나, 마지막 실사용 테스트에서 운영체제와의 단축키 충돌이 발견되었습니다.</p>
 
   <div class="note">
