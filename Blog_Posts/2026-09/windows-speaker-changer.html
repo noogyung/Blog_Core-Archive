@@ -1,64 +1,205 @@
 ﻿<!-- ============================================================
   [BLOG POST METADATA - Blogspot 설정창 복사용]
-  Title: 윈도우 스피커 전환 앱 개발기: Python 프로토타입부터 C++ 1.5MB 극초경량화까지
-  Labels (Tags): PersonalDev, C++, Python, 트러블슈팅, 최적화
-  Meta Description: 윈도우 10에서 스피커 전환을 단축키로 제어하는 앱 개발기입니다. 파이썬 프로토타입에서 출발해 C++ Win32 API로 1.5MB까지 극초경량화하고 저수준 훅으로 시스템 간섭을 차단한 과정을 소개합니다.
+  Title: 윈도우 10 스피커 전환 유틸리티 개발기: Python 프로토타입부터 C++ 1.5MB 최적화까지
+  Labels (Tags): PersonalDev, C++, Python, Win32, 트러블슈팅, 최적화, 개발기
+  Meta Description: 윈도우 10에서 단축키로 스피커를 전환하는 앱 개발기입니다. AI를 활용해 파이썬 프로토타입 검증부터 C++ Win32 API 포팅, 저수준 훅 간섭 해결까지의 전 과정을 정리했습니다.
   Slug: windows-speaker-changer
   ---
   Primary Keyword: 윈도우 스피커 전환 단축키
-  Secondary Keywords: C++ 트레이 앱 최적화, 저수준 키보드 훅, 파이썬 C++ 마이그레이션
+  Secondary Keywords: C++ 트레이 앱 최적화, 저수준 키보드 훅, 파이썬 C++ 마이그레이션, Win32 API 개발
   Knowledge Source: windows-speaker-changer-20260901.md
   Generated Date: 2026-09-01
-  Estimated Read Time: 6분
+  Estimated Read Time: 8분
   Series ID: null
   ============================================================ -->
 
 <article>
-  <!-- [IMAGE SLOT 1 - REQUIRED] ALT: 윈도우 10 오디오 스위처 개발 아키텍처 다이어그램 -->
-  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-09/windows-speaker-changer-img1.jpg?v=20260901_1215" alt="윈도우 10 오디오 스위처 개발 아키텍처 다이어그램">
+  <!-- [IMAGE SLOT 1 - REQUIRED] ALT: 윈도우 10 오디오 스위처 개발 아키텍처 및 C++ 최적화 다이어그램 -->
+  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-09/windows-speaker-changer-img1.jpg?v=20260901_1215" alt="윈도우 10 오디오 스위처 개발 아키텍처 및 C++ 최적화 다이어그램">
   
-  <p>윈도우 10 환경에서는 기본적으로 단축키를 이용해 스피커나 헤드셋 등 오디오 출력 장치를 즉각적으로 전환하는 기능을 지원하지 않습니다. 이를 해결하기 위해 여러 서드파티 앱들을 시도해 보았으나, 백그라운드 상주 시 오작동하거나 딜레이가 발생하는 등 제대로 동작하지 않는 경우가 많았습니다. 이에 인터넷 검색으로 계속 헤매는 것보다 AI의 도움을 받아 직접 맞춤형 앱을 제작하는 것이 훨씬 효율적일 것이라 판단하여 개발을 시작하게 되었습니다.</p>
+  <p>윈도우 10 환경에서는 기본적으로 단축키를 이용해 스피커나 헤드셋 등 오디오 출력 장치를 즉각적으로 전환하는 기능을 제공하지 않습니다. 작업 표시줄의 사운드 아이콘을 일일이 클릭하거나 복잡한 제어판 설정을 거쳐야만 장치를 바꿀 수 있는 구조입니다. 이를 해결하고자 몇 가지 서드파티 유틸리티를 찾아 사용해 보았으나, 백그라운드 상주 중 예기치 않게 종료되거나 장치 전환 딜레이가 발생하는 등 불안정한 경우가 많았습니다.</p>
   
-  <p>이번 글에서는 초기에 Python을 활용하여 빠르게 프로토타입을 검증한 뒤, 20MB 이상의 메모리 점유 및 실행 속도 제약을 극복하기 위해 최종적으로 <strong>C++ Win32 Native API</strong> 기반으로 포팅하여 1.5MB의 극초경량화를 달성한 전체 개발 과정을 상세히 살펴보고자 합니다.</p>
+  <p>더 이상 인터넷 검색으로 시간을 소모하기보다는, AI에게 명확한 요구사항을 제시하여 가볍고 확실하게 동작하는 맞춤형 유틸리티를 직접 제작하는 것이 빠르고 효율적이라고 판단했습니다. 이번 글에서는 초기 아이디어를 <strong>Python으로 신속하게 프로토타이핑</strong>하고, 이후 메모리 점유율과 반응 속도 한계를 극복하기 위해 <strong>C++ Win32 Native API로 전면 재작성(1.5MB 메모리 최적화)</strong>하기까지의 전체 개발 과정을 시간 순서대로 가감 없이 공유하고자 합니다.</p>
 
-  <h2 id="python-prototype">1. 파이썬 기반 초기 기획 및 프로토타입 구현</h2>
-  <p>최초 기획 단계에서는 신속한 개발과 로직 검증을 위해 Python을 채택했습니다. <code>pystray</code> 모듈로 시스템 트레이를 구현하고, <code>comtypes</code> 모듈을 통해 문서화되지 않은 윈도우 내부 COM 인터페이스(<code>IPolicyConfig</code>)를 호출하여 기본 장치를 전환하는 방식이었습니다.</p>
-
-  <h3 id="keyboard-hook-issue">글로벌 훅 마비와 pynput 도입</h3>
-  <p>초기 버전에서는 <code>keyboard</code> 라이브러리를 사용하여 사용자의 지정 단축키(예: <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>Win</kbd>+<kbd>S</kbd>)를 감지하도록 구성했습니다. 그러나 <code>keyboard</code> 모듈이 윈도우 저수준 키보드 훅을 가로채는 방식이 불안정하여, 한 번 누른 뒤 시스템 전체의 키보드 입력이 먹통이 되는 치명적인 결함이 발생했습니다.</p>
-  <p>이를 해결하기 위해 더 안정적인 <code>pynput</code> 모듈로 단축키 엔진을 전면 교체하였고, 키를 누르는 과정에서 발생하는 <strong>가상 키코드(83) 오류</strong> 등을 상태 머신 도입을 통해 정밀하게 캡처하도록 고도화하여 파이썬 기반 앱으로서의 결함을 대부분 수정할 수 있었습니다.</p>
-
-  <h2 id="optimization-limits">2. 메모리 점유율과 억지 최적화의 한계</h2>
-  <p>파이썬 런타임 특성상 앱이 백그라운드에 상주하는 동안 <strong>약 20~23MB의 메모리</strong>를 지속적으로 점유했으며, PyInstaller로 빌드된 실행 파일의 크기 역시 약 32MB에 달했습니다.</p>
-  <p>이를 최적화하기 위해 Windows API의 <code>SetProcessWorkingSetSize</code>를 호출해 메모리를 OS에 강제로 반환하는 워킹셋 트리밍을 시도했습니다. 하지만 이러한 억지 최적화는 <code>pystray</code>의 Win32 메시지 펌프 루프를 블로킹하여 시스템 트레이 아이콘을 마비시키는 부작용을 낳았습니다.</p>
-  
-  <div class="note wr">
-    <strong>⚠️ 주의:</strong> Python 프로세스 내에서 가비지 컬렉션을 우회하거나 억지로 메모리 페이지를 디스크로 스왑 아웃(Swap-out)시키는 행위는 실시간 이벤트 루프를 처리하는 UI 스레드에 치명적인 블로킹을 유발할 수 있습니다.
+  <div class="table w100 withBg">
+    <table>
+      <thead>
+        <tr>
+          <th>버전 단계</th>
+          <th>주요 기술 스택</th>
+          <th>해결한 핵심 문제 및 특징</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>v1.0 ~ v2.0</strong></td>
+          <td>Python, pystray, comtypes, keyboard</td>
+          <td>초기 기획 검증, 트레이 UI 노출 및 키보드 글로벌 훅 결함 확인</td>
+        </tr>
+        <tr>
+          <td><strong>v3.0 ~ v6.0</strong></td>
+          <td>Python, pynput, WinReg, Tkinter</td>
+          <td>pynput 교체로 먹통 해결, 시작프로그램 등록, 단축키 캡처 상태 머신 구현</td>
+        </tr>
+        <tr>
+          <td><strong>v7.0</strong></td>
+          <td>Python (Threading, Subprocess)</td>
+          <td>동시성 락(is_switching) 및 UI 분리, 파이썬 런타임 상주 메모리(23MB) 한계 도달</td>
+        </tr>
+        <tr>
+          <td><strong>v8.0 ~ v8.1</strong></td>
+          <td>C++ (Win32 API, Core Audio COM)</td>
+          <td>C++ 완전 포팅(RAM 1.5MB 달성), WH_KEYBOARD_LL 저수준 훅으로 OS 단축키 간섭 차단</td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 
-  <h2 id="cpp-migration">3. C++ Win32 Native API로의 전면 포팅</h2>
-  <p>파이썬의 태생적 한계를 극복하기 위해, 검증이 끝난 로직을 바탕으로 <strong>C++ Win32 Native API</strong> 환경으로 앱을 전면 재작성하기로 결정했습니다. 설계가 완료된 작은 사이드 프로젝트를 타 언어로 마이그레이션하는 과정은 AI를 활용함으로써 아주 손쉽게 진행할 수 있었습니다.</p>
+  <h2 id="phase-1-python-prototype">1. Phase 1: 파이썬 기반 초기 기획 및 프로토타이핑 (v1.0 ~ v2.0)</h2>
+  <p>첫 단계의 목표는 Windows Core Audio API를 제어하여 실제로 출력 장치가 즉시 전환되는지 최소 기능 제품(PoC)을 빠르게 검증하는 것이었습니다.</p>
 
-  <ul class="pros">
-    <li><strong>상주 메모리:</strong> 23MB → 1.5MB (약 93% 절감)</li>
-    <li><strong>실행 파일 크기:</strong> 32MB → 439KB (약 1/73 축소)</li>
-    <li><strong>콜드 부팅 속도:</strong> 1.5초 → 0초 (딜레이 제로)</li>
-  </ul>
+  <h3 id="v1-initial-design">v1.0 — 최초 요구사항 지시와 설계</h3>
+  <p>AI에게 다음과 같이 명확한 요구사항을 전달하며 개발을 시작했습니다.</p>
 
-  <p>모든 외부 의존성을 제거하고 <code>Shell_NotifyIconW</code> 및 <code>IPolicyConfig</code>를 직접 호출함으로써 성능적 한계를 완벽히 해결했습니다.</p>
+  <div class="note">
+    <strong>💬 사용자 지시 (v1.0):</strong> "Windows Speaker를 단축키로 바로 전환 할 수 있는 앱이 필요해... 파이썬 선호하기. Hot키는 일단 기본으로는 Alt + Ctrl + Shift + Window + S... 시스템 트레이 백그라운드로 작동하는걸 선호해."
+  </div>
 
-  <h2 id="low-level-hook">4. 저수준 키보드 훅(WH_KEYBOARD_LL)을 통한 간섭 차단</h2>
-  <p>C++ 전환 후, 단축키 설정 팝업창에서 사용자가 새로운 핫키를 등록하기 위해 키보드를 캡처할 때, 기존 OS에 등록된 단축키(예: 윈도우 검색창을 띄우는 <kbd>Win</kbd>+<kbd>S</kbd>)가 그대로 시스템에 전파되어 실행되는 간섭 현상이 발생했습니다.</p>
-  <p>이를 해결하기 위해 설정 창 활성화 상태에서 <code>WH_KEYBOARD_LL</code> 저수준 훅을 일시적으로 설치하여 해결했습니다.</p>
+  <p>AI는 Windows Core Audio의 미문서화 COM 인터페이스인 <code>IPolicyConfig</code>를 <code>comtypes</code> 모듈로 래핑하고, <code>pystray</code>(시스템 트레이)와 <code>keyboard</code>(단축키 캡처)를 결합한 스크립트를 작성하여 배포용 실행 파일(<code>dist/main.exe</code>)을 빌드했습니다.</p>
+
+  <div class="pre custom" data-text="Text"><button aria-label="Copy code">Copy</button><pre>[사용자 / 매크로 단축키] 
+       │ (Alt+Ctrl+Shift+Win+S)
+       ▼
+[keyboard 모듈 (Global Hook)] ──&gt; [main.py 컨트롤러] ──&gt; [config.json (장치 목록)]
+                                         │
+                                         ▼
+                                [audio_manager.py]
+                                         │ (COM 인터페이스)
+                                         ▼
+                         [Windows Core Audio IPolicyConfig]
+                                         │
+                                         ▼
+                                [기본 오디오 장치 즉시 전환]</pre></div>
+
+  <p>그러나 첫 번째 빌드를 실행했을 때, 백그라운드 프로세스는 구동되었으나 작업 표시줄 시스템 트레이에 아이콘이 나타나지 않아 상태를 제어할 수 없는 현상이 발생했습니다.</p>
+
+  <h3 id="v2-hook-freeze">v2.0 — 트레이 UI 노출과 키보드 마비 결함</h3>
+  <p>트레이 아이콘 노출과 GUI 기반 단축키 변경 기능을 요청하며 다음 피드백을 전달했습니다.</p>
+
+  <div class="note">
+    <strong>💬 사용자 지시 (v2.0):</strong> "다 되었다고 했는데 시스템 트레이에 해당 앱을 찾을 수 없어. 단축키를 수정할 수 있게 해줘. 이거 누른 뒤에 키보드가 먹통이 되는데?"
+  </div>
+
+  <p>AI는 <code>pystray.Icon.run_detached()</code> 방식으로 스레드를 분리하여 트레이 아이콘을 정상 렌더링시켰고, Tkinter 기반의 설정 대화상자를 추가했습니다. 하지만 실사용 테스트 과정에서 심각한 결함이 드러났습니다.</p>
   
+  <div class="note wr">
+    <strong>⚠️ 증상 및 원인 분석:</strong> <code>keyboard</code> 라이브러리가 윈도우 OS의 저수준 키보드 훅을 등록하고 해제하는 과정에서 스레드 락이 비정상적으로 걸려, 단축키를 누른 직후 운영체제 전체의 키보드 입력이 완전히 마비되는 치명적인 문제가 발생했습니다.
+  </div>
+
+  <h2 id="phase-2-ux-enhancement">2. Phase 2: 키보드 엔진 교체 및 UX 고도화 (v3.0 ~ v6.0)</h2>
+  <p>글로벌 훅 마비 현상을 해결하고, 실사용에 적합하도록 단축키 캡처 알고리즘을 대대적으로 개편했습니다.</p>
+
+  <div class="note">
+    <strong>💬 사용자 지시 (v3.0 ~ v6.0):</strong> "단축키 입력 창이 제대로 뜨지도 않고, 단축키를 누른 이후에 먹통이 됨... 윈도우가 시작될 때 자동 실행되도록 하는 걸 넣어줘... 컨트롤키나 알트키에 L이 붙어서 잘못 입력됨... s 대신에 83이라는 숫자가 뜸."
+  </div>
+
+  <p>이 단계에서 적용된 핵심 개선 사항은 다음과 같습니다.</p>
+
   <ol class="step">
-    <li><strong>훅 설치:</strong> <code>SetWindowsHookExW(WH_KEYBOARD_LL)</code>를 통해 모든 키 이벤트를 낚아챕니다.</li>
-    <li><strong>OS 전파 차단:</strong> 키 입력 감지 시 <code>return 1</code>을 반환하여 OS나 타 응용프로그램으로 이벤트가 전달되는 것을 완전히 차단합니다.</li>
-    <li><strong>입력 확정 및 훅 해제:</strong> 모든 수식어 키와 일반 키에서 손을 떼었을 때(WM_CLOSE) 핫키를 확정하고 <code>UnhookWindowsHookEx</code>를 호출해 안전하게 훅을 반환합니다.</li>
+    <li><strong>단축키 엔진 교체:</strong> 불안정한 <code>keyboard</code> 라이브러리를 완전히 걷어내고, 시스템 이벤트 안정성이 검증된 <code>pynput.keyboard</code> 모듈로 전환했습니다.</li>
+    <li><strong>자동 실행 등록:</strong> <code>winreg</code> API를 통해 Windows 레지스트리(<code>HKCU\Software\Microsoft\Windows\CurrentVersion\Run</code>)에 앱 실행 경로를 등록/해제하는 기능을 트레이 메뉴에 연동했습니다.</li>
+    <li><strong>가상 키코드 디코딩 패치:</strong> <code>vk=83</code>처럼 문자가 아닌 가상 키코드로 들어오는 입력을 <code>win32api.MapVirtualKey</code>를 통해 실제 영문 알파벳('S')으로 정확하게 역변환했습니다.</li>
+    <li><strong>키 릴리즈 기반 상태 머신:</strong> 키를 누르는 중간에 단축키가 불완전하게 저장되는 문제를 방지하기 위해, 수식어 키를 누르고 일반 키를 누른 뒤 <strong>모든 키에서 손을 완전히 떼었을 때(Key Release)</strong> 입력을 확정하는 상태 머신을 구현했습니다.</li>
   </ol>
 
+  <h2 id="phase-3-concurrency-and-limits">3. Phase 3: 동시성 락 적용과 파이썬 런타임의 한계 (v7.0)</h2>
+  <p>기능적 안정성을 확보한 뒤 전체 코드 최적화 및 리소스 검토를 진행했습니다.</p>
+
+  <div class="note">
+    <strong>💬 사용자 지시 (v7.0):</strong> "전체 코드를 검토하고, 최적화 포인트가 있는지 찾아봐... 메모리를 23메가바이트나 잡아먹고 있는데 줄일 수 없어?"
+  </div>
+
+  <h3 id="concurrency-architecture">스레드 경합 제어 및 프로세스 분리</h3>
+  <p>단축키를 빠르게 연타했을 때 COM 인터페이스가 중복 호출되어 충돌하는 문제를 방지하기 위해 플래그 기반 동시성 락(<code>is_switching</code>)을 도입했습니다.</p>
+
+  <div class="pre custom" data-text="Text"><button aria-label="Copy code">Copy</button><pre>[사용자 단축키 입력] ──&gt; [HotkeyManager]
+                             │ switch_device() 호출
+                             ▼
+                    ┌─────────────────────────┐
+                    │ is_switching == True ?  │ ──(Yes)──&gt; [요청 무시 (연타 방어)]
+                    └─────────────────────────┘
+                             │ (No)
+                             ▼
+                    [is_switching = True 설정]
+                             │
+                             ▼
+                    [Worker Thread 비동기 생성] ──&gt; CoInitialize()
+                                                ──&gt; IPolicyConfig.SetDefaultEndpoint()
+                                                ──&gt; 윈도우 토스트 알림 전송
+                                                ──&gt; is_switching = False 해제</pre></div>
+
+  <p>또한 Tkinter 설정 팝업이 트레이 아이콘의 메인 이벤트 루프를 방해하지 않도록 <code>subprocess.run([exe, "--dialog"])</code> 형태로 독립 실행되도록 격리했습니다.</p>
+
+  <h3 id="python-memory-limits">파이썬 런타임 메모리의 한계와 부작용</h3>
+  <p>하지만 리소스 측면에서는 파이썬 런타임의 한계가 명확했습니다. 단순 백그라운드 트레이 유틸리티임에도 <strong>상주 메모리가 23MB</strong>에 달했고, PyInstaller 패키징 결과물 크기도 32MB가 넘었습니다.</p>
+  <p>이를 줄이고자 Windows API의 <code>SetProcessWorkingSetSize</code>를 호출해 메모리를 강제로 페이징 아웃(Trimming)시키는 트릭을 적용해 보았으나, <code>pystray</code>의 메시지 펌프가 멈춰버려 트레이가 다시 먹통이 되는 치명적인 부작용이 발생했습니다. 억지스러운 메모리 트레이닝 대신 기반 언어를 교체해야 할 시점이었습니다.</p>
+
+  <h2 id="phase-4-cpp-rewrite">4. Phase 4: C++ Win32 Native API로의 전면 재작성 (v8.0)</h2>
+  <p>파이썬으로 모든 로직과 예외 케이스를 이미 검증했으므로, AI에게 C++ Win32 Native API로의 전면 전환을 지시했습니다.</p>
+
+  <div class="note">
+    <strong>💬 사용자 지시 (v8.0):</strong> "그렇다면 굳이 파이썬을 쓸 필요가 있어? 다른 것으로 작성하는게 더 낫지 않아? C++이나 C#으로 작성 시 메모리가 얼마나 줄어들 수 있는지 찾아봐... C++로 전환해서 만들어."
+  </div>
+
+  <p>AI를 활용한 언어 마이그레이션은 놀라울 정도로 빠르고 매끄럽게 진행되었습니다. 이미 확립된 상태 머신과 COM 제어 로직이 존재했기 때문에, C++ 표준 라이브러리와 순수 Win32 API로 구조를 옮겨 담는 작업이 즉각 완료되었습니다.</p>
+
+  <div class="pre custom" data-text="Text"><button aria-label="Copy code">Copy</button><pre>[WindowSpeakerChanger_Cpp.exe (439 KB)]
+  ├── main.cpp              (Win32 Message Pump &amp; WndProc)
+  ├── tray_app.cpp          (Shell_NotifyIconW &amp; Popup Menu)
+  ├── hotkey_manager.cpp    (RegisterHotKey &amp; Modal Dialog)
+  ├── audio_manager.cpp     (IMMDevice &amp; IPolicyConfig COM)
+  ├── config_manager.cpp    (nlohmann/json.hpp 경량 파싱)
+  └── autostart.cpp         (RegSetValueExW 시작프로그램)</pre></div>
+
+  <h3 id="benchmark-results">파이썬 vs C++ 성능 측정 결과</h3>
+  <p>C++ 네이티브 빌드로 전환한 결과, 백그라운드 유틸리티에 걸맞은 극적인 성능 개선을 달성할 수 있었습니다.</p>
+
+  <ul class="pros">
+    <li><strong>상주 메모리(RAM):</strong> 23.0 MB → <strong>1.5 MB</strong> (약 93.5% 절감)</li>
+    <li><strong>실행 파일 크기:</strong> 32.4 MB → <strong>439 KB</strong> (약 1/73 수준 축소)</li>
+    <li><strong>최초 실행 딜레이:</strong> 1.5초(인터프리터 로딩) → <strong>0.0초(즉각 반응)</strong></li>
+  </ul>
+
+  <h2 id="phase-5-low-level-hook">5. Phase 5: 저수준 키보드 훅(WH_KEYBOARD_LL)과 최종 검증 (v8.1)</h2>
+  <p>C++ 전환으로 모든 성능 문제가 해결되었으나, 마지막 실사용 테스트에서 운영체제와의 단축키 충돌이 발견되었습니다.</p>
+
+  <div class="note">
+    <strong>💬 사용자 지시 (v8.1):</strong> "단축키 설정 키보드에서 캡쳐가 잘 안되고 있어... 해당 설정창이 열려있는 경우에 다른 화면에서도 단축키가 그대로 작동되는 점이 있어. 예를 들어 Win + S를 누르면 Windows 검색 창이 함께 열리는 등."
+  </div>
+
+  <h3 id="wh-keyboard-ll-isolation">WH_KEYBOARD_LL을 통한 이벤트 격리</h3>
+  <p>기존 <code>RegisterHotKey</code> 방식은 단축키 설정 창이 떠 있는 동안 사용자가 입력하는 조합키를 OS가 먼저 낚아채는 문제가 있었습니다. 이를 차단하기 위해 <strong>저수준 키보드 훅(<code>WH_KEYBOARD_LL</code>)</strong>을 설정 창 라이프사이클에만 임시로 부착하는 설계를 적용했습니다.</p>
+
+  <div class="pre custom" data-text="Text"><button aria-label="Copy code">Copy</button><pre>[사용자: 단축키 설정 창 오픈] ──&gt; SetWindowsHookExW(WH_KEYBOARD_LL) 설치
+                                               │
+┌──────────────────────────────────────────────┴──────────────────────────────┐
+│ [키 입력 가로채기 및 OS 전파 완전 차단 구간]                                    │
+│   사용자가 복합키(예: Win + S) 입력 ──&gt; Hook 프로시저에서 감지                 │
+│                                     ──&gt; return 1 반환 (Windows 검색창 실행 차단!)│
+└──────────────────────────────────────────────┬──────────────────────────────┘
+                                               │
+[사용자: 모든 키에서 손을 뗌] ──&gt; PostMessage(WM_CLOSE) ──&gt; UnhookWindowsHookEx() 해제
+                             ──&gt; 새 단축키 등록 완료</pre></div>
+
+  <div class="note">
+    <strong>💡 최종 실환경 검증 결과:</strong> 저수준 키보드 훅을 사용함에도 Windows Defender 등 주요 안티바이러스 프로그램에서 오탐지(False Positive)가 전혀 발생하지 않았으며, 전체 화면 3D 게임 구동 중에도 입력 지연이나 단축키 충돌 없이 백그라운드에서 매끄럽게 동작함을 확인하였습니다.
+  </div>
+
   <h2 id="conclusion">마무리하며</h2>
-  <p>지금까지 파이썬 프로토타이핑을 거쳐 C++ Win32 API로 최적화된 오디오 전환 앱을 완성하는 과정을 살펴보았습니다. AI를 활용하여 프로토타입에서 발견된 논리적 결함을 빠르게 찾아내고, 완성된 구조를 C++로 손쉽게 마이그레이션하는 하이브리드 접근법은 개인 개발 생산성을 극대화하는 훌륭한 방법론이었습니다.</p>
-  <p>여러분도 일상적인 윈도우 사용 중 불편함을 느껴 단축키나 백그라운드 자동화 스크립트를 작성해 보신 적이 있으신가요? 혹시 비슷한 C++ Win32 최적화 과정에서 겪으셨던 흥미로운 트러블슈팅 경험이나 팁이 있다면 댓글로 의견을 나누어 주시면 감사하겠습니다.</p>
+  <p>이번 윈도우 스피커 전환 유틸리티 개발은 단순한 기능 구현을 넘어, <strong>AI를 활용한 현대적인 소프트웨어 개발 워크플로우</strong>의 장점을 체감할 수 있었던 프로젝트였습니다.</p>
+  
+  <p>Python을 통해 복잡한 Windows Core Audio COM 인터페이스의 동작을 단시간에 검증하고, 여기서 도출된 안정화된 로직과 예외 처리 구조를 바탕으로 C++ Win32 Native 코드로 단번에 포팅함으로써 <strong>1.5MB의 상주 메모리와 제로 딜레이</strong>를 갖춘 완성형 유틸리티를 손쉽게 완성할 수 있었습니다.</p>
+
+  <p>여러분도 일상적인 PC 사용 환경에서 겪는 사소하지만 성가신 불편함이 있다면, AI와 함께 가벼운 프로토타입부터 네이티브 최적화까지 직접 구축해 보시는 것을 추천합니다. 혹시 C++ Win32 환경에서 백그라운드 훅이나 오디오 엔드포인트 제어를 다루며 겪으셨던 또 다른 트러블슈팅 경험이 있다면 댓글로 자유롭게 의견을 나누어 주시면 감사하겠습니다.</p>
 
 </article>
