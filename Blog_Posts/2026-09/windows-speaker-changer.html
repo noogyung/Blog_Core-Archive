@@ -67,19 +67,15 @@
 
   <p>AI는 Windows Core Audio의 미문서화 COM 인터페이스인 <code>IPolicyConfig</code>를 <code>comtypes</code> 모듈로 래핑하고, <code>pystray</code>(시스템 트레이)와 <code>keyboard</code>(단축키 캡처)를 결합한 스크립트를 작성하여 배포용 실행 파일(<code>dist/main.exe</code>)을 빌드했습니다.</p>
 
-  <div class="pre custom" data-text="Text"><button aria-label="Copy code">Copy</button><pre>[사용자 / 매크로 단축키] 
-       │ (Alt+Ctrl+Shift+Win+S)
-       ▼
-[keyboard 모듈 (Global Hook)] ──&gt; [main.py 컨트롤러] ──&gt; [config.json (장치 목록)]
-                                         │
-                                         ▼
-                                [audio_manager.py]
-                                         │ (COM 인터페이스)
-                                         ▼
-                         [Windows Core Audio IPolicyConfig]
-                                         │
-                                         ▼
-                                [기본 오디오 장치 즉시 전환]</pre></div>
+  <div class="pre custom" data-text="Mermaid"><button aria-label="Copy code">Copy</button><pre class="mermaid">flowchart TD
+    User([사용자 / 매크로 키보드]) --&gt;|Alt+Ctrl+Shift+Win+S| Hotkey[keyboard 모듈]
+    Hotkey --&gt;|스위칭 트리거| Main[main.py 컨트롤러]
+    Main --&gt;|설정 조회| Config[(config.json&lt;br/&gt;즐겨찾기 목록)]
+    Main --&gt;|장치 순환 요청| AudioMgr[audio_manager.py]
+    AudioMgr --&gt;|COM 인터페이스| CoreAudio[Windows Core Audio API&lt;br/&gt;IPolicyConfig / IMMDevice]
+    CoreAudio --&gt;|기본 엔드포인트 변경| Speaker[스피커 / 헤드셋 출력]
+    Main --&gt;|상태 피드백| Tray[pystray 시스템 트레이]
+    Tray --&gt;|토스트 알림| OSNotification[Windows 툴팁 알림]</pre></div>
 
   <p>그러나 첫 번째 빌드를 실행했을 때, 백그라운드 프로세스는 구동되었으나 작업 표시줄 시스템 트레이에 아이콘이 나타나지 않아 상태를 제어할 수 없는 현상이 발생했습니다.</p>
 
@@ -122,23 +118,49 @@
   <h3 id="concurrency-architecture">스레드 경합 제어 및 프로세스 분리</h3>
   <p>단축키를 빠르게 연타했을 때 COM 인터페이스가 중복 호출되어 충돌하는 문제를 방지하기 위해 플래그 기반 동시성 락(<code>is_switching</code>)을 도입했습니다.</p>
 
-  <div class="pre custom" data-text="Text"><button aria-label="Copy code">Copy</button><pre>[사용자 단축키 입력] ──&gt; [HotkeyManager]
-                             │ switch_device() 호출
-                             ▼
-                    ┌─────────────────────────┐
-                    │ is_switching == True ?  │ ──(Yes)──&gt; [요청 무시 (연타 방어)]
-                    └─────────────────────────┘
-                             │ (No)
-                             ▼
-                    [is_switching = True 설정]
-                             │
-                             ▼
-                    [Worker Thread 비동기 생성] ──&gt; CoInitialize()
-                                                ──&gt; IPolicyConfig.SetDefaultEndpoint()
-                                                ──&gt; 윈도우 토스트 알림 전송
-                                                ──&gt; is_switching = False 해제</pre></div>
+  <div class="pre custom" data-text="Mermaid"><button aria-label="Copy code">Copy</button><pre class="mermaid">sequenceDiagram
+    autonumber
+    actor User as 사용자
+    participant HK as HotkeyManager (pynput)
+    participant App as Main App (main.py)
+    participant Worker as Worker Thread
+    participant Audio as AudioManager (COM API)
+    participant Tray as TrayApp (알림)
 
-  <p>또한 Tkinter 설정 팝업이 트레이 아이콘의 메인 이벤트 루프를 방해하지 않도록 <code>subprocess.run([exe, "--dialog"])</code> 형태로 독립 실행되도록 격리했습니다.</p>
+    User-&gt;&gt;HK: 지정된 단축키 입력
+    HK-&gt;&gt;App: switch_device() 트리거
+    
+    alt is_switching == True (이미 작업 중)
+        App--&gt;&gt;HK: 요청 무시 (연타 방어)
+    else is_switching == False
+        App-&gt;&gt;App: is_switching = True 설정
+        App-&gt;&gt;Worker: 스레드 생성 (daemon=True)
+        activate Worker
+        Worker-&gt;&gt;Worker: CoInitialize()
+        Worker-&gt;&gt;Audio: 현재 기본 스피커 조회
+        Worker-&gt;&gt;Audio: IPolicyConfig.SetDefaultEndpoint(ID)
+        Worker-&gt;&gt;Tray: 변경 완료 윈도우 알림 발송
+        Worker-&gt;&gt;App: is_switching = False 해제
+        deactivate Worker
+    end</pre></div>
+
+  <p>또한 Tkinter 설정 팝업이 트레이 아이콘의 메인 이벤트 루프를 방해하지 않도록 <code>subprocess.run([exe, "--dialog"])</code> 형태로 독립 프로세스를 생성하여 실행하도록 격리했습니다.</p>
+
+  <div class="pre custom" data-text="Mermaid"><button aria-label="Copy code">Copy</button><pre class="mermaid">sequenceDiagram
+    autonumber
+    actor User as 사용자
+    participant Tray as TrayApp
+    participant Sub as Subprocess (--dialog)
+    participant Tk as Tkinter UI / Listener
+    participant Main as Main App
+
+    User-&gt;&gt;Tray: [단축키 설정] 클릭
+    Tray-&gt;&gt;Main: change_hotkey() 호출
+    Main-&gt;&gt;Sub: subprocess.run([exe, "--dialog", ...])
+    Sub-&gt;&gt;Tk: 윈도우 생성 및 키 리스너 활성화
+    User-&gt;&gt;Tk: 모든 키에서 손을 뗌
+    Tk-&gt;&gt;Sub: 임시 파일에 단축키 문자열 기록 후 종료
+    Main-&gt;&gt;Main: config.json 저장 및 HotkeyManager 재등록</pre></div>
 
   <h3 id="python-memory-limits">파이썬 런타임 메모리의 한계와 부작용</h3>
   <p>하지만 리소스 측면에서는 파이썬 런타임의 한계가 명확했습니다. 단순 백그라운드 트레이 유틸리티임에도 <strong>상주 메모리가 23MB</strong>에 달했고, PyInstaller 패키징 결과물 크기도 32MB가 넘었습니다.</p>
@@ -153,13 +175,30 @@
 
   <p>AI를 활용한 언어 마이그레이션은 놀라울 정도로 빠르고 매끄럽게 진행되었습니다. 이미 확립된 상태 머신과 COM 제어 로직이 존재했기 때문에, C++ 표준 라이브러리와 순수 Win32 API로 구조를 옮겨 담는 작업이 즉각 완료되었습니다.</p>
 
-  <div class="pre custom" data-text="Text"><button aria-label="Copy code">Copy</button><pre>[WindowSpeakerChanger_Cpp.exe (439 KB)]
-  ├── main.cpp              (Win32 Message Pump &amp; WndProc)
-  ├── tray_app.cpp          (Shell_NotifyIconW &amp; Popup Menu)
-  ├── hotkey_manager.cpp    (RegisterHotKey &amp; Modal Dialog)
-  ├── audio_manager.cpp     (IMMDevice &amp; IPolicyConfig COM)
-  ├── config_manager.cpp    (nlohmann/json.hpp 경량 파싱)
-  └── autostart.cpp         (RegSetValueExW 시작프로그램)</pre></div>
+  <div class="pre custom" data-text="Mermaid"><button aria-label="Copy code">Copy</button><pre class="mermaid">graph TD
+    subgraph Win32 Native Application [WindowSpeakerChanger_Cpp.exe - 439 KB]
+        MainProc["main.cpp&lt;br/&gt;(Win32 Message Pump &amp; WndProc)"]
+        TrayUI["tray_app.cpp&lt;br/&gt;(Shell_NotifyIconW &amp; TrackPopupMenuEx)"]
+        HotkeyProc["hotkey_manager.cpp&lt;br/&gt;(RegisterHotKey &amp; Modal Dialog)"]
+        AudioCore["audio_manager.cpp&lt;br/&gt;(IMMDevice &amp; IPolicyConfig COM)"]
+        ConfigCore["config_manager.cpp&lt;br/&gt;(nlohmann/json.hpp)"]
+        AutoCore["autostart.cpp&lt;br/&gt;(RegSetValueExW)"]
+    end
+    subgraph Windows 11 OS Subsystem [RAM 1.5 MB]
+        Taskbar["Windows Taskbar System Tray"]
+        Registry["HKCU Run Registry"]
+        CoreAudioAPI["Windows Core Audio Endpoint Engine"]
+        KeyboardSubsys["Win32 Raw Input &amp; Hotkey Manager"]
+    end
+    MainProc --&gt; TrayUI
+    MainProc --&gt; HotkeyProc
+    MainProc --&gt; AudioCore
+    MainProc --&gt; ConfigCore
+    MainProc --&gt; AutoCore
+    TrayUI &lt;--&gt; Taskbar
+    AutoCore &lt;--&gt; Registry
+    AudioCore &lt;--&gt; CoreAudioAPI
+    HotkeyProc &lt;--&gt; KeyboardSubsys</pre></div>
 
   <h3 id="benchmark-results">파이썬 vs C++ 성능 측정 결과</h3>
   <p>C++ 네이티브 빌드로 전환한 결과, 백그라운드 유틸리티에 걸맞은 극적인 성능 개선을 달성할 수 있었습니다.</p>
@@ -180,16 +219,24 @@
   <h3 id="wh-keyboard-ll-isolation">WH_KEYBOARD_LL을 통한 이벤트 격리</h3>
   <p>기존 <code>RegisterHotKey</code> 방식은 단축키 설정 창이 떠 있는 동안 사용자가 입력하는 조합키를 OS가 먼저 낚아채는 문제가 있었습니다. 이를 차단하기 위해 <strong>저수준 키보드 훅(<code>WH_KEYBOARD_LL</code>)</strong>을 설정 창 라이프사이클에만 임시로 부착하는 설계를 적용했습니다.</p>
 
-  <div class="pre custom" data-text="Text"><button aria-label="Copy code">Copy</button><pre>[사용자: 단축키 설정 창 오픈] ──&gt; SetWindowsHookExW(WH_KEYBOARD_LL) 설치
-                                               │
-┌──────────────────────────────────────────────┴──────────────────────────────┐
-│ [키 입력 가로채기 및 OS 전파 완전 차단 구간]                                    │
-│   사용자가 복합키(예: Win + S) 입력 ──&gt; Hook 프로시저에서 감지                 │
-│                                     ──&gt; return 1 반환 (Windows 검색창 실행 차단!)│
-└──────────────────────────────────────────────┬──────────────────────────────┘
-                                               │
-[사용자: 모든 키에서 손을 뗌] ──&gt; PostMessage(WM_CLOSE) ──&gt; UnhookWindowsHookEx() 해제
-                             ──&gt; 새 단축키 등록 완료</pre></div>
+  <div class="pre custom" data-text="Mermaid"><button aria-label="Copy code">Copy</button><pre class="mermaid">sequenceDiagram
+    autonumber
+    actor User as 사용자
+    participant Dlg as 단축키 설정 창 (Win32 Dialog)
+    participant Hook as LowLevelKeyboardProc (WH_KEYBOARD_LL)
+    participant OS as Windows OS / 타 응용프로그램
+    participant Main as Main / HotkeyManager
+
+    User-&gt;&gt;Dlg: 단축키 설정 대화상자 오픈
+    Dlg-&gt;&gt;Hook: SetWindowsHookExW(WH_KEYBOARD_LL) 설치
+    rect rgb(240, 248, 255)
+        note over User, OS: 키 입력 가로채기 및 시스템 전파 완전 차단 구간
+        User-&gt;&gt;Hook: 복합키 입력 (예: Win + S / Ctrl + Alt + S)
+        Hook--&gt;&gt;OS: return 1 (OS 전파 차단! Windows 검색창 실행 방지)
+    end
+    User-&gt;&gt;Hook: 모든 키에서 손을 뗌 (All Keys Released)
+    Hook-&gt;&gt;Dlg: PostMessage(WM_CLOSE) (입력 확정)
+    Dlg-&gt;&gt;Main: 새 핫키 등록</pre></div>
 
   <div class="note">
     <strong>💡 최종 실환경 검증 결과:</strong> 저수준 키보드 훅을 사용함에도 Windows Defender 등 주요 안티바이러스 프로그램에서 오탐지(False Positive)가 전혀 발생하지 않았으며, 전체 화면 3D 게임 구동 중에도 입력 지연이나 단축키 충돌 없이 백그라운드에서 매끄럽게 동작함을 확인하였습니다.
