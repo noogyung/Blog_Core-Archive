@@ -1,0 +1,64 @@
+﻿<!-- ============================================================
+  [BLOG POST METADATA - Blogspot 설정창 복사용]
+  Title: 윈도우 스피커 전환 앱 개발기: Python 프로토타입부터 C++ 1.5MB 극초경량화까지
+  Labels (Tags): PersonalDev, C++, Python, 트러블슈팅, 최적화
+  Meta Description: 윈도우 10에서 스피커 전환을 단축키로 제어하는 앱 개발기입니다. 파이썬 프로토타입에서 출발해 C++ Win32 API로 1.5MB까지 극초경량화하고 저수준 훅으로 시스템 간섭을 차단한 과정을 소개합니다.
+  Slug: windows-speaker-changer
+  ---
+  Primary Keyword: 윈도우 스피커 전환 단축키
+  Secondary Keywords: C++ 트레이 앱 최적화, 저수준 키보드 훅, 파이썬 C++ 마이그레이션
+  Knowledge Source: windows-speaker-changer-20260901.md
+  Generated Date: 2026-09-01
+  Estimated Read Time: 6분
+  Series ID: null
+  ============================================================ -->
+
+<article>
+  <!-- [IMAGE SLOT 1 - REQUIRED] ALT: 윈도우 10 오디오 스위처 개발 아키텍처 다이어그램 -->
+  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-09/windows-speaker-changer-img1.jpg?v=20260901_1215" alt="윈도우 10 오디오 스위처 개발 아키텍처 다이어그램">
+  
+  <p>윈도우 10 환경에서는 기본적으로 단축키를 이용해 스피커나 헤드셋 등 오디오 출력 장치를 즉각적으로 전환하는 기능을 지원하지 않습니다. 이를 해결하기 위해 여러 서드파티 앱들을 시도해 보았으나, 백그라운드 상주 시 오작동하거나 딜레이가 발생하는 등 제대로 동작하지 않는 경우가 많았습니다. 이에 인터넷 검색으로 계속 헤매는 것보다 AI의 도움을 받아 직접 맞춤형 앱을 제작하는 것이 훨씬 효율적일 것이라 판단하여 개발을 시작하게 되었습니다.</p>
+  
+  <p>이번 글에서는 초기에 Python을 활용하여 빠르게 프로토타입을 검증한 뒤, 20MB 이상의 메모리 점유 및 실행 속도 제약을 극복하기 위해 최종적으로 <strong>C++ Win32 Native API</strong> 기반으로 포팅하여 1.5MB의 극초경량화를 달성한 전체 개발 과정을 상세히 살펴보고자 합니다.</p>
+
+  <h2 id="python-prototype">1. 파이썬 기반 초기 기획 및 프로토타입 구현</h2>
+  <p>최초 기획 단계에서는 신속한 개발과 로직 검증을 위해 Python을 채택했습니다. <code>pystray</code> 모듈로 시스템 트레이를 구현하고, <code>comtypes</code> 모듈을 통해 문서화되지 않은 윈도우 내부 COM 인터페이스(<code>IPolicyConfig</code>)를 호출하여 기본 장치를 전환하는 방식이었습니다.</p>
+
+  <h3 id="keyboard-hook-issue">글로벌 훅 마비와 pynput 도입</h3>
+  <p>초기 버전에서는 <code>keyboard</code> 라이브러리를 사용하여 사용자의 지정 단축키(예: <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>Win</kbd>+<kbd>S</kbd>)를 감지하도록 구성했습니다. 그러나 <code>keyboard</code> 모듈이 윈도우 저수준 키보드 훅을 가로채는 방식이 불안정하여, 한 번 누른 뒤 시스템 전체의 키보드 입력이 먹통이 되는 치명적인 결함이 발생했습니다.</p>
+  <p>이를 해결하기 위해 더 안정적인 <code>pynput</code> 모듈로 단축키 엔진을 전면 교체하였고, 키를 누르는 과정에서 발생하는 <strong>가상 키코드(83) 오류</strong> 등을 상태 머신 도입을 통해 정밀하게 캡처하도록 고도화하여 파이썬 기반 앱으로서의 결함을 대부분 수정할 수 있었습니다.</p>
+
+  <h2 id="optimization-limits">2. 메모리 점유율과 억지 최적화의 한계</h2>
+  <p>파이썬 런타임 특성상 앱이 백그라운드에 상주하는 동안 <strong>약 20~23MB의 메모리</strong>를 지속적으로 점유했으며, PyInstaller로 빌드된 실행 파일의 크기 역시 약 32MB에 달했습니다.</p>
+  <p>이를 최적화하기 위해 Windows API의 <code>SetProcessWorkingSetSize</code>를 호출해 메모리를 OS에 강제로 반환하는 워킹셋 트리밍을 시도했습니다. 하지만 이러한 억지 최적화는 <code>pystray</code>의 Win32 메시지 펌프 루프를 블로킹하여 시스템 트레이 아이콘을 마비시키는 부작용을 낳았습니다.</p>
+  
+  <div class="note wr">
+    <strong>⚠️ 주의:</strong> Python 프로세스 내에서 가비지 컬렉션을 우회하거나 억지로 메모리 페이지를 디스크로 스왑 아웃(Swap-out)시키는 행위는 실시간 이벤트 루프를 처리하는 UI 스레드에 치명적인 블로킹을 유발할 수 있습니다.
+  </div>
+
+  <h2 id="cpp-migration">3. C++ Win32 Native API로의 전면 포팅</h2>
+  <p>파이썬의 태생적 한계를 극복하기 위해, 검증이 끝난 로직을 바탕으로 <strong>C++ Win32 Native API</strong> 환경으로 앱을 전면 재작성하기로 결정했습니다. 설계가 완료된 작은 사이드 프로젝트를 타 언어로 마이그레이션하는 과정은 AI를 활용함으로써 아주 손쉽게 진행할 수 있었습니다.</p>
+
+  <ul class="pros">
+    <li><strong>상주 메모리:</strong> 23MB → 1.5MB (약 93% 절감)</li>
+    <li><strong>실행 파일 크기:</strong> 32MB → 439KB (약 1/73 축소)</li>
+    <li><strong>콜드 부팅 속도:</strong> 1.5초 → 0초 (딜레이 제로)</li>
+  </ul>
+
+  <p>모든 외부 의존성을 제거하고 <code>Shell_NotifyIconW</code> 및 <code>IPolicyConfig</code>를 직접 호출함으로써 성능적 한계를 완벽히 해결했습니다.</p>
+
+  <h2 id="low-level-hook">4. 저수준 키보드 훅(WH_KEYBOARD_LL)을 통한 간섭 차단</h2>
+  <p>C++ 전환 후, 단축키 설정 팝업창에서 사용자가 새로운 핫키를 등록하기 위해 키보드를 캡처할 때, 기존 OS에 등록된 단축키(예: 윈도우 검색창을 띄우는 <kbd>Win</kbd>+<kbd>S</kbd>)가 그대로 시스템에 전파되어 실행되는 간섭 현상이 발생했습니다.</p>
+  <p>이를 해결하기 위해 설정 창 활성화 상태에서 <code>WH_KEYBOARD_LL</code> 저수준 훅을 일시적으로 설치하여 해결했습니다.</p>
+  
+  <ol class="step">
+    <li><strong>훅 설치:</strong> <code>SetWindowsHookExW(WH_KEYBOARD_LL)</code>를 통해 모든 키 이벤트를 낚아챕니다.</li>
+    <li><strong>OS 전파 차단:</strong> 키 입력 감지 시 <code>return 1</code>을 반환하여 OS나 타 응용프로그램으로 이벤트가 전달되는 것을 완전히 차단합니다.</li>
+    <li><strong>입력 확정 및 훅 해제:</strong> 모든 수식어 키와 일반 키에서 손을 떼었을 때(WM_CLOSE) 핫키를 확정하고 <code>UnhookWindowsHookEx</code>를 호출해 안전하게 훅을 반환합니다.</li>
+  </ol>
+
+  <h2 id="conclusion">마무리하며</h2>
+  <p>지금까지 파이썬 프로토타이핑을 거쳐 C++ Win32 API로 최적화된 오디오 전환 앱을 완성하는 과정을 살펴보았습니다. AI를 활용하여 프로토타입에서 발견된 논리적 결함을 빠르게 찾아내고, 완성된 구조를 C++로 손쉽게 마이그레이션하는 하이브리드 접근법은 개인 개발 생산성을 극대화하는 훌륭한 방법론이었습니다.</p>
+  <p>여러분도 일상적인 윈도우 사용 중 불편함을 느껴 단축키나 백그라운드 자동화 스크립트를 작성해 보신 적이 있으신가요? 혹시 비슷한 C++ Win32 최적화 과정에서 겪으셨던 흥미로운 트러블슈팅 경험이나 팁이 있다면 댓글로 의견을 나누어 주시면 감사하겠습니다.</p>
+
+</article>
