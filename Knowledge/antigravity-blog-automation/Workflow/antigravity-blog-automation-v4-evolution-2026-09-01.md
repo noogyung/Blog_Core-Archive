@@ -4,7 +4,7 @@ title_kr: "[블로그 포스팅 자동화 구축기 #4] 이전 버전 비교와 
 category: Workflow
 sub_category: System-Evolution-Comparison
 version: 2026-09-01
-status: Experimental
+status: Verified
 created_date: 2026-09-01
 last_modified: 2026-09-01
 language: KR
@@ -26,7 +26,7 @@ series_id: antigravity-blog-automation
 * **Category:** Workflow
 * **Sub-Category:** System-Evolution-Comparison
 * **Version:** 2026-09-01
-* **Status:** Experimental
+* **Status:** Verified
 * **Date:** 2026-09-01
 * **Language:** KR
 
@@ -42,7 +42,7 @@ series_id: antigravity-blog-automation
 * [★★★★★] 시리즈 네비게이션 가이드 및 카탈로그: `Instructions/series_navigation_plan.md`, `Knowledge/_series.yaml`, `Knowledge/_series.json`
 * [★★★★★] Median UI 테마 XML 및 동적 스크립트: `Instructions/Personas/Core-Archive_Theme_Median-UI-v1.7.0-Custom.xml` (Mermaid.js 및 Lightbox 줌 모달 패치 커밋)
 * [★★★★★] 최근 실전 포스팅 구축 및 검증 이력: `windows-speaker-changer` (2026-09-01), `unity6-urp-rendergraph` (2026-08-31)
-* [★★★★★] 사용자 실전 검증: Mermaid 다이어그램 580px 표준화, 극장형 Lightbox 모달, 양방향 피드백 동기화, 슬래시 커맨드 운용 경험
+* [★★★★★] 사용자 실전 검증: Mermaid 다이어그램 580px 표준화, 극장형 Lightbox 모달 모바일(360px~412px) 실기기 렌더링 검증 완료, 양방향 피드백 동기화 운용
 
 ---
 
@@ -54,12 +54,19 @@ series_id: antigravity-blog-automation
   * **3세대 (v3, 2026-08-18):** Control Plane(`BlogDocs`)과 Data Plane(`Blog_Core-Archive`) 분산 아키텍처 확립. Antigravity 2.0 Native Skills(5대)와 슬래시 커맨드(`/1_주제` ~ `/5_블로그추가`)로 전면 개편하여 오발동 원천 차단. 상시 Rules 경량화 vs Skills 온디맨드 스펙 분리. Blogger Feed 기반 동적 탭 네비게이션 도입.
   * **현재 상태 (v3.1+, 2026-09-01):** Mermaid.js 동적 다이어그램 렌더링 엔진 통합 및 580px 표준화, 92vw×88vh 극장형 고해상도 Lightbox 줌 모달 지원, `_series.yaml`/`_series.json` SSOT 카탈로그 정착, `/2_피드백` 지식-HTML 양방향 동기화, 이미지 버전 관리(`_v1`, `_v2`) 및 `ImagePaths` 톤앤매너 계승, 캐시 버스팅 정밀화. [FACT]
 
+* **[v3 로드맵 예정 항목 실천 현황 비교 분석]:**
+  1. **테마 XML 레거시/하드코딩 요소 정리:** Mermaid.js 통합 시 CDATA 래핑, XML 엔티티 파서 호환, viewBox 스케일링 패치 완료. 레거시 위젯 코드는 사이드바 커스텀과 병행하여 지속 정비 중.
+  2. **`/5_블로그추가` 2호 블로그 엔드투엔드 실전 검증:** 제2호 블로그 개설 계획이 아직 확정되지 않아 실전 테스트를 보류하고 향후 개설 시점으로 연기. [USER VERIFIED]
+  3. **가이드라인(Rules/Skills) 지속 고도화:** `always-link-files`, `always-use-primitive-output`, `blog-harness-rules` 3대 초경량 가드레일 정착. 이미지 버전 히스토리(`_v1`, `_v2`), `ImagePaths` 톤 계승, `?v=` 캐시버스팅 명문화 완료. [FACT]
+  4. **구글 Blogger 기본 댓글 한계 극복 및 독립형 댓글 재검토:** 현재 기본 Blogger 댓글 유지 중이며 추후 독립 댓글 재도입 과제로 보류 유지. [FACT]
+  5. **본문 보조 이미지 및 다이어그램 추천 파이프라인:** Mermaid.js 동적 렌더링 엔진 내재화를 통해 복잡한 아키텍처/흐름도를 텍스트 코드로 즉시 생성·시각화하는 방식으로 보조 이미지 수요를 대폭 대체 및 고도화 완료. [FACT]
+
 * **[Mermaid.js 동적 다이어그램 & 극장 스케일 Lightbox 줌 모달 통합]:**
   * **기존 한계:** 복잡한 시스템 구조나 아키텍처를 설명할 때 외부 그래픽 툴로 이미지를 일일이 생성하거나 AI 썸네일에 의존해야 했고, 본문 내 텍스트/도식의 가독성과 수정 편의성이 떨어졌음.
   * **현재 구축된 아키텍처:**
     1. **Mermaid.js 동적 렌더링:** HTML 본문에 표준 Markdown/HTML `<pre class="mermaid">` 블록을 작성하면 브라우저 클라이언트가 즉시 SVG 벡터로 렌더링.
     2. **전역 580px 표준화 및 폰트 스케일:** SVG 다이어그램이 컨테이너 너비에 맞춰 억지로 늘어나 폰트가 깨지는 현상을 방지하기 위해 580px 자연 너비와 6px/13px 폰트 스케일, viewBox 보정, CDATA 래핑 적용.
-    3. **극장형 Lightbox 모달 (92vw × 88vh):** 복잡한 다이어그램 클릭 시 화면의 92vw × 88vh 크기 뷰어로 1:1 고해상도 벡터 확대되어 모바일 및 데스크톱 모두에서 뛰어난 가독성 제공. [FACT]
+    3. **극장형 Lightbox 모달 (92vw × 88vh):** 복잡한 다이어그램 클릭 시 화면의 92vw × 88vh 크기 뷰어로 1:1 고해상도 벡터 확대되어 데스크톱 및 모바일(360px~412px 뷰포트) 실기기 모두에서 정상 작동 확인. [FACT/USER VERIFIED]
 
 * **[단일 진실 공급원(SSOT) 기반 동적 시리즈 네비게이션 체계]:**
   * **v2까지의 결함:** 개별 HTML 본문에 이전/다음 글 링크를 수동 삽입하여 연재 도중 순서 변경이나 미래 글 작성 시 전체 글을 수동 수정해야 했음.
@@ -98,7 +105,7 @@ series_id: antigravity-blog-automation
 * **[Mermaid 다이어그램 크기 축소 및 폰트 왜곡 문제 (2026-08 말 해결)]**
   * **증상:** Median UI 테마에서 Mermaid 다이어그램이 컨테이너 가로폭(800px)에 맞춰 억지로 늘어나면서 폰트 크기가 불균일해지거나 텍스트가 잘리는 현상 발생.
   * **원인:** SVG viewBox와 CSS width/max-width 간의 비율 불일치 및 전역 스타일 상속 간섭.
-  * **해결법:** Mermaid 다이어그램 너비를 580px 자연 너비로 표준화하고, 기본 폰트 크기를 clamp(6px/13px)로 정규화하며, 클릭 시 92vw×88vh 극장형 고해상도 Lightbox 모달에서 원본 벡터로 확대되도록 테마 스크립트 패치 완료. [FACT/USER VERIFIED]
+  * **해결법:** Mermaid 다이어그램 너비를 580px 자연 너비로 표준화하고, 기본 폰트 크기를 clamp(6px/13px)로 정규화하며, 클릭 시 92vw×88vh 극장형 고해상도 Lightbox 모달에서 원본 벡터로 확대되도록 테마 스크립트 패치 완료. 모바일 뷰포트(360px~412px) 실기기에서도 정상 렌더링 검증 완료. [FACT/USER VERIFIED]
 
 * **[Blogger XML 엔티티 파싱 오류 및 Mermaid CDATA 충돌 (2026-08 말 해결)]**
   * **증상:** Blogger 테마 XML 에디터에서 Mermaid 스크립트 및 스타일 내부의 특수문자(`<`, `>`, `&`)로 인해 템플릿 저장 시 파싱 에러 발생.
@@ -120,10 +127,10 @@ series_id: antigravity-blog-automation
 
 ---
 
-#### ❓ Missing Info (검증 필요 항목)
+#### ❓ Missing Info (검증 완료 및 보류 항목)
 
-* [ ] 신규 Mermaid 다이어그램 렌더링 규격(580px 표준 너비 및 Lightbox 모달)이 모바일 뷰포트(360px~412px)에서 정상 작동하는지 실기기 렌더링 테스트 확인.
-* [ ] 향후 2호 블로그 개설 시 `/5_블로그추가`의 원클릭 엔드투엔드 파이프라인 실전 검증.
+* [x] **Mermaid 다이어그램 모바일 뷰포트(360px~412px) 실기기 렌더링 검증** — Verified 2026-09-01 (580px 표준 너비 및 92vw×88vh Lightbox 모달의 모바일 실기기 정상 렌더링 확인 완료)
+* [ ] **제2호 블로그 개설 시 `/5_블로그추가` 스킬 엔드투엔드 검증** — 보류 (2호 블로그 개설 시점까지 연기)
 
 ---
 
@@ -132,3 +139,14 @@ series_id: antigravity-blog-automation
 Antigravity, 블로그-자동화, 시스템-진화, Mermaid, SSOT, 동적-네비게이션, 양방향-동기화, 분산-아키텍처, 가드레일, Blogger, Median-UI, Lightbox-모달
 
 ===== KNOWLEDGE PACKAGE END =====
+
+---
+## 📝 Feedback History
+
+### 2026-09-01 — Test Result: PASS
+* **환경:** Windows 11, Antigravity IDE v2.0 (Gemini 3.7 Flash), 모바일 실기기 (360px~412px 뷰포트)
+* **검증된 단계:**
+  1. Mermaid 다이어그램 렌더링 규격(580px 표준 너비 및 극장형 Lightbox 모달)의 모바일 실기기(360px~412px) 렌더링 정상 동작 확인.
+  2. v3 로드맵 예정 항목(5개 항목)의 실천 현황 비교 분석 정리 반영.
+* **보류된 항목:** 제2호 블로그 개설 및 `/5_블로그추가` 실전 엔드투엔드 검증 (향후 2호 블로그 개설 시점으로 연기).
+* **Status 변경:** Experimental → Verified
