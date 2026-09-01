@@ -9,6 +9,7 @@ series:
       - antigravity-blog-automation-workflow
       - antigravity-blog-automation-workflow-v2
       - antigravity-blog-automation-workflow-v3
+      - antigravity-blog-automation-v4
 
   webtranslator:
     series_name: "WebTranslator 개발기"
