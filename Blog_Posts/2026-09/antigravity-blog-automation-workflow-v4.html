@@ -9,7 +9,7 @@
   Secondary Keywords: Antigravity, Blogger 댓글, Vercel Neon PostgreSQL, Cloudflare Turnstile, Mermaid 다이어그램
   Knowledge Source: Knowledge/antigravity-blog-automation/Workflow/antigravity-blog-automation-workflow-v4-evolution-2026-09-03.md
   Generated Date: 2026-09-03
-  Estimated Read Time: 12분
+  Estimated Read Time: 15분
   Series ID: antigravity-blog-automation
   ============================================================ -->
 
@@ -17,11 +17,13 @@
   <!-- [IMAGE SLOT 1 - REQUIRED] ALT: [블로그 포스팅 자동화 구축기 #4] 아키텍처 진화와 Waline 댓글 시스템 연동 대표 이미지 -->
   <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-09/antigravity-blog-automation-workflow-v4-img1.jpg?v=20260903_1800" alt="[블로그 포스팅 자동화 구축기 #4] 아키텍처 진화와 Waline 댓글 시스템 연동 대표 이미지">
 
-  <p>블로그 자동화 파이프라인을 구축하면서 가장 먼저 마주했던 숙제는 단순히 AI로 초안을 빠르게 찍어내는 것이 아니었습니다. 앞선 1편에서 구글 NotebookLM의 맥락 손실 한계를 겪고 Antigravity 단독 루프로 전환했으며, 2편에서는 프롬프트 지시서와 CDN 캐시 퍼지를 정비했고, 3편에서는 제어 영역(BlogDocs)과 데이터 저장소(Blog_Core-Archive)를 물리적으로 분리하는 분산 아키텍처를 세웠습니다.</p>
+  <p>블로그 자동화 파이프라인을 구축하면서 마주했던 숙제는 단순히 AI로 초안을 빠르게 찍어내는 것이 아니었습니다. 앞선 1편에서 구글 NotebookLM의 맥락 손실 한계를 겪고 Antigravity 단독 루프로 전환했으며, 2편에서는 프롬프트 지시서와 CDN 캐시 퍼지를 정비했고, 3편에서는 제어 영역(BlogDocs)과 데이터 저장소(Blog_Core-Archive)를 물리적으로 분리하는 분산 아키텍처를 세웠습니다.</p>
 
-  <p>하지만 시스템을 갖추고 실제로 글을 연재하기 시작하자, 운영 관점에서 완전히 새로운 갈증들이 수면 위로 올라왔습니다. 복잡한 시스템 구조를 설명할 때 외부 그래픽 툴 없이 깔끔한 벡터 다이어그램을 본문에 그릴 방법이 필요했고, 수십 편에 달하는 연재물을 관리하면서 본문 링크가 깨지지 않는 동적 시리즈 내비게이션이 절실했습니다. 무엇보다 구글 블로그스팟의 기본 댓글 시스템이 지닌 높은 진입 장벽(구글 로그인 강제, 게스트 작성 불가)은 방문자와의 소통을 가로막는 치명적인 병목이었습니다.</p>
+  <p>하지만 시스템을 갖추고 실제로 글을 연재하기 시작하자, 운영 관점에서 완전히 새로운 갈증들이 수면 위로 올라왔습니다. 복잡한 시스템 구조를 설명할 때 외부 그래픽 툴 없이 깔끔한 벡터 다이어그램을 본문에 그릴 방법이 필요했고, 수십 편에 달하는 연재물을 관리하면서 본문 링크가 깨지지 않는 동적 시리즈 내비게이션이 절실했습니다.</p>
 
-  <p>이번 글에서는 이러한 한계들을 극복하기 위해 테마 차원에서 직접 통합한 <strong>Mermaid.js 벡터 다이어그램 엔진</strong>, <strong>중앙 집중식 카탈로그 기반 동적 시리즈 내비게이션</strong>, 그리고 <strong>Vercel·Neon PostgreSQL·Cloudflare Turnstile 기반의 Waline 서버리스 댓글 시스템 구축 및 Median UI 완전 일체화 과정</strong>을 실전 트러블슈팅 경험을 바탕으로 가감 없이 정리해보고자 합니다.</p>
+  <p>무엇보다 구글 블로그스팟의 기본 댓글 시스템이 지닌 한계가 컸습니다. 기본 댓글도 익명 작성이 가능하기는 하지만, 무인 봇이나 악성 스팸을 걸러내는 검출 기능이 전무하고, 테마와 겉도는 낙후된 디자인에다 익명 작성자가 답글 알림을 받을 본인의 이메일이나 웹사이트 정보를 남길 수 없다는 문제가 있었습니다.</p>
+
+  <p>이번 글에서는 이러한 한계들을 극복하기 위해 테마 차원에서 직접 통합한 <strong>Mermaid.js 벡터 다이어그램 엔진</strong>, <strong>중앙 집중식 카탈로그 기반 동적 시리즈 내비게이션</strong>, 그리고 <strong>Vercel·Neon PostgreSQL·Cloudflare Turnstile 기반의 Waline 서버리스 댓글 시스템 구축 및 Median UI 완전 일체화 과정</strong>을 실제 DDL 쿼리와 설정 코드까지 포함하여 상세히 정리해보고자 합니다.</p>
 
   <h2 id="pipeline-evolution">1. 세대별 파이프라인 진화와 현재의 워크플로우</h2>
 
@@ -69,7 +71,7 @@
         </tr>
         <tr>
           <td><strong>댓글 시스템</strong></td>
-          <td>Blogger 기본 댓글 (구글 로그인)</td>
+          <td>Blogger 기본 댓글 (스팸 무방비)</td>
           <td>Blogger 기본 댓글 유지</td>
           <td>Blogger 기본 댓글 유지</td>
           <td><strong>Waline 독립 서버리스 + 봇 방어</strong></td>
@@ -115,6 +117,10 @@
     <li><strong>폰트 상속 및 정규화:</strong> 노드 내부 <code>foreignObject div</code>와 <code>text</code> 요소가 본문 테마 폰트를 상속받고 13px 크기로 일관되게 중앙 정렬되도록 CSS를 격리했습니다.</li>
     <li><strong>극장형 Lightbox 모달 연동:</strong> 다이어그램을 클릭하면 화면의 92vw × 88vh 크기를 차지하는 대형 모달 창이 열리며, 원본 해상도의 선명한 벡터 그래픽으로 확대되어 모바일 실기기(360px~412px 뷰포트)에서도 가로 스크롤이나 터치 줌으로 쾌적하게 확인할 수 있도록 구현했습니다.</li>
   </ol>
+
+  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-09/antigravity-blog-automation-workflow-v4-scr28-mermaid-complete-desktop.png?v=20260903_1800" alt="1:1 자연 배율 및 테마 다크모드에 맞춰 본문에 깔끔하게 렌더링된 Mermaid 다이어그램 완성 화면">
+
+  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-09/antigravity-blog-automation-workflow-v4-scr29-mermaid-complete-lightbox.png?v=20260903_1800" alt="다이어그램 클릭 시 92vw×88vh 극장형 모달 뷰어에서 고해상도 벡터로 시원하게 확대되는 완성 화면">
 
   <p>실제 블로그 본문에서 렌더링되는 아키텍처 흐름도를 Mermaid 코드로 표현하면 다음과 같습니다.</p>
 
@@ -162,21 +168,25 @@ _series.yaml")]
 
   <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-09/antigravity-blog-automation-workflow-v4-scr25-series-nav-tab-layout.png?v=20260903_1800" alt="본문 하단에 시리즈 목록 탭과 관심글 탭이 동적으로 분리된 최종 레이아웃">
 
+  <p>특히 20편이 넘어가는 장기 연재물(WebTranslator 개발기 등)의 경우, 방대한 목차가 본문을 너무 길게 차지하지 않도록 챕터별 접이식 아코디언 목차를 완벽하게 구현했습니다.</p>
+
+  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-09/antigravity-blog-automation-workflow-v4-scr30-series-complete-chapter-accordion.png?v=20260903_1800" alt="대형 연재물에서 챕터별로 깔끔하게 계층화되어 펼쳐진 시리즈 전체 목록 아코디언 완성 화면">
+
   <ul class="pros">
     <li><strong>이전/다음 글 자동 계산:</strong> 카탈로그에 명시된 토픽 배열 순서를 읽어 현재 글의 앞뒤 편을 정확하게 찾아 카드로 렌더링합니다. (순서가 바뀌거나 새 글이 추가되어도 카탈로그 파일만 수정하면 모든 글의 이전/다음 링크가 즉시 갱신됩니다.)</li>
     <li><strong>탭 기반 UI 분리:</strong> '📌 시리즈 목록' 탭에는 정규 순서 카드와 전체 목차를 배치하고, '✨ 관심이 있을 만한 글' 탭에는 현재 시리즈 글을 제외한 블로그의 추천 글을 분리 노출합니다.</li>
-    <li><strong>장기 연재물 챕터 아코디언:</strong> 20편이 넘어가는 대형 연재물(WebTranslator 등)의 경우, 챕터별로 묶인 접이식 아코디언 목차를 제공하여 독자가 원하는 단계로 쉽게 이동할 수 있도록 구성했습니다.</li>
+    <li><strong>장기 연재물 챕터 아코디언:</strong> 챕터별로 묶인 접이식 아코디언 목차를 제공하여 독자가 원하는 단계로 쉽게 이동할 수 있도록 구성했습니다.</li>
   </ul>
 
   <h2 id="waline-infrastructure">4. 구글 블로그의 한계 돌파: Waline 서버리스 댓글 시스템 구축</h2>
 
-  <p>구글 블로그스팟의 기본 댓글 시스템은 방문자에게 구글 로그인을 강제합니다. 가볍게 질문을 남기거나 의견을 나누고 싶은 게스트 방문자에게는 큰 진입 장벽이었습니다. 그렇다고 광고와 추적 스크립트로 도배된 Disqus 같은 외부 위젯을 달고 싶지는 않았습니다.</p>
+  <p>구글 블로그스팟의 기본 댓글 시스템도 익명 작성을 허용할 수는 있습니다. 하지만 스팸 봇을 걸러내는 방어 체계가 전무하여 광고 댓글에 무방비로 노출되고, 테마와 어울리지 않는 낙후된 룩앤필에다 익명 작성자가 답글 알림을 받을 본인의 이메일이나 웹사이트 정보를 남길 수 없다는 결정적인 한계가 있었습니다.</p>
 
   <p>그 대안으로 선택한 것이 오픈소스 서버리스 댓글 솔루션인 <strong>Waline v3</strong>였습니다. 백엔드는 Vercel Serverless Function, 데이터베이스는 Neon PostgreSQL, 스팸 및 무인 봇 방어는 Cloudflare Turnstile을 결합하여 비용 발생 없이 안전하게 독립형 댓글 인프라를 구축했습니다.</p>
 
   <h3 id="waline-setup-steps">인프라 구축 및 권한 확보 7단계</h3>
 
-  <p>실제 인프라를 올리는 과정에서 공식 문서만으로는 알기 어려웠던 여러 실전 복병들이 있었습니다.</p>
+  <p>실제 인프라를 올리는 과정에서 공식 문서만으로는 알기 어려웠던 실전 복병들과 핵심 설정 내역입니다.</p>
 
   <ol class="step">
     <li>
@@ -186,7 +196,7 @@ _series.yaml")]
     </li>
     <li>
       <strong>Vercel 원클릭 배포와 모노레포 함정:</strong><br>
-      Waline의 전체 GitHub 모노레포를 그대로 포크하여 Vercel에 연결하면 빌드 산출물 경로(<code>dist</code>)를 찾지 못해 빌드가 실패합니다. 반드시 서버 배포 전용으로 경량화된 공식 example 템플릿 레포지토리를 사용하여 Vercel 프로젝트를 생성해야 합니다.
+      Waline의 전체 GitHub 모노레포를 그대로 포크하여 Vercel에 연결하면 빌드 산출물 경로(<code>dist</code>)를 찾지 못해 빌드가 실패합니다. 반드시 서버 배포 전용으로 경량화된 공식 example 템플릿 레포지토리(<code>walinejs/waline/example</code>)를 사용하여 Vercel 프로젝트를 생성해야 합니다.
     </li>
     <li>
       <strong>Neon PostgreSQL 연동과 가상 섀도우 계정 격리 탈출:</strong><br>
@@ -195,12 +205,100 @@ _series.yaml")]
       이 문제는 <a href="https://neon.tech/" target="_blank" rel="noopener noreferrer">neon.tech</a> 공식 홈페이지로 이동하여 GitHub 소셜 로그인을 직접 수행함으로써 해결되었습니다. 실제 스토리지 대시보드가 정상적으로 표시되며 데이터베이스 제어권을 온전히 확보할 수 있었습니다.
     </li>
     <li>
-      <strong>Neon SQL Editor에서 테이블 수동 초기화:</strong><br>
-      Waline 최신 버전은 PostgreSQL 접속 시 테이블을 자동으로 생성해주지 않습니다. 곧바로 관리자 화면에 접속하면 <code>relation "wl_users" does not exist</code> 500 에러가 발생합니다. Neon의 SQL Editor에 접속하여 공식 DDL 쿼리(3개 테이블 <code>wl_comment</code>, <code>wl_counter</code>, <code>wl_users</code> 및 시퀀스)를 수동으로 실행(Run)해 주어야 합니다.
+      <strong>Neon SQL Editor에서 테이블 수동 초기화 (실제 실행 DDL):</strong><br>
+      Waline 최신 버전은 PostgreSQL 접속 시 테이블을 자동으로 생성해주지 않습니다. 곧바로 관리자 화면에 접속하면 <code>relation "wl_users" does not exist</code> 500 에러가 발생합니다. Neon의 SQL Editor에 접속하여 아래 공식 DDL 쿼리를 반드시 실행(Run)해 주어야 합니다.
+      <div class="pre custom" data-text="SQL"><button aria-label="Copy code">Copy</button><pre>-- 1. 댓글 테이블 및 시퀀스 생성
+CREATE SEQUENCE wl_comment_seq;
+
+CREATE TABLE wl_comment (
+  id int check (id &gt; 0) NOT NULL DEFAULT NEXTVAL ('wl_comment_seq'),
+  user_id int DEFAULT NULL,
+  comment text,
+  insertedAt timestamp(0) without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  ip varchar(100) DEFAULT '',
+  link varchar(255) DEFAULT NULL,
+  mail varchar(255) DEFAULT NULL,
+  nick varchar(255) DEFAULT NULL,
+  pid int DEFAULT NULL,
+  rid int DEFAULT NULL,
+  sticky numeric DEFAULT NULL,
+  status varchar(50) NOT NULL DEFAULT '',
+  "like" int DEFAULT NULL,
+  ua text,
+  url varchar(255) DEFAULT NULL,
+  createdAt timestamp(0) without time zone NULL DEFAULT CURRENT_TIMESTAMP,
+  updatedAt timestamp(0) without time zone NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id)
+);
+
+-- 2. 방문 카운터/반응 테이블 및 시퀀스 생성
+CREATE SEQUENCE wl_counter_seq;
+
+CREATE TABLE wl_counter (
+  id int check (id &gt; 0) NOT NULL DEFAULT NEXTVAL ('wl_counter_seq'),
+  time int DEFAULT NULL,
+  reaction0 int DEFAULT NULL,
+  reaction1 int DEFAULT NULL,
+  reaction2 int DEFAULT NULL,
+  reaction3 int DEFAULT NULL,
+  reaction4 int DEFAULT NULL,
+  reaction5 int DEFAULT NULL,
+  reaction6 int DEFAULT NULL,
+  reaction7 int DEFAULT NULL,
+  reaction8 int DEFAULT NULL,
+  url varchar(255) NOT NULL DEFAULT '',
+  createdAt timestamp(0) without time zone NULL DEFAULT CURRENT_TIMESTAMP,
+  updatedAt timestamp(0) without time zone NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id)
+);
+
+-- 3. 사용자 및 관리자 계정 테이블 생성
+CREATE SEQUENCE wl_users_seq;
+
+CREATE TABLE wl_users (
+  id int check (id &gt; 0) NOT NULL DEFAULT NEXTVAL ('wl_users_seq'),
+  display_name varchar(255) NOT NULL DEFAULT '',
+  email varchar(255) NOT NULL DEFAULT '',
+  password varchar(255) NOT NULL DEFAULT '',
+  type varchar(50) NOT NULL DEFAULT '',
+  label varchar(255) DEFAULT NULL,
+  url varchar(255) DEFAULT NULL,
+  avatar varchar(255) DEFAULT NULL,
+  github varchar(255) DEFAULT NULL,
+  twitter varchar(255) DEFAULT NULL,
+  facebook varchar(255) DEFAULT NULL,
+  google varchar(255) DEFAULT NULL,
+  weibo varchar(255) DEFAULT NULL,
+  qq varchar(255) DEFAULT NULL,
+  oidc varchar(255) DEFAULT NULL,
+  huawei varchar(255) DEFAULT NULL,
+  "2fa" varchar(32) DEFAULT NULL,
+  createdAt timestamp(0) without time zone NULL DEFAULT CURRENT_TIMESTAMP,
+  updatedAt timestamp(0) without time zone NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id)
+);</pre></div>
     </li>
     <li>
-      <strong>Vercel 환경 변수 등록 및 재배포:</strong><br>
-      Vercel 환경 변수 설정란에 데이터베이스 연결 문자열(<code>POSTGRES_URL</code>), SSL 옵션(<code>PG_SSL=true</code>), 봇 방어 키(<code>TURNSTILE_KEY</code>, <code>TURNSTILE_SECRET</code>), 허용 도메인(<code>SECURE_DOMAINS</code>), 그리고 실시간 이메일 알림을 위한 Gmail SMTP 정보(<code>SMTP_USER</code>, <code>SMTP_PASS</code>, <code>AUTHOR_EMAIL</code>)를 등록하고 재배포했습니다.
+      <strong>Vercel 필수 환경 변수 등록:</strong><br>
+      Vercel <code>[Settings] -&gt; [Environment Variables]</code>에 아래 변수들을 등록하고 재배포(Redeploy)합니다.
+      <div class="table w100 withBg">
+        <table>
+          <thead>
+            <tr><th>환경 변수 키</th><th>설정 값 및 역할</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>POSTGRES_URL</code></td><td>Neon 대시보드에서 복사한 PostgreSQL 연결 문자열 (단일 URL)</td></tr>
+            <tr><td><code>PG_SSL</code></td><td><code>true</code> (Neon 서버리스 SSL 필수 옵션)</td></tr>
+            <tr><td><code>TURNSTILE_KEY</code></td><td>Cloudflare Turnstile 위젯 Site Key</td></tr>
+            <tr><td><code>TURNSTILE_SECRET</code></td><td>Cloudflare Turnstile 위젯 Secret Key</td></tr>
+            <tr><td><code>SECURE_DOMAINS</code></td><td><code>blog.noog.kim,blog-waline.vercel.app</code> (블로그 주소와 Vercel 주소 쉼표 병기)</td></tr>
+            <tr><td><code>SMTP_SERVICE</code></td><td><code>Gmail</code></td></tr>
+            <tr><td><code>SMTP_USER</code></td><td>관리자 Gmail 주소 (<code>noog.sub@gmail.com</code>)</td></tr>
+            <tr><td><code>SMTP_PASS</code></td><td>구글 계정 보안에서 발급받은 16자리 앱 비밀번호</td></tr>
+            <tr><td><code>AUTHOR_EMAIL</code></td><td>알림을 수신할 관리자 이메일 주소 (<code>noog.sub@gmail.com</code>)</td></tr>
+          </tbody>
+        </table>
+      </div>
     </li>
     <li>
       <strong>최초 관리자 계정 생성:</strong><br>
@@ -213,7 +311,7 @@ _series.yaml")]
   </ol>
 
   <div class="note wr">
-    <strong>⚠️ 주의:</strong> Vercel 환경 변수에서 <code>TZ</code>(타임존)는 Vercel 시스템 내부 예약어로 지정되어 있어 등록 시 에러가 발생합니다. 또한 <code>SECURE_DOMAINS</code>에 블로그 도메인만 넣고 Vercel 자체 도메인을 빠뜨리면 관리자 가입 시 403 Forbidden 에러가 발생하므로 두 도메인을 쉼표로 함께 등록해야 합니다.
+    <strong>⚠️ 주의:</strong> Vercel 환경 변수에서 <code>TZ</code>(타임존)는 Vercel 시스템 내부 예약어로 지정되어 있어 등록 시 에러가 발생합니다. 타임존 설정이 필요할 경우 코드 레벨에서 처리하거나 생략해야 합니다.
   </div>
 
   <h2 id="theme-customization">5. Median UI 1.7 테마 완전 일체화와 인터랙션 고도화</h2>

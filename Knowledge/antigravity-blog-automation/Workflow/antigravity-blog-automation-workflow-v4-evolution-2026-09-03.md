@@ -90,7 +90,7 @@ series_id: antigravity-blog-automation
   * **캐시 버스팅:** `<img> src` 뒤에 `?v={YYYYMMDD_HHmm}` 쿼리스트링을 자동 부여하고 jsDelivr Purge API를 호출하여 블로그스팟 및 브라우저 캐시 고착을 방지. [FACT]
 
 * **[Waline 기반 독립형 서버리스 댓글 시스템 아키텍처 및 테마 내재화]:**
-  * **도입 배경:** 구글 기본 댓글의 구글 로그인 강제, 게스트 덧글 불가, 스팸 취약성 문제를 해결하고 방문자 참여 장벽을 완화하기 위해 서버리스 Waline v3를 도입.
+  * **도입 배경:** 구글 기본 댓글도 익명 작성이 가능하긴 하나 봇 검출 기능이 전혀 없어 스팸에 취약하고, 테마와 어울리지 않는 낙후된 디자인에다 익명 작성자가 본인의 정보(이메일/웹사이트)를 남길 수 없어 답글 알림을 받지 못하는 한계를 극복하기 위해 서버리스 Waline v3를 도입.
   * **서버리스 인프라 구성:**
     1. **백엔드 (Compute):** Vercel Serverless Function (무료 티어, 공식 example 템플릿 배포).
     2. **데이터베이스 (Storage):** Neon Serverless PostgreSQL (외부 연결 독립 클라우드 DB).
@@ -131,8 +131,77 @@ series_id: antigravity-blog-automation
    - Waline 전체 소스코드(모노레포)를 통째로 가져오면 빌드 실패가 발생하므로, 서버 배포 전용 공식 example 템플릿 레포지토리로 Vercel 프로젝트 생성.
 3. **Neon PostgreSQL 스토리지 연동 및 계정 권한 확보:**
    - Vercel 내장 생성 시 발생하는 가상 계정 격리를 방지하기 위해, [neon.tech](https://neon.tech/)에서 직접 GitHub 외부 연결 로그인을 수행하여 실제 스토리지 접근권 및 제어권 확보.
-4. **Neon SQL Editor 테이블 수동 초기화:**
-   - Waline은 PostgreSQL 연결 시 테이블을 자동 생성하지 않으므로, Neon SQL Editor에서 3개 테이블(`wl_comment`, `wl_counter`, `wl_users`) 및 시퀀스 DDL 쿼리를 일괄 실행(Run).
+4. **Neon SQL Editor 테이블 수동 초기화 (실제 DDL 쿼리문):**
+   - Waline은 PostgreSQL 연결 시 테이블을 자동 생성하지 않으므로, Neon SQL Editor에서 아래의 3개 테이블(`wl_comment`, `wl_counter`, `wl_users`) 및 시퀀스 DDL 쿼리를 일괄 실행(Run).
+   ```sql
+   -- 1. 댓글 테이블
+   CREATE SEQUENCE wl_comment_seq;
+   CREATE TABLE wl_comment (
+     id int check (id > 0) NOT NULL DEFAULT NEXTVAL ('wl_comment_seq'),
+     user_id int DEFAULT NULL,
+     comment text,
+     insertedAt timestamp(0) without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+     ip varchar(100) DEFAULT '',
+     link varchar(255) DEFAULT NULL,
+     mail varchar(255) DEFAULT NULL,
+     nick varchar(255) DEFAULT NULL,
+     pid int DEFAULT NULL,
+     rid int DEFAULT NULL,
+     sticky numeric DEFAULT NULL,
+     status varchar(50) NOT NULL DEFAULT '',
+     "like" int DEFAULT NULL,
+     ua text,
+     url varchar(255) DEFAULT NULL,
+     createdAt timestamp(0) without time zone NULL DEFAULT CURRENT_TIMESTAMP,
+     updatedAt timestamp(0) without time zone NULL DEFAULT CURRENT_TIMESTAMP,
+     PRIMARY KEY (id)
+   );
+
+   -- 2. 방문 카운터/반응 테이블
+   CREATE SEQUENCE wl_counter_seq;
+   CREATE TABLE wl_counter (
+     id int check (id > 0) NOT NULL DEFAULT NEXTVAL ('wl_counter_seq'),
+     time int DEFAULT NULL,
+     reaction0 int DEFAULT NULL,
+     reaction1 int DEFAULT NULL,
+     reaction2 int DEFAULT NULL,
+     reaction3 int DEFAULT NULL,
+     reaction4 int DEFAULT NULL,
+     reaction5 int DEFAULT NULL,
+     reaction6 int DEFAULT NULL,
+     reaction7 int DEFAULT NULL,
+     reaction8 int DEFAULT NULL,
+     url varchar(255) NOT NULL DEFAULT '',
+     createdAt timestamp(0) without time zone NULL DEFAULT CURRENT_TIMESTAMP,
+     updatedAt timestamp(0) without time zone NULL DEFAULT CURRENT_TIMESTAMP,
+     PRIMARY KEY (id)
+   );
+
+   -- 3. 사용자 및 관리자 테이블
+   CREATE SEQUENCE wl_users_seq;
+   CREATE TABLE wl_users (
+     id int check (id > 0) NOT NULL DEFAULT NEXTVAL ('wl_users_seq'),
+     display_name varchar(255) NOT NULL DEFAULT '',
+     email varchar(255) NOT NULL DEFAULT '',
+     password varchar(255) NOT NULL DEFAULT '',
+     type varchar(50) NOT NULL DEFAULT '',
+     label varchar(255) DEFAULT NULL,
+     url varchar(255) DEFAULT NULL,
+     avatar varchar(255) DEFAULT NULL,
+     github varchar(255) DEFAULT NULL,
+     twitter varchar(255) DEFAULT NULL,
+     facebook varchar(255) DEFAULT NULL,
+     google varchar(255) DEFAULT NULL,
+     weibo varchar(255) DEFAULT NULL,
+     qq varchar(255) DEFAULT NULL,
+     oidc varchar(255) DEFAULT NULL,
+     huawei varchar(255) DEFAULT NULL,
+     "2fa" varchar(32) DEFAULT NULL,
+     createdAt timestamp(0) without time zone NULL DEFAULT CURRENT_TIMESTAMP,
+     updatedAt timestamp(0) without time zone NULL DEFAULT CURRENT_TIMESTAMP,
+     PRIMARY KEY (id)
+   );
+   ```
 5. **Vercel 환경 변수 등록 및 재배포(Redeploy):**
    - Vercel `[Settings] -> [Environment Variables]`에 필수 변수 등록:
      - DB: `POSTGRES_URL` (단일 연결 문자열), `PG_SSL=true`
@@ -164,7 +233,15 @@ series_id: antigravity-blog-automation
 | **scr14** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr14-concept1-mobile.png` | 관리자(noog)로 로그인했을 때 프로필 아바타와 단일 입력창으로 정돈된 데스크톱 레이아웃 |
 | **scr15** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr15-guest-label-and-email.png` | 150px×140px Turnstile 사각형 위젯이 툴바 안에 끼어들어 글자 수와 버튼 사이를 파괴한 화면 |
 
-##### [B. Mermaid 동적 다이어그램 & 트러블슈팅 (4종)]
+##### [B. Mermaid 동적 다이어그램 & 완성 렌더링 (6종)]
+| 번호 | 이미지 파일명 | 설명 및 본문 배치 위치 |
+|:---:|---|---|
+| **scr16** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr16-mermaid-tiny-render.png` | 테마의 기존 pre 스타일 상속으로 인해 Mermaid 다이어그램이 중앙에 점처럼 축소 렌더링되는 초기 증상 |
+| **scr17** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr17-mermaid-svg-24px-clash.png` | Median UI 전역 SVG 24px 크기 강제 스타일로 인해 다이어그램이 작은 상자 안에 갇히는 간섭 현상 |
+| **scr18** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr18-mermaid-lightbox-shrink.png` | 다이어그램 노드 내부 텍스트가 박스 경계에 걸려 잘리거나 찌그러지는 현상 |
+| **scr19** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr19-mermaid-font-overflow.png` | 가로로 긴 다이어그램에서 노드 하단 텍스트가 잘려나가는 폰트 오버플로우 현상 |
+| **scr28** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr28-mermaid-complete-desktop.png` | 1:1 자연 배율 및 다크모드에 맞춰 본문에 깔끔하게 렌더링된 Mermaid 다이어그램 완성 화면 |
+| **scr29** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr29-mermaid-complete-lightbox.png` | 다이어그램 클릭 시 92vw×88vh 극장형 모달 뷰어에서 고해상도 벡터로 시원하게 확대되는 완성 화면 |
 | 번호 | 이미지 파일명 | 설명 및 본문 배치 위치 |
 |:---:|---|---|
 | **scr16** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr16-mermaid-tiny-render.png` | 테마의 기존 pre 스타일 상속으로 인해 Mermaid 다이어그램이 중앙에 점처럼 축소 렌더링되는 초기 증상 |
@@ -172,7 +249,13 @@ series_id: antigravity-blog-automation
 | **scr18** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr18-mermaid-lightbox-shrink.png` | 다이어그램 노드 내부 텍스트가 박스 경계에 걸려 잘리거나 찌그러지는 현상 |
 | **scr19** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr19-mermaid-font-overflow.png` | 가로로 긴 다이어그램에서 노드 하단 텍스트가 잘려나가는 폰트 오버플로우 현상 |
 
-##### [C. 중앙 집중식 카탈로그 기반 동적 시리즈 네비게이션 (3종)]
+##### [C. 중앙 집중식 카탈로그 기반 동적 시리즈 네비게이션 (4종)]
+| 번호 | 이미지 파일명 | 설명 및 본문 배치 위치 |
+|:---:|---|---|
+| **scr27** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr27-series-chapter-accordion.png` | 초기 동적 네비게이션 연동 시 이전 편과 다음 편 카드가 둘 다 #3편으로 중복 렌더링되던 오류 화면 |
+| **scr26** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr26-series-cards-prev-next.png` | 중앙 카탈로그 순서에 따라 올바르게 계산되어 생성된 이전 편 카드와 시리즈 전체 목록 토글 |
+| **scr25** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr25-series-nav-tab-layout.png` | 본문 하단에 '📌 시리즈 목록' 탭과 '✨ 관심이 있을 만한 글' 탭이 동적으로 분리된 최종 레이아웃 |
+| **scr30** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr30-series-complete-chapter-accordion.png` | 대형 연재물(WebTranslator 등)에서 챕터별로 깔끔하게 계층화되어 펼쳐진 시리즈 전체 목록 아코디언 완성 화면 |
 | 번호 | 이미지 파일명 | 설명 및 본문 배치 위치 |
 |:---:|---|---|
 | **scr27** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr27-series-chapter-accordion.png` | 초기 동적 네비게이션 연동 시 이전 편과 다음 편 카드가 둘 다 #3편으로 중복 렌더링되던 오류 화면 |
