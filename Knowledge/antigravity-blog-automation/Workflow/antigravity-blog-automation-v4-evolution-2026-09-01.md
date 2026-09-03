@@ -1,6 +1,6 @@
 ---
 topic: antigravity-blog-automation-v4
-title_kr: "[블로그 자동화 #4] 아키텍처 진화와 Waline 댓글 시스템 구축"
+title_kr: "[블로그 포스팅 자동화 구축기 #4] 아키텍처 진화와 Waline 댓글 시스템 연동"
 category: Workflow
 sub_category: System-Evolution-Comparison
 version: 2026-09-03
@@ -22,7 +22,7 @@ series_id: antigravity-blog-automation
 ### 📦 [Knowledge Package]
 
 * **Topic:** antigravity-blog-automation-v4
-* **Title_KR:** [블로그 자동화 #4] 아키텍처 진화와 Waline 댓글 시스템 구축
+* **Title_KR:** [블로그 포스팅 자동화 구축기 #4] 아키텍처 진화와 Waline 댓글 시스템 연동
 * **Category:** Workflow
 * **Sub-Category:** System-Evolution-Comparison
 * **Version:** 2026-09-03
