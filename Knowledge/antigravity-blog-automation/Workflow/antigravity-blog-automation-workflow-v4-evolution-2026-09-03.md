@@ -225,7 +225,7 @@ series_id: antigravity-blog-automation
 |:---:|---|---|
 | **scr02** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr02-turnstile-blocked.png` | Cloudflare Turnstile에 Vercel 도메인 미등록 시 발생하는 봇 차단 에러 |
 | **scr03** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr03-neon-shadow-account.png` | Vercel 'Open in Neon' 클릭 시 인증 메일 미수신 및 가상 계정 격리 현상 |
-| **scr06** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr06-waline-theme-mismatch.png` | 다크 테마에서 댓글창만 하얗게 떠 있는 테마 선택자 불일치 전체 화면 |
+| **scr06** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr06-waline-theme-mismatch.png` | 다크 테마 환경에서 댓글 입력창만 하얗게 떠 있는 테마 선택자 불일치 크롭 화면 |
 | **scr11** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr11-admin-ui-exposed.png` | NickName, E-Mail, Website 상단 라벨과 가로 3분할 입력 폼 초기 구조 |
 | **scr13** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr13-concept1-desktop.png` | 게스트 3분할 입력 폼과 정돈된 아바타 및 여백이 적용된 데스크톱 최종 레이아웃 |
 | **scr15** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr15-guest-label-and-email.png` | 150px×140px Turnstile 사각형 위젯이 툴바 안에 끼어들어 글자 수와 버튼 사이를 파괴한 화면 |
