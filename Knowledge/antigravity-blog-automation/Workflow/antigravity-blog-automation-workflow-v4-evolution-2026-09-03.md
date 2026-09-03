@@ -43,9 +43,9 @@ series_id: antigravity-blog-automation
 * [★★★★★] Median UI 테마 XML 및 동적 스크립트: `Instructions/Personas/Core-Archive_Theme_Median-UI-v1.7.0-Custom.xml` (Mermaid.js 1:1 자연 배율 및 Lightbox 줌 모달, Waline 댓글 위젯 및 Turnstile 핫픽스, 메인 슬라이더 연동 커밋)
 * [★★★★★] Waline v3 공식 문서 및 배포 템플릿: `https://waline.js.org`, `@waline/client@v3.3.0`
 * [★★★★★] Vercel Serverless Function, Neon Serverless PostgreSQL 콘솔, Cloudflare Turnstile 보안 설정
-* [★★★★★] 사용자 실전 검증 스크린샷 15종: `images/2026-09/antigravity-blog-automation-workflow-v4-scr01~15.png`
+* [★★★★★] 사용자 실전 검증 스크린샷 27종: `images/2026-09/antigravity-blog-automation-workflow-v4-scr01~27.png`
 * [★★★★★] 최근 실전 포스팅 구축 및 검증 이력: `windows-speaker-changer` (2026-09-01), `unity6-urp-rendergraph` (2026-08-31)
-* [★★★★★] 사용자 실전 검증: Mermaid 다이어그램 1:1 자연 배율 및 모바일 실기기 검증 완료, Waline 댓글 인프라 배포·테이블 생성·Turnstile 무한대기 핫픽스·다크모드 CSS 커스텀·Gmail 실시간 알림 엔드투엔드 검증 완료
+* [★★★★★] 사용자 실전 검증: Mermaid 다이어그램 1:1 자연 배율 및 모바일 실기기 검증 완료, 중앙 카탈로그 기반 동적 시리즈 네비게이션 연동 완료, Waline 댓글 인프라 배포·테이블 생성·Turnstile 무한대기 핫픽스·다크모드 CSS 커스텀·Gmail 실시간 알림 엔드투엔드 검증 완료
 
 ---
 
@@ -110,7 +110,7 @@ series_id: antigravity-blog-automation
 
 ---
 
-#### 🛠️ Procedures (실전 워크플로우 및 댓글 시스템 구축 절차)
+#### 🛠️ Procedures (실전 워크플로우 및 구축 절차)
 
 ##### 1. 현재 v3.1+ 실전 워크플로우 종합 비교
 
@@ -131,7 +131,6 @@ series_id: antigravity-blog-automation
    - Waline 전체 소스코드(모노레포)를 통째로 가져오면 빌드 실패가 발생하므로, 서버 배포 전용 공식 example 템플릿 레포지토리로 Vercel 프로젝트 생성.
 3. **Neon PostgreSQL 스토리지 연동 및 계정 권한 확보:**
    - Vercel 내장 생성 시 발생하는 가상 계정 격리를 방지하기 위해, [neon.tech](https://neon.tech/)에서 직접 GitHub 외부 연결 로그인을 수행하여 실제 스토리지 접근권 및 제어권 확보.
-   *(관련 실전 스크린샷: `images/2026-09/antigravity-blog-automation-workflow-v4-scr01-vercel-storage.png`, `images/2026-09/antigravity-blog-automation-workflow-v4-scr03-neon-shadow-account.png`, `images/2026-09/antigravity-blog-automation-workflow-v4-scr04-neon-github-oauth.png`)*
 4. **Neon SQL Editor 테이블 수동 초기화:**
    - Waline은 PostgreSQL 연결 시 테이블을 자동 생성하지 않으므로, Neon SQL Editor에서 3개 테이블(`wl_comment`, `wl_counter`, `wl_users`) 및 시퀀스 DDL 쿼리를 일괄 실행(Run).
 5. **Vercel 환경 변수 등록 및 재배포(Redeploy):**
@@ -144,15 +143,15 @@ series_id: antigravity-blog-automation
    - Vercel 대표 도메인의 관리자 경로(`https://.../ui`)에 접속하여 최초 회원가입 수행 (최초 가입자가 최고 관리자로 자동 지정됨).
 7. **Blogger 테마 XML(`Core-Archive_Theme_Median-UI-v1.7.0-Custom.xml`) 주입:**
    - 테마의 `commentPicker` 블록에 Waline 컨테이너 및 ESM 스크립트 주입.
-   - Median UI 전용 다크/라이트 모드 CSS 매핑, Turnstile 중복 렌더링 핫픽스, 플로팅 팝오버(방안 A), 슬라이더 4번 실시간 비동기 연동 및 중복 방지 스크립트 반영 후 테마 저장.
-   *(관련 실전 스크린샷: `images/2026-09/antigravity-blog-automation-workflow-v4-scr07-waline-dark-initial.png`, `images/2026-09/antigravity-blog-automation-workflow-v4-scr08-waline-light-initial.png`, `images/2026-09/antigravity-blog-automation-workflow-v4-scr13-concept1-desktop.png`, `images/2026-09/antigravity-blog-automation-workflow-v4-scr14-concept1-mobile.png`)* [FACT/USER VERIFIED]
+   - Median UI 전용 다크/라이트 모드 CSS 매핑, Turnstile 중복 렌더링 핫픽스, 플로팅 팝오버(방안 A), 슬라이더 4번 실시간 비동기 연동 및 중복 방지 스크립트 반영 후 테마 저장. [FACT/USER VERIFIED]
 
 ---
 
 #### 📷 실전 첨부 스크린샷 카탈로그 (게시글 삽입 매핑 가이드)
 
-블로그 포스팅 생성 시 본문 각 맥락에 맞춰 삽입할 검증 스크린샷 15종 목록:
+블로그 포스팅 생성 시 본문 각 맥락에 맞춰 삽입할 검증 스크린샷 27종 목록:
 
+##### [A. Waline 서버리스 댓글 시스템 (15종)]
 | 번호 | 이미지 파일명 | 설명 및 본문 배치 위치 |
 |:---:|---|---|
 | **scr01** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr01-vercel-storage.png` | Vercel 내장 Storage 탭에서 Neon DB 생성 시 초기 화면 |
@@ -171,14 +170,34 @@ series_id: antigravity-blog-automation
 | **scr14** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr14-concept1-mobile.png` | Concept 1 미니멀리스트 적용 후 모바일/다크 테마 최종 레이아웃 |
 | **scr15** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr15-guest-label-and-email.png` | 게스트 폼 라벨 숨김 및 Placeholder 주입 요구사항 검토 화면 |
 
+##### [B. Mermaid 동적 다이어그램 & Lightbox 모달 (8종)]
+| 번호 | 이미지 파일명 | 설명 및 본문 배치 위치 |
+|:---:|---|---|
+| **scr16** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr16-mermaid-tiny-render.png` | 테마의 기존 pre 블록 상속으로 인해 Mermaid 다이어그램이 지나치게 작게 렌더링되는 초기 증상 |
+| **scr17** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr17-mermaid-svg-24px-clash.png` | Median UI 테마의 전역 SVG 24px width/height 강제 스타일이 Mermaid 다이어그램에 간섭하는 현상 |
+| **scr18** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr18-mermaid-lightbox-shrink.png` | Lightbox 모달 확대 시 다이어그램이 뷰포트에 맞게 1:1로 확장되지 않고 축소되는 현상 |
+| **scr19** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr19-mermaid-font-overflow.png` | 다이어그램 내부 노드 텍스트가 박스 경계를 뚫고 넘치거나 잘리는 폰트 오버플로우 현상 |
+| **scr20** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr20-mermaid-font-size-inconsistent.png` | 다이어그램마다 폰트 크기가 들쭉날쭉하여 통일감이 저해되는 증상 |
+| **scr21** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr21-mermaid-lightbox-fullsize-fix.png` | 92vw×88vh 극장형 모달 컨테이너를 가득 채우도록 고해상도 벡터 스케일링 패치한 화면 |
+| **scr22** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr22-mermaid-final-desktop.png` | 1:1 자연 배율(Natural Scale) 및 정규화된 폰트로 깔끔하게 렌더링되는 데스크톱 최종 화면 |
+| **scr23** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr23-mermaid-final-mobile.png` | 모바일 뷰포트(360px~412px) 실기기에서도 가로 스크롤 및 모달 터치 줌으로 정상 동작하는 화면 |
+
+##### [C. 중앙 집중식 카탈로그 기반 동적 시리즈 네비게이션 (4종)]
+| 번호 | 이미지 파일명 | 설명 및 본문 배치 위치 |
+|:---:|---|---|
+| **scr24** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr24-series-nav-devtools.png` | 개발자 도구(F12) 콘솔에서 `<nav class="series-nav">`가 중앙 JSON 카탈로그를 조회하는 렌더링 점검 |
+| **scr25** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr25-series-nav-tab-layout.png` | 본문 하단에 '📌 시리즈 목록' 탭과 '✨ 관심이 있을 만한 글' 탭이 동적으로 분리된 UI |
+| **scr26** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr26-series-cards-prev-next.png` | 중앙 카탈로그 순서에 따라 자동으로 계산되어 생성된 '이전 편 / 다음 편' 카드 레이아웃 |
+| **scr27** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr27-series-chapter-accordion.png` | 대형 연재물에서 챕터별로 계층화되어 접히고 펼쳐지는 시리즈 아코디언 전체 목차 화면 |
+
 ---
 
 #### 🐛 Errors & Solutions (버전별 주요 장애 및 극복 내역)
 
 * **[Mermaid 다이어그램 폰트 왜곡 및 뷰포트 스케일링 (2026-08 말 해결)]**
-  * **증상:** Median UI 테마에서 Mermaid 다이어그램이 컨테이너 가로폭(800px)에 맞춰 억지로 늘어나면서 폰트 크기가 불균일해지거나 텍스트가 잘리는 현상 발생.
+  * **증상:** Median UI 테마에서 Mermaid 다이어그램이 컨테이너 가로폭(800px)에 맞춰 억지로 늘어나면서 폰트 크기가 불균일해지거나 텍스트가 잘리는 현상 발생. *(스크린샷: `scr16`, `scr19`, `scr20`)*
   * **원인:** SVG viewBox와 CSS width 간의 비율 불일치 및 강제 가로폭 고정 스타일.
-  * **해결법:** 임시 가로폭 고정 방식을 탈피하여 다이어그램 고유 1:1 자연 배율(`width: auto !important`, `max-width: 100% !important`)로 정규화하고, 본문 폰트를 상속하도록 정리. 클릭 시 92vw×88vh 극장형 고해상도 Lightbox 모달에서 원본 벡터로 확대되도록 테마 스크립트 패치 완료. 모바일 뷰포트(360px~412px) 실기기에서도 정상 렌더링 검증 완료. [FACT/USER VERIFIED]
+  * **해결법:** 임시 가로폭 고정 방식을 탈피하여 다이어그램 고유 1:1 자연 배율(`width: auto !important`, `max-width: 100% !important`)로 정규화하고, 본문 폰트를 상속하도록 정리. 클릭 시 92vw×88vh 극장형 고해상도 Lightbox 모달에서 원본 벡터로 확대되도록 테마 스크립트 패치 완료. 모바일 뷰포트(360px~412px) 실기기에서도 정상 렌더링 검증 완료. *(스크린샷: `scr21`, `scr22`, `scr23`)* [FACT/USER VERIFIED]
 
 * **[Blogger XML 엔티티 파싱 오류 및 Mermaid CDATA 충돌 (2026-08 말 해결)]**
   * **증상:** Blogger 테마 XML 에디터에서 Mermaid 스크립트 및 스타일 내부의 특수문자(`<`, `>`, `&`)로 인해 템플릿 저장 시 파싱 에러 발생.
@@ -196,13 +215,13 @@ series_id: antigravity-blog-automation
   * **해결법:** 서버 배포용으로 정돈된 공식 example 템플릿 전용 배포 경로로 교체하여 빌드 과정 없이 즉시 배포 성공. [FACT]
 
 * **[Vercel 내장 Neon 스토리지의 가상 섀도우 계정 격리 문제 (2026-09-01 해결)]**
-  * **증상:** Vercel 대시보드에서 원클릭으로 생성된 Neon DB에 대해 'Open in Neon' 클릭 시 인증 메일이 오지 않고 계정 콘솔 접근이 불가능해짐. *(스크린샷: `images/2026-09/antigravity-blog-automation-workflow-v4-scr03-neon-shadow-account.png`)*
+  * **증상:** Vercel 대시보드에서 원클릭으로 생성된 Neon DB에 대해 'Open in Neon' 클릭 시 인증 메일이 오지 않고 계정 콘솔 접근이 불가능해짐. *(스크린샷: `scr03`)*
   * **원인:** Vercel이 플랫폼 내부에서 사용자 이메일과 무관한 GitHub OAuth 가상(Shadow) 계정으로 DB를 프로비저닝하여 소유권 매핑 실패.
-  * **해결법:** 사용자가 [neon.tech](https://neon.tech/) 공식 홈페이지에서 GitHub 외부 연동 로그인을 직접 수행하여 실제 스토리지를 확인하고 콘솔 제어권을 정상 확보함. *(스크린샷: `images/2026-09/antigravity-blog-automation-workflow-v4-scr04-neon-github-oauth.png`)* [FACT/USER VERIFIED]
+  * **해결법:** 사용자가 [neon.tech](https://neon.tech/) 공식 홈페이지에서 GitHub 외부 연동 로그인을 직접 수행하여 실제 스토리지를 확인하고 콘솔 제어권을 정상 확보함. *(스크린샷: `scr04`)* [FACT/USER VERIFIED]
 
 * **[Vercel 어드민 회원가입 시 403 Forbidden 차단 에러 (2026-09-01 해결)]**
   * **증상:** `/ui` 관리자 가입 화면에서 Register 클릭 시 403 Forbidden 에러 발생.
-  * **원인:** `SECURE_DOMAINS` 및 Turnstile 허용 도메인에 블로그 도메인만 등록하여, 정작 가입 요청이 발생하는 Vercel 고정 도메인의 API 접근을 보안 위반으로 차단. *(스크린샷: `images/2026-09/antigravity-blog-automation-workflow-v4-scr02-turnstile-blocked.png`)*
+  * **원인:** `SECURE_DOMAINS` 및 Turnstile 허용 도메인에 블로그 도메인만 등록하여, 정작 가입 요청이 발생하는 Vercel 고정 도메인의 API 접근을 보안 위반으로 차단. *(스크린샷: `scr02`)*
   * **해결법:** Vercel 고정 대표 도메인(Production URL)을 `SECURE_DOMAINS` 환경 변수와 Turnstile Domain 목록에 추가하여 해결. [FACT]
 
 * **[PostgreSQL 테이블 스키마 미생성으로 인한 500 에러 (2026-09-01 해결)]**
@@ -274,7 +293,7 @@ Antigravity, 블로그-자동화, 시스템-진화, Mermaid, 동적-네비게이
   7. 테마 XML 파일(`Core-Archive_Theme_Median-UI-v1.7.0-Custom.xml`) 수정 사항 GitHub 원격 푸시 완료.
   8. Mermaid 다이어그램 규격 정정: 580px 강제 고정 방식을 탈피하여 테마 구현에 맞춘 1:1 자연 배율(Natural Scale) 및 유연한 뷰포트 반응형 구조로 정착.
   9. 용어 정비: 'SSOT' 줄임말을 배제하고 '중앙 집중식 카탈로그(`_series.yaml`/`_series.json`) 기반 동적 시리즈 네비게이션'으로 알기 쉽게 서술.
-  10. 실전 스크린샷 15종(`images/2026-09/antigravity-blog-automation-workflow-v4-scr01~15.png`) 아카이빙 및 게시글 삽입 매핑 가이드라인 구축.
+  10. 실전 스크린샷 27종(`images/2026-09/antigravity-blog-automation-workflow-v4-scr01~27.png`) 아카이빙 및 게시글 3대 주제별(댓글 시스템, Mermaid 다이어그램, 동적 시리즈 네비게이션) 삽입 매핑 가이드라인 완성.
 * **보류된 항목:** 제2호 블로그 개설 및 `/5_블로그추가` 실전 엔드투엔드 검증 (향후 2호 블로그 개설 시점으로 연기 유지).
 * **Status 변경:** Verified 유지
 
