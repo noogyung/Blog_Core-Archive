@@ -236,7 +236,6 @@ series_id: antigravity-blog-automation
 ##### [B. Mermaid 동적 다이어그램 & 완성 렌더링 (6종)]
 | 번호 | 이미지 파일명 | 설명 및 본문 배치 위치 |
 |:---:|---|---|
-| **scr16** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr16-mermaid-tiny-render.png` | 테마의 기존 pre 스타일 상속으로 인해 Mermaid 다이어그램이 중앙에 점처럼 축소 렌더링되는 초기 증상 |
 | **scr17** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr17-mermaid-svg-24px-clash.png` | Median UI 전역 SVG 24px 크기 강제 스타일로 인해 다이어그램이 작은 상자 안에 갇히는 간섭 현상 |
 | **scr18** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr18-mermaid-lightbox-shrink.png` | 다이어그램 노드 내부 텍스트가 박스 경계에 걸려 잘리거나 찌그러지는 현상 |
 | **scr19** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr19-mermaid-font-overflow.png` | 가로로 긴 다이어그램에서 노드 하단 텍스트가 잘려나가는 폰트 오버플로우 현상 |

@@ -96,7 +96,6 @@
 
   <p>하지만 Median UI 1.7 테마에 Mermaid 라이브러리를 주입하자마자 여러 가지 시각적 충돌이 발생했습니다.</p>
 
-  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-09/antigravity-blog-automation-workflow-v4-scr16-mermaid-tiny-render.png?v=20260903_1800" alt="테마의 기존 pre 스타일을 상속받아 Mermaid 다이어그램이 중앙에 점처럼 축소 렌더링되는 증상">
 
   <p>가장 먼저 눈에 들어온 부분은 다이어그램이 본문 영역 안에서 돋보기로 보아야 할 정도로 작게 축소되어 출력되는 현상이었습니다. 원인을 분석해보니 Median UI 테마가 기본 코드 블록인 <code>pre</code> 태그에 부여해 둔 여백과 폰트 크기 스타일을 Mermaid 래퍼가 그대로 상속받고 있었습니다.</p>
 
