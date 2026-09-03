@@ -10,8 +10,8 @@ last_modified: 2026-09-03
 language: KR
 tags: [Antigravity, 블로그-자동화, 시스템-진화, Mermaid, 동적-네비게이션, 시리즈-카탈로그, 양방향-동기화, 분산-아키텍처, Waline, 댓글시스템, Vercel, Neon-PostgreSQL, Cloudflare-Turnstile, Blogger, Median-UI]
 sources_count: 10
-blog_draft_path: null
-blog_draft_date: null
+blog_draft_path: "Blog_Posts/2026-09/antigravity-blog-automation-workflow-v4.html"
+blog_draft_date: "2026-09-03"
 blog_id: core-archive
 blog_published: false
 series_id: antigravity-blog-automation
