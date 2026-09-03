@@ -95,7 +95,7 @@ series_id: antigravity-blog-automation
     1. **백엔드 (Compute):** Vercel Serverless Function (무료 티어, 공식 example 템플릿 배포).
     2. **데이터베이스 (Storage):** Neon Serverless PostgreSQL (외부 연결 독립 클라우드 DB).
     3. **무인 봇/스팸 방어:** Cloudflare Turnstile (`TURNSTILE_KEY`, `TURNSTILE_SECRET`, `SECURE_DOMAINS` 연동). 퍼즐 풀기 없이 백그라운드 무인 챌린지 수행.
-    4. **관리자 실시간 알림:** Gmail SMTP 연동 (`noog.sub@gmail.com`)으로 새 댓글 작성 시 즉각 이메일 수신.
+    4. **관리자 실시간 알림:** Gmail SMTP 연동 (`your-email@gmail.com`)으로 새 댓글 작성 시 즉각 이메일 수신.
   * **Median UI 1.7 테마 완전 일체화:**
     1. **다크/라이트 모드 자동 연동:** 테마의 다크모드 식별자(`body.nB[data-theme="dark"]`)에 맞춰 테마 내장 CSS 변수(`--contentBg`, `--contentBg-alt`, `--contentC`, `--contentBd-color`, `--themeLink` 등)를 Waline CSS 변수(`--waline-bgcolor`, `--waline-color` 등)에 1:1 매핑하여 이질감 없는 자동 테마 전환 구현.
     2. **미니멀 UI 커스텀 (Concept 1):** 게스트 입력 폼(Nickname, E-Mail, Website)의 상단 라벨 텍스트를 숨기고 가로 3분할 배치 후 `MutationObserver`로 내부 Placeholder 주입. 45px 아바타 크기 고정, 대댓글 점선 인용선(`.wl-card .wl-quote`) 제거, OS/브라우저 메타 정보(`.wl-meta`) 숨김 처리. 포커스 시 배경 투명 유지로 흰색 번짐 버그 원천 차단.
@@ -126,7 +126,7 @@ series_id: antigravity-blog-automation
 
 1. **Cloudflare Turnstile 위젯 생성:**
    - Cloudflare 대시보드에서 Turnstile 위젯 생성 후 `Site Key`와 `Secret Key` 발급.
-   - Domain(s) 항목에 실제 블로그 도메인(`blog.noog.kim`)과 함께 Vercel 대표 도메인(`blog-waline.vercel.app`)을 동시 등록.
+   - Domain(s) 항목에 실제 블로그 도메인(`blog.yourdomain.com`)과 함께 Vercel 대표 도메인(`your-waline.vercel.app`)을 동시 등록.
 2. **Vercel 원클릭 서버리스 배포:**
    - Waline 전체 소스코드(모노레포)를 통째로 가져오면 빌드 실패가 발생하므로, 서버 배포 전용 공식 example 템플릿 레포지토리로 Vercel 프로젝트 생성.
 3. **Neon PostgreSQL 스토리지 연동 및 계정 권한 확보:**
@@ -206,7 +206,7 @@ series_id: antigravity-blog-automation
    - Vercel `[Settings] -> [Environment Variables]`에 필수 변수 등록:
      - DB: `POSTGRES_URL` (단일 연결 문자열), `PG_SSL=true`
      - 봇 방어: `TURNSTILE_KEY`, `TURNSTILE_SECRET`, `SECURE_DOMAINS` (블로그 도메인, Vercel 고정 도메인)
-     - 알림: `SMTP_SERVICE=Gmail`, `SMTP_USER=noog.sub@gmail.com`, `SMTP_PASS=(16자리 앱비밀번호)`, `AUTHOR_EMAIL=noog.sub@gmail.com`
+     - 알림: `SMTP_SERVICE=Gmail`, `SMTP_USER=your-email@gmail.com`, `SMTP_PASS=(16자리 앱비밀번호)`, `AUTHOR_EMAIL=your-email@gmail.com`
    - 변수 저장 후 Deployments 탭에서 Redeploy 수행.
 6. **최초 관리자(Admin) 계정 등록:**
    - Vercel 대표 도메인의 관리자 경로(`https://.../ui`)에 접속하여 최초 회원가입 수행 (최초 가입자가 최고 관리자로 자동 지정됨).
@@ -361,7 +361,7 @@ Antigravity, 블로그-자동화, 시스템-진화, Mermaid, 동적-네비게이
   3. Median UI 1.7 다크/라이트 모드 테마 CSS 변수 완전 일체화 및 미니멀 UI(Concept 1, 3분할 폼, 아바타 교정, 플로팅 팝오버) 적용 완료.
   4. 메인 슬라이더 4번 Waline API 실시간 댓글 연동 및 하이브리드 자동 승격(`화제의 글` / 최근 30일 `추천글` fallback) 정상 동작 확인.
   5. 블로그스팟 인기글 집계 기간 최근 30일(`LAST_MONTH`) 통일 및 슬라이더 3종 중복 방지 알고리즘 검증 완료.
-  6. 관리자 이메일(`noog.sub@gmail.com`) 실시간 댓글 알림(Gmail SMTP) 수신 검증 완료.
+  6. 관리자 이메일(`your-email@gmail.com`) 실시간 댓글 알림(Gmail SMTP) 수신 검증 완료.
   7. 테마 XML 파일(`Core-Archive_Theme_Median-UI-v1.7.0-Custom.xml`) 수정 사항 GitHub 원격 푸시 완료.
   8. Mermaid 다이어그램 규격 정정: 580px 강제 고정 방식을 탈피하여 테마 구현에 맞춘 1:1 자연 배율(Natural Scale) 및 유연한 뷰포트 반응형 구조로 정착.
   9. 용어 정비: 'SSOT' 줄임말을 배제하고 '중앙 집중식 카탈로그(`_series.yaml`/`_series.json`) 기반 동적 시리즈 네비게이션'으로 알기 쉽게 서술.
