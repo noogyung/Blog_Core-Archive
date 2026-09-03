@@ -218,20 +218,21 @@ series_id: antigravity-blog-automation
 
 #### 📷 실전 첨부 스크린샷 카탈로그 (게시글 삽입 매핑 가이드)
 
-블로그 포스팅 생성 시 본문 각 맥락에 맞춰 삽입된 검증 스크린샷 14종 정밀 목록:
+블로그 포스팅 생성 시 본문 각 맥락에 맞춰 삽입된 검증 스크린샷 16종 정밀 목록:
 
-##### [A. Waline 서버리스 댓글 시스템 및 테마 일체화 (8종)]
+##### [A. Waline 서버리스 댓글 시스템 및 테마 일체화 (9종)]
 | 번호 | 이미지 파일명 | 설명 및 본문 배치 위치 |
 |:---:|---|---|
 | **scr02** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr02-turnstile-blocked.png` | Cloudflare Turnstile에 Vercel 도메인 미등록 시 발생하는 봇 차단 에러 |
 | **scr03** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr03-neon-shadow-account.png` | Vercel 'Open in Neon' 클릭 시 인증 메일 미수신 및 가상 계정 격리 현상 |
 | **scr06** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr06-waline-theme-mismatch.png` | 다크 테마에서 댓글창만 하얗게 떠 있는 테마 선택자 불일치 전체 화면 |
-| **scr07** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr07-waline-dark-initial.png` | CSS 변수 1:1 매핑 후 다크 모드에 맞춰 부드럽게 렌더링된 댓글창 화면 |
-| **scr10** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr10-guest-inputs-meta.png` | 라이트 모드 환경에 맞춰 밝은 테마 색상으로 자동 전환된 댓글창 화면 |
 | **scr11** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr11-admin-ui-exposed.png` | NickName, E-Mail, Website 상단 라벨과 가로 3분할 입력 폼 초기 구조 |
 | **scr13** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr13-concept1-desktop.png` | 게스트 3분할 입력 폼과 정돈된 아바타 및 여백이 적용된 데스크톱 최종 레이아웃 |
-| **scr14** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr14-concept1-mobile.png` | 관리자(noog)로 로그인했을 때 프로필 아바타와 단일 입력창으로 정돈된 데스크톱 레이아웃 |
+| **scr14** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr14-concept1-mobile.png` | 관리자로 로그인했을 때 프로필 아바타와 단일 입력창으로 정돈된 데스크톱 레이아웃 |
 | **scr15** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr15-guest-label-and-email.png` | 150px×140px Turnstile 사각형 위젯이 툴바 안에 끼어들어 글자 수와 버튼 사이를 파괴한 화면 |
+| **scr31** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr31-turnstile-floating-popover-complete.png` | Submit 버튼 상단에 플로팅 팝오버 카드로 우아하게 떠올라 검증을 수행하는 Turnstile 완성 화면 |
+| **scr32** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr32-emoji-stretch-bug.png` | 테마 전역 본문 이미지 스타일 간섭으로 이모티콘이 줄바꿈되고 가로 100%로 납작하게 찌그러지는 버그 화면 |
+| **scr33** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr33-emoji-complete.png` | CSS 격리 패치 후 텍스트와 자연스럽게 어우러져 정상 크기로 렌더링되는 인라인 이모티콘 완성 화면 |
 
 ##### [B. Mermaid 동적 다이어그램 & 완성 렌더링 (6종)]
 | 번호 | 이미지 파일명 | 설명 및 본문 배치 위치 |
@@ -242,25 +243,14 @@ series_id: antigravity-blog-automation
 | **scr19** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr19-mermaid-font-overflow.png` | 가로로 긴 다이어그램에서 노드 하단 텍스트가 잘려나가는 폰트 오버플로우 현상 |
 | **scr28** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr28-mermaid-complete-desktop.png` | 1:1 자연 배율 및 다크모드에 맞춰 본문에 깔끔하게 렌더링된 Mermaid 다이어그램 완성 화면 |
 | **scr29** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr29-mermaid-complete-lightbox.png` | 다이어그램 클릭 시 92vw×88vh 극장형 모달 뷰어에서 고해상도 벡터로 시원하게 확대되는 완성 화면 |
-| 번호 | 이미지 파일명 | 설명 및 본문 배치 위치 |
-|:---:|---|---|
-| **scr16** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr16-mermaid-tiny-render.png` | 테마의 기존 pre 스타일 상속으로 인해 Mermaid 다이어그램이 중앙에 점처럼 축소 렌더링되는 초기 증상 |
-| **scr17** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr17-mermaid-svg-24px-clash.png` | Median UI 전역 SVG 24px 크기 강제 스타일로 인해 다이어그램이 작은 상자 안에 갇히는 간섭 현상 |
-| **scr18** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr18-mermaid-lightbox-shrink.png` | 다이어그램 노드 내부 텍스트가 박스 경계에 걸려 잘리거나 찌그러지는 현상 |
-| **scr19** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr19-mermaid-font-overflow.png` | 가로로 긴 다이어그램에서 노드 하단 텍스트가 잘려나가는 폰트 오버플로우 현상 |
 
 ##### [C. 중앙 집중식 카탈로그 기반 동적 시리즈 네비게이션 (4종)]
 | 번호 | 이미지 파일명 | 설명 및 본문 배치 위치 |
 |:---:|---|---|
 | **scr27** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr27-series-chapter-accordion.png` | 초기 동적 네비게이션 연동 시 이전 편과 다음 편 카드가 둘 다 #3편으로 중복 렌더링되던 오류 화면 |
-| **scr26** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr26-series-cards-prev-next.png` | 중앙 카탈로그 순서에 따라 올바르게 계산되어 생성된 이전 편 카드와 시리즈 전체 목록 토글 |
+| **scr26** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr26-series-cards-prev-next.png` | 초기 AI가 무단으로 배경색을 부여하고 어색한 아이콘을 붙여 테마 다크/라이트 호환을 깨뜨렸던 초기 디자인 결함 화면 |
 | **scr25** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr25-series-nav-tab-layout.png` | 본문 하단에 '📌 시리즈 목록' 탭과 '✨ 관심이 있을 만한 글' 탭이 동적으로 분리된 최종 레이아웃 |
 | **scr30** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr30-series-complete-chapter-accordion.png` | 대형 연재물(WebTranslator 등)에서 챕터별로 깔끔하게 계층화되어 펼쳐진 시리즈 전체 목록 아코디언 완성 화면 |
-| 번호 | 이미지 파일명 | 설명 및 본문 배치 위치 |
-|:---:|---|---|
-| **scr27** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr27-series-chapter-accordion.png` | 초기 동적 네비게이션 연동 시 이전 편과 다음 편 카드가 둘 다 #3편으로 중복 렌더링되던 오류 화면 |
-| **scr26** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr26-series-cards-prev-next.png` | 중앙 카탈로그 순서에 따라 올바르게 계산되어 생성된 이전 편 카드와 시리즈 전체 목록 토글 |
-| **scr25** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr25-series-nav-tab-layout.png` | 본문 하단에 '📌 시리즈 목록' 탭과 '✨ 관심이 있을 만한 글' 탭이 동적으로 분리된 최종 레이아웃 |
 
 ---
 

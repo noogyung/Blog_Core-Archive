@@ -383,6 +383,7 @@ body.nB[data-theme='dark'] #waline {
       <strong>테마 전역 스타일 간섭으로 인한 이모티콘 100% 가로 왜곡 버그 해결:</strong><br>
       <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-09/antigravity-blog-automation-workflow-v4-scr32-emoji-stretch-bug.png?v=20260903_1800" alt="Median UI 전역 본문 이미지 스타일을 상속받아 댓글 내부 이모티콘이 새 줄로 떨어지고 가로 100%로 찌그러져 늘어나는 증상">
       Mermaid에서 겪었던 전역 SVG 24px 간섭과 마찬가지로, Median UI 테마 전역의 <code>article img { width: 100%; display: block; }</code> 스타일이 댓글 내부의 <code>&lt;img class="wl-emoji"&gt;</code>까지 강제 상속시키는 참사가 발생했습니다. 이로 인해 위 화면처럼 이모티콘이 문장 중간에 들어가지 못하고 강제로 줄바꿈되며 가로 100%로 납작하게 찌그러져 늘어났습니다. 댓글 전용 CSS에서 <code>#waline-comments img.wl-emoji { display: inline-block !important; width: 1.25em !important; height: 1.25em !important; margin: 0 2px !important; vertical-align: middle !important; }</code>를 선언하여 완벽한 인라인 이모지 렌더링을 복원했습니다.
+      <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-09/antigravity-blog-automation-workflow-v4-scr33-emoji-complete.png?v=20260903_1800" alt="CSS 격리 패치 후 텍스트와 자연스럽게 어우러져 정상 크기로 렌더링되는 인라인 이모티콘 완성 화면">
     </li>
   </ol>
 
