@@ -94,15 +94,17 @@
 
   <p>하지만 Median UI 1.7 테마에 Mermaid 라이브러리를 주입하자마자 여러 가지 시각적 충돌이 발생했습니다.</p>
 
-  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-09/antigravity-blog-automation-workflow-v4-scr16-mermaid-tiny-render.png?v=20260903_1800" alt="테마의 기존 pre 스타일을 상속받아 Mermaid 다이어그램이 지나치게 작게 축소 렌더링되는 증상">
+  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-09/antigravity-blog-automation-workflow-v4-scr16-mermaid-tiny-render.png?v=20260903_1800" alt="테마의 기존 pre 스타일을 상속받아 Mermaid 다이어그램이 중앙에 점처럼 축소 렌더링되는 증상">
 
   <p>가장 먼저 눈에 들어온 부분은 다이어그램이 본문 영역 안에서 돋보기로 보아야 할 정도로 작게 축소되어 출력되는 현상이었습니다. 원인을 분석해보니 Median UI 테마가 기본 코드 블록인 <code>pre</code> 태그에 부여해 둔 여백과 폰트 크기 스타일을 Mermaid 래퍼가 그대로 상속받고 있었습니다.</p>
 
-  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-09/antigravity-blog-automation-workflow-v4-scr17-mermaid-svg-24px-clash.png?v=20260903_1800" alt="Median UI 전역 SVG 24px 크기 강제 스타일이 Mermaid 다이어그램에 간섭하는 현상">
+  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-09/antigravity-blog-automation-workflow-v4-scr17-mermaid-svg-24px-clash.png?v=20260903_1800" alt="Median UI 전역 SVG 24px 크기 강제 스타일로 인해 다이어그램이 작은 상자 안에 갇히는 간섭 현상">
 
   <p>여기에 테마 전역 CSS에서 아이콘 크기를 맞추기 위해 선언해 둔 <code>svg { width: 24px; height: 24px; }</code> 스타일이 Mermaid가 생성한 복잡한 SVG 다이어그램까지 24픽셀 크기로 찌그러뜨리는 문제가 겹쳤습니다. 이로 인해 다이어그램 노드 내부의 텍스트가 박스 경계를 뚫고 넘치거나 폰트 크기가 들쭉날쭉해지는 현상이 연쇄적으로 일어났습니다.</p>
 
-  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-09/antigravity-blog-automation-workflow-v4-scr19-mermaid-font-overflow.png?v=20260903_1800" alt="다이어그램 내부 노드 텍스트가 박스 밖으로 튀어나오는 폰트 오버플로우 현상">
+  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-09/antigravity-blog-automation-workflow-v4-scr18-mermaid-lightbox-shrink.png?v=20260903_1800" alt="다이어그램 노드 내부 텍스트가 박스 경계에 걸려 잘리거나 찌그러지는 현상">
+
+  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-09/antigravity-blog-automation-workflow-v4-scr19-mermaid-font-overflow.png?v=20260903_1800" alt="가로로 긴 다이어그램에서 노드 하단 텍스트가 잘려나가는 폰트 오버플로우 현상">
 
   <h3 id="mermaid-resolution">1:1 자연 배율과 92vw×88vh 극장형 Lightbox 모달의 안착</h3>
 
@@ -111,12 +113,8 @@
   <ol class="step">
     <li><strong>1:1 자연 배율(Natural Scale) 정규화:</strong> 억지스러운 가로폭 고정을 제거하고 <code>width: auto !important; max-width: 100% !important;</code>를 부여하여 다이어그램 고유의 종횡비와 벡터 크기를 본문 너비 안에서 자연스럽게 유지하도록 구성했습니다.</li>
     <li><strong>폰트 상속 및 정규화:</strong> 노드 내부 <code>foreignObject div</code>와 <code>text</code> 요소가 본문 테마 폰트를 상속받고 13px 크기로 일관되게 중앙 정렬되도록 CSS를 격리했습니다.</li>
-    <li><strong>극장형 Lightbox 모달 연동:</strong> 다이어그램을 클릭하면 화면의 92vw × 88vh 크기를 차지하는 대형 모달 창이 열리며, 원본 해상도의 선명한 벡터 그래픽으로 확대되도록 구현했습니다.</li>
+    <li><strong>극장형 Lightbox 모달 연동:</strong> 다이어그램을 클릭하면 화면의 92vw × 88vh 크기를 차지하는 대형 모달 창이 열리며, 원본 해상도의 선명한 벡터 그래픽으로 확대되어 모바일 실기기(360px~412px 뷰포트)에서도 가로 스크롤이나 터치 줌으로 쾌적하게 확인할 수 있도록 구현했습니다.</li>
   </ol>
-
-  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-09/antigravity-blog-automation-workflow-v4-scr21-mermaid-lightbox-fullsize-fix.png?v=20260903_1800" alt="92vw×88vh 크기의 극장형 모달 뷰어에서 고해상도로 확대되는 다이어그램">
-
-  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-09/antigravity-blog-automation-workflow-v4-scr22-mermaid-final-desktop.png?v=20260903_1800" alt="정규화된 폰트와 깔끔한 레이아웃으로 본문에 렌더링된 데스크톱 최종 화면">
 
   <p>실제 블로그 본문에서 렌더링되는 아키텍처 흐름도를 Mermaid 코드로 표현하면 다음과 같습니다.</p>
 
@@ -154,19 +152,21 @@ _series.yaml")]
   <div class="pre custom" data-text="HTML"><button aria-label="Copy code">Copy</button><pre>&lt;!-- 시리즈 네비게이션 컨테이너 (JS로 동적 렌더링) --&gt;
 &lt;nav class="series-nav"&gt;&lt;/nav&gt;</pre></div>
 
-  <p>테마에 내장된 자바스크립트는 페이지가 열릴 때 GitHub Raw 저장소의 <code>_series.json</code> 카탈로그와 블로그스팟 라벨 피드를 실시간으로 조회하여 다음과 같은 작업을 브라우저 단에서 동적으로 처리합니다.</p>
+  <p>테마에 내장된 자바스크립트는 페이지가 열릴 때 GitHub Raw 저장소의 <code>_series.json</code> 카탈로그와 블로그스팟 라벨 피드를 실시간으로 조회하여 브라우저 단에서 동적으로 처리합니다.</p>
 
-  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-09/antigravity-blog-automation-workflow-v4-scr25-series-nav-tab-layout.png?v=20260903_1800" alt="본문 하단에 시리즈 목록 탭과 관심글 탭이 동적으로 분리된 레이아웃">
+  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-09/antigravity-blog-automation-workflow-v4-scr27-series-chapter-accordion.png?v=20260903_1800" alt="초기 동적 네비게이션 연동 시 이전 편과 다음 편 카드가 둘 다 #3편으로 중복 렌더링되던 오류 화면">
 
-  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-09/antigravity-blog-automation-workflow-v4-scr26-series-cards-prev-next.png?v=20260903_1800" alt="중앙 카탈로그 순서에 따라 자동으로 계산되어 생성된 이전 편과 다음 편 카드">
+  <p>초기 구현 당시에는 위 화면처럼 피드 조회 조건과 슬러그 파싱의 결함으로 인해 이전 편과 다음 편 카드가 둘 다 동일한 3편을 가리키거나 순서가 뒤엉키는 렌더링 버그가 발생하기도 했습니다. 이를 해결하기 위해 카탈로그의 <code>topics</code> 순서를 엄격한 단일 진실 기준으로 삼아 앞뒤 인덱스를 계산하도록 스크립트를 정비했습니다.</p>
+
+  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-09/antigravity-blog-automation-workflow-v4-scr26-series-cards-prev-next.png?v=20260903_1800" alt="중앙 카탈로그 순서에 따라 올바르게 계산되어 생성된 이전 편 카드와 시리즈 전체 목록 토글">
+
+  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-09/antigravity-blog-automation-workflow-v4-scr25-series-nav-tab-layout.png?v=20260903_1800" alt="본문 하단에 시리즈 목록 탭과 관심글 탭이 동적으로 분리된 최종 레이아웃">
 
   <ul class="pros">
     <li><strong>이전/다음 글 자동 계산:</strong> 카탈로그에 명시된 토픽 배열 순서를 읽어 현재 글의 앞뒤 편을 정확하게 찾아 카드로 렌더링합니다. (순서가 바뀌거나 새 글이 추가되어도 카탈로그 파일만 수정하면 모든 글의 이전/다음 링크가 즉시 갱신됩니다.)</li>
     <li><strong>탭 기반 UI 분리:</strong> '📌 시리즈 목록' 탭에는 정규 순서 카드와 전체 목차를 배치하고, '✨ 관심이 있을 만한 글' 탭에는 현재 시리즈 글을 제외한 블로그의 추천 글을 분리 노출합니다.</li>
     <li><strong>장기 연재물 챕터 아코디언:</strong> 20편이 넘어가는 대형 연재물(WebTranslator 등)의 경우, 챕터별로 묶인 접이식 아코디언 목차를 제공하여 독자가 원하는 단계로 쉽게 이동할 수 있도록 구성했습니다.</li>
   </ul>
-
-  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-09/antigravity-blog-automation-workflow-v4-scr27-series-chapter-accordion.png?v=20260903_1800" alt="대형 연재물을 챕터별로 계층화하여 표시하는 아코디언 목차 화면">
 
   <h2 id="waline-infrastructure">4. 구글 블로그의 한계 돌파: Waline 서버리스 댓글 시스템 구축</h2>
 
@@ -181,7 +181,8 @@ _series.yaml")]
   <ol class="step">
     <li>
       <strong>Cloudflare Turnstile 위젯 발급:</strong><br>
-      방문자가 귀찮은 퍼즐을 풀 필요 없이 백그라운드에서 인간임을 검증하는 Turnstile 위젯을 생성했습니다. 여기서 핵심은 Domain 목록에 실제 블로그 주소(<code>blog.noog.kim</code>)뿐만 아니라 Vercel 고정 대표 주소(<code>blog-waline.vercel.app</code>)를 함께 등록해야 한다는 점이었습니다.
+      방문자가 귀찮은 퍼즐을 풀 필요 없이 백그라운드에서 인간임을 검증하는 Turnstile 위젯을 생성했습니다. 여기서 핵심은 Domain 목록에 실제 블로그 주소(<code>blog.noog.kim</code>)뿐만 아니라 Vercel 고정 대표 주소(<code>blog-waline.vercel.app</code>)를 함께 등록해야 한다는 점이었습니다. (도메인을 누락하면 가입 화면에서 차단 에러가 발생합니다.)
+      <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-09/antigravity-blog-automation-workflow-v4-scr02-turnstile-blocked.png?v=20260903_1800" alt="Cloudflare Turnstile에 Vercel 도메인 미등록 시 발생하는 봇 차단 화면">
     </li>
     <li>
       <strong>Vercel 원클릭 배포와 모노레포 함정:</strong><br>
@@ -192,7 +193,6 @@ _series.yaml")]
       Vercel 내장 Storage 탭에서 원클릭으로 Neon DB를 생성한 후 'Open in Neon'을 누르면 인증 메일이 발송되지 않고 콘솔에 진입할 수 없는 기현상이 발생했습니다. Vercel이 사용자 이메일과 매핑되지 않는 임의의 GitHub OAuth 가상 계정으로 DB를 프로비저닝했기 때문이었습니다.
       <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-09/antigravity-blog-automation-workflow-v4-scr03-neon-shadow-account.png?v=20260903_1800" alt="Vercel에서 생성된 Neon DB 진입 시 가상 계정 격리로 인증 메일이 오지 않는 현상">
       이 문제는 <a href="https://neon.tech/" target="_blank" rel="noopener noreferrer">neon.tech</a> 공식 홈페이지로 이동하여 GitHub 소셜 로그인을 직접 수행함으로써 해결되었습니다. 실제 스토리지 대시보드가 정상적으로 표시되며 데이터베이스 제어권을 온전히 확보할 수 있었습니다.
-      <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-09/antigravity-blog-automation-workflow-v4-scr04-neon-github-oauth.png?v=20260903_1800" alt="Neon 공식 사이트에서 GitHub 로그인을 통해 스토리지 제어권을 확보한 화면">
     </li>
     <li>
       <strong>Neon SQL Editor에서 테이블 수동 초기화:</strong><br>
@@ -222,7 +222,7 @@ _series.yaml")]
 
   <h3 id="dark-mode-mapping">다크/라이트 모드 CSS 변수 1:1 매핑</h3>
 
-  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-09/antigravity-blog-automation-workflow-v4-scr05-waline-light-glare.png?v=20260903_1800" alt="초기 연동 시 다크 테마와 맞지 않게 하얗게 번져 나오는 댓글창 UI">
+  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-09/antigravity-blog-automation-workflow-v4-scr06-waline-theme-mismatch.png?v=20260903_1800" alt="초기 연동 시 블로그 본문 전체는 다크 모드인데 댓글 입력창만 하얗게 떠 있는 테마 불일치 현상">
 
   <p>Median UI 테마는 <code>html</code> 태그가 아닌 <code>body.nB[data-theme='dark']</code> 선택자를 통해 다크 모드를 제어합니다. 테마에 내장된 색상 변수들을 Waline의 내부 CSS 변수에 1:1로 매핑하여 테마 스위치를 누르는 즉시 댓글 영역도 부드럽게 색상이 동기화되도록 수정했습니다.</p>
 
@@ -244,15 +244,23 @@ body.nB[data-theme='dark'] #waline {
   --waline-border-color: var(--contentBd-color);
 }</pre></div>
 
+  <p>이를 통해 다크 모드와 라이트 모드 양쪽 환경 모두에서 블로그 본문 테마와 완벽하게 일치하는 색조를 확보했습니다.</p>
+
+  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-09/antigravity-blog-automation-workflow-v4-scr07-waline-dark-initial.png?v=20260903_1800" alt="다크 모드 환경에 맞춰 어두운 배경과 폰트 색상이 적용된 댓글창 화면">
+
+  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-09/antigravity-blog-automation-workflow-v4-scr10-guest-inputs-meta.png?v=20260903_1800" alt="라이트 모드 환경에 맞춰 밝은 테마 색상으로 전환된 댓글창 화면">
+
   <h3 id="minimal-guest-form">미니멀 3분할 게스트 폼 및 불필요한 메타 은닉</h3>
 
   <p>기본 Waline UI는 닉네임, 이메일, 웹사이트 입력창 위에 영문 라벨이 크게 붙어 있어 세로 공간을 과도하게 차지했습니다. 상단 라벨 텍스트를 숨기고 세 입력창을 가로 3분할(33.3%)로 배치한 뒤, <code>MutationObserver</code>를 활용해 '닉네임', '이메일(알림용)', '웹사이트' 한글 Placeholder를 인풋 내부로 자연스럽게 주입했습니다.</p>
 
-  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-09/antigravity-blog-automation-workflow-v4-scr13-concept1-desktop.png?v=20260903_1800" alt="가로 3분할 입력 폼과 정돈된 아바타 및 여백이 적용된 데스크톱 최종 레이아웃">
+  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-09/antigravity-blog-automation-workflow-v4-scr11-admin-ui-exposed.png?v=20260903_1800" alt="NickName, E-Mail, Website 상단 라벨과 가로 3분할 입력 폼 초기 구조">
 
-  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-09/antigravity-blog-automation-workflow-v4-scr14-concept1-mobile.png?v=20260903_1800" alt="모바일 다크 모드 환경에서도 일체감 있게 렌더링되는 최종 댓글 레이아웃">
+  <p>또한 프로필 아바타 주변의 원형 테두리 위치가 어긋나거나 닉네임이 세로로 줄바꿈되는 버그를 잡고, 모바일 가독성을 저해하던 대댓글 점선 인용선(<code>.wl-card .wl-quote</code>)과 불필요한 OS/브라우저 메타 정보 배지(<code>.wl-meta</code>)를 숨겨 정갈한 미니멀리스트 룩을 완성했습니다.</p>
 
-  <p>또한 모바일 가독성을 저해하던 대댓글 점선 인용선(<code>.wl-card .wl-quote</code>)을 지우고, 불필요하게 노출되던 방문자의 OS/브라우저 메타 정보 배지(<code>.wl-meta</code>)를 숨김 처리하여 정갈한 미니멀리스트 룩을 완성했습니다.</p>
+  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-09/antigravity-blog-automation-workflow-v4-scr13-concept1-desktop.png?v=20260903_1800" alt="가로 3분할 입력 폼과 정돈된 아바타 및 여백이 적용된 게스트 상태의 데스크톱 최종 레이아웃">
+
+  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-09/antigravity-blog-automation-workflow-v4-scr14-concept1-mobile.png?v=20260903_1800" alt="관리자로 로그인했을 때 프로필 아바타와 단일 입력창으로 깔끔하게 정돈된 데스크톱 레이아웃">
 
   <h3 id="turnstile-popover">Turnstile 중복 렌더링 무한 대기와 플로팅 팝오버</h3>
 
@@ -264,7 +272,9 @@ body.nB[data-theme='dark'] #waline {
     <strong>💡 해결책:</strong> 무리한 전역 객체 가로채기를 모두 걷어내고, 스크립트 헤더에 <code>id='cf-turnstile-script'</code>를 주어 정적으로 단 한 번만 로드되도록 고정했습니다. 그리고 렌더링 직전 Turnstile 공식 API인 <code>turnstile.remove(widgetId)</code>를 명시적으로 호출하여 이전 인스턴스를 파괴한 후 새 위젯을 마운트하는 훅을 구현함으로써 연속 댓글 작성을 지연 없이 즉시 통과시켰습니다.
   </div>
 
-  <p>또한 150px×140px 크기의 네모난 Turnstile 캡차 상자가 툴바 안에 끼어들어 글자 수와 전송 버튼을 밑으로 밀어내는 레이아웃 파괴 현상을 해결하기 위해, 캡차 컨테이너에 <code>position: absolute</code>를 부여하여 Submit 버튼 상단에 깔끔하게 떠오르는 <strong>플로팅 팝오버</strong> 형태로 UI를 개편했습니다.</p>
+  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-09/antigravity-blog-automation-workflow-v4-scr15-guest-label-and-email.png?v=20260903_1800" alt="150px×140px 크기의 사각형 Turnstile 위젯이 Submit 버튼과 아이콘 사이에 끼어들어 툴바 레이아웃을 파괴한 화면">
+
+  <p>위 화면처럼 150px×140px 크기의 네모난 Turnstile 캡차 상자가 인라인으로 끼어들어 글자 수와 전송 버튼을 밀어내는 레이아웃 파괴 현상을 해결하기 위해, 캡차 컨테이너에 <code>position: absolute</code>를 부여하여 Submit 버튼 상단에 깔끔하게 떠오르는 <strong>플로팅 팝오버</strong> 형태로 UI를 개편하고 비어있을 때는 완전 은닉 처리했습니다.</p>
 
   <h3 id="slider-integration">메인 슬라이더 4번 실시간 댓글 연동 및 하이브리드 승격</h3>
 

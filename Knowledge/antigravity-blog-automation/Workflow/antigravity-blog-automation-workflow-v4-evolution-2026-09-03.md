@@ -149,55 +149,44 @@ series_id: antigravity-blog-automation
 
 #### 📷 실전 첨부 스크린샷 카탈로그 (게시글 삽입 매핑 가이드)
 
-블로그 포스팅 생성 시 본문 각 맥락에 맞춰 삽입할 검증 스크린샷 27종 목록:
+블로그 포스팅 생성 시 본문 각 맥락에 맞춰 삽입된 검증 스크린샷 14종 정밀 목록:
 
-##### [A. Waline 서버리스 댓글 시스템 (15종)]
+##### [A. Waline 서버리스 댓글 시스템 및 테마 일체화 (8종)]
 | 번호 | 이미지 파일명 | 설명 및 본문 배치 위치 |
 |:---:|---|---|
-| **scr01** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr01-vercel-storage.png` | Vercel 내장 Storage 탭에서 Neon DB 생성 시 초기 화면 |
 | **scr02** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr02-turnstile-blocked.png` | Cloudflare Turnstile에 Vercel 도메인 미등록 시 발생하는 봇 차단 에러 |
 | **scr03** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr03-neon-shadow-account.png` | Vercel 'Open in Neon' 클릭 시 인증 메일 미수신 및 가상 계정 격리 현상 |
-| **scr04** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr04-neon-github-oauth.png` | Neon 공식 콘솔에 GitHub 외부 연동 계정으로 직접 로그인하여 스토리지 제어권 확보한 화면 |
-| **scr05** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr05-waline-light-glare.png` | 초기 Waline 연동 시 다크 테마와 맞지 않게 하얗게 번지는 댓글창 UI |
-| **scr06** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr06-waline-theme-mismatch.png` | Median UI 다크모드 선택자(`body.nB[data-theme='dark']`) 불일치로 인한 스타일 미적용 현상 |
-| **scr07** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr07-waline-dark-initial.png` | 테마 변수 매핑 직후의 초기 다크모드 댓글창 렌더링 화면 |
-| **scr08** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr08-waline-light-initial.png` | 테마 변수 매핑 직후의 초기 라이트모드 댓글창 렌더링 화면 |
-| **scr09** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr09-avatar-align-issue.png` | 프로필 아이콘과 닉네임 정렬 불일치 및 배지 겹침 이슈 화면 |
-| **scr10** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr10-guest-inputs-meta.png` | 게스트 3분할 입력칸 및 브라우저/OS 메타 정보 표시 이슈 화면 |
-| **scr11** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr11-admin-ui-exposed.png` | 일반 사용자 화면에 관리자용 승인/수정/삭제 버튼이 노출되던 화면 |
-| **scr12** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr12-focus-white-bug.png` | 댓글 텍스트박스 클릭(포커스) 시 흰색 박스로 변하는 버그 및 레이아웃 틀어짐 화면 |
-| **scr13** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr13-concept1-desktop.png` | Concept 1 미니멀리스트 적용 후 데스크톱 최종 레이아웃 |
-| **scr14** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr14-concept1-mobile.png` | Concept 1 미니멀리스트 적용 후 모바일/다크 테마 최종 레이아웃 |
-| **scr15** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr15-guest-label-and-email.png` | 게스트 폼 라벨 숨김 및 Placeholder 주입 요구사항 검토 화면 |
+| **scr06** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr06-waline-theme-mismatch.png` | 다크 테마에서 댓글창만 하얗게 떠 있는 테마 선택자 불일치 전체 화면 |
+| **scr07** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr07-waline-dark-initial.png` | CSS 변수 1:1 매핑 후 다크 모드에 맞춰 부드럽게 렌더링된 댓글창 화면 |
+| **scr10** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr10-guest-inputs-meta.png` | 라이트 모드 환경에 맞춰 밝은 테마 색상으로 자동 전환된 댓글창 화면 |
+| **scr11** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr11-admin-ui-exposed.png` | NickName, E-Mail, Website 상단 라벨과 가로 3분할 입력 폼 초기 구조 |
+| **scr13** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr13-concept1-desktop.png` | 게스트 3분할 입력 폼과 정돈된 아바타 및 여백이 적용된 데스크톱 최종 레이아웃 |
+| **scr14** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr14-concept1-mobile.png` | 관리자(noog)로 로그인했을 때 프로필 아바타와 단일 입력창으로 정돈된 데스크톱 레이아웃 |
+| **scr15** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr15-guest-label-and-email.png` | 150px×140px Turnstile 사각형 위젯이 툴바 안에 끼어들어 글자 수와 버튼 사이를 파괴한 화면 |
 
-##### [B. Mermaid 동적 다이어그램 & Lightbox 모달 (8종)]
+##### [B. Mermaid 동적 다이어그램 & 트러블슈팅 (4종)]
 | 번호 | 이미지 파일명 | 설명 및 본문 배치 위치 |
 |:---:|---|---|
-| **scr16** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr16-mermaid-tiny-render.png` | 테마의 기존 pre 블록 상속으로 인해 Mermaid 다이어그램이 지나치게 작게 렌더링되는 초기 증상 |
-| **scr17** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr17-mermaid-svg-24px-clash.png` | Median UI 테마의 전역 SVG 24px width/height 강제 스타일이 Mermaid 다이어그램에 간섭하는 현상 |
-| **scr18** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr18-mermaid-lightbox-shrink.png` | Lightbox 모달 확대 시 다이어그램이 뷰포트에 맞게 1:1로 확장되지 않고 축소되는 현상 |
-| **scr19** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr19-mermaid-font-overflow.png` | 다이어그램 내부 노드 텍스트가 박스 경계를 뚫고 넘치거나 잘리는 폰트 오버플로우 현상 |
-| **scr20** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr20-mermaid-font-size-inconsistent.png` | 다이어그램마다 폰트 크기가 들쭉날쭉하여 통일감이 저해되는 증상 |
-| **scr21** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr21-mermaid-lightbox-fullsize-fix.png` | 92vw×88vh 극장형 모달 컨테이너를 가득 채우도록 고해상도 벡터 스케일링 패치한 화면 |
-| **scr22** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr22-mermaid-final-desktop.png` | 1:1 자연 배율(Natural Scale) 및 정규화된 폰트로 깔끔하게 렌더링되는 데스크톱 최종 화면 |
-| **scr23** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr23-mermaid-final-mobile.png` | 모바일 뷰포트(360px~412px) 실기기에서도 가로 스크롤 및 모달 터치 줌으로 정상 동작하는 화면 |
+| **scr16** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr16-mermaid-tiny-render.png` | 테마의 기존 pre 스타일 상속으로 인해 Mermaid 다이어그램이 중앙에 점처럼 축소 렌더링되는 초기 증상 |
+| **scr17** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr17-mermaid-svg-24px-clash.png` | Median UI 전역 SVG 24px 크기 강제 스타일로 인해 다이어그램이 작은 상자 안에 갇히는 간섭 현상 |
+| **scr18** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr18-mermaid-lightbox-shrink.png` | 다이어그램 노드 내부 텍스트가 박스 경계에 걸려 잘리거나 찌그러지는 현상 |
+| **scr19** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr19-mermaid-font-overflow.png` | 가로로 긴 다이어그램에서 노드 하단 텍스트가 잘려나가는 폰트 오버플로우 현상 |
 
-##### [C. 중앙 집중식 카탈로그 기반 동적 시리즈 네비게이션 (4종)]
+##### [C. 중앙 집중식 카탈로그 기반 동적 시리즈 네비게이션 (3종)]
 | 번호 | 이미지 파일명 | 설명 및 본문 배치 위치 |
 |:---:|---|---|
-| **scr24** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr24-series-nav-devtools.png` | 개발자 도구(F12) 콘솔에서 `<nav class="series-nav">`가 중앙 JSON 카탈로그를 조회하는 렌더링 점검 |
-| **scr25** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr25-series-nav-tab-layout.png` | 본문 하단에 '📌 시리즈 목록' 탭과 '✨ 관심이 있을 만한 글' 탭이 동적으로 분리된 UI |
-| **scr26** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr26-series-cards-prev-next.png` | 중앙 카탈로그 순서에 따라 자동으로 계산되어 생성된 '이전 편 / 다음 편' 카드 레이아웃 |
-| **scr27** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr27-series-chapter-accordion.png` | 대형 연재물에서 챕터별로 계층화되어 접히고 펼쳐지는 시리즈 아코디언 전체 목차 화면 |
+| **scr27** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr27-series-chapter-accordion.png` | 초기 동적 네비게이션 연동 시 이전 편과 다음 편 카드가 둘 다 #3편으로 중복 렌더링되던 오류 화면 |
+| **scr26** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr26-series-cards-prev-next.png` | 중앙 카탈로그 순서에 따라 올바르게 계산되어 생성된 이전 편 카드와 시리즈 전체 목록 토글 |
+| **scr25** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr25-series-nav-tab-layout.png` | 본문 하단에 '📌 시리즈 목록' 탭과 '✨ 관심이 있을 만한 글' 탭이 동적으로 분리된 최종 레이아웃 |
 
 ---
 
 #### 🐛 Errors & Solutions (버전별 주요 장애 및 극복 내역)
 
 * **[Mermaid 다이어그램 폰트 왜곡 및 뷰포트 스케일링 (2026-08 말 해결)]**
-  * **증상:** Median UI 테마에서 Mermaid 다이어그램이 컨테이너 가로폭(800px)에 맞춰 억지로 늘어나면서 폰트 크기가 불균일해지거나 텍스트가 잘리는 현상 발생. *(스크린샷: `scr16`, `scr19`, `scr20`)*
+  * **증상:** Median UI 테마에서 Mermaid 다이어그램이 컨테이너 가로폭(800px)에 맞춰 억지로 늘어나면서 폰트 크기가 불균일해지거나 텍스트가 잘리는 현상 발생. *(스크린샷: `scr16`, `scr17`, `scr18`, `scr19`)*
   * **원인:** SVG viewBox와 CSS width 간의 비율 불일치 및 강제 가로폭 고정 스타일.
-  * **해결법:** 임시 가로폭 고정 방식을 탈피하여 다이어그램 고유 1:1 자연 배율(`width: auto !important`, `max-width: 100% !important`)로 정규화하고, 본문 폰트를 상속하도록 정리. 클릭 시 92vw×88vh 극장형 고해상도 Lightbox 모달에서 원본 벡터로 확대되도록 테마 스크립트 패치 완료. 모바일 뷰포트(360px~412px) 실기기에서도 정상 렌더링 검증 완료. *(스크린샷: `scr21`, `scr22`, `scr23`)* [FACT/USER VERIFIED]
+  * **해결법:** 임시 가로폭 고정 방식을 탈피하여 다이어그램 고유 1:1 자연 배율(`width: auto !important`, `max-width: 100% !important`)로 정규화하고, 본문 폰트를 상속하도록 정리. 클릭 시 92vw×88vh 극장형 고해상도 Lightbox 모달에서 원본 벡터로 확대되도록 테마 스크립트 패치 완료. 모바일 뷰포트(360px~412px) 실기기에서도 정상 렌더링 검증 완료. [FACT/USER VERIFIED]
 
 * **[Blogger XML 엔티티 파싱 오류 및 Mermaid CDATA 충돌 (2026-08 말 해결)]**
   * **증상:** Blogger 테마 XML 에디터에서 Mermaid 스크립트 및 스타일 내부의 특수문자(`<`, `>`, `&`)로 인해 템플릿 저장 시 파싱 에러 발생.
@@ -217,7 +206,7 @@ series_id: antigravity-blog-automation
 * **[Vercel 내장 Neon 스토리지의 가상 섀도우 계정 격리 문제 (2026-09-01 해결)]**
   * **증상:** Vercel 대시보드에서 원클릭으로 생성된 Neon DB에 대해 'Open in Neon' 클릭 시 인증 메일이 오지 않고 계정 콘솔 접근이 불가능해짐. *(스크린샷: `scr03`)*
   * **원인:** Vercel이 플랫폼 내부에서 사용자 이메일과 무관한 GitHub OAuth 가상(Shadow) 계정으로 DB를 프로비저닝하여 소유권 매핑 실패.
-  * **해결법:** 사용자가 [neon.tech](https://neon.tech/) 공식 홈페이지에서 GitHub 외부 연동 로그인을 직접 수행하여 실제 스토리지를 확인하고 콘솔 제어권을 정상 확보함. *(스크린샷: `scr04`)* [FACT/USER VERIFIED]
+  * **해결법:** 사용자가 [neon.tech](https://neon.tech/) 공식 홈페이지에서 GitHub 외부 연동 로그인을 직접 수행하여 실제 스토리지를 확인하고 콘솔 제어권을 정상 확보함. [FACT/USER VERIFIED]
 
 * **[Vercel 어드민 회원가입 시 403 Forbidden 차단 에러 (2026-09-01 해결)]**
   * **증상:** `/ui` 관리자 가입 화면에서 Register 클릭 시 403 Forbidden 에러 발생.
