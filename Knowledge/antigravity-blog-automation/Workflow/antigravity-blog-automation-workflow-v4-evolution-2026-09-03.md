@@ -90,7 +90,7 @@ series_id: antigravity-blog-automation
   * **캐시 버스팅:** `<img> src` 뒤에 `?v={YYYYMMDD_HHmm}` 쿼리스트링을 자동 부여하고 jsDelivr Purge API를 호출하여 블로그스팟 및 브라우저 캐시 고착을 방지. [FACT]
 
 * **[Waline 기반 독립형 서버리스 댓글 시스템 아키텍처 및 테마 내재화]:**
-  * **도입 배경:** 구글 기본 댓글도 익명 작성이 가능하긴 하나 봇 검출 기능이 전혀 없어 스팸에 취약하고, 테마와 어울리지 않는 낙후된 디자인에다 익명 작성자가 본인의 정보(이메일/웹사이트)를 남길 수 없어 답글 알림을 받지 못하는 한계를 극복하기 위해 서버리스 Waline v3를 도입.
+  * **도입 배경:** 구글 기본 댓글도 익명 작성이 가능하긴 하나 봇 검출 기능이 전혀 없어 스팸에 취약하고, 테마와 어울리지 않는 낙후된 디자인에다 익명 작성자가 본인의 정보(이메일/웹사이트)를 남길 수 없어 답글 알림을 받지 못하는 한계를 극복하기 위해 서버리스 Waline v3를 도입. 특히 인라인/블록 코드 및 마크다운 문법 지원, 이미지 첨부 기능 지원으로 기술 블로그에 걸맞은 폭넓고 깊이 있는 소통 환경을 구축함.
   * **서버리스 인프라 구성:**
     1. **백엔드 (Compute):** Vercel Serverless Function (무료 티어, 공식 example 템플릿 배포).
     2. **데이터베이스 (Storage):** Neon Serverless PostgreSQL (외부 연결 독립 클라우드 DB).
@@ -265,6 +265,21 @@ series_id: antigravity-blog-automation
 ---
 
 #### 🐛 Errors & Solutions (버전별 주요 장애 및 극복 내역)
+
+* **[댓글 에디터 패널 우측 이탈 및 최소 높이 최적화 (2026-09-03 해결)]**
+  * **증상:** `<textarea id="wl-edit" class="wl-editor">`가 `<div class="wl-panel">` 경계를 우측으로 약 30px 초과하여 삐져나옴 (리사이즈 핸들이 박스 외부에 위치). 또한 기본 최소 높이가 너무 높아 1~2줄 단문 작성 시 부담스러움.
+  * **원인:** Waline 기본 CSS의 `box-sizing: content-box` 및 `width: calc(100% - 1em)`로 인해 테마 패딩(15px)과 합산되어 가로폭 초과.
+  * **해결법:** `#waline-comments .wl-editor`에 `box-sizing: border-box !important; width: 100% !important; margin: 0 !important;`를 부여하고, 최소 높이를 `min-height: 3.5em;`(약 60px)로 설정하여 컴팩트한 단문 뷰 구현. [FACT/USER VERIFIED]
+
+* **[댓글 실시간 글자 수 카운터(Word Counter) 0 고정 멈춤 버그 (2026-09-03 해결)]**
+  * **증상:** 텍스트 입력 시 하단의 `0 Words` 카운터가 0에서 갱신되지 않음.
+  * **원인:** 한글 IME 입력 및 커스텀 이벤트 처리 도중 `input` 이벤트 감지 누락.
+  * **해결법:** 에디터 입력 이벤트 리스너를 동기화하여 실시간 글자 수 및 단어 수 카운팅 정상 동작하도록 복원. [FACT/USER VERIFIED]
+
+* **[이모티콘 팝업 위치 및 전역 이미지 스타일에 의한 가로 100% 왜곡 버그 (2026-09-03 해결)]**
+  * **증상:** 이모티콘/GIF 창이 에디터 하단으로 밀려나 패널에 잘리고 배경이 투명해짐. 또한 댓글 내부의 이모티콘(`<img class="wl-emoji">`)이 문장 중간에 들어가지 않고 강제로 줄바꿈되며 가로 100%로 납작하게 늘어남. *(스크린샷: `scr32`)*
+  * **원인:** Waline 기본의 `top: 100%` 팝업 위치 및 테마 전역의 `article img { width: 100%; display: block; }` 스타일이 댓글 이모티콘 이미지까지 강제 상속.
+  * **해결법:** 이모티콘 팝업을 상단 플로팅 모달(`position: absolute; bottom: 100%;` + 그림자)로 올리고, 댓글 전용 CSS에서 `#waline-comments img.wl-emoji { display: inline-block !important; width: 1.25em !important; height: 1.25em !important; margin: 0 2px !important; vertical-align: middle !important; }`를 강제하여 완벽한 인라인 렌더링 복원. [FACT/USER VERIFIED]
 
 * **[Mermaid 다이어그램 폰트 왜곡 및 뷰포트 스케일링 (2026-08 말 해결)]**
   * **증상:** Median UI 테마에서 Mermaid 다이어그램이 컨테이너 가로폭(800px)에 맞춰 억지로 늘어나면서 폰트 크기가 불균일해지거나 텍스트가 잘리는 현상 발생. *(스크린샷: `scr16`, `scr17`, `scr18`, `scr19`)*
