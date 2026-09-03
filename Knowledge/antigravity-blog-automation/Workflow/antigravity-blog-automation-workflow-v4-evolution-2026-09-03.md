@@ -228,7 +228,6 @@ series_id: antigravity-blog-automation
 | **scr06** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr06-waline-theme-mismatch.png` | 다크 테마에서 댓글창만 하얗게 떠 있는 테마 선택자 불일치 전체 화면 |
 | **scr11** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr11-admin-ui-exposed.png` | NickName, E-Mail, Website 상단 라벨과 가로 3분할 입력 폼 초기 구조 |
 | **scr13** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr13-concept1-desktop.png` | 게스트 3분할 입력 폼과 정돈된 아바타 및 여백이 적용된 데스크톱 최종 레이아웃 |
-| **scr14** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr14-concept1-mobile.png` | 관리자로 로그인했을 때 프로필 아바타와 단일 입력창으로 정돈된 데스크톱 레이아웃 |
 | **scr15** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr15-guest-label-and-email.png` | 150px×140px Turnstile 사각형 위젯이 툴바 안에 끼어들어 글자 수와 버튼 사이를 파괴한 화면 |
 | **scr31** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr31-turnstile-floating-popover-complete.png` | Submit 버튼 상단에 플로팅 팝오버 카드로 우아하게 떠올라 검증을 수행하는 Turnstile 완성 화면 |
 | **scr32** | `images/2026-09/antigravity-blog-automation-workflow-v4-scr32-emoji-stretch-bug.png` | 테마 전역 본문 이미지 스타일 간섭으로 이모티콘이 줄바꿈되고 가로 100%로 납작하게 찌그러지는 버그 화면 |
