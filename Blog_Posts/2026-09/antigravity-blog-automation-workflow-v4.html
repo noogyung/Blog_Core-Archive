@@ -121,30 +121,31 @@
 
   <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-09/antigravity-blog-automation-workflow-v4-scr29-mermaid-complete-lightbox.png?v=20260903_1800" alt="다이어그램 클릭 시 92vw×88vh 극장형 모달 뷰어에서 고해상도 벡터로 시원하게 확대되는 완성 화면">
 
-  <p>실제 블로그 본문에서 렌더링되는 아키텍처 흐름도를 Mermaid 코드로 표현하면 다음과 같습니다.</p>
+  <p>실제 블로그 본문과 Waline 댓글 시스템 간의 렌더링 및 통신 아키텍처 흐름도를 Mermaid 코드로 표현하면 다음과 같습니다.</p>
 
-  <div class="pre custom" data-text="Mermaid"><button aria-label="Copy code">Copy</button><pre>&lt;pre class="mermaid"&gt;
-flowchart LR
-    subgraph ControlPlane [Control Plane : BlogDocs]
-        Skill1["/1_주제"] --&gt; Skill2["/2_피드백"]
-        Skill2 --&gt; Skill3["/3_게시글"]
-        Skill3 --&gt; Skill4["/4_발행완료"]
+  <div class="pre mermaid" data-text="Mermaid"><button aria-label="Copy code">Copy</button><pre class="mermaid">flowchart LR
+    subgraph Client [클라이언트 : Blogger 본문]
+        DOM["#waline-comments&lt;br/&gt;(댓글 컨테이너)"]
+        WClient["@waline/client v3&lt;br/&gt;(ESM 동적 로드)"]
+        Turnstile["Cloudflare Turnstile&lt;br/&gt;(봇 차단 캡차)"]
+
+        DOM --- WClient
+        WClient --&gt; Turnstile
     end
-    subgraph DataPlane [Data Plane : Blog_Core-Archive]
-        Knowledge[("Knowledge Base
-_series.yaml")]
-        Posts["Blog_Posts (HTML)"]
-        Images["images/ (CDN)"]
+
+    subgraph Backend [서버리스 백엔드 : Vercel]
+        API["Waline REST API&lt;br/&gt;(Node.js 서버리스)"]
+        Admin["관리자 콘솔&lt;br/&gt;(/ui)"]
+        API --- Admin
     end
-    subgraph Services [External Infrastructure]
-        Vercel["Vercel Serverless"]
-        Neon[("Neon PostgreSQL")]
-        Turnstile["Cloudflare Turnstile"]
+
+    subgraph Storage [클라우드 DB : Neon]
+        DB[("Neon PostgreSQL&lt;br/&gt;(영구 저장소)")]
     end
-    Skill2 &lt;--&gt;|양방향 동기화| Knowledge
-    Skill3 --&gt;|HTML 생성| Posts
-    Services &lt;--&gt;|Waline API| Posts
-&lt;/pre&gt;</pre></div>
+
+    WClient &lt;--&gt;|댓글 조회 / 등록| API
+    Turnstile --&gt;|캡차 토큰| API
+    API &lt;--&gt;|SQL 쿼리| DB</pre></div>
 
   <h2 id="series-navigation">3. 중앙 집중식 카탈로그 기반 동적 시리즈 네비게이션</h2>
 

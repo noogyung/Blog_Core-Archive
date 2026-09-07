@@ -6,7 +6,7 @@ sub_category: System-Evolution-Comparison
 version: 2026-09-03
 status: Verified
 created_date: 2026-09-01
-last_modified: 2026-09-04
+last_modified: 2026-09-08
 language: KR
 tags: [Antigravity, 블로그-자동화, 시스템-진화, Mermaid, 동적-네비게이션, 시리즈-카탈로그, 양방향-동기화, 분산-아키텍처, Waline, 댓글시스템, Vercel, Neon-PostgreSQL, Cloudflare-Turnstile, Blogger, Median-UI]
 sources_count: 10
@@ -356,6 +356,13 @@ Antigravity, 블로그-자동화, 시스템-진화, Mermaid, 동적-네비게이
 
 ---
 ## 📝 Feedback History
+
+### 2026-09-08 — Test Result: PASS
+* **환경:** Windows 11, Antigravity IDE (Gemini 3.8 Flash), Median UI v1.7.0, Mermaid v10
+* **검증된 단계:**
+  1. Mermaid 다이어그램 내용 정정: 포스팅 자동화 CLI 스킬이 혼입되어 있던 오류를 바로잡고, 실제 블로그 본문과 Waline 댓글 시스템 간 3계층(클라이언트 → Vercel 백엔드 → Neon DB) 렌더링 및 통신 아키텍처 흐름도(수평 3열형)로 수정 반영 완료.
+  2. Mermaid 래퍼 태그 및 엔티티 규격화: 테마의 Mermaid 엔진이 정상 인식할 수 있도록 `<div class="pre mermaid" data-text="Mermaid">` 래퍼 및 `--&gt;` / `&lt;--&gt;` 엔티티 적용 완료.
+* **Status 변경:** Verified 유지
 
 ### 2026-09-03 — Test Result: PASS
 * **환경:** Windows 11, Antigravity IDE (Gemini 3.8 Flash), Vercel Serverless, Neon PostgreSQL, Cloudflare Turnstile, Median UI v1.7.0
