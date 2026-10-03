@@ -78,16 +78,25 @@ series_id: null
   * **최종 추천:** **Moonlight(클라이언트) + Apollo(호스트)**
     * **이유:** PC 모니터와 빔프로젝터 간 해상도/주사율 불일치가 존재하므로 가상 모니터 자동 생성이 필수적임. 호스트에 Apollo를 설치하면 스트리밍 시작 시 빔프로젝터가 요구하는 해상도/주사율(4K 60Hz 또는 1440p 120Hz)에 맞춘 PnP 가상 모니터를 자동 생성해 줌. 반면 클라이언트(Google TV Streamer)에는 Artemis를 사이드로딩할 필요 없이 공식 Moonlight 앱만으로도 완벽하게 연동되므로 설치 및 유지보수가 가장 편리함.
 
-##### 3. 다중 모니터(듀얼 모니터) + 가상 디스플레이(3번) 충돌 해결 방안
+##### 3. 설치 및 페어링 절차 (Moonlight + Apollo 0.4.6) [USER VERIFIED]
+  1. **클라이언트 (Google TV Streamer):**
+     * 안드로이드 TV 기반 OS이므로 Google Play 스토어에서 공식 **Moonlight Game Streaming** 앱 검색 후 설치.
+     * 실행 후 PC 연결 대기 상태로 진입하여 화면에 표시되는 **PIN 번호** 확인.
+  2. **호스트 PC:**
+     * 공식 GitHub 저장소([ClassicOldSong/Apollo](https://github.com/ClassicOldSong/Apollo))의 Releases 페이지에서 안정 릴리스 버전인 **v0.4.6** 다운로드 및 설치 (알파/프리릴리스 제외).
+     * 웹 관리자 페이지(`https://localhost:47990`) 접속 및 초기 계정 설정.
+     * 상단 메뉴의 **PIN 페어링** 탭으로 이동하여 Google TV Streamer의 Moonlight 화면에 나타난 PIN 번호 입력 및 페어링 완료 (장치 관리 목록에 등록 확인).
+  3. **가상 디스플레이 및 화면 단독 출력 설정:**
+     * **애플리케이션(Applications) 설정:** `Desktop` 또는 `Steam Big Picture` 등의 등록 앱 설정에서 **`Always create Virtual Display`** 옵션 활성화.
+     * **디스플레이 격리 설정:** `설정(Configuration)` -> `Audio/Video` -> `고급 디스플레이 장치 옵션(Advanced display device options)` -> `장치 구성(Device Configuration)` 항목을 **`다른 디스플레이를 비활성화하고 지정된 디스플레이만 활성화 하기(Deactivate other displays and activate only the specified display)`**로 지정.
+     * **결과:** Moonlight 스트리밍 세션이 열리는 즉시 PC의 물리 모니터(1번, 2번)가 비활성화되고, 스트리밍 전용 Virtual Display(3번)만 활성화되어 게임/스팀이 정상 출력됨. 세션 종료 시 물리 모니터 자동 복구.
+
+##### 4. 다중 모니터(듀얼 모니터) + 가상 디스플레이(3번) 충돌 해결 분석
   * **문제 상황:** 물리 모니터 2개 사용 중 스트리밍 시 가상 디스플레이 3번이 연결되나, Steam Big Picture나 게임이 주 모니터(1번)에 출력되는 현상.
   * **실제 검증된 최적 해결책: Apollo 내장 디스플레이 격리 옵션 활용 [USER VERIFIED]**
-    1. Apollo 웹 관리자 (`https://localhost:47990`) 접속
-    2. `Configuration` -> `Audio / Video` 탭 진입
-    3. `Advanced display device options` 클릭하여 확장
-    4. `Device Configuration` 항목을 **`Deactivate other displays and activate only the specified display`** 로 설정
-    5. **효과:** 스트리밍 시작 시 물리 모니터(1, 2번)가 일시 비활성화되고 가상 모니터(3번)만 단독 활성화되며, 종료 시 물리 모니터가 자동 복원됨. 주 모니터를 수동 변경할 필요 없이 가장 효용이 높음이 실증됨.
+    * 위의 설치 절차 3단계에서 적용한 Apollo `Deactivate other displays` 기능이 복잡한 Windows 주 모니터 수동 변경이나 서드파티 스크립트 대비 가장 효용과 완성도가 높음을 실증 확인.
 
-##### 4. 실전 스트리밍 해상도 및 성능 실측 데이터 (Google TV Streamer)
+##### 5. 실전 스트리밍 해상도 및 성능 실측 데이터 (Google TV Streamer)
   * **해상도 및 주사율 한계와 최종 세팅:**
     * 빔프로젝터는 120Hz를 지원하나, **Google TV Streamer 기기 스펙상 120Hz 출력을 지원하지 않아 최종 60FPS로 고정**하여 사용.
     * 볼핏은 120FPS 설정 테스트로 ~119.5 FPS까지 동작함을 확인했으나, 엘든 링 및 림월드는 60FPS 타겟으로 설정.
@@ -174,7 +183,11 @@ Moonlight, Artemis, Sunshine, Apollo, GoogleTVStreamer, GameStreaming, Projector
   * Display: 빔프로젝터 (저지연/게임 모드 활성화, 120Hz 지원 기기)
   * 선택 조합: Moonlight(Client) + Apollo(Host)
 * **검증/확인된 항목:**
-  * Apollo `Deactivate other displays` 설정으로 가상 모니터 3번 단독 출력 및 스팀 정상 작동 검증.
+  * **설치 및 페어링 절차 검증:**
+    * Google TV Streamer: Play 스토어에서 공식 Moonlight Game Streaming 앱 직접 설치.
+    * Host PC: GitHub(ClassicOldSong/Apollo)에서 v0.4.6 정식 릴리스 버전 설치.
+    * PIN 페어링: Moonlight 화면의 PIN 번호를 Apollo 웹 관리자 PIN 탭에 입력하여 연결 완료.
+    * 디스플레이 자동화: 애플리케이션의 `Always create Virtual Display` 옵션 활성화 및 `설정 -> Audio/Video -> 고급 디스플레이 장치 옵션 -> 장치 구성`에서 `다른 디스플레이를 비활성화하고 지정된 디스플레이만 활성화 하기(Deactivate other displays and activate only the specified display)` 적용.
   * 빔프로젝터의 120Hz 지원과 무관하게 Google TV Streamer 기기 자체가 120Hz를 지원하지 않아 최종 **1080p 60FPS**로 고정 사용 결정.
   * 해상도 설정: 1440p 이상은 디코딩 지연 과다, 1080p가 최적.
   * 게임 3종 실측 데이터:
