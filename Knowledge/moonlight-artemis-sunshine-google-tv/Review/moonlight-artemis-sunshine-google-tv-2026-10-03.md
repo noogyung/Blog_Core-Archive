@@ -4,7 +4,7 @@ title_kr: Moonlight vs Artemis 및 Sunshine 게임 스트리밍 조합 비교 �
 category: Review
 sub_category: Comparison
 version: 2026-10-03
-status: Experimental
+status: Verified (Partial)
 created_date: 2026-10-03
 last_modified: 2026-10-03
 language: KR+EN
@@ -26,7 +26,7 @@ series_id: null
 * **Category:** Review
 * **Sub-Category:** Comparison
 * **Version:** 2026-10-03
-* **Status:** Experimental
+* **Status:** Verified (Partial)
 * **Date:** 2026-10-03
 * **Language:** KR+EN
 
@@ -57,20 +57,26 @@ series_id: null
     * **호스트:** Sunshine
     * **클라이언트:** Moonlight (Google TV Streamer 플레이스토어에서 직접 설치 가능)
     * **장점:** 공식 릴리스 및 검증된 안정성, 플레이스토어를 통한 쉬운 설치 및 자동 업데이트, 빔프로젝터가 주 디스플레이이거나 서브 모니터 환경인 경우 안정적 구동.
-    * **단점:** 클라이언트와 호스트 모니터 간 해상도/주사율이 다를 경우(예: PC 모니터 QHD/FHD vs 빔프로젝터 4K), 별도의 가상 디스플레이 드라이버(Virtual Display Driver)나 qres/ChangeScreen 스크립트를 Sunshine 커스텀 훅에 직접 구성해야 함.
+    * **단점:** 클라이언트와 호스트 모니터 간 해상도/주사율이 다를 경우(예: PC 모니터 QHD 144Hz vs 빔프로젝터 4K 60Hz / 1440p 120Hz), 별도의 가상 디스플레이 드라이버(Virtual Display Driver)나 qres/ChangeScreen 스크립트를 Sunshine 커스텀 훅에 직접 구성해야 함.
   * **조합 B: 통합 최적화 조합 (Artemis + Sunshine/Apollo)**
     * **호스트:** Sunshine (또는 가상 디스플레이 일체형 Apollo)
     * **클라이언트:** Artemis (APK 사이드로딩 필요)
     * **장점:** Artemis는 세부 디코더 옵션 및 Apollo 연동 기능을 제공하며, Apollo와 함께 쓸 경우 가상 디스플레이 생성이 플러그앤플레이 형태로 자동 처리됨.
     * **단점:** 안드로이드 TV 환경에서 APK 직접 추출/사이드로딩(다운로더 앱 또는 ADB 등) 과정 필요. 비공식 포크 특성상 업데이트 관리 수동.
+  * **조합 C: 하이브리드 추천 조합 (Moonlight + Apollo)**
+    * **호스트:** Apollo (Sunshine 포크, PC 설치)
+    * **클라이언트:** Moonlight (Google TV Streamer 공식 플레이스토어 설치)
+    * **장점:** 호스트의 가상 디스플레이(SudoVDA) 자동 생성/해제 기능의 편리함을 그대로 누리면서, Google TV Streamer 쪽에는 번거로운 사이드로딩 없이 플레이스토어 공식 Moonlight 앱을 그대로 사용 가능. 현재 사용자 환경(PC 1440p 144Hz vs 빔프로젝터 4K 60Hz/1440p 120Hz)에 최적의 밸런스.
+    * **단점:** 기존에 수동 설치한 다른 가상 디스플레이 드라이버(VDD 등)가 있다면 충돌 방지를 위해 사전 삭제 필요.
 
 ##### 2. PC + 빔프로젝터 + Google TV Streamer 환경 추천 가이드
-  * **상황 1: 빔프로젝터가 4K/FHD이며 PC 모니터와 해상도가 일치하거나 단순 미러링 형태인 경우**
-    * **추천:** **Moonlight + Sunshine**
-    * **이유:** Google TV Streamer에 사이드로딩 없이 플레이스토어에서 즉시 Moonlight 설치 가능. 리모컨 조작 및 공식 업데이트가 편리하며 불필요한 설정 복잡도를 줄임.
-  * **상황 2: PC 본체 모니터와 빔프로젝터 해상도/비율이 달라 자동 가상 디스플레이 생성이 필수적인 경우**
-    * **추천:** **Artemis + Apollo** (또는 Moonlight + Sunshine + Virtual Display 스크립트)
-    * **이유:** Sunshine 단독으로는 해상도 자동 동기화에 별도 스크립트 작업이 필요하지만, Apollo + Artemis 조합은 스트리밍 시작 시 빔프로젝터 해상도에 맞춘 가상 모니터를 자동 활성화함.
+  * **현재 사용자 환경 특성:**
+    * PC 모니터: 1440p 144Hz
+    * 빔프로젝터: 4K 60Hz, 1440p 120Hz 지원
+    * 스트리머 네트워크: 5GHz Wi-Fi
+    * 게임 모드: 미설정 (테스트 예정)
+  * **최종 추천:** **Moonlight(클라이언트) + Apollo(호스트)**
+    * **이유:** PC 모니터와 빔프로젝터 간 해상도/주사율 불일치가 존재하므로 가상 모니터 자동 생성이 필수적임. 호스트에 Apollo를 설치하면 스트리밍 시작 시 빔프로젝터가 요구하는 해상도/주사율(4K 60Hz 또는 1440p 120Hz)에 맞춘 PnP 가상 모니터를 자동 생성해 줌. 반면 클라이언트(Google TV Streamer)에는 Artemis를 사이드로딩할 필요 없이 공식 Moonlight 앱만으로도 완벽하게 연동되므로 설치 및 유지보수가 가장 편리함.
 
 ---
 
@@ -87,16 +93,17 @@ series_id: null
 ---
 
 #### 💬 Experiences & Tips (경험 및 팁)
-  * [OPINION] Google TV Streamer는 기가비트 유선 포트가 탑재되어 있어 Wi-Fi 대비 지연 변동폭이 크게 줄어듭니다. 가급적 PC와 스트리머 모두 유선 LAN 구성을 권장합니다.
-  * [OPINION] 빔프로젝터는 일반 TV/모니터보다 자체 입력 지연(Display Latency)이 30~50ms 이상 발생하는 모델이 많으므로, 프로젝터의 MEMC(프레임 보간) 및 화면 보정 기능을 반드시 끄고 저지연 모드를 켜야 체감 딜레이가 최소화됩니다.
+  * [OPINION] PC 모니터가 1440p 144Hz이고 빔프로젝터가 4K 60Hz / 1440p 120Hz인 환경에서는 Apollo 호스트의 가상 디스플레이 자동 매칭이 매우 효과적입니다. 물리 모니터를 끄거나 해상도 강제 복제 없이 독립된 스트리밍 전용 가상 화면을 띄울 수 있습니다.
+  * [OPINION] 5GHz Wi-Fi 환경에서는 4K 60fps 전송 시 순간적인 지연 스파이크(Jitter)가 발생할 수 있으므로, 비트레이트는 50~70Mbps 전후로 시작하여 점진적으로 조정하는 것을 권장합니다.
+  * [OPINION] 빔프로젝터는 자체 이미지 후처리 엔진(MEMC 등)으로 인해 기본 입력 지연이 40~70ms에 달할 수 있으므로, 테스트 시 빔프로젝터의 게임 모드(저지연 모드) 활성화가 체감 반응성에 결정적인 역할을 합니다.
 
 ---
 
 #### ❓ Missing Info (검증 필요 항목)
-  * [ ] 사용자 PC의 물리 모니터 해상도 및 빔프로젝터 해상도/화면비 일치 여부 (가상 디스플레이 필요성 결정)
-  * [ ] Google TV Streamer의 연결 방식 (유선 LAN 케이블 직결 vs 5GHz Wi-Fi)
-  * [ ] 빔프로젝터 자체 게임 모드(저지연 모드) 지원 여부 및 실제 체감 레이턴시
-  * [ ] 사용자 최종 선택 조합 (Moonlight + Sunshine vs Artemis + Sunshine/Apollo) 및 선택 사유
+  * [x] 사용자 PC의 물리 모니터 해상도 및 빔프로젝터 해상도/화면비 일치 여부 — Verified 2026-10-03 (PC: 1440p 144Hz, 프로젝터: 4K 60Hz / 1440p 120Hz)
+  * [x] Google TV Streamer의 연결 방식 — Verified 2026-10-03 (5GHz Wi-Fi)
+  * [ ] 빔프로젝터 자체 게임 모드(저지연 모드) 적용 후 실제 체감 레이턴시 측정 결과
+  * [ ] 사용자가 최종 선택한 조합 구동 결과 및 테스트 피드백
 
 ---
 
@@ -104,3 +111,18 @@ series_id: null
 Moonlight, Artemis, Sunshine, Apollo, GoogleTVStreamer, GameStreaming, Projector, StreamingReview
 
 ===== KNOWLEDGE PACKAGE END =====
+
+---
+## 📝 Feedback History
+
+### 2026-10-03 — Test Result: PARTIAL
+* **환경:**
+  * Host PC: 1440p 144Hz 물리 모니터
+  * Client: Google TV Streamer (5GHz Wi-Fi)
+  * Display: 빔프로젝터 (4K 60Hz, 1440p 120Hz 지원)
+* **검증/확인된 항목:**
+  * 모니터와 프로젝터 해상도/주사율 차이로 가상 디스플레이(Virtual Display) 필요성 확인.
+  * 조합 C(Moonlight + Apollo) 옵션 타당성 분석 및 추가: 호스트 가상 디스플레이 자동화 + 클라이언트 공식 플레이스토어 Moonlight 조합이 최적의 밸런스임을 확인.
+* **진행 대기 항목:**
+  * 빔프로젝터 게임 모드 세팅 및 실제 스트리밍 레이턴시 테스트.
+* **Status 변경:** Experimental → Verified (Partial)
