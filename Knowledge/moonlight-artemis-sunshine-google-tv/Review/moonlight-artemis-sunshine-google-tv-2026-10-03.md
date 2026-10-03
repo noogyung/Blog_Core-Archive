@@ -10,8 +10,8 @@ last_modified: 2026-10-04
 language: KR+EN
 tags: [Moonlight, Artemis, Sunshine, Apollo, GoogleTVStreamer, GameStreaming, Projector]
 sources_count: 5
-blog_draft_path: null
-blog_draft_date: null
+blog_draft_path: Blog_Posts/2026-10/moonlight-apollo-google-tv-streamer-setup.html
+blog_draft_date: 2026-10-04
 blog_id: core-archive
 blog_published: false
 series_id: null

@@ -1,0 +1,194 @@
+<!-- ============================================================
+  [BLOG POST METADATA - Blogspot 설정창 복사용]
+  Title: PC 듀얼 모니터 환경에서 거실 빔프로젝터로 게임 스트리밍 구축기: Moonlight와 Apollo 가상 디스플레이 설정 및 실측
+  Labels (Tags): Review, GameStreaming, Moonlight, Apollo, Sunshine, GoogleTVStreamer, Projector
+  Meta Description: 듀얼 모니터 PC에서 거실 빔프로젝터 및 Google TV Streamer로 게임을 스트리밍하는 환경을 구축했습니다. Moonlight와 Apollo 조합 및 가상 디스플레이 설정을 정리합니다.
+  Slug: moonlight-apollo-google-tv-streamer-setup
+  ---
+  Primary Keyword: 게임 스트리밍
+  Secondary Keywords: Moonlight, Apollo, Sunshine, 가상 디스플레이, Google TV Streamer, 빔프로젝터
+  Knowledge Source: Knowledge/moonlight-artemis-sunshine-google-tv/Review/moonlight-artemis-sunshine-google-tv-2026-10-03.md
+  Generated Date: 2026-10-04
+  Estimated Read Time: 8분
+  Series ID: null
+  ============================================================ -->
+
+<article>
+  <!-- [IMAGE SLOT 1 - REQUIRED] ALT: PC 게임 스트리밍 아키텍처 다이어그램 -->
+  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-10/moonlight-artemis-sunshine-google-tv-img1.jpg?v=20261004_0150" alt="PC 게임 스트리밍 아키텍처 다이어그램" />
+
+  <p>작업 공간의 PC 사양을 활용하여 거실 빔프로젝터 대화면에서 PC 게임을 쾌적하게 즐기기 위한 로컬 게임 스트리밍 환경을 구축했습니다. 현재 PC는 1440p 144Hz 물리 듀얼 모니터 환경이며, 거실에는 4K 60Hz 및 1440p 120Hz 입력을 지원하는 빔프로젝터와 안드로이드 기반 미디어 플레이어인 <strong>Google TV Streamer</strong>가 연결되어 있습니다.</p>
+
+  <p>처음에는 전통적인 Moonlight + Sunshine 조합이나 최신 포크인 Artemis 클라이언트를 검토했으나, 호스트 모니터와 프로젝터의 해상도 불일치 문제 및 안드로이드 TV 환경의 설치 편의성을 고려하여 최종적으로 <strong>Moonlight(클라이언트) + Apollo(호스트)</strong> 조합을 선택했습니다. 이번 글에서는 이 조합을 선택한 기술적 배경과 듀얼 모니터 환경에서의 가상 디스플레이 격리 설정, 그리고 실제 게임 3종(엘든 링, 림월드, 볼핏)의 지연 시간 실측 데이터를 공유하고자 합니다.</p>
+
+  <h2 id="why-moonlight-apollo">스트리밍 조합 비교 및 선정 배경</h2>
+  <p>게임 스트리밍 인프라를 구성할 때 가장 먼저 고려해야 할 요소는 호스트 PC와 클라이언트 디스플레이 간의 물리적 스펙 차이입니다. PC 모니터는 QHD(2560x1440) 듀얼 구성인 반면, 빔프로젝터는 4K 및 고주사율을 지원하므로 단순 화면 복제나 미러링 방식으로는 정상적인 비율과 주사율을 확보하기 어렵습니다.</p>
+
+  <div class="table w100 withBg">
+    <table>
+      <thead>
+        <tr>
+          <th>구분</th>
+          <th>Moonlight + Sunshine (표준)</th>
+          <th>Artemis + Apollo (포크 전용)</th>
+          <th>Moonlight + Apollo (하이브리드 선택)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>호스트 (PC)</strong></td>
+          <td>Sunshine (오픈소스 표준)</td>
+          <td>Apollo (SudoVDA 가상 디스플레이 내장)</td>
+          <td>Apollo (v0.4.6 정식 릴리스)</td>
+        </tr>
+        <tr>
+          <td><strong>클라이언트 (Google TV)</strong></td>
+          <td>Moonlight (Google Play 스토어)</td>
+          <td>Artemis (APK 수동 사이드로딩)</td>
+          <td>Moonlight (Google Play 스토어)</td>
+        </tr>
+        <tr>
+          <td><strong>해상도 자동 동기화</strong></td>
+          <td>별도 스크립트/VDD 수동 연동 필요</td>
+          <td>PnP 가상 디스플레이 자동 생성</td>
+          <td>PnP 가상 디스플레이 자동 생성</td>
+        </tr>
+        <tr>
+          <td><strong>유지보수 및 설치</strong></td>
+          <td>보통 (공식 스토어 지원)</td>
+          <td>다소 번거로움 (업데이트 시 수동 추출)</td>
+          <td>우수 (스토어 자동 업데이트 + 호스트 자동화)</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>호스트로 선택한 <strong>Apollo</strong>는 Sunshine의 포크 버전으로, 윈도우용 가상 디스플레이 드라이버(SudoVDA)가 기본 탑재되어 있어 클라이언트 요청 해상도에 맞춘 가상 모니터를 플러그앤플레이(PnP) 형태로 자동 생성합니다. 반면 클라이언트의 경우, Artemis는 Google TV Play 스토어에 등록되어 있지 않아 매번 APK를 사이드로딩해야 하는 번거로움이 있었습니다. 표준 Moonlight 클라이언트 역시 Apollo 호스트의 가상 디스플레이 트리거와 완벽하게 호환되므로, <strong>클라이언트는 접근성이 높은 공식 Moonlight, 호스트는 화면 자동화가 내장된 Apollo</strong>를 조합하는 하이브리드 구성을 채택했습니다.</p>
+
+  <h2 id="network-architecture">네트워크 구성: 로컬 LAN 대 Tailscale</h2>
+  <p>많은 테크 커뮤니티나 영상 가이드에서는 외부 접속을 염두에 두고 Tailscale과 같은 가상 사설망(VPN) 구성을 함께 안내하곤 합니다. 그러나 거실 프로젝터처럼 <strong>동일한 홈 네트워크 내부에서만 스트리밍할 목적이라면 Tailscale이나 VPN 서버는 불필요</strong>합니다. 오히려 로컬 IP 대역에서 직접 통신하는 것이 불필요한 패킷 캡슐화나 오버헤드 없이 최소 지연을 달성하는 데 유리합니다.</p>
+
+  <div class="pre mermaid" data-text="Mermaid">
+    <button aria-label="Copy code">Copy</button>
+    <pre class="mermaid">
+flowchart LR
+    subgraph HostPC ["호스트 PC (Windows 11)"]
+        ApolloServer["Apollo Host v0.4.6"]
+        VirtualDisplay["SudoVDA 가상 디스플레이"]
+        PhysicalDisplays["물리 듀얼 모니터 (비활성화)"]
+    end
+
+    subgraph HomeRouter ["홈 공유기 (Wi-Fi 5GHz)"]
+        InternalNetwork["내부 LAN 통신 (PIN 페어링)"]
+    end
+
+    subgraph LivingRoom ["거실 디스플레이 환경"]
+        Streamer["Google TV Streamer (Moonlight)"]
+        Projector["빔프로젝터 (저지연 게임 모드)"]
+    end
+
+    ApolloServer &lt;--&gt; InternalNetwork &lt;--&gt; Streamer
+    Streamer --&gt; Projector
+    ApolloServer -. 가상 화면 생성 .-&gt; VirtualDisplay
+    ApolloServer -. 물리 모니터 격리 .-&gt; PhysicalDisplays
+    </pre>
+  </div>
+
+  <p>현재 외부 서비스 운영에는 Cloudflare Tunnel을 활용하고 있으며, 향후 홈 서버 하드웨어 점검과 내부 네트워크 배선 정비가 완료되면 홈 서버에 Tailscale 게이트웨이를 올려 외부 전용 VPN을 일원화할 계획입니다. 이번 스트리밍 테스트는 내부망의 순수 대역폭과 디코딩 성능에 집중했습니다.</p>
+
+  <h2 id="setup-and-pairing">Apollo 호스트 및 Moonlight 클라이언트 설치 절차</h2>
+  <p>실제 설치 및 페어링 과정은 다음과 같은 순서로 진행했습니다.</p>
+
+  <ol class="step">
+    <li><strong>Google TV Streamer 클라이언트 설치:</strong> Google Play 스토어에서 공식 <strong>Moonlight Game Streaming</strong> 앱을 검색하여 설치한 후 실행합니다. 화면에 출력되는 페어링용 4자리 PIN 번호를 확인합니다.</li>
+    <li><strong>PC 호스트 Apollo 설치:</strong> 공식 <a href="https://github.com/ClassicOldSong/Apollo/releases" target="_blank" rel="noopener noreferrer">ClassicOldSong/Apollo 저장소</a>에서 알파 버전이 아닌 안정 릴리스 버전인 <strong>v0.4.6</strong> 설치 파일을 받아 PC에 설치합니다.</li>
+    <li><strong>웹 콘솔 접근 및 PIN 페어링:</strong> 브라우저로 Apollo 관리자 페이지(<code>https://localhost:47990</code>)에 접속한 뒤, 상단 <strong>PIN 페어링</strong> 메뉴에서 Google TV Streamer 화면에 뜬 PIN 번호를 입력하여 기기 인증을 완료합니다.</li>
+  </ol>
+
+  <!-- [IMAGE SLOT 2 - OPTIONAL] ALT: Apollo PIN 페어링 인터페이스 -->
+  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-10/apollo-pin-pairing.png?v=20261004_0150" alt="Apollo 웹 콘솔의 PIN 페어링 인터페이스" />
+
+  <h2 id="dual-monitor-isolation">듀얼 모니터 환경의 가상 디스플레이 격리 설정</h2>
+  <p>물리 모니터를 1개만 사용하는 환경에서는 스트리밍 시 단순히 보조 디스플레이만 켜지도록 구성하면 되지만, <strong>물리 모니터가 2개인 환경에서는 가상 디스플레이(3번)가 연결되더라도 스팀이나 게임 전체화면이 1번 모니터로 실행되는 문제</strong>가 발생합니다.</p>
+
+  <p>이 문제를 해결하기 위해 윈도우 주 모니터를 수동으로 바꾸거나 외부 스크립트를 쓰는 대신, <strong>Apollo 자체의 디스플레이 격리 옵션</strong>을 적용했습니다. 이 설정이 가장 부작용 없이 깔끔하게 동작했습니다.</p>
+
+  <h3 id="step-app-virtual-display">1. 애플리케이션 가상 디스플레이 강제 활성화</h3>
+  <p>Apollo 웹 관리자의 <strong>애플리케이션</strong> 탭으로 이동하여 <code>Desktop</code> 또는 <code>Steam Big Picture</code> 항목의 수정(연필 아이콘) 버튼을 클릭합니다. 화면을 아래로 스크롤하면 하단에 <strong>Always create Virtual Display</strong> 체크박스가 위치해 있습니다. 이를 활성화하고 저장합니다.</p>
+
+  <!-- [IMAGE SLOT 3 - OPTIONAL] ALT: 애플리케이션 가상 디스플레이 설정 -->
+  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-10/apollo-app-virtual-display.png?v=20261004_0150" alt="Apollo 애플리케이션 설정 내 가상 디스플레이 상시 생성 옵션" />
+
+  <h3 id="step-display-isolation">2. 물리 모니터 비활성화 및 가상 디스플레이 단독 출력 설정</h3>
+  <p>상단 메뉴의 <strong>설정(Configuration) ➔ Audio/Video</strong> 탭으로 이동합니다. 화면을 아래로 스크롤하여 <strong>고급 디스플레이 장치 옵션(Advanced display device options)</strong> 아코디언 메뉴를 클릭하여 펼칩니다.</p>
+
+  <!-- [IMAGE SLOT 4 - OPTIONAL] ALT: 고급 디스플레이 장치 옵션 격리 설정 -->
+  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-10/apollo-audio-video-isolation.png?v=20261004_0150" alt="Apollo Audio/Video 설정의 다른 디스플레이 비활성화 옵션" />
+
+  <p><strong>장치 구성(Device Configuration)</strong> 드롭다운 메뉴에서 <strong>다른 디스플레이를 비활성화하고 지정된 디스플레이만 활성화 하기</strong>(Deactivate other displays and activate only the specified display)를 선택하고 저장(Save & Apply)합니다.</p>
+
+  <div class="note"><strong>💡 팁:</strong> 이 설정을 적용하면 Moonlight 연결 즉시 물리 듀얼 모니터(1, 2번)의 신호가 차단되면서 3번 가상 디스플레이만 활성화됩니다. 따라서 스팀 빅픽처와 게임이 자연스럽게 3번에 단독 렌더링되며, 스트리밍 종료 시 물리 모니터 2개가 원래대로 자동 복원됩니다.</div>
+
+  <h2 id="resolution-limit-and-fps">해상도 한계 및 60FPS 설정 사유</h2>
+  <p>빔프로젝터 스펙은 4K 60Hz 및 1440p 120Hz를 지원하지만, 실제 환경에서는 <strong>1080p 60FPS</strong>로 고정하여 세팅했습니다. 여기에는 두 가지 명확한 이유가 있습니다.</p>
+
+  <ul class="cons">
+    <li><strong>Google TV Streamer의 디코딩 한계:</strong> 1440p 및 4K 해상도로 스트리밍을 시도할 경우, Streamer의 하드웨어 비디오 디코더에 병목이 발생하여 디코딩 지연이 급격히 증가하고 조작이 불가능한 수준의 밀림 현상이 발생했습니다. 1080p가 부드러운 플레이를 보장하는 최적의 해상도였습니다.</li>
+    <li><strong>미디어 플레이어 출력 스펙 한계:</strong> 빔프로젝터가 120Hz 주사율을 지원하더라도, 클라이언트 기기인 Google TV Streamer의 시스템 출력 자체가 120Hz를 지원하지 않습니다. 따라서 클라이언트 스트림 역시 안정적인 60FPS를 타겟으로 고정했습니다.</li>
+  </ul>
+
+  <h2 id="performance-benchmarks">실전 게임 3종 스트리밍 실측 데이터</h2>
+  <p>빔프로젝터 자체의 저지연(게임) 모드를 활성화하여 프로젝터 후처리 지연을 배제한 뒤, Moonlight 화면 오버레이를 통해 실제 게임 3종의 전송 및 디코딩 성능을 측정했습니다. 코덱은 하드웨어 가속 저지연 디코더인 <code>c2.mtk.hevc.decoder.lowlatency</code>(HEVC)가 사용되었습니다.</p>
+
+  <h3 id="game-elden-ring">1. 엘든 링 (Elden Ring) — 60FPS 타겟</h3>
+  <p>정교한 패링과 회피 타이밍이 요구되는 액션 RPG 환경에서의 반응성을 확인했습니다.</p>
+
+  <!-- [IMAGE SLOT 5 - OPTIONAL] ALT: 엘든 링 스트리밍 오버레이 실측 지표 -->
+  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-10/moonlight-eldenring-overlay.jpg?v=20261004_0150" alt="엘든 링 1080p 스트리밍 시 Moonlight 오버레이 지표" />
+
+  <ul>
+    <li><strong>스트림 규격:</strong> 1920x1080, 54.32 FPS (렌더링 51.85 FPS)</li>
+    <li><strong>평균 디코딩 시간:</strong> <strong>4.96 ms</strong></li>
+    <li><strong>평균 네트워크 지연:</strong> <strong>5 ms</strong> (편차 7 ms)</li>
+    <li><strong>호스트 처리 대기 시간:</strong> 최소 2.1 ms / 최대 4.1 ms / 평균 3.1 ms</li>
+    <li><strong>패킷 손실률:</strong> 0.00%</li>
+  </ul>
+  <p>디코딩 시간 약 4.9ms와 네트워크 지연 5ms로 합산 지연이 약 10ms 안팎을 유지하여, 회피 및 공격 타이밍에서 이질감 없는 조작감을 보여주었습니다.</p>
+
+  <h3 id="game-rimworld">2. 림월드 (RimWorld) — 60FPS 타겟 및 네트워크 특이점</h3>
+  <p>탑다운 시뮬레이션 게임인 림월드에서는 화면 전체의 렌더링 프레임과 호스트 지연 특성을 점검했습니다.</p>
+
+  <!-- [IMAGE SLOT 6 - OPTIONAL] ALT: 림월드 스트리밍 오버레이 실측 지표 -->
+  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-10/moonlight-rimworld-overlay.jpg?v=20261004_0150" alt="림월드 1080p 스트리밍 시 Moonlight 오버레이 지표" />
+
+  <ul>
+    <li><strong>스트림 규격:</strong> 1920x1080, 41.67 FPS (렌더링 41.67 FPS)</li>
+    <li><strong>평균 디코딩 시간:</strong> <strong>4.29 ms</strong></li>
+    <li><strong>평균 네트워크 지연:</strong> <strong>2 ms</strong> (편차 0 ms)</li>
+    <li><strong>호스트 처리 대기 시간:</strong> 최소 2.0 ms / 최대 2.9 ms / 평균 2.3 ms</li>
+    <li><strong>패킷 손실률:</strong> 0.00%</li>
+  </ul>
+  <div class="note wr"><strong>⚠️ 주의 (네트워크 분리 구성의 영향):</strong> 림월드 테스트 시 프레임이 41 FPS 수준으로 다소 낮게 유지된 원인은 PC의 특수한 네트워크 환경 때문이었습니다. 당시 호스트 PC가 Wi-Fi(내부망)와 유선 LAN(외부망)으로 이원화 연결되어 있어 대역폭 라우팅 병목이 발생했습니다. 추후 홈 네트워크 구조를 단일 유선 LAN 인프라로 정리해야 할 필요성을 확인한 대목입니다.</div>
+
+  <h3 id="game-ballpit">3. 볼핏 (Ball Pit) — 120FPS 고주사율 스트림 검증</h3>
+  <p>클라이언트 기기의 120Hz 출력 지원 여부와 별개로, Moonlight 스트림을 120FPS 모드로 구동했을 때 Streamer의 디코더가 이를 감당할 수 있는지 한계치를 테스트했습니다.</p>
+
+  <!-- [IMAGE SLOT 7 - OPTIONAL] ALT: 볼핏 120FPS 스트리밍 오버레이 실측 지표 -->
+  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-10/moonlight-ballpit-overlay.jpg?v=20261004_0150" alt="볼핏 1080p 120FPS 스트리밍 시 Moonlight 오버레이 지표" />
+
+  <ul>
+    <li><strong>스트림 규격:</strong> 1920x1080, 119.48 FPS (렌더링 119.48 FPS)</li>
+    <li><strong>평균 디코딩 시간:</strong> <strong>5.00 ms</strong></li>
+    <li><strong>평균 네트워크 지연:</strong> <strong>1 ms</strong> (편차 0 ms)</li>
+    <li><strong>호스트 처리 대기 시간:</strong> 최소 2.1 ms / 최대 3.5 ms / 평균 2.6 ms</li>
+    <li><strong>패킷 손실률:</strong> 0.00%</li>
+  </ul>
+  <p>120FPS 스트림 상태에서도 평균 디코딩 시간은 5.00ms로 매우 안정적이었습니다. 다만 앞서 언급했듯 Google TV Streamer 자체의 디스플레이 출력 한계로 인해 실사용은 60FPS로 맞추는 것이 전력 및 발열 관리 측면에서 가장 적절합니다.</p>
+
+  <h2 id="summary">마무리하며</h2>
+  <p>PC와 Google TV Streamer가 모두 5GHz Wi-Fi로 연결된 무선-무선(Wi-Fi to Wi-Fi) 환경이었음에도 불구하고, 간헐적인 무선 신호 혼선으로 전송 속도가 급감하며 발생하는 순간 프리징을 제외하면 전반적인 지연 시간(디코딩 4~5ms, 네트워크 1~5ms)은 대단히 만족스러운 수준이었습니다.</p>
+
+  <p>특히 물리 듀얼 모니터 환경에서 별도의 스크립트 작성 없이 Apollo의 디스플레이 격리 옵션만으로 가상 디스플레이 단독 출력을 매끄럽게 자동화할 수 있었던 점이 이번 셋업의 가장 큰 성과였습니다. 동일한 듀얼 모니터 및 안드로이드 TV 환경에서 게임 스트리밍을 구상하고 계신 분들에게 본 세팅이 유용한 참고가 되기를 바랍니다.</p>
+
+  <p>혹시 유사한 다중 모니터 환경에서 Sunshine이나 Apollo를 운용하시면서 다른 형태의 화면 전환 방식을 사용하고 계신다면, 어떤 접근법을 취하고 계신지 댓글로 공유해 주시면 감사하겠습니다.</p>
+</article>
