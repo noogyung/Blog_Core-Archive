@@ -86,9 +86,14 @@ series_id: null
      * 공식 GitHub 저장소([ClassicOldSong/Apollo](https://github.com/ClassicOldSong/Apollo))의 Releases 페이지에서 안정 릴리스 버전인 **v0.4.6** 다운로드 및 설치 (알파/프리릴리스 제외).
      * 웹 관리자 페이지(`https://localhost:47990`) 접속 및 초기 계정 설정.
      * 상단 메뉴의 **PIN 페어링** 탭으로 이동하여 Google TV Streamer의 Moonlight 화면에 나타난 PIN 번호 입력 및 페어링 완료 (장치 관리 목록에 등록 확인).
-  3. **가상 디스플레이 및 화면 단독 출력 설정:**
-     * **애플리케이션(Applications) 설정:** `Desktop` 또는 `Steam Big Picture` 등의 등록 앱 설정에서 **`Always create Virtual Display`** 옵션 활성화.
-     * **디스플레이 격리 설정:** `설정(Configuration)` -> `Audio/Video` -> `고급 디스플레이 장치 옵션(Advanced display device options)` -> `장치 구성(Device Configuration)` 항목을 **`다른 디스플레이를 비활성화하고 지정된 디스플레이만 활성화 하기(Deactivate other displays and activate only the specified display)`**로 지정.
+  3. **가상 디스플레이 및 화면 단독 출력 설정 (세부 UI 경로):**
+     * **애플리케이션(Applications) 설정:**
+       * 상단 메뉴 `애플리케이션` 탭 진입 후 등록된 앱(`Desktop` 또는 `Steam Big Picture`)의 수정(연필 아이콘) 버튼 클릭.
+       * 화면을 아래로 스크롤하여 하단에 위치한 **`Always create Virtual Display`** 체크박스를 활성화한 후 저장.
+     * **디스플레이 격리 설정:**
+       * 상단 메뉴 `설정(Configuration)` -> **`Audio/Video`** 탭 진입.
+       * 화면을 아래로 스크롤하여 하단의 **`고급 디스플레이 장치 옵션(Advanced display device options)`** 아코디언 메뉴를 클릭하여 확장.
+       * 확장된 항목 내의 **`장치 구성(Device Configuration)`** 드롭다운 메뉴를 클릭하여 **`다른 디스플레이를 비활성화하고 지정된 디스플레이만 활성화 하기(Deactivate other displays and activate only the specified display)`**로 변경 후 저장(Save & Apply).
      * **결과:** Moonlight 스트리밍 세션이 열리는 즉시 PC의 물리 모니터(1번, 2번)가 비활성화되고, 스트리밍 전용 Virtual Display(3번)만 활성화되어 게임/스팀이 정상 출력됨. 세션 종료 시 물리 모니터 자동 복구.
 
 ##### 4. 다중 모니터(듀얼 모니터) + 가상 디스플레이(3번) 충돌 해결 분석
