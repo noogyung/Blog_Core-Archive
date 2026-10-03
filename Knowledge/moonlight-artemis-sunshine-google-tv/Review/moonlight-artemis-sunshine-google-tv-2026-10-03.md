@@ -159,6 +159,8 @@ series_id: null
   * [OPINION] PC 모니터가 1440p 144Hz이고 빔프로젝터가 4K/1440p를 지원하더라도, Google TV Streamer의 디코딩 한계상 1080p 스트리밍이 필수적입니다. 1080p 환경에서는 60FPS뿐 아니라 120FPS(볼핏)까지도 디코딩 지연 4~5ms 내외로 소화합니다.
   * [OPINION] PC에서 Wi-Fi(내부망)와 유선 LAN(외부망)을 분리해 둔 특수 환경에서는 대역폭 라우팅 이슈로 특정 게임(림월드 등)에서 프레임 저하가 발생할 수 있습니다. 안정적인 무선 스트리밍을 위해서라도 홈 네트워크 구조를 깔끔하게 단일화하는 정리가 필요합니다.
   * [OPINION] Wi-Fi to Wi-Fi 환경임에도 불구하고 순간적인 무선 혼선에 따른 간헐적 프리징을 제외하면 전반적인 지연 시간과 반응성은 실전 게임 플레이에 매우 만족스러운 수준입니다.
+  * [OPINION] 많은 유튜브/가이드에서 외부 접속용으로 Tailscale VPN 구성을 권장하지만, 거실 빔프로젝터처럼 **순수 내부망(로컬 네트워크)에서만 스트리밍할 목적이라면 Tailscale이나 VPN 없이도 로컬 IP/PIN 페어링만으로 충분히 완벽하게 작동**합니다.
+  * [OPINION] 현재는 Cloudflare Tunnel 서비스를 이용 중이나, 향후 내부 홈 서버 스펙 점검 및 홈 네트워크 개편 시 서버에 Tailscale을 올려 전체 홈 네트워크를 외부에서 VPN으로 접근할 수 있도록 일원화하는 구성도 고려해 볼 만한 확장 단계입니다.
 
 ---
 
@@ -170,11 +172,12 @@ series_id: null
   * [x] 해상도 및 주사율 한계 실측 — Verified 2026-10-04 (스트리머 120Hz 미지원으로 60FPS 고정 운용 확정, 1080p 최적)
   * [x] 빔프로젝터 저지연 모드 동작 여부 — Verified 2026-10-04 (저지연 모드 활성화로 정상 구동 확인)
   * [x] Wi-Fi to Wi-Fi 네트워크 상태 및 프리징 특성 — Verified 2026-10-04 (내부/외부망 분리에 따른 림월드 프레임 이슈 및 무선 프리징 파악)
+  * [x] 네트워크 접속 방식 타당성 — Verified 2026-10-04 (내부망 전용 사용 시 Tailscale 불필요 확인, 향후 홈 서버 Tailscale 도입 구상 수립)
 
 ---
 
 #### 🏷️ Tags
-Moonlight, Artemis, Sunshine, Apollo, GoogleTVStreamer, GameStreaming, Projector, StreamingReview, EldenRing, RimWorld, BallPit, HomeNetwork
+Moonlight, Artemis, Sunshine, Apollo, GoogleTVStreamer, GameStreaming, Projector, StreamingReview, EldenRing, RimWorld, BallPit, HomeNetwork, Tailscale, CloudflareTunnel
 
 ===== KNOWLEDGE PACKAGE END =====
 
@@ -193,6 +196,9 @@ Moonlight, Artemis, Sunshine, Apollo, GoogleTVStreamer, GameStreaming, Projector
     * Host PC: GitHub(ClassicOldSong/Apollo)에서 v0.4.6 정식 릴리스 버전 설치.
     * PIN 페어링: Moonlight 화면의 PIN 번호를 Apollo 웹 관리자 PIN 탭에 입력하여 연결 완료.
     * 디스플레이 자동화: 애플리케이션의 `Always create Virtual Display` 옵션 활성화 및 `설정 -> Audio/Video -> 고급 디스플레이 장치 옵션 -> 장치 구성`에서 `다른 디스플레이를 비활성화하고 지정된 디스플레이만 활성화 하기(Deactivate other displays and activate only the specified display)` 적용.
+  * **네트워크 아키텍처 및 외부 접속 고찰:**
+    * 내부망 스트리밍 목적에는 Tailscale 등 가상 VPN 구성 없이 로컬 네트워크 환경만으로도 충분히 완벽하게 동작함을 검증.
+    * 현재는 외부 접속에 Cloudflare Tunnel을 사용 중이며, 추후 홈 서버 및 네트워크 정비 시 내부 서버에 Tailscale을 구축하여 외부 통합 VPN 게이트웨이로 확장 구상.
   * 빔프로젝터의 120Hz 지원과 무관하게 Google TV Streamer 기기 자체가 120Hz를 지원하지 않아 최종 **1080p 60FPS**로 고정 사용 결정.
   * 해상도 설정: 1440p 이상은 디코딩 지연 과다, 1080p가 최적.
   * 게임 3종 실측 데이터:
