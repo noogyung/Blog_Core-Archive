@@ -138,42 +138,12 @@ flowchart LR
   </ul>
 
   <h2 id="performance-benchmarks">실전 게임 3종 스트리밍 실측 데이터</h2>
-  <p>빔프로젝터 자체의 저지연(게임) 모드를 활성화하여 프로젝터 후처리 지연을 배제한 뒤, Moonlight 화면 오버레이를 통해 실제 게임 3종의 전송 및 디코딩 성능을 측정했습니다. 코덱은 하드웨어 가속 저지연 디코더인 <code>c2.mtk.hevc.decoder.lowlatency</code>(HEVC)가 사용되었습니다.</p>
+  <p>빔프로젝터 자체의 저지연(게임) 모드를 활성화하여 프로젝터 후처리 지연을 배제한 뒤, Moonlight 화면 오버레이를 통해 실제 게임 3종의 전송 및 디코딩 성능을 측정했습니다. 코덱은 하드웨어 가속 저지연 디코더인 <code>c2.mtk.hevc.decoder.lowlatency</code>(HEVC)가 사용되었습니다. 실제 테스트는 볼핏을 가장 먼저 진행한 후 엘든 링, 림월드 순서로 진행했습니다.</p>
 
-  <h3 id="game-elden-ring">1. 엘든 링 (Elden Ring) — 60FPS 타겟</h3>
-  <p>정교한 패링과 회피 타이밍이 요구되는 액션 RPG 환경에서의 반응성을 확인했습니다.</p>
+  <h3 id="game-ballpit">1. 볼핏 (Ball Pit) — 120FPS 고주사율 스트림 검증</h3>
+  <p>가장 먼저 테스트한 볼핏에서는 클라이언트 기기의 120Hz 출력 지원 여부와 별개로, Moonlight 스트림을 120FPS 모드로 구동했을 때 Streamer의 디코더가 이를 감당할 수 있는지 한계치를 점검했습니다.</p>
 
-  <!-- [IMAGE SLOT 5 - OPTIONAL] ALT: 엘든 링 스트리밍 오버레이 실측 지표 -->
-  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-10/moonlight-eldenring-overlay.jpg?v=20261004_0150" alt="엘든 링 1080p 스트리밍 시 Moonlight 오버레이 지표" />
-
-  <ul>
-    <li><strong>스트림 규격:</strong> 1920x1080, 54.32 FPS (렌더링 51.85 FPS)</li>
-    <li><strong>평균 디코딩 시간:</strong> <strong>4.96 ms</strong></li>
-    <li><strong>평균 네트워크 지연:</strong> <strong>5 ms</strong> (편차 7 ms)</li>
-    <li><strong>호스트 처리 대기 시간:</strong> 최소 2.1 ms / 최대 4.1 ms / 평균 3.1 ms</li>
-    <li><strong>패킷 손실률:</strong> 0.00%</li>
-  </ul>
-  <p>디코딩 시간 약 4.9ms와 네트워크 지연 5ms로 합산 지연이 약 10ms 안팎을 유지하여, 회피 및 공격 타이밍에서 이질감 없는 조작감을 보여주었습니다.</p>
-
-  <h3 id="game-rimworld">2. 림월드 (RimWorld) — 60FPS 타겟 및 네트워크 특이점</h3>
-  <p>탑다운 시뮬레이션 게임인 림월드에서는 화면 전체의 렌더링 프레임과 호스트 지연 특성을 점검했습니다.</p>
-
-  <!-- [IMAGE SLOT 6 - OPTIONAL] ALT: 림월드 스트리밍 오버레이 실측 지표 -->
-  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-10/moonlight-rimworld-overlay.jpg?v=20261004_0150" alt="림월드 1080p 스트리밍 시 Moonlight 오버레이 지표" />
-
-  <ul>
-    <li><strong>스트림 규격:</strong> 1920x1080, 41.67 FPS (렌더링 41.67 FPS)</li>
-    <li><strong>평균 디코딩 시간:</strong> <strong>4.29 ms</strong></li>
-    <li><strong>평균 네트워크 지연:</strong> <strong>2 ms</strong> (편차 0 ms)</li>
-    <li><strong>호스트 처리 대기 시간:</strong> 최소 2.0 ms / 최대 2.9 ms / 평균 2.3 ms</li>
-    <li><strong>패킷 손실률:</strong> 0.00%</li>
-  </ul>
-  <div class="note wr"><strong>⚠️ 주의 (네트워크 분리 구성의 영향):</strong> 림월드 테스트 시 프레임이 41 FPS 수준으로 다소 낮게 유지된 원인은 PC의 특수한 네트워크 환경 때문이었습니다. 당시 호스트 PC가 Wi-Fi(내부망)와 유선 LAN(외부망)으로 이원화 연결되어 있어 대역폭 라우팅 병목이 발생했습니다. 추후 홈 네트워크 구조를 단일 유선 LAN 인프라로 정리해야 할 필요성을 확인한 대목입니다.</div>
-
-  <h3 id="game-ballpit">3. 볼핏 (Ball Pit) — 120FPS 고주사율 스트림 검증</h3>
-  <p>클라이언트 기기의 120Hz 출력 지원 여부와 별개로, Moonlight 스트림을 120FPS 모드로 구동했을 때 Streamer의 디코더가 이를 감당할 수 있는지 한계치를 테스트했습니다.</p>
-
-  <!-- [IMAGE SLOT 7 - OPTIONAL] ALT: 볼핏 120FPS 스트리밍 오버레이 실측 지표 -->
+  <!-- [IMAGE SLOT 5 - OPTIONAL] ALT: 볼핏 120FPS 스트리밍 오버레이 실측 지표 -->
   <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-10/moonlight-ballpit-overlay.jpg?v=20261004_0150" alt="볼핏 1080p 120FPS 스트리밍 시 Moonlight 오버레이 지표" />
 
   <ul>
@@ -183,12 +153,50 @@ flowchart LR
     <li><strong>호스트 처리 대기 시간:</strong> 최소 2.1 ms / 최대 3.5 ms / 평균 2.6 ms</li>
     <li><strong>패킷 손실률:</strong> 0.00%</li>
   </ul>
-  <p>120FPS 스트림 상태에서도 평균 디코딩 시간은 5.00ms로 매우 안정적이었습니다. 다만 앞서 언급했듯 Google TV Streamer 자체의 디스플레이 출력 한계로 인해 실사용은 60FPS로 맞추는 것이 전력 및 발열 관리 측면에서 가장 적절합니다.</p>
+  <p>볼핏 같은 게임은 간단하게 플레이하기 좋았습니다. 주로 책상에 앉아서 게임하는 것보다는 누워서 좀 편안하게 플레이하고 싶을 때 즐기면 좋겠다는 생각이 들었습니다. 120FPS 스트림 상태에서도 평균 디코딩 시간은 5.00ms로 매우 안정적이었습니다. 다만 앞서 언급했듯 Google TV Streamer 자체의 디스플레이 출력 한계로 인해 실사용은 60FPS로 맞추는 것이 전력 및 발열 관리 측면에서 가장 적절합니다.</p>
 
-  <h2 id="summary">마무리하며</h2>
-  <p>PC와 Google TV Streamer가 모두 5GHz Wi-Fi로 연결된 무선-무선(Wi-Fi to Wi-Fi) 환경이었음에도 불구하고, 간헐적인 무선 신호 혼선으로 전송 속도가 급감하며 발생하는 순간 프리징을 제외하면 전반적인 지연 시간(디코딩 4~5ms, 네트워크 1~5ms)은 대단히 만족스러운 수준이었습니다.</p>
+  <h3 id="game-elden-ring">2. 엘든 링 (Elden Ring) — 60FPS 타겟</h3>
+  <p>정교한 패링과 회피 타이밍이 요구되는 액션 RPG 환경에서의 반응성을 확인했습니다.</p>
 
-  <p>특히 물리 듀얼 모니터 환경에서 별도의 스크립트 작성 없이 Apollo의 디스플레이 격리 옵션만으로 가상 디스플레이 단독 출력을 매끄럽게 자동화할 수 있었던 점이 이번 셋업의 가장 큰 성과였습니다. 동일한 듀얼 모니터 및 안드로이드 TV 환경에서 게임 스트리밍을 구상하고 계신 분들에게 본 세팅이 유용한 참고가 되기를 바랍니다.</p>
+  <!-- [IMAGE SLOT 6 - OPTIONAL] ALT: 엘든 링 스트리밍 오버레이 실측 지표 -->
+  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-10/moonlight-eldenring-overlay.jpg?v=20261004_0150" alt="엘든 링 1080p 스트리밍 시 Moonlight 오버레이 지표" />
 
-  <p>혹시 유사한 다중 모니터 환경에서 Sunshine이나 Apollo를 운용하시면서 다른 형태의 화면 전환 방식을 사용하고 계신다면, 어떤 접근법을 취하고 계신지 댓글로 공유해 주시면 감사하겠습니다.</p>
+  <ul>
+    <li><strong>스트림 규격:</strong> 1920x1080, 54.32 FPS (렌더링 51.85 FPS)</li>
+    <li><strong>평균 디코딩 시간:</strong> <strong>4.96 ms</strong></li>
+    <li><strong>평균 네트워크 지연:</strong> <strong>5 ms</strong> (편차 7 ms)</li>
+    <li><strong>호스트 처리 대기 시간:</strong> 최소 2.1 ms / 최대 4.1 ms / 평균 3.1 ms</li>
+    <li><strong>패킷 손실률:</strong> 0.00%</li>
+  </ul>
+  <p>디코딩 시간 약 4.9ms와 네트워크 지연 5ms로 합산 지연이 약 10ms 안팎을 유지하여, 회피 및 공격 타이밍에서 이질감 없는 조작감을 보여주었습니다. 패드로 게임을 안 한 지 오래되어 컨트롤 미숙으로 늑대에게 계속 죽는 바람에 나중에 날잡고 처음부터 다시 플레이하거나, 개인적으로 컨트롤이 조금 더 쉬운 느낌이었던 세키로를 먼저 플레이해보는 게 좋겠다고 생각했습니다.</p>
+
+  <h3 id="game-rimworld">3. 림월드 (RimWorld) — 60FPS 타겟 및 네트워크 특이점</h3>
+  <p>탑다운 시뮬레이션 게임인 림월드에서는 화면 전체의 렌더링 프레임과 호스트 지연 특성을 점검했습니다.</p>
+
+  <!-- [IMAGE SLOT 7 - OPTIONAL] ALT: 림월드 스트리밍 오버레이 실측 지표 -->
+  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-10/moonlight-rimworld-overlay.jpg?v=20261004_0150" alt="림월드 1080p 스트리밍 시 Moonlight 오버레이 지표" />
+
+  <ul>
+    <li><strong>스트림 규격:</strong> 1920x1080, 41.67 FPS (렌더링 41.67 FPS)</li>
+    <li><strong>평균 디코딩 시간:</strong> <strong>4.29 ms</strong></li>
+    <li><strong>평균 네트워크 지연:</strong> <strong>2 ms</strong> (편차 0 ms)</li>
+    <li><strong>호스트 처리 대기 시간:</strong> 최소 2.0 ms / 최대 2.9 ms / 평균 2.3 ms</li>
+    <li><strong>패킷 손실률:</strong> 0.00%</li>
+  </ul>
+  <p>림월드와 같은 게임은 대형 화면으로 했을 때 눈에 뵈는 게 없어진다는 문제점이 있다는 걸 깨달았습니다.</p>
+
+  <div class="note wr"><strong>⚠️ 주의 (네트워크 분리 구성의 영향):</strong> 림월드 테스트 시 프레임이 41 FPS 수준으로 다소 낮게 유지된 원인은 PC의 특수한 네트워크 환경 때문이었습니다. 당시 호스트 PC가 Wi-Fi(내부망)와 유선 LAN(외부망)으로 이원화 연결되어 있어 대역폭 라우팅 병목이 발생했습니다. 추후 홈 네트워크 구조를 단일 유선 LAN 인프라로 정리해야 할 필요성을 확인한 대목입니다.</div>
+
+  <h2 id="summary">마무리하며: 아쉬운 점과 향후 과제</h2>
+  <p>이번 스트리밍 환경 구축을 통해 작업용 PC의 자원을 거실 빔프로젝터 대화면으로 온전히 끌어올 수 있었고, 물리 듀얼 모니터 환경에서도 Apollo의 격리 기능 덕분에 스팀 화면 출력 문제를 깔끔하게 해결할 수 있었습니다. 하지만 실사용 테스트 과정에서 몇 가지 명확한 기술적 아쉬움과 한계도 마주했습니다.</p>
+
+  <ul class="cons">
+    <li><strong>Wi-Fi to Wi-Fi 환경의 간헐적 프리징:</strong> 호스트 PC와 Google TV Streamer가 모두 무선으로 연결되어 있다 보니, 무선 신호 상태가 일시적으로 불안정해질 때 호스트 측에서 전송 속도가 급격히 떨어지며 화면이 순간 멈추는 프리징 현상이 발생했습니다.</li>
+    <li><strong>Google TV Streamer의 120Hz 출력 미지원:</strong> 빔프로젝터 하드웨어는 120Hz를 완벽히 지원함에도, 미디어 플레이어 기기 스펙의 한계로 120Hz 출력을 활용하지 못하고 60FPS로 제한해야 했던 점은 큰 아쉬움으로 남습니다.</li>
+    <li><strong>디코더 성능 한계로 인한 1080p 고정:</strong> 4K 프로젝터의 고해상도를 온전히 살리지 못하고, Google TV Streamer의 하드웨어 디코딩 성능 병목 때문에 1440p나 4K로 해상도를 올리지 못한 채 1080p에 머물러야 했습니다.</li>
+  </ul>
+
+  <p>이러한 한계들을 해결하기 위해 향후 홈 네트워크 인프라를 유선 LAN 중심으로 단일화하는 배선 정리를 진행할 예정입니다. 또한 현재 Cloudflare Tunnel로 운용 중인 외부 서비스와 함께, 내부 홈 서버의 하드웨어 스펙을 재점검한 뒤 홈 서버에 Tailscale을 올려 외부에서도 홈 네트워크 전체로 안전하게 접근할 수 있는 VPN 게이트웨이 환경으로 점진적 확장을 시도해보고자 합니다.</p>
+
+  <p>혹시 유사한 다중 모니터 및 안드로이드 TV 환경에서 Sunshine이나 Apollo를 운용하시면서 다른 형태의 화면 전환 방식을 사용하고 계시거나, Google TV Streamer의 4K 디코딩 병목을 완화한 경험이 있으시다면 댓글로 공유해 주시면 감사하겠습니다.</p>
 </article>
