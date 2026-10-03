@@ -88,30 +88,34 @@ series_id: null
     5. **효과:** 스트리밍 시작 시 물리 모니터(1, 2번)가 일시 비활성화되고 가상 모니터(3번)만 단독 활성화되며, 종료 시 물리 모니터가 자동 복원됨. 주 모니터를 수동 변경할 필요 없이 가장 효용이 높음이 실증됨.
 
 ##### 4. 실전 스트리밍 해상도 및 성능 실측 데이터 (Google TV Streamer)
-  * **해상도 한계 및 권장치:**
+  * **해상도 및 주사율 한계와 최종 세팅:**
+    * 빔프로젝터는 120Hz를 지원하나, **Google TV Streamer 기기 스펙상 120Hz 출력을 지원하지 않아 최종 60FPS로 고정**하여 사용.
+    * 볼핏은 120FPS 설정 테스트로 ~119.5 FPS까지 동작함을 확인했으나, 엘든 링 및 림월드는 60FPS 타겟으로 설정.
     * 4K/1440p 이상: Google TV Streamer의 하드웨어 디코딩 속도 한계로 인해 조작이 어려운 수준의 심각한 지연 발생.
-    * **1080p (Full HD):** 안정적으로 플레이 가능한 마지노선이자 최적 해상도.
+    * **1080p 60FPS (Full HD):** Google TV Streamer 환경에서 가장 안정적이고 쾌적하게 플레이 가능한 최적의 세팅.
   * **게임별 실측 데이터 (HEVC Low-Latency 코덱 기준):**
-    1. **엘든 링 (Elden Ring):**
+    1. **엘든 링 (Elden Ring - 60FPS 타겟):**
        - 스트림: 1920x1080, 54.32 FPS (렌더링 51.85 FPS)
        - 평균 디코딩 시간: **4.96 ms**
        - 평균 네트워크 지연: **5 ms** (편차 7 ms)
        - 호스트 처리 대기 시간: 최소 2.1 ms / 최대 4.1 ms / 평균 3.1 ms
        - 패킷 손실: 0.00%
-    2. **림월드 (RimWorld):**
+    2. **림월드 (RimWorld - 60FPS 타겟):**
        - 스트림: 1920x1080, 41.67 FPS (렌더링 41.67 FPS)
        - 평균 디코딩 시간: **4.29 ms**
        - 평균 네트워크 지연: **2 ms** (편차 0 ms)
        - 호스트 처리 대기 시간: 최소 2.0 ms / 최대 2.9 ms / 평균 2.3 ms
        - 패킷 손실: 0.00%
-    3. **볼핏 (Ball Pit):**
-       - 스트림: 1920x1080, 119.48 FPS (렌더링 119.48 FPS, 고주사율 모드)
+       - *프레임 저하 원인:* PC 호스트의 네트워크가 Wi-Fi(내부망)와 유선 LAN(외부망)으로 분리된 특수 테스트 환경 구성으로 인해 발생. 향후 홈 네트워크 단일화 정리 필요.
+    3. **볼핏 (Ball Pit - 120FPS 고주사율 모드 테스트):**
+       - 스트림: 1920x1080, 119.48 FPS (렌더링 119.48 FPS)
        - 평균 디코딩 시간: **5.00 ms**
        - 평균 네트워크 지연: **1 ms** (편차 0 ms)
        - 호스트 처리 대기 시간: 최소 2.1 ms / 최대 3.5 ms / 평균 2.6 ms
        - 패킷 손실: 0.00%
-  * **디스플레이 지연 관련:**
+  * **디스플레이 및 네트워크 지연 관련:**
     - 빔프로젝터 자체 저지연(게임) 모드가 정상 활성화되어 있어 Google TV Streamer ↔ 빔프로젝터 간 지연 병목은 발생하지 않음.
+    - 호스트 PC와 Google TV Streamer 모두 Wi-Fi로 연결된 무선-무선(Wi-Fi to Wi-Fi) 환경에서도 간헐적인 대역폭 저하를 제외하면 전반적으로 만족스러운 응답성을 보임.
 
 ---
 
@@ -125,6 +129,10 @@ series_id: null
     * 원인: Google TV Streamer의 AP(MediaTek칩) 하드웨어 비디오 디코더 성능 한계로 1440p 이상 고해상도 프레임 디코딩 지연 누적.
     * 해결법: 스트리밍 해상도를 **1080p**로 고정하고 코덱을 `c2.mtk.hevc.decoder.lowlatency`로 구동. 1080p 설정 시 디코딩 시간 4~5ms, 네트워크 지연 1~5ms 수준으로 쾌적한 플레이 가능. [USER VERIFIED]
     * 신뢰도: [★★★★★]
+  * **Wi-Fi 간 연결 시 간헐적인 호스트 전송 속도 급감 및 화면 프리징 현상** *(사용자 검증 추가 — 2026-10-04)*
+    * 원인: 호스트 PC(Wi-Fi 내부망/LAN 외부망 이원화) 및 Google TV Streamer(Wi-Fi) 간의 무선 대역폭 간섭 또는 지터 발생 시, 호스트 인코더가 급격히 전송 속도를 낮추며 순간 프리징 유발.
+    * 해결법: 단기적으로는 Moonlight 비트레이트를 안전 범위(40~60Mbps)로 제한, 장기적으로는 홈 네트워크 구성을 단일 유선 LAN 인프라로 재정비하여 무선 간섭 최소화 필요. [USER VERIFIED / OPINION]
+    * 신뢰도: [★★★★☆]
   * **Artemis 클라이언트 설치 파일 접근 제한**
     * 원인: Google TV 플레이스토어에 Artemis가 등록되어 있지 않음.
     * 해결법: Send Files to TV 또는 USB 파일 관리자 앱을 사용하여 GitHub 릴리스 APK를 다운로드한 후 개발자 옵션 허용 상태에서 사이드로딩 설치. [FACT]
@@ -133,9 +141,10 @@ series_id: null
 ---
 
 #### 💬 Experiences & Tips (경험 및 팁)
-  * [OPINION] PC 모니터가 1440p 144Hz이고 빔프로젝터가 4K/1440p를 지원하더라도, Google TV Streamer를 클라이언트로 쓸 때는 디코딩 성능 한계로 인해 **1080p로 스트리밍하는 것이 필수적**입니다. 1080p 환경에서는 60FPS(엘든 링)뿐 아니라 120FPS(볼핏 등 경량 게임)까지도 디코딩 지연 4~5ms 내외로 안정적으로 소화합니다.
-  * [OPINION] 듀얼 모니터를 쓰는 환경에서는 Apollo의 `Deactivate other displays and activate only the specified display` 옵션이 가장 완벽한 해법입니다. 복잡한 윈도우 주 모니터 재배치나 서드파티 스크립트 없이도 물리 모니터 2개가 깔끔히 꺼지고 가상 화면 3번에 스팀이 단독 실행됩니다.
-  * [OPINION] 빔프로젝터의 게임 모드(저지연 모드)를 켜두면 스트리머와 프로젝터 간 HDMI 전송 지연이 억제되므로, 순수 Moonlight 오버레이 지연(합산 10ms 안팎) 수준의 민첩한 응답성을 체감할 수 있습니다.
+  * [OPINION] 프로젝터 하드웨어가 120Hz를 지원하더라도 Google TV Streamer 기기 자체가 120Hz 출력을 지원하지 않으므로, Moonlight 클라이언트 설정은 현실적으로 **1080p 60FPS로 맞추어 운용**하는 것이 가장 합리적입니다.
+  * [OPINION] PC 모니터가 1440p 144Hz이고 빔프로젝터가 4K/1440p를 지원하더라도, Google TV Streamer의 디코딩 한계상 1080p 스트리밍이 필수적입니다. 1080p 환경에서는 60FPS뿐 아니라 120FPS(볼핏)까지도 디코딩 지연 4~5ms 내외로 소화합니다.
+  * [OPINION] PC에서 Wi-Fi(내부망)와 유선 LAN(외부망)을 분리해 둔 특수 환경에서는 대역폭 라우팅 이슈로 특정 게임(림월드 등)에서 프레임 저하가 발생할 수 있습니다. 안정적인 무선 스트리밍을 위해서라도 홈 네트워크 구조를 깔끔하게 단일화하는 정리가 필요합니다.
+  * [OPINION] Wi-Fi to Wi-Fi 환경임에도 불구하고 순간적인 무선 혼선에 따른 간헐적 프리징을 제외하면 전반적인 지연 시간과 반응성은 실전 게임 플레이에 매우 만족스러운 수준입니다.
 
 ---
 
@@ -144,13 +153,14 @@ series_id: null
   * [x] Google TV Streamer의 연결 방식 — Verified 2026-10-03 (5GHz Wi-Fi)
   * [x] 최종 사용 조합 확정 — Verified 2026-10-03 (Moonlight + Apollo)
   * [x] 3번 가상 디스플레이 단독 출력 설정 — Verified 2026-10-04 (Apollo Deactivate other displays 적용 완료)
-  * [x] 해상도 한계 및 실제 게임별 레이턴시 실측 — Verified 2026-10-04 (1080p 최적, 엘든 링/림월드/볼핏 디코딩 4~5ms 검증)
+  * [x] 해상도 및 주사율 한계 실측 — Verified 2026-10-04 (스트리머 120Hz 미지원으로 60FPS 고정 운용 확정, 1080p 최적)
   * [x] 빔프로젝터 저지연 모드 동작 여부 — Verified 2026-10-04 (저지연 모드 활성화로 정상 구동 확인)
+  * [x] Wi-Fi to Wi-Fi 네트워크 상태 및 프리징 특성 — Verified 2026-10-04 (내부/외부망 분리에 따른 림월드 프레임 이슈 및 무선 프리징 파악)
 
 ---
 
 #### 🏷️ Tags
-Moonlight, Artemis, Sunshine, Apollo, GoogleTVStreamer, GameStreaming, Projector, StreamingReview, EldenRing, RimWorld, BallPit
+Moonlight, Artemis, Sunshine, Apollo, GoogleTVStreamer, GameStreaming, Projector, StreamingReview, EldenRing, RimWorld, BallPit, HomeNetwork
 
 ===== KNOWLEDGE PACKAGE END =====
 
@@ -159,19 +169,20 @@ Moonlight, Artemis, Sunshine, Apollo, GoogleTVStreamer, GameStreaming, Projector
 
 ### 2026-10-04 — Test Result: PASS
 * **환경:**
-  * Host PC: 물리 듀얼 모니터 (1440p 144Hz)
+  * Host PC: 물리 듀얼 모니터 (1440p 144Hz, 내부망 Wi-Fi / 외부망 LAN 분리 구성)
   * Client: Google TV Streamer (5GHz Wi-Fi)
-  * Display: 빔프로젝터 (저지연/게임 모드 활성화)
+  * Display: 빔프로젝터 (저지연/게임 모드 활성화, 120Hz 지원 기기)
   * 선택 조합: Moonlight(Client) + Apollo(Host)
 * **검증/확인된 항목:**
-  * Apollo 설정의 `Deactivate other displays and activate only the specified display` 적용으로 물리 모니터 비활성화 및 가상 모니터 3번 단독 출력 완벽 동작 확인.
-  * Google TV Streamer의 디코딩 한계로 1440p/4K는 실사용 불가 수준의 지연 발생, **1080p가 최적 해상도**임을 확인.
-  * 1080p 환경 실측 결과 (HEVC Low-Latency 디코더 `c2.mtk.hevc.decoder.lowlatency`):
-    * 엘든 링: 1080p ~54 FPS, 디코딩 4.96 ms, 네트워크 지연 5 ms
-    * 림월드: 1080p ~41.7 FPS, 디코딩 4.29 ms, 네트워크 지연 2 ms
-    * 볼핏: 1080p ~119.5 FPS, 디코딩 5.00 ms, 네트워크 지연 1 ms
-  * 빔프로젝터 저지연 모드 적용으로 클라이언트-디스플레이 간 병목 해소 확인.
-* **Status 변경:** Verified (Partial) → Verified
+  * Apollo `Deactivate other displays` 설정으로 가상 모니터 3번 단독 출력 및 스팀 정상 작동 검증.
+  * 빔프로젝터의 120Hz 지원과 무관하게 Google TV Streamer 기기 자체가 120Hz를 지원하지 않아 최종 **1080p 60FPS**로 고정 사용 결정.
+  * 해상도 설정: 1440p 이상은 디코딩 지연 과다, 1080p가 최적.
+  * 게임 3종 실측 데이터:
+    * 엘든 링 (60FPS 타겟): ~54 FPS, 디코딩 4.96 ms, 네트워크 지연 5 ms
+    * 림월드 (60FPS 타겟): ~41.7 FPS, 디코딩 4.29 ms, 네트워크 지연 2 ms (PC의 Wi-Fi 내부망/LAN 외부망 분리 특수 구성으로 인한 프레임 저하 원인 확인)
+    * 볼핏 (120FPS 설정 테스트): ~119.5 FPS, 디코딩 5.00 ms, 네트워크 지연 1 ms
+  * 네트워크 특성: Wi-Fi to Wi-Fi 환경임에도 간헐적 무선 혼선(속도 급감 및 화면 프리징) 외에는 전반적으로 매우 만족스러운 성능 확인. 향후 홈 네트워크 정비 과제로 기록.
+* **Status 변경:** Verified 유지
 
 ### 2026-10-03 — Test Result: PARTIAL
 * **환경:**
