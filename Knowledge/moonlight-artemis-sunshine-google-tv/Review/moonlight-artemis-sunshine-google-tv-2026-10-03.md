@@ -4,9 +4,9 @@ title_kr: Moonlight vs Artemis 및 Sunshine 게임 스트리밍 조합 비교 �
 category: Review
 sub_category: Comparison
 version: 2026-10-03
-status: Verified (Partial)
+status: Verified
 created_date: 2026-10-03
-last_modified: 2026-10-03
+last_modified: 2026-10-04
 language: KR+EN
 tags: [Moonlight, Artemis, Sunshine, Apollo, GoogleTVStreamer, GameStreaming, Projector]
 sources_count: 5
@@ -26,7 +26,7 @@ series_id: null
 * **Category:** Review
 * **Sub-Category:** Comparison
 * **Version:** 2026-10-03
-* **Status:** Verified (Partial)
+* **Status:** Verified
 * **Date:** 2026-10-03
 * **Language:** KR+EN
 
@@ -80,33 +80,51 @@ series_id: null
 
 ##### 3. 다중 모니터(듀얼 모니터) + 가상 디스플레이(3번) 충돌 해결 방안
   * **문제 상황:** 물리 모니터 2개 사용 중 스트리밍 시 가상 디스플레이 3번이 연결되나, Steam Big Picture나 게임이 주 모니터(1번)에 출력되는 현상.
-  * **해결 방안 1: Apollo 내장 디스플레이 관리 옵션 활용 (가장 권장)**
+  * **실제 검증된 최적 해결책: Apollo 내장 디스플레이 격리 옵션 활용 [USER VERIFIED]**
     1. Apollo 웹 관리자 (`https://localhost:47990`) 접속
     2. `Configuration` -> `Audio / Video` 탭 진입
     3. `Advanced display device options` 클릭하여 확장
     4. `Device Configuration` 항목을 **`Deactivate other displays and activate only the specified display`** 로 설정
-    5. 스트리밍 시작 시 물리 모니터(1, 2번)가 일시 비활성화되고 가상 모니터(3번)만 단독 활성화되며, 종료 시 물리 모니터가 자동 복원됨.
-  * **해결 방안 2: Windows 디스플레이 설정 프로필 기억 활용 (수동 설정)**
-    1. Moonlight로 스트리밍에 접속한 상태(3번 가상 디스플레이가 켜진 상태) 유지
-    2. Windows 설정 -> 시스템 -> 디스플레이에서 3번 모니터를 선택 후 **"이 디스플레이를 주 모니터로 만들기"** 체크
-    3. 필요 시 1번과 2번 디스플레이를 "이 디스플레이 연결 끊기"로 설정하거나, 3번을 주 모니터로 두면 게임/Steam Big Picture가 항상 3번으로 실행됨.
-  * **해결 방안 3: MultiMonitorTool 커맨드 스크립트 연동 (고급 자동화)**
-    * NirSoft의 `MultiMonitorTool`을 활용하여 Apollo 애플리케이션의 `Command Preparations`에 등록:
-      * **Do Command:** `MultiMonitorTool.exe /SetPrimary \\.\DISPLAY3 /disable \\.\DISPLAY1 \\.\DISPLAY2`
-      * **Undo Command:** `MultiMonitorTool.exe /SetPrimary \\.\DISPLAY1 /enable \\.\DISPLAY1 \\.\DISPLAY2`
+    5. **효과:** 스트리밍 시작 시 물리 모니터(1, 2번)가 일시 비활성화되고 가상 모니터(3번)만 단독 활성화되며, 종료 시 물리 모니터가 자동 복원됨. 주 모니터를 수동 변경할 필요 없이 가장 효용이 높음이 실증됨.
+
+##### 4. 실전 스트리밍 해상도 및 성능 실측 데이터 (Google TV Streamer)
+  * **해상도 한계 및 권장치:**
+    * 4K/1440p 이상: Google TV Streamer의 하드웨어 디코딩 속도 한계로 인해 조작이 어려운 수준의 심각한 지연 발생.
+    * **1080p (Full HD):** 안정적으로 플레이 가능한 마지노선이자 최적 해상도.
+  * **게임별 실측 데이터 (HEVC Low-Latency 코덱 기준):**
+    1. **엘든 링 (Elden Ring):**
+       - 스트림: 1920x1080, 54.32 FPS (렌더링 51.85 FPS)
+       - 평균 디코딩 시간: **4.96 ms**
+       - 평균 네트워크 지연: **5 ms** (편차 7 ms)
+       - 호스트 처리 대기 시간: 최소 2.1 ms / 최대 4.1 ms / 평균 3.1 ms
+       - 패킷 손실: 0.00%
+    2. **림월드 (RimWorld):**
+       - 스트림: 1920x1080, 41.67 FPS (렌더링 41.67 FPS)
+       - 평균 디코딩 시간: **4.29 ms**
+       - 평균 네트워크 지연: **2 ms** (편차 0 ms)
+       - 호스트 처리 대기 시간: 최소 2.0 ms / 최대 2.9 ms / 평균 2.3 ms
+       - 패킷 손실: 0.00%
+    3. **볼핏 (Ball Pit):**
+       - 스트림: 1920x1080, 119.48 FPS (렌더링 119.48 FPS, 고주사율 모드)
+       - 평균 디코딩 시간: **5.00 ms**
+       - 평균 네트워크 지연: **1 ms** (편차 0 ms)
+       - 호스트 처리 대기 시간: 최소 2.1 ms / 최대 3.5 ms / 평균 2.6 ms
+       - 패킷 손실: 0.00%
+  * **디스플레이 지연 관련:**
+    - 빔프로젝터 자체 저지연(게임) 모드가 정상 활성화되어 있어 Google TV Streamer ↔ 빔프로젝터 간 지연 병목은 발생하지 않음.
 
 ---
 
 #### 🐛 Errors & Solutions (오류 및 해결법)
   * **가상 디스플레이(3번) 연결 시 Steam/게임이 1번 물리 모니터에 실행되는 문제** *(사용자 검증 추가 — 2026-10-03)*
     * 원인: Windows의 주 모니터(Primary Display) 설정이 1번으로 유지되어 있어, 전체 화면 게임 및 Steam Big Picture가 기본 디스플레이로 열림.
-    * 해결법: Apollo 설정의 `Device Configuration`에서 `Deactivate other displays and activate only the specified display`를 적용하거나, 스트리밍 접속 상태에서 3번 가상 디스플레이를 주 모니터(Primary Display)로 지정. [USER VERIFIED / FACT]
-    * 환경: Windows 11/10, 물리 듀얼 모니터(1440p) + 가상 디스플레이(4K/1440p)
+    * 해결법: Apollo 설정의 `Device Configuration`에서 `Deactivate other displays and activate only the specified display`를 적용하여 물리 듀얼 모니터를 비활성화하고 가상 모니터만 단독 구동. [USER VERIFIED]
+    * 환경: Windows 11/10, 물리 듀얼 모니터(1440p) + 가상 디스플레이(Apollo SudoVDA)
     * 신뢰도: [★★★★★]
-  * **Google TV Streamer에서 4K 스트리밍 시 스터터링/입력 지연 발생**
-    * 원인: 비트레이트 과다 설정(100Mbps 초과) 시 디코더 버퍼 병목 또는 빔프로젝터 화면 처리 지연(영상 보정 기능 활성화).
-    * 해결법: Moonlight/Artemis 설정에서 비트레이트를 60~80Mbps 수준으로 조정, 코덱을 HEVC(H.265)로 고정, 빔프로젝터 입력 모드를 '게임 모드(Game Mode / 저지연 모드)'로 설정. [FACT]
-    * 신뢰도: [★★★★☆]
+  * **Google TV Streamer에서 1440p/4K 스트리밍 시 조작 불가 수준의 입력 지연 및 스터터링 발생** *(사용자 검증 추가 — 2026-10-04)*
+    * 원인: Google TV Streamer의 AP(MediaTek칩) 하드웨어 비디오 디코더 성능 한계로 1440p 이상 고해상도 프레임 디코딩 지연 누적.
+    * 해결법: 스트리밍 해상도를 **1080p**로 고정하고 코덱을 `c2.mtk.hevc.decoder.lowlatency`로 구동. 1080p 설정 시 디코딩 시간 4~5ms, 네트워크 지연 1~5ms 수준으로 쾌적한 플레이 가능. [USER VERIFIED]
+    * 신뢰도: [★★★★★]
   * **Artemis 클라이언트 설치 파일 접근 제한**
     * 원인: Google TV 플레이스토어에 Artemis가 등록되어 있지 않음.
     * 해결법: Send Files to TV 또는 USB 파일 관리자 앱을 사용하여 GitHub 릴리스 APK를 다운로드한 후 개발자 옵션 허용 상태에서 사이드로딩 설치. [FACT]
@@ -115,10 +133,9 @@ series_id: null
 ---
 
 #### 💬 Experiences & Tips (경험 및 팁)
-  * [OPINION] PC 모니터가 1440p 144Hz이고 빔프로젝터가 4K 60Hz / 1440p 120Hz인 환경에서는 Apollo 호스트의 가상 디스플레이 자동 매칭이 매우 효과적입니다. 물리 모니터를 끄거나 해상도 강제 복제 없이 독립된 스트리밍 전용 가상 화면을 띄울 수 있습니다.
-  * [OPINION] 듀얼 모니터 환경에서 가상 디스플레이 추가 시 단순히 Win+P 단축키로 '두 번째 화면만'을 누르면 1번만 꺼지고 2번과 3번 사이에서 혼선이 발생할 수 있으므로, Apollo의 화면 단독 활성화 옵션이나 가상 모니터 주 모니터 지정을 쓰는 것이 가장 확실합니다.
-  * [OPINION] 5GHz Wi-Fi 환경에서는 4K 60fps 전송 시 순간적인 지연 스파이크(Jitter)가 발생할 수 있으므로, 비트레이트는 50~70Mbps 전후로 시작하여 점진적으로 조정하는 것을 권장합니다.
-  * [OPINION] 빔프로젝터는 자체 이미지 후처리 엔진(MEMC 등)으로 인해 기본 입력 지연이 40~70ms에 달할 수 있으므로, 테스트 시 빔프로젝터의 게임 모드(저지연 모드) 활성화가 체감 반응성에 결정적인 역할을 합니다.
+  * [OPINION] PC 모니터가 1440p 144Hz이고 빔프로젝터가 4K/1440p를 지원하더라도, Google TV Streamer를 클라이언트로 쓸 때는 디코딩 성능 한계로 인해 **1080p로 스트리밍하는 것이 필수적**입니다. 1080p 환경에서는 60FPS(엘든 링)뿐 아니라 120FPS(볼핏 등 경량 게임)까지도 디코딩 지연 4~5ms 내외로 안정적으로 소화합니다.
+  * [OPINION] 듀얼 모니터를 쓰는 환경에서는 Apollo의 `Deactivate other displays and activate only the specified display` 옵션이 가장 완벽한 해법입니다. 복잡한 윈도우 주 모니터 재배치나 서드파티 스크립트 없이도 물리 모니터 2개가 깔끔히 꺼지고 가상 화면 3번에 스팀이 단독 실행됩니다.
+  * [OPINION] 빔프로젝터의 게임 모드(저지연 모드)를 켜두면 스트리머와 프로젝터 간 HDMI 전송 지연이 억제되므로, 순수 Moonlight 오버레이 지연(합산 10ms 안팎) 수준의 민첩한 응답성을 체감할 수 있습니다.
 
 ---
 
@@ -126,18 +143,35 @@ series_id: null
   * [x] 사용자 PC의 물리 모니터 해상도 및 빔프로젝터 해상도/화면비 일치 여부 — Verified 2026-10-03 (PC: 1440p 144Hz, 프로젝터: 4K 60Hz / 1440p 120Hz)
   * [x] Google TV Streamer의 연결 방식 — Verified 2026-10-03 (5GHz Wi-Fi)
   * [x] 최종 사용 조합 확정 — Verified 2026-10-03 (Moonlight + Apollo)
-  * [ ] 3번 가상 디스플레이 주 모니터 지정 / Apollo 비활성화 옵션 적용 후 Steam Big Picture 정상 출력 여부
-  * [ ] 빔프로젝터 자체 게임 모드(저지연 모드) 적용 후 실제 체감 레이턴시 측정 결과
+  * [x] 3번 가상 디스플레이 단독 출력 설정 — Verified 2026-10-04 (Apollo Deactivate other displays 적용 완료)
+  * [x] 해상도 한계 및 실제 게임별 레이턴시 실측 — Verified 2026-10-04 (1080p 최적, 엘든 링/림월드/볼핏 디코딩 4~5ms 검증)
+  * [x] 빔프로젝터 저지연 모드 동작 여부 — Verified 2026-10-04 (저지연 모드 활성화로 정상 구동 확인)
 
 ---
 
 #### 🏷️ Tags
-Moonlight, Artemis, Sunshine, Apollo, GoogleTVStreamer, GameStreaming, Projector, StreamingReview
+Moonlight, Artemis, Sunshine, Apollo, GoogleTVStreamer, GameStreaming, Projector, StreamingReview, EldenRing, RimWorld, BallPit
 
 ===== KNOWLEDGE PACKAGE END =====
 
 ---
 ## 📝 Feedback History
+
+### 2026-10-04 — Test Result: PASS
+* **환경:**
+  * Host PC: 물리 듀얼 모니터 (1440p 144Hz)
+  * Client: Google TV Streamer (5GHz Wi-Fi)
+  * Display: 빔프로젝터 (저지연/게임 모드 활성화)
+  * 선택 조합: Moonlight(Client) + Apollo(Host)
+* **검증/확인된 항목:**
+  * Apollo 설정의 `Deactivate other displays and activate only the specified display` 적용으로 물리 모니터 비활성화 및 가상 모니터 3번 단독 출력 완벽 동작 확인.
+  * Google TV Streamer의 디코딩 한계로 1440p/4K는 실사용 불가 수준의 지연 발생, **1080p가 최적 해상도**임을 확인.
+  * 1080p 환경 실측 결과 (HEVC Low-Latency 디코더 `c2.mtk.hevc.decoder.lowlatency`):
+    * 엘든 링: 1080p ~54 FPS, 디코딩 4.96 ms, 네트워크 지연 5 ms
+    * 림월드: 1080p ~41.7 FPS, 디코딩 4.29 ms, 네트워크 지연 2 ms
+    * 볼핏: 1080p ~119.5 FPS, 디코딩 5.00 ms, 네트워크 지연 1 ms
+  * 빔프로젝터 저지연 모드 적용으로 클라이언트-디스플레이 간 병목 해소 확인.
+* **Status 변경:** Verified (Partial) → Verified
 
 ### 2026-10-03 — Test Result: PARTIAL
 * **환경:**
