@@ -1,12 +1,12 @@
 ---
 topic: ai-agent-git-branch-strategy
-title_kr: "1인 개발 및 AI 에이전트 환경을 위한 3계층 Git 브랜치 관리 전략"
+title_kr: "1인 개발 및 AI 에이전트 환경을 위한 개인용 3계층 Git 브랜치 관리 전략"
 category: Workflow
 sub_category: Git & DevOps
 version: 2026-11-01
-status: Experimental
+status: Verified
 created_date: 2026-11-01
-last_modified: 2026-11-01
+last_modified: 2026-11-02
 language: KR+EN
 tags: [Git, Branch Strategy, AI Agent, Squash Merge, Semantic Versioning, WebTranslator]
 sources_count: 5
@@ -22,11 +22,11 @@ series_id: null
 ### 📦 [Knowledge Package]
 
 * **Topic:** ai-agent-git-branch-strategy
-* **Title_KR:** 1인 개발 및 AI 에이전트 환경을 위한 3계층 Git 브랜치 관리 전략
+* **Title_KR:** 1인 개발 및 AI 에이전트 환경을 위한 개인용 3계층 Git 브랜치 관리 전략
 * **Category:** Workflow
 * **Sub-Category:** Git & DevOps
 * **Version:** 2026-11-01
-* **Status:** Experimental
+* **Status:** Verified
 * **Date:** 2026-11-01
 * **Language:** KR+EN
 
@@ -42,7 +42,7 @@ series_id: null
 ---
 
 #### 🔑 Core Concepts (핵심 개념)
-  * **3계층 브랜치 아키텍처 (3-Tier Branching Model for Solo + AI Development):** 1인 개발자가 AI 코딩 에이전트(Antigravity, Codex 등)에 구현 및 R&D를 위임하고 버전별로 배포하는 환경에 맞춰, 브랜치를 ① `main` (불변 배포선), ② `v{Major}.{Minor}-dev` (차기 버전 통합선), ③ `feat/*`, `fix/*`, `exp/*` (단위 작업 및 AI 실험 격리선)의 3계층으로 분리하는 구조다. [OPINION]
+  * **개인 개발용 3계층 브랜치 아키텍처 (Personal 3-Tier Branching Model for Solo + AI Development):** 모든 조직이나 개발자에게 공통으로 적용되는 범용 표준이 아니라, 1인 개발자가 AI 코딩 에이전트(Antigravity, Codex 등)에 구현 및 R&D를 위임하고 버전별로 배포하는 개인 작업 방식에 맞춰 정리한 브랜치 전략이다. 브랜치를 ① `main` (불변 배포선), ② `v{Major}.{Minor}-dev` (차기 버전 통합선), ③ `feat/*`, `fix/*`, `exp/*` (단위 작업 및 AI 실험 격리선)의 3계층으로 분리한다. [OPINION]
   * **Annotated Git Tag (`git tag -a`):** 단순 커밋 포인터인 Lightweight 태그와 달리, 태거(Tagger) 정보, 생성 시각, 릴리즈 메시지를 Git 데이터베이스 내 독립 객체로 저장하는 영구 스냅샷 표식이다. 스토어 배포나 패키지 릴리즈 시점의 소스 트리 상태를 보존하고, 향후 이전 버전 긴급 패치(`hotfix/*`)의 분기 기준점으로 사용한다. [FACT]
   * **실험 브랜치(`exp/*`)와 Squash Merge (`git merge --squash`):** R&D나 AI 에이전트 실험 중 발생한 다수의 시행착오 커밋(`wip`, `debug`, `revert`)을 통합 브랜치(`v{Major}.{Minor}-dev`)에 그대로 병합하지 않고, 검증된 최종 결과만 단일 커밋으로 압축하여 병합하는 방식이다. 병합 후 원본 `exp/*` 브랜치는 새 커밋 SHA와의 공통 조상 연결이 끊어지므로 충돌 방지를 위해 즉시 삭제해야 한다. [FACT]
   * **No-Fast-Forward Merge (`git merge --no-ff`):** 버전 통합 브랜치(`v2.0-dev`)를 `main`에 병합할 때 Fast-Forward가 가능하더라도 명시적인 병합 커밋(Merge Commit)을 생성하여, `main` 브랜치 로그만으로도 버전 단위 배포 경계를 식별할 수 있게 하는 방식이다. [FACT]
@@ -50,15 +50,15 @@ series_id: null
 ---
 
 #### 🛠️ Procedures (절차)
-  1. **Tier 1 (`main`) 배포 전용 보호 및 태깅 절차:** [★★★★★]
+  1. **Tier 1 (`main`) 배포 전용 보호 및 태깅 절차:** [★★★★★] ✅ Verified 2026-11-02
      * `main` 브랜치에서는 직접 코드 수정이나 일반 커밋을 수행하지 않는다.
      * 버전 배포가 확정되면 `v{Major}.{Minor}-dev`에서 버전 메타데이터(`manifest.json`, `package.json`, `CHANGELOG.md`)를 최종 확인한 뒤 `main`으로 체크아웃한다.
      * `git merge --no-ff v{Major}.{Minor}-dev -m "release: v{Major}.{Minor}.{Patch}"` 명령으로 병합 커밋을 생성한다.
      * `git tag -a v{Major}.{Minor}.{Patch} -m "Release v{Major}.{Minor}.{Patch}"`로 Annotated Tag를 생성하고 `git push origin main --tags`로 원격 저장소에 반영한다.
-  2. **Tier 2 (`v{Major}.{Minor}-dev`) 버전 통합 및 핫픽스 운용 절차:** [★★★★☆]
+  2. **Tier 2 (`v{Major}.{Minor}-dev`) 버전 통합 및 핫픽스 운용 절차:** [★★★★☆] ✅ Verified 2026-11-02
      * 차기 배포 버전(예: `v2.0-dev`)은 검증이 끝난 기능과 버그 수정만 통합하는 기준선으로 유지한다.
      * 이미 배포된 이전 버전(예: `v1.0.0`)에 긴급 수정이 필요하면 `git checkout -b hotfix/v1.0.1-{이슈명} v1.0.0`으로 태그에서 분기하여 수정한 뒤, `main`에 병합(`v1.0.1` 태그 생성)하고 현재 개발 중인 `v2.0-dev`에도 `git cherry-pick` 또는 병합으로 반영한다.
-  3. **Tier 3 (`feat/*`, `fix/*`, `exp/*`) AI 작업/실험 격리 및 Squash Merge 절차:** [★★★★★]
+  3. **Tier 3 (`feat/*`, `fix/*`, `exp/*`) AI 작업/실험 격리 및 Squash Merge 절차:** [★★★★★] ⚠️ 수정됨: 실험 실패 시 아카이브 태그 생성 없이 즉시 브랜치 삭제(`git branch -D`)만 수행하도록 단순화 — Verified 2026-11-02
      * AI 에이전트에게 신규 기능이나 R&D 실험을 지시하기 전 `v{Major}.{Minor}-dev`에서 `feat/{기능명}`, `fix/{이슈명}`, 또는 `exp/{실험명}` 브랜치를 분기한다.
      * 실험 성공 시:
        ```powershell
@@ -68,8 +68,8 @@ series_id: null
        git push origin v2.0-dev
        git branch -D exp/{실험명}
        ```
-     * 실험 실패/폐기 시: `v2.0-dev`에 `revert` 커밋을 남기지 않고 `git checkout v2.0-dev` 복귀 후 `git branch -D exp/{실험명}`으로 폐기한다. (코드 보관이 필요한 경우 `git tag -a archive/exp-{실험명} exp/{실험명}` 생성 후 브랜치 삭제)
-  4. **AI 에이전트 규칙(`AGENTS.md`) 및 자동 동기화 스크립트(`git-sync.ps1`) 가드레일 구성:** [★★★★★]
+     * 실험 실패/폐기 시: `v2.0-dev`에 `revert` 커밋을 남기지 않고 `git checkout v2.0-dev` 복귀 후 `git branch -D exp/{실험명}`으로 즉시 폐기한다.
+  4. **AI 에이전트 규칙(`AGENTS.md`) 및 자동 동기화 스크립트(`git-sync.ps1`) 가드레일 구성:** [★★★★★] ✅ Verified 2026-11-02
      * 버전 필드(`manifest.json`의 `version`)만 읽고 브랜치를 강제 전환(`git checkout`)하는 로직을 제거하고, 현재 체크아웃된 브랜치(`git branch --show-current`)를 유지한다.
      * 현재 브랜치가 `main`인 경우 스크립트가 즉시 종료(`exit 1`)되도록 차단 조건(Guard)을 둔다.
      * 문서 수정(`docs:`)과 소스 코드(`src/`, `manifest.json`) 변경이 한 커밋에 섞이지 않도록 커밋 전 `git status --short` 검증을 의무화한다.
@@ -93,14 +93,15 @@ series_id: null
 ---
 
 #### 💬 Experiences & Tips (경험 및 팁)
+  * [OPINION] 이 브랜치 전략은 모든 사람에게 공통으로 쓰이는 범용 규칙이 아니라, 혼자 작업하면서 AI에게 작업을 지시하고 개별 버전별 배포 히스토리를 남겨야 하는 평소 개인 개발 방식을 토대로 정리한 개인 개발용 Git 브랜치 전략이다. — 출처: 사용자 피드백 (2026-11-02)
   * [OPINION] 1인 개발 환경에서는 다수 인원 협업을 전제로 한 무거운 Git Flow 대신, AI 에이전트에게 작업을 시키는 단위(`feat/*`, `fix/*`, `exp/*`)와 버전별 배포 히스토리(`vX.Y-dev` + `main` 태그)를 명확히 분리하는 경량 3계층 구조가 실용적이다. — 출처: 사용자 실제 개발 경험 (`WebTranslator`)
   * [OPINION] AI 코딩 에이전트(Antigravity, Codex 등)는 단일 요청에서도 다수의 파일을 동시에 수정하고 자동 커밋 스크립트를 호출하므로, 에이전트 규칙(`AGENTS.md`)과 동기화 스크립트(`git-sync.ps1`)에 잘못된 브랜치 라우팅이나 무조건적인 `git add -A`가 들어가면 브랜치 오염이 빠르게 누적된다. — 출처: 사용자 실제 개발 경험 (`WebTranslator`)
 
 ---
 
 #### ❓ Missing Info (검증 필요 항목)
-  * [ ] 새롭게 수립한 표준 문서(`D:\Noogs\NextCloud\Projects\BRANCH_STRATEGY.md`)의 3계층 구조(`main` + `vX.Y-dev` + `feat/fix/exp`)와 `git-sync.ps1` 가드레일 규격이 의도하신 평소 브랜치 관리 기준에 부합하는지 확인해주세요.
-  * [ ] 블로그 포스팅 작성 시 실패한 실험 브랜치 보관 방법으로 '즉시 삭제(`git branch -D`)'를 기본으로 두되, 필요 시 '아카이브 태그(`archive/exp-*`) 생성 후 브랜치 삭제' 팁을 함께 소개할지 확인해주세요.
+  * [x] 새롭게 수립한 표준 문서(`D:\Noogs\NextCloud\Projects\BRANCH_STRATEGY.md`)의 3계층 구조(`main` + `vX.Y-dev` + `feat/fix/exp`)와 `git-sync.ps1` 가드레일 규격 확인 (범용 표준이 아닌 개인 개발용 전략임을 명시) — Verified 2026-11-02
+  * [x] 블로그 포스팅 작성 시 실패한 실험 브랜치 보관 방법 확인 (아카이브 태그 팁 불필요, `git branch -D` 즉시 삭제만 유지) — Verified 2026-11-02
 
 ---
 
@@ -108,3 +109,15 @@ series_id: null
 Git, Branch Strategy, AI Agent, Squash Merge, Semantic Versioning, WebTranslator
 
 ===== KNOWLEDGE PACKAGE END =====
+
+---
+## 📝 Feedback History
+
+### 2026-11-02 — Test Result: PASS
+* **환경:** Windows 11, Git, PowerShell (`WebTranslator` 및 `Projects` 워크스페이스)
+* **검증된 단계:** 1, 2, 3, 4
+* **실패한 단계:** 없음
+* **새 오류/팁:**
+  * 이 전략은 모든 사람에게 공통으로 쓰이는 범용 표준이 아니라, 평소 자주 사용하는 개인 개발 방식(1인 개발 + AI 활용 + 버전별 배포 히스토리 관리)을 토대로 만든 개인 개발용 Git 브랜치 전략임을 명확히 밝혀야 함.
+  * 실패한 실험 브랜치(`exp/*`) 보관용 아카이브 태그(`archive/exp-*`) 팁은 불필요하며 즉시 삭제(`git branch -D`)만 유지함.
+* **Status 변경:** Experimental → Verified
