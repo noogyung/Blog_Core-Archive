@@ -10,9 +10,9 @@ last_modified: 2026-11-02
 language: KR+EN
 tags: [Git, Branch Strategy, AI Agent, Squash Merge, Semantic Versioning, WebTranslator]
 sources_count: 5
-blog_draft_path: null
-blog_draft_date: null
-blog_id: null
+blog_draft_path: Blog_Posts/2026-11/ai-agent-git-branch-strategy.html
+blog_draft_date: 2026-11-02
+blog_id: core-archive
 blog_published: false
 series_id: null
 ---
