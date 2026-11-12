@@ -1,10 +1,17 @@
 # Knowledge Base Index
-Last Updated: 2026-11-02
+Last Updated: 2026-11-12
 
 > 📚 **Series Catalog:** [`_series.yaml`](file:///d:/Noogs/NextCloud/Projects/Blog_Core-Archive/Knowledge/_series.yaml)
 
 | Topic | Category | Created Date | Last Modified | Status | File Path |
 |-------|----------|:------------:|:-------------:|:------:|-----------|
+| ue58-map-consolidation-reference-fixup-and-zip-packaging | Troubleshooting | 2026-11-12 | 2026-11-12 | Experimental | ue58-map-consolidation-reference-fixup-and-zip-packaging/Troubleshooting/ue58-map-consolidation-reference-fixup-and-zip-packaging-v5.8.md |
+| ue58-official-mcp-adoption-and-python-distinction | Configuration | 2026-11-12 | 2026-11-12 | Experimental | ue58-official-mcp-adoption-and-python-distinction/Configuration/ue58-official-mcp-adoption-and-python-distinction-v5.8.md |
+| ue58-motion-design-cloner-effector-wave-verification | Concept | 2026-11-12 | 2026-11-12 | Experimental | ue58-motion-design-cloner-effector-wave-verification/Concept/ue58-motion-design-cloner-effector-wave-verification-v5.8.md |
+| ue58-character-input-capsule-and-door-verification | Troubleshooting | 2026-11-12 | 2026-11-12 | Experimental | ue58-character-input-capsule-and-door-verification/Troubleshooting/ue58-character-input-capsule-and-door-verification-v5.8.md |
+| ue58-workspace-density-lighting-uv-and-f-toggle | Configuration | 2026-11-12 | 2026-11-12 | Experimental | ue58-workspace-density-lighting-uv-and-f-toggle/Configuration/ue58-workspace-density-lighting-uv-and-f-toggle-v5.8.md |
+| ue58-pcg-electric-dreams-vegetation-and-set-scatter | Workflow | 2026-11-12 | 2026-11-12 | Experimental | ue58-pcg-electric-dreams-vegetation-and-set-scatter/Workflow/ue58-pcg-electric-dreams-vegetation-and-set-scatter-v5.8.md |
+| ue58-curriculum-stepwise-maps-and-ui-guide | Workflow | 2026-11-12 | 2026-11-12 | Experimental | ue58-curriculum-stepwise-maps-and-ui-guide/Workflow/ue58-curriculum-stepwise-maps-and-ui-guide-v5.8.md |
 | ai-agent-git-branch-strategy | Workflow | 2026-11-01 | 2026-11-02 | Verified | ai-agent-git-branch-strategy/Workflow/ai-agent-git-branch-strategy-2026-11-01.md |
 | moonlight-artemis-sunshine-google-tv | Review | 2026-10-03 | 2026-10-04 | Verified | moonlight-artemis-sunshine-google-tv/Review/moonlight-artemis-sunshine-google-tv-2026-10-03.md |
 | antigravity-blog-automation-workflow-v4 | Workflow | 2026-09-01 | 2026-09-08 | Verified | antigravity-blog-automation/Workflow/antigravity-blog-automation-workflow-v4-evolution-2026-09-03.md |
