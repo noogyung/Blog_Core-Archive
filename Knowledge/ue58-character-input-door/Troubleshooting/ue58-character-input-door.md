@@ -1,5 +1,5 @@
 ---
-topic: ue58-character-input-capsule-and-door-verification
+topic: ue58-character-input-door
 title_kr: "Unreal Engine 5.8 Character WASD·MouseY 입력 오류, 캡슐 축소 및 문 통과 검증"
 category: Troubleshooting
 sub_category: Character-Input-Collision
@@ -21,7 +21,7 @@ series_id: null
 
 ### 📦 [Knowledge Package]
 
-* **Topic:** ue58-character-input-capsule-and-door-verification
+* **Topic:** ue58-character-input-door
 * **Title_KR:** Unreal Engine 5.8 Character WASD·MouseY 입력 오류, 캡슐 축소 및 문 통과 검증
 * **Category:** Troubleshooting
 * **Sub-Category:** Character-Input-Collision

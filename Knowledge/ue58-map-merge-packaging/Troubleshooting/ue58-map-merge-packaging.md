@@ -1,5 +1,5 @@
 ---
-topic: ue58-map-consolidation-reference-fixup-and-zip-packaging
+topic: ue58-map-merge-packaging
 title_kr: "Unreal Engine 5.8 맵 경로 통합·참조 복구, 단일 프로젝트 ZIP 배포 및 Smart App Control 차단 기록"
 category: Troubleshooting
 sub_category: Asset-References-Packaging-Windows-Security
@@ -21,7 +21,7 @@ series_id: null
 
 ### 📦 [Knowledge Package]
 
-* **Topic:** ue58-map-consolidation-reference-fixup-and-zip-packaging
+* **Topic:** ue58-map-merge-packaging
 * **Title_KR:** Unreal Engine 5.8 맵 경로 통합·참조 복구, 단일 프로젝트 ZIP 배포 및 Smart App Control 차단 기록
 * **Category:** Troubleshooting
 * **Sub-Category:** Asset-References-Packaging-Windows-Security

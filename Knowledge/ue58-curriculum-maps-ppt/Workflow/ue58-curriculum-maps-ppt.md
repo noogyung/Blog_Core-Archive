@@ -1,5 +1,5 @@
 ---
-topic: ue58-curriculum-stepwise-maps-and-ui-guide
+topic: ue58-curriculum-maps-ppt
 title_kr: "실제 Unreal Editor 5.8 화면과 단계별 체크포인트 맵 기반 실습 교재 재구성"
 category: Workflow
 sub_category: Curriculum-And-Documentation-Design
@@ -21,7 +21,7 @@ series_id: null
 
 ### 📦 [Knowledge Package]
 
-* **Topic:** ue58-curriculum-stepwise-maps-and-ui-guide
+* **Topic:** ue58-curriculum-maps-ppt
 * **Title_KR:** 실제 Unreal Editor 5.8 화면과 단계별 체크포인트 맵 기반 실습 교재 재구성
 * **Category:** Workflow
 * **Sub-Category:** Curriculum-And-Documentation-Design

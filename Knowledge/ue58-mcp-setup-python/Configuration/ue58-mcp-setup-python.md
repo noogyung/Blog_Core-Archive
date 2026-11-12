@@ -1,5 +1,5 @@
 ---
-topic: ue58-official-mcp-adoption-and-python-distinction
+topic: ue58-mcp-setup-python
 title_kr: "Unreal Engine 5.8 공식 Unreal MCP 도입 절차와 Python 클라이언트·Unreal Python 구별"
 category: Configuration
 sub_category: Model-Context-Protocol-Editor-Automation
@@ -21,7 +21,7 @@ series_id: null
 
 ### 📦 [Knowledge Package]
 
-* **Topic:** ue58-official-mcp-adoption-and-python-distinction
+* **Topic:** ue58-mcp-setup-python
 * **Title_KR:** Unreal Engine 5.8 공식 Unreal MCP 도입 절차와 Python 클라이언트·Unreal Python 구별
 * **Category:** Configuration
 * **Sub-Category:** Model-Context-Protocol-Editor-Automation

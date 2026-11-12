@@ -1,5 +1,5 @@
 ---
-topic: ue58-motion-design-cloner-effector-wave-verification
+topic: ue58-motion-cloner-wave
 title_kr: "Unreal Engine 5.8 Motion Design Cloner·Effector 1,200개 타일 360° 파동 구현과 프레임 검증"
 category: Concept
 sub_category: Motion-Design-Cloner-Effector
@@ -21,7 +21,7 @@ series_id: null
 
 ### 📦 [Knowledge Package]
 
-* **Topic:** ue58-motion-design-cloner-effector-wave-verification
+* **Topic:** ue58-motion-cloner-wave
 * **Title_KR:** Unreal Engine 5.8 Motion Design Cloner·Effector 1,200개 타일 360° 파동 구현과 프레임 검증
 * **Category:** Concept
 * **Sub-Category:** Motion-Design-Cloner-Effector

@@ -1,5 +1,5 @@
 ---
-topic: ue58-pcg-electric-dreams-vegetation-and-set-scatter
+topic: ue58-pcg-scatter
 title_kr: "Unreal Engine 5.8 Electric Dreams 기반 지면 식생 PCG와 세트 데이터 재사용 확장"
 category: Workflow
 sub_category: Procedural-Content-Generation
@@ -21,7 +21,7 @@ series_id: null
 
 ### 📦 [Knowledge Package]
 
-* **Topic:** ue58-pcg-electric-dreams-vegetation-and-set-scatter
+* **Topic:** ue58-pcg-scatter
 * **Title_KR:** Unreal Engine 5.8 Electric Dreams 기반 지면 식생 PCG와 세트 데이터 재사용 확장
 * **Category:** Workflow
 * **Sub-Category:** Procedural-Content-Generation

@@ -1,5 +1,5 @@
 ---
-topic: ue58-workspace-density-lighting-uv-and-f-toggle
+topic: ue58-workspace-lighting-uv
 title_kr: "Unreal Engine 5.8 작은 작업실의 공간 밀도, 물리 광원·UV 정렬 및 F키 토글 설계"
 category: Configuration
 sub_category: Level-Design-Material-Blueprint
@@ -21,7 +21,7 @@ series_id: null
 
 ### 📦 [Knowledge Package]
 
-* **Topic:** ue58-workspace-density-lighting-uv-and-f-toggle
+* **Topic:** ue58-workspace-lighting-uv
 * **Title_KR:** Unreal Engine 5.8 작은 작업실의 공간 밀도, 물리 광원·UV 정렬 및 F키 토글 설계
 * **Category:** Configuration
 * **Sub-Category:** Level-Design-Material-Blueprint
