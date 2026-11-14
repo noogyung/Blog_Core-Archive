@@ -127,9 +127,14 @@
     <button aria-label="Copy code">Copy</button>
     <pre class="mermaid">
 flowchart LR
-    PC["작업용 메인 PC (Windows)&lt;br/&gt;WinSCP SFTP 클라이언트"] &lt;--&gt;|기가비트 유선 직결 LAN| DeskMini["ASRock DeskMini (Bazzite-Deck)&lt;br/&gt;NetworkManager 공유 (10.42.0.1)"]
-    DeskMini --&gt;|Internal Storage| SSD["500GB NVMe SSD&lt;br/&gt;~/Emulation/roms/"]
-    DeskMini -.-&gt;|2.4GHz 무선 (일상 유지보수용)| Router["가정용 무선 공유기"]
+    PC["작업용 메인 PC (Windows)&lt;br/&gt;WinSCP SFTP 클라이언트"]
+    DeskMini["ASRock DeskMini (Bazzite-Deck)&lt;br/&gt;NetworkManager 공유 (10.42.0.1)"]
+    SSD["500GB NVMe SSD&lt;br/&gt;~/Emulation/roms/"]
+    Router["가정용 무선 공유기"]
+
+    PC &lt;-- 기가비트 유선 직결 LAN --&gt; DeskMini
+    DeskMini --&gt;|Internal Storage| SSD
+    DeskMini -. 2.4GHz 무선 (일상 유지보수) .-&gt; Router
     </pre>
   </div>
 
