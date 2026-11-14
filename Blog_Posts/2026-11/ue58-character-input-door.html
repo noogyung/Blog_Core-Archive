@@ -1,0 +1,188 @@
+<!-- ============================================================
+  [BLOG POST METADATA - Blogspot 설정창 복사용]
+  Title: [UE 5.8 입문 부트캠프 구축기 #6] BP_WorkCharacter WASD·MouseY 입력 오류 수정, 캡슐 축소 및 문 통과 검증
+  Labels (Tags): Unreal, CharacterMovement, Troubleshooting
+  Meta Description: UE 5.8 작업실 캐릭터의 Key 핀 (KeyName=...) 파싱 오류와 MouseY 상하 반전을 수정하고, 캡슐을 18×80cm로 줄여 닫힌 문 정지·열린 문 통과·Idle 원복을 4단계로 분리 검증한 기록입니다.
+  Slug: ue58-character-input-door
+  ---
+  Primary Keyword: 언리얼 엔진 5.8 캐릭터 WASD 입력 오류 캡슐 충돌 해결
+  Secondary Keywords: Unreal Engine 5.8, BP_WorkCharacter, CharacterMovementComponent, CapsuleComponent, AddControllerPitchInput, PIE
+  Knowledge Source: Knowledge/ue58-character-input-door/Troubleshooting/ue58-character-input-door.md
+  Generated Date: 2026-11-14
+  Estimated Read Time: 12분
+  Series ID: ue58-bootcamp
+  ============================================================ -->
+
+<article>
+  <!-- 이미지 슬롯 1 (대표 이미지 - 필수) -->
+  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-11/ue58-character-input-door-img1_v1.jpg?v=20261114_2010" alt="Unreal Engine 5.8 BP_WorkCharacter WASD·MouseY 입력 오류 수정 및 캡슐 축소·문 통과 4단계 검증 대표 이미지">
+
+  <p>직전 179장 교재 개정 시점까지 작업실(<code>L_Work_08_Complete</code>) 점검 기록에는 긍정적인 항목들만 적혀 있었습니다. 에디터 플레이(PIE)에서 <code>BP_WorkCharacter</code>가 <code>Walking</code> 모드와 중력 스케일 <code>1</code>로 서 있고, <code>F</code>키를 눌렀을 때 <code>BP_WorkDoor</code>가 <code>100°</code>로 열리고 <code>BP_WorkLamp</code> 가시성이 전환되며, 테스트용 <code>W</code> 입력에서 위치 변화가 잡혔다는 확인이었기 때문입니다.</p>
+
+  <p>그러나 사용자가 직접 플레이 모드에 들어가 키보드를 누르며 보행을 시도해 본 후속 상세 점검 단계에서 숨겨져 있던 세 가지 치명적인 사용성 문제가 한꺼번에 드러났습니다. 실제 키보드 WASD를 눌러도 캐릭터가 전혀 앞으로 가지 않고, 마우스를 움직이면 상하 시점이 반대로 뒤집히며, 문틀 폭이 좁아 캐릭터가 문 안으로 걸어 들어가지 못하는 현상이었습니다. 이번 글에서는 179장 단계의 부분 확인이 왜 오류를 놓쳤는지 짚어보고, 원인 파악과 수정 과정, 그리고 단발 자동 입력 도구의 한계를 보완하기 위해 4단계로 분리해 수행한 정밀 검증 기록을 공유하고자 합니다.</p>
+
+  <h2 id="why-early-check-missed-input-bugs">1. 179장 시점 부분 확인의 한계와 세 가지 복합 증상</h2>
+
+  <p>왜 1차 확인에서는 문제를 놓치고 후속 점검에서 오류가 발견되었을까요. 가장 큰 이유는 초기 확인이 개별 블루프린트 상태나 API 단발 트리거 확인 위주였고, 실제 사용자가 키보드를 계속 누르며 마우스를 흔들고 문턱을 넘어 실내까지 진입하는 연속 시나리오를 거치지 않았기 때문입니다.</p>
+
+  <p>후속 정밀 테스트에서 확인된 구체적인 증상은 다음과 같았습니다.</p>
+
+  <ul>
+    <li><strong>증상 1 (이동 입력 불능):</strong> 플레이 모드에서 <code>W</code>, <code>A</code>, <code>S</code>, <code>D</code> 키를 눌러도 캐릭터가 어느 방향으로도 전진·후퇴·좌우 이동하지 않았습니다.</li>
+    <li><strong>증상 2 (마우스 상하 반전):</strong> 마우스를 위로 올리면 시선이 하늘로 향해야 자연스럽지만 반대로 바닥을 향해 꺾이는 상하(Pitch) 반전이 일어났습니다.</li>
+    <li><strong>증상 3 (문틀 걸림 및 밀림):</strong> 문 비례를 살린 소형 작업실 입구 폭에 비해 캐릭터 충돌 캡슐이 너무 커서 문틀에 끼여 통과하지 못했으며, 문짝에 바짝 붙어 있는 상태에서 <code>F</code>키로 문을 열면 회전하는 문 메쉬 콜리전이 캐릭터를 옆으로 밀어내는 현상이 발생했습니다.</li>
+  </ul>
+
+  <div class="note wr">
+    <strong>⚠️ 참고 (엔진 C++ 팝업 현상):</strong> 입력 디버깅 도중 에디터 내부에서 C++ 관련 소스/보기 메뉴가 잘못 트리거되어 Visual Studio 로그인 창과 <code>.h</code> 파일 연결 앱 선택 대화상자가 화면을 가로막는 소동도 한 차례 겪었습니다. 해당 부트캠프 프로젝트(<code>Bootcamp_BaseProject</code>)는 사용자 C++ 모듈이 전혀 없는 순수 Blueprint 및 에셋 기반 프로젝트이므로 해당 팝업 창을 모두 닫고 PIE 검증을 재개했습니다.
+  </div>
+
+  <h2 id="root-cause-and-blueprint-fixes">2. Key 핀 파싱 오류 수정, MouseY 반전 교정 및 캡슐 축소</h2>
+
+  <p>Epic Games 공식 문서의 <code>CharacterMovementComponent</code> 및 입력 처리 구조를 기준으로 <code>BP_WorkCharacter</code>와 컴포넌트 수치를 하나씩 분해해 점검한 결과, 세 증상의 정확한 원인과 수정 지점을 찾아냈습니다.</p>
+
+  <h3 id="fix-key-pin-parsing">원인 및 해결 1: Key 핀의 (KeyName=...) 직렬화 문자열 파싱 오류</h3>
+
+  <p><strong>원인 파악:</strong> <code>BP_WorkCharacter</code> 이벤트 그래프의 키 입력 노드를 살펴보니, Key 핀에 순수 키 이름 리터럴 대신 구조체 직렬화 문자열 형태인 <code>(KeyName=...)</code>이 잘못 기록되어 있었습니다. Unreal Engine 블루프린트 직렬화 파서가 이 문자열을 올바른 <code>FKey</code> 구조체로 복원하지 못하고 첫 글자 <code>(</code> 등 잘못된 토큰으로 해석하면서 실제 키보드 입력 이벤트가 전혀 바인딩되지 않았던 것입니다. (특히 스크립트나 텍스트 기반 MCP 도구 호출로 Key 핀 기본값을 대입할 때 자주 겪을 수 있는 함정입니다.)</p>
+
+  <p><strong>해결 과정:</strong> 잘못 들어간 <code>(KeyName=...)</code> 문자열을 모두 제거하고, 핀 값에 <code>W</code>, <code>S</code>, <code>A</code>, <code>D</code>, <code>MouseX</code>, <code>MouseY</code> 키 리터럴 값을 직접 전달하도록 수정한 뒤 블루프린트를 컴파일·저장했습니다.</p>
+
+  <h3 id="fix-mouse-y-inversion">원인 및 해결 2: MouseY 부호 반전과 1인칭 EyeCamera 설정</h3>
+
+  <p><strong>원인 파악:</strong> <code>MouseY</code> 축 입력 값이 <code>AddControllerPitchInput</code> 노드가 기대하는 부호 방향과 반대로 연결되어 있어, 마우스를 위로 밀 때 시점이 아래로 내려갔습니다.</p>
+
+  <p><strong>해결 과정:</strong> Blueprint 그래프 중간에 <code>0 - MouseY</code> 뺄셈 연산을 배치해 부호를 반전시킨 뒤 <code>AddControllerPitchInput</code>에 연결했습니다. 아울러 1인칭 시점 카메라(<code>EyeCamera</code>)의 상대 높이를 <code>Z = 72cm</code>(눈높이)로 맞추고 <code>Use Pawn Control Rotation</code> 옵션을 활성화해 컨트롤러 회전과 카메라 상하·좌우 시점이 1:1로 연동되도록 정리했습니다.</p>
+
+  <h3 id="fix-capsule-collision-size">원인 및 해결 3: 소형 문틀 통과를 위한 CapsuleComponent 축소</h3>
+
+  <p><strong>원인 파악:</strong> 5편에서 작업실 크기를 <code>4×3.6m</code>로 줄이고 문 메쉬(<code>SM_door_Baked_0021</code>)의 비균일 확대를 없애 원비례를 복원한 상태였는데, 캐릭터 루트 충돌 볼륨인 <code>CapsuleComponent</code>는 여전히 반지름 <code>24cm</code>(지름 48cm), 반높이 <code>88cm</code>(전체 높이 176cm)로 유지되어 좁아진 문틀 개구부와 부딪히고 있었습니다.</p>
+
+  <p><strong>해결 과정:</strong> <code>CapsuleComponent</code>의 크기를 <strong>반지름 <code>18cm</code>(지름 36cm), 반높이 <code>80cm</code>(전체 높이 160cm)</strong>로 축소해 문을 비정상적으로 키우지 않고도 자연스럽게 통과할 수 있는 폭과 높이를 확보했습니다. 동시에 <code>CharacterMovementComponent</code>는 <code>MOVE_Walking</code>, <code>GravityScale = 1</code>, <code>Walk Speed = 180</code>, <code>Step Height = 25</code>로 설정해 작은 실내 공간에서 너무 빠르게 튀지 않고 문턱을 가볍게 넘을 수 있도록 맞췄습니다.</p>
+
+  <div class="table w100 withBg">
+    <table>
+      <thead>
+        <tr>
+          <th>컴포넌트 / 항목</th>
+          <th>수정 전 (오류 상태)</th>
+          <th>수정 후 (최종 설정)</th>
+          <th>조치 목적</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Blueprint Key 핀 값</td>
+          <td><code>(KeyName=...)</code> 구조체 문자열</td>
+          <td><code>W</code>, <code>S</code>, <code>A</code>, <code>D</code>, <code>MouseX</code>, <code>MouseY</code> 직접 전달</td>
+          <td><code>(</code> 오인 파싱 제거 및 키 바인딩 복구</td>
+        </tr>
+        <tr>
+          <td>Pitch 시점 입력</td>
+          <td><code>MouseY</code> 직접 연결</td>
+          <td><code>0 - MouseY</code> → <code>AddControllerPitchInput</code></td>
+          <td>마우스 상하 방향 일치 교정</td>
+        </tr>
+        <tr>
+          <td><code>EyeCamera</code> 위치·설정</td>
+          <td>기준 보정 전</td>
+          <td>상대 높이 <code>Z = 72cm</code>, <code>Use Pawn Control Rotation</code></td>
+          <td>실내 눈높이 1인칭 시야 확보</td>
+        </tr>
+        <tr>
+          <td><code>CapsuleComponent</code></td>
+          <td>반지름 <code>24cm</code>, 반높이 <code>88cm</code></td>
+          <td>반지름 <code>18cm</code>, 반높이 <code>80cm</code></td>
+          <td>원비례 문틀 통과 폭·높이 확보</td>
+        </tr>
+        <tr>
+          <td><code>CharacterMovement</code></td>
+          <td>보행 통합 미검증</td>
+          <td><code>MOVE_Walking</code>, <code>GravityScale = 1</code>, <code>Walk Speed = 180</code>, <code>Step Height = 25</code></td>
+          <td>소형 작업실 적정 보행 속도 및 문턱 통과</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-11/ue58-character-input-door-img2.png?v=20261114_2010" alt="Unreal Engine 5.8 L_Work_08_Complete 플레이 모드(PIE)에서 문 안쪽 작업실을 바라보는 1인칭 시점 실행 화면">
+
+  <h2 id="four-stage-separated-verification">3. 자동 입력, 임시 연속 전진, 사용자 실조작의 4단계 분리 검증</h2>
+
+  <p>이슈를 수정한 뒤 검수 과정에서 중요하게 지킨 원칙이 있습니다. 자동화된 에디터 입력 도구는 짧은 키 입력(tap)만 지원할 뿐, 사람이 <code>W</code>키를 2초간 꾹 누르며 문턱을 통과하는 연속 입력을 흉내 내지 못했습니다. 반대로 연속 전진 테스트를 위해 임시 값을 넣어둔 채 그대로 저장해 버리면, 수강생이 프로젝트를 열자마자 캐릭터가 알아서 걸어가는 오염된 파일이 배포됩니다.</p>
+
+  <p>이를 명확히 통제하기 위해 검증 절차를 다음 4단계로 분리하고, 모든 단계의 결과 JSON과 임시 값 원복 상태를 근거로 남겼습니다.</p>
+
+  <div class="pre mermaid" data-text="Mermaid">
+    <button aria-label="Copy code">Copy</button>
+    <pre class="mermaid">
+flowchart LR
+    V1["1단계: 단발 키·마우스 검사 (WASD 위치 변화 + Yaw 6.61도)"] --&gt;|"연속 전진 임시 공급"| V2["2단계: 닫힌 문 충돌 검사 (X = -241.80 정지)"]
+    V2 --&gt;|"문 밖 X = -320 배치"| V3["3단계: 열린 문 통과 검사 (실내 X = -23.85 진입)"]
+    V3 --&gt;|"임시값 제거 후 재시작"| V4["4단계: Idle 원복 (Velocity 0) + 사용자 W키 직접 통과"]
+    </pre>
+  </div>
+
+  <div class="table w100 withBg">
+    <table>
+      <thead>
+        <tr>
+          <th>검증 단계</th>
+          <th>근거 JSON 사본</th>
+          <th>실측 좌표 및 상태 값</th>
+          <th>검증 방식 구분</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1단계: 단발 키·마우스</td>
+          <td><code>input-fix_final_yaw.json</code></td>
+          <td>WASD 방향별 이동 + 오른쪽 마우스 <code>Yaw 0° → 6.610°</code> (상하 방향은 뷰포트 확인)</td>
+          <td>단발 입력 검사 + 화면 관찰</td>
+        </tr>
+        <tr>
+          <td>2단계: 닫힌 문 정지</td>
+          <td><code>input-fix_walk_closed.json</code></td>
+          <td><code>IsOpen: false, DoorYaw: 0</code> 상태에서 <code>X = -241.797</code> 정지, <code>Velocity = 0</code></td>
+          <td>임시 연속 전진 값 공급</td>
+        </tr>
+        <tr>
+          <td>3단계: 열린 문 통과</td>
+          <td><code>input-fix_walk_passage.json</code></td>
+          <td><code>IsOpen: true, DoorYaw: 100</code>, <code>X = -320 → -23.847</code> (<code>Y = -40, Z = 82.15</code>)</td>
+          <td>임시 연속 전진 값 공급 (문 밖 출발)</td>
+        </tr>
+        <tr>
+          <td>4단계: 원복 및 재시작</td>
+          <td><code>input-fix_final_idle.json</code>, <code>input-fix_input_restored.json</code></td>
+          <td><code>restored_forward_idle_value: "0"</code>, <code>X = -320</code> 정지, <code>Velocity (0, 0, 0)</code></td>
+          <td>임시 값 제거 후 저장·재시작</td>
+        </tr>
+        <tr>
+          <td>사용자 실조작</td>
+          <td>채팅 직접 확인 기록</td>
+          <td>사용자가 직접 <code>W</code>키를 길게 눌러 <strong>"문 안으로 정상적으로 들어감"</strong> 응답</td>
+          <td>수동 키보드 실조작 확인</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>여기서 3단계 '열린 문 통과 검사' 출발 좌표를 문 바로 앞이 아닌 문 바깥 <code>X = -320, Y = -40, Z = 82.15</code>로 잡은 이유가 있습니다. 문짝에 바짝 밀착한 채로 <code>F</code>키를 눌러 문을 <code>100°</code>로 회전시키면, 회전 반경 안쪽에 있던 캐릭터 캡슐이 문 메쉬와 부딪혀 옆으로 밀려나는 물리 현상이 발생합니다. 이 회전 중 문 충돌 현상과 '이미 열린 문틀을 캐릭터가 정상 보행으로 통과하는가'라는 문제를 섞지 않기 위해 문 바깥에서 출발해 통과 여부를 따로 분리 검증했습니다.</p>
+
+  <h2 id="verification-scope-and-next">4. 검증 결과 해석의 정확한 경계와 다음 편 예고</h2>
+
+  <p>자동 단발 입력과 임시 전진 값 공급 후 재시작 원복(<code>Velocity = 0</code>), 그리고 사용자의 <code>W</code>키 직접 조작까지 확인함으로써 <code>BP_WorkCharacter</code>의 이동·시점·출입구 통과 오류는 깔끔하게 해결되었습니다. 다만 기술 문서 작성 시 검증 결과의 적용 범위를 과대 해석하지 않도록 다음 세 가지 경계를 분명히 구분해 두었습니다.</p>
+
+  <ul>
+    <li><strong>문 통과 확인의 범위 제한:</strong> 사용자의 "문 안으로 정상적으로 들어감" 확인은 출입구 문 통과 버그가 수정되었음을 증명하는 것이지, 작업실 전체 디자인 품질(배치, 색감, 밝기)에 대한 포괄적 승인이나 실내 책상·의자·소파·서랍 사이 모든 동선에서의 끼임 부재를 보장하지 않습니다.</li>
+    <li><strong>문 밀착 개방 시 물리 밀림 정책:</strong> 문에 아주 가까이 붙은 상태에서 <code>F</code>키로 문을 열 때 옆으로 밀리는 현상을 입문 교육용 프로젝트 특성상 허용할지, 아니면 개방 애니메이션 동안 충돌을 일시 무시하는 보완 로직을 넣을지는 후속 검토 항목입니다.</li>
+    <li><strong>Enhanced Input vs 직접 Key 핀 비교:</strong> 교재가 입문자의 노드 직관성을 위해 직접 Key 핀 연결 방식을 택한 것과 UE 5.8 표준 <code>Enhanced Input</code>(<code>IA_Move</code>, <code>IA_Look</code>, <code>IMC_Default</code> Negate Modifier) 사이의 설명 정렬 여부도 추후 강의 개편 시 검토 대상입니다.</li>
+  </ul>
+
+  <p>이로써 1교시 입문부터 자연환경(2~4교시)과 실내 작업실·보행 인터랙션(5~7교시)까지의 난관들을 모두 정리했습니다. 이제 8시간 부트캠프의 마지막 8교시인 4장, <strong>Motion Design(모션 그래픽)</strong> 트랙으로 넘어갈 차례입니다. 다음 7편에서는 짙은 남색 스튜디오의 단순 3D 타이틀과 SignalGrid 168개 타일 플립 중간 버전을 거쳐, 최종 <code>40×30 = 1,200개</code> 타일 그리드가 공을 따라 상하 파동 및 누적 360° 회전을 수행한 뒤 원위치로 복귀하는 Motion Design Cloner·Effector 구현과 240프레임 궤적 정량 검증 기록을 살펴보겠습니다.</p>
+
+  <p>UE 5.8 캐릭터 입력이나 에디터 자동 테스트를 구성하실 때, 여러분은 자동 입력 스크립트의 테스트 상태가 실제 배포 파일의 초기값(<code>Velocity = 0</code> 등)을 오염시키지 않도록 어떤 복구 및 검증 절차를 두고 계신가요?</p>
+
+  <!-- 시리즈 네비게이션 컨테이너 (시리즈 글인 경우에만 삽입, JS로 동적 렌더링) -->
+  <nav class="series-nav"></nav>
+</article>

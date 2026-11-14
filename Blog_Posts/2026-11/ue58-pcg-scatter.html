@@ -1,0 +1,113 @@
+<!-- ============================================================
+  [BLOG POST METADATA - Blogspot 설정창 복사용]
+  Title: [UE 5.8 입문 부트캠프 구축기 #4] Electric Dreams 기반 지면 식생 PCG 필터링과 Data Asset 세트 재사용 확장
+  Labels (Tags): Unreal, PCG, Environment
+  Meta Description: UE 5.8에서 Electric Dreams 에셋을 선별해 바위 표면을 제외한 바닥 식생 PCG(5B)를 구성하고, 레벨 세트를 DA_ForestPatchSet으로 추출해 광역 스캐터링(5C~5E)으로 확장한 기록입니다.
+  Slug: ue58-pcg-scatter
+  ---
+  Primary Keyword: 언리얼 엔진 5.8 PCG 지면 식생 Data Asset 확장
+  Secondary Keywords: Unreal Engine 5.8, PCG, Electric Dreams, Create PCG Asset from Level, Surface Sampler, Static Mesh Spawner
+  Knowledge Source: Knowledge/ue58-pcg-scatter/Workflow/ue58-pcg-scatter.md
+  Generated Date: 2026-11-14
+  Estimated Read Time: 12분
+  Series ID: ue58-bootcamp
+  ============================================================ -->
+
+<article>
+  <!-- 이미지 슬롯 1 (대표 이미지 - 필수) -->
+  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-11/ue58-pcg-scatter-img1_v1.jpg?v=20261114_2005" alt="Unreal Engine 5.8 Electric Dreams 기반 지면 식생 PCG 필터링 및 DA_ForestPatchSet 확장 파이프라인 대표 이미지">
+
+  <p>부트캠프 오전 2~4교시에 배치된 첫 번째 실습 결과물은 실외 자연환경(<code>01_Environment</code>) 트랙입니다. 초반에는 Epic Games가 시연용으로 공개한 Electric Dreams Environment 샘플 프로젝트(4km×4km 규모의 <code>ElectricDreams_Env</code>, 근거리 <code>PCGCloseRange</code>, 대규모 숲 <code>PCGForest</code> 포함)의 시각적 완성도를 활용해 수업을 구성하고자 했습니다.</p>
+
+  <p>그러나 2편에서 짚었던 것처럼 샘플 프로젝트 자체를 열어놓고 구도만 구경하게 만드는 수업 방식은 입문자가 빈 레벨에서 장면을 재현하는 데 도움이 되지 않았습니다. 결국 선별한 Megascans 바위·절벽·쓰러진 통나무·고사리·잔디·나무 에셋만을 강의 프로젝트(<code>Bootcamp_BaseProject</code>)의 <code>Content/_Bootcamp/90_Library/ElectricDreams/</code> 경로로 가져와, <code>L_Env_00_Empty</code>부터 <code>L_Env_08_Complete</code>까지 총 13개 단계별 맵으로 새롭게 배치하고 PCG(Procedural Content Generation) 실습 구조를 설계했습니다. 이번 글에서는 바닥 식생 필터링(5B)부터 레벨 세트 추출 재사용(5C·5D), 주변 대형 요소 보강(5E)까지의 구축 과정과 경로 변경 후 재검증 기록을 정리하고자 합니다.</p>
+
+  <h2 id="electric-dreams-reconstruct">1. 13개 자연환경 체크포인트 맵과 PCG 3단계 파이프라인</h2>
+
+  <p>자연환경 트랙은 입문자가 수동 레벨 디자인 감각과 절차적 생성(PCG) 자동화를 단계적으로 모두 경험할 수 있도록 구성했습니다. 앞선 <code>L_Env_01_Landscape</code>(지형) → <code>02_Rocks</code>(큰 바위) → <code>03_GroundDetail</code>(근경 바닥) → <code>04_Trees</code>(주요 나무) → <code>05_Foliage</code>(수동 <code>FT_Fern</code> 페인팅) 단계까지는 직접 손으로 전경·중경·원경 협곡 구도를 쌓습니다.</p>
+
+  <p>그다음 <code>05B</code>부터 <code>05E</code>까지 4개 맵을 추가해 Unreal Engine의 핵심 PCG 파이프라인을 두 가지 서로 다른 활용 패턴으로 분리해 가르치는 구조를 잡았습니다.</p>
+
+  <div class="pre mermaid" data-text="Mermaid">
+    <button aria-label="Copy code">Copy</button>
+    <pre class="mermaid">
+flowchart LR
+    Base["01_Landscape ~ 05_Foliage (기초 협곡 수동 배치)"] --&gt;|"단일 포인트 샘플링"| S5B["05B_PCG (지면 잔디·고사리 필터링)"]
+    Base --&gt;|"작은 식생 조합 제작"| S5C["05C_SetSource (세트 원본 레벨)"]
+    S5C --&gt;|"Create PCG Asset from Level"| DA["DA_ForestPatchSet 추출"]
+    DA --&gt;|"Copy Points (회전·스케일·Seed)"| S5D["05D_SetScatter (광역 세트 배치)"]
+    S5D --&gt;|"대형 바위·절벽·나무 보강"| S5E["05E_Surroundings ~ 08_Complete"]
+    </pre>
+  </div>
+
+  <p>Epic Games 공식 PCG 문서를 기준으로 볼 때, 입문자가 이해해야 할 가장 기본적인 그래프 흐름은 다음 세 노드의 직렬 연결입니다.</p>
+
+  <ul>
+    <li><strong><code>Surface Sampler</code>:</strong> 입력된 지형(Landscape)이나 스태틱 메시 표면 위에서 <code>Density</code> 및 <code>Point Extents</code> 값에 맞춰 스폰 포인트(위치·바운드·밀도 속성)를 샘플링합니다.</li>
+    <li><strong><code>Transform Points</code>:</strong> 생성된 포인트에 무작위 오프셋, 회전(예: Z축 Yaw <code>0~360°</code>), 최소·최대 스케일 변형을 부여해 동일한 에셋이 기계적으로 복사된 느낌을 줄여줍니다.</li>
+    <li><strong><code>Static Mesh Spawner</code>:</strong> 변형된 포인트 좌표에 <code>Mesh Entries</code>로 등록한 다수의 스태틱 메시를 가중치(Weight) 비율에 따라 인스턴스(ISM) 형태로 일괄 스폰합니다.</li>
+  </ul>
+
+  <h2 id="stage-5b-ground-vegetation-filter">2. 5B(L_Env_05B_PCG): 바위를 피하고 바닥만 채우는 식생 필터링</h2>
+
+  <p>5B 단계(<code>PCG_ForestFloorSet</code>, <code>PCG_FernPatch</code>)를 처음 구성했을 때는 예상과 다른 화면이 나왔습니다. 풀 에셋이 너무 성기게 배치되어 지면이 허전하거나, 반대로 표면 구분 없이 생성되어 협곡을 이루는 커다란 바위 표면 위까지 잔디가 덮어버리는 부자연스러운 현상이 발생한 것입니다.</p>
+
+  <h3 id="troubleshooting-rock-overlap">바위 표면 잔디 침범 현상 해결 과정</h3>
+
+  <p><strong>증상:</strong> 초기 5B PCG 실행 결과, 지면과 바위 경계가 분리되지 않아 바위 꼭대기나 경사면 위에도 풀이 솟아오르거나, 여러 식생이 자연스럽게 섞이지 않았습니다.</p>
+
+  <p><strong>원인 파악:</strong> PCG 볼륨 내부의 모든 표면을 단일 입력으로 샘플링하면서 바위 메시 액터와 지면 액터를 구분하는 대상 필터 조건이 빠져 있었고, 단일 잔디 메시에 치우친 가중치 설정 때문이었습니다.</p>
+
+  <p><strong>해결 과정 및 결과:</strong> 실제 <code>PCG_ForestFloorSet</code> 그래프에서 지면 액터에만 반응하도록 Actor Tag와 대상 필터(World Ray Hit Query 및 필터 구성)를 적용해 바위 표면이 깨끗하게 노출되도록 조정했습니다. 이어 <code>Surface Sampler</code> → <code>Transform Points</code> → <code>Static Mesh Spawner</code> 파이프라인에 여러 종의 잔디(<code>SM_KikuyuGrass_01</code>, <code>07</code>, <code>09</code>)와 고사리(<code>SM_BostonFern_01</code>)를 가중치별로 혼합 배치해, 바위는 바위대로 살아 있고 바닥 틈새에만 식생이 어우러지는 장면을 완성해 교재 캡처(<code>pcg-floor-graph.png</code>)를 갱신했습니다.</p>
+
+  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-11/ue58-pcg-scatter-img2.png?v=20261114_2005" alt="Unreal Engine 5.8 PCG_ForestFloorSet 그래프에서 Surface Sampler, Transform Points, Static Mesh Spawner 연결 구조 화면">
+
+  <h2 id="stage-5c-5d-dataset-reuse">3. 5C·5D: 레벨에서 PCG Data Asset 추출 후 광역 재사용</h2>
+
+  <p>5B에서 개별 풀과 고사리 포인트를 하나씩 뿌리는 방식을 배웠다면, 5C와 5D는 레벨 디자인 실무에서 훨씬 생산성이 높은 '세트 재사용 패턴'을 다룹니다. 수동으로 균형 있게 배치해 둔 작은 나무·바위·지면 식생의 조화로운 묶음 자체를 데이터 에셋(Data Asset)으로 얼려두고, 이를 도장 찍듯 넓은 구역에 회전과 크기를 바꿔가며 반복 배치하는 원리입니다.</p>
+
+  <ol class="step">
+    <li><strong>5C 세트 원본 레벨 구성 (<code>L_Env_05C_SetSource</code>):</strong> 작은 나무, 바위, 지면 식생을 하나의 완성된 소규모 생태 조합으로 수동 배치합니다.</li>
+    <li><strong>PCG Data Asset 추출 (<code>DA_ForestPatchSet</code>):</strong> Unreal Engine의 <code>Create PCG Asset from Level</code> 기능을 이용해 <code>L_Env_05C_SetSource</code> 레벨의 스태틱 메시·ISM 배치 구성을 재사용 가능한 <code>DA_ForestPatchSet.uasset</code>으로 추출합니다.</li>
+    <li><strong>5D 광역 세트 스캐터링 (<code>L_Env_05D_SetScatter</code>):</strong> <code>PCG_ForestSetScatter</code> 그래프에서 <code>World Ray Hit Query</code> → <code>Surface Sampler</code> → <code>Transform Points</code>로 타겟 포인트를 먼저 뿌린 뒤, 로드한 <code>DA_ForestPatchSet</code>과 <code>Filter Data By Tag</code>를 거쳐 <code>Copy Points</code> 노드에 연결해 <code>Static Mesh Spawner</code>로 넓은 영역에 배치합니다. 이때 회전, 스케일, Seed 값(예: Seed2407)을 변경해 반복 패턴이 눈에 띄지 않도록 다듬습니다.</li>
+  </ol>
+
+  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-11/ue58-pcg-scatter-img3.png?v=20261114_2005" alt="Unreal Engine 5.8 DA_ForestPatchSet PCG 데이터 에셋 디테일 및 L_Env_05C_SetSource 오브젝트 경로 연결 화면">
+
+  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-11/ue58-pcg-scatter-img4.png?v=20261114_2005" alt="Unreal Engine 5.8 PCG_ForestSetScatter 그래프에서 DA_ForestPatchSet과 Copy Points를 활용한 세트 확장 구조 화면">
+
+  <h2 id="stage-5e-surroundings-and-verification">4. 5E 대형 요소 보강, 경로 통합 후 재검증 및 검증 경계</h2>
+
+  <p>5D까지 바닥 식생과 패치 세트를 깔고 나자, 협곡 외곽과 배경의 빈 공간이 여전히 휑해 보이는 한계가 드러났습니다. 풀과 작은 관목만으로는 웅장한 실외 공간의 실루엣과 원경을 채울 수 없기 때문입니다. 이를 보완하기 위해 <code>L_Env_05E_Surroundings</code>(<code>PCG_ForestSurroundings</code>) 단계를 별도로 편성해 거대한 바위(<code>SM_MossyForestBoulder_03</code>), 절벽(<code>SM_HugeNordicCoastalCliff_01</code>), 큰 나무(<code>SM_EuropeanHornbeam_Forest_02</code>) 등 대형 요소를 PCG로 둘러 배치한 뒤, <code>06_Lighting</code> → <code>07_Camera</code> → <code>08_Complete</code>로 조명·안개·시네마 카메라를 마무리했습니다.</p>
+
+  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-11/ue58-pcg-scatter-img5.png?v=20261114_2005" alt="Unreal Engine 5.8 자연환경 트랙에서 바위, 절벽, 나무 대형 요소 보강(5E) 후 협곡 뷰포트 결과 화면">
+
+  <h3 id="troubleshooting-lessons-to-maps-pcg">Lessons 경로 통합 후 발생한 Data Asset 참조 끊김 복구</h3>
+
+  <p>PCG 구축 과정의 검증 기록을 다룰 때는 중간 버전 기록과 최종 경로 통합 후 검증 기록을 정확히 구분해야 합니다.</p>
+
+  <ul>
+    <li><strong>증상 및 원인:</strong> 중간 PCG 개정 시점(<code>pcg-revision_verification.json</code>)에는 맵들이 <code>Maps/Lessons/</code> 하위 경로에 위치해 있었고, 해당 경로 기준 동일 Seed 재생성 전후 포인트 개수(<code>05B/06/07/08</code> 5,932개, <code>05C</code> 168개, <code>05D</code> 3,268개)와 SHA-256 다이제스트가 일치(<code>deterministic: true</code>)함을 확인한 바 있습니다. 그러나 이후 맵 폴더를 <code>Maps/</code> 직하위로 통합하면서 <code>DA_ForestPatchSet</code>이 여전히 옛 <code>Lessons/05B</code> 쪽 경로를 가리키는 참조 오류가 드러났습니다.</li>
+    <li><strong>해결 과정 및 결과:</strong> 단순히 기존 에셋 파일만 옮겨두지 않고, 새 <code>Maps/L_Env_05C_SetSource</code>에서 <code>DA_ForestPatchSet</code>을 다시 추출했습니다. 그런 다음 새 <code>L_Env_05D_SetScatter</code>를 열어 <code>Generate</code>를 직접 실행했고, <code>input-fix_pcg_result.json</code>을 통해 <code>PCGVolume_0</code> 하위에 7종의 ISM 컴포넌트(<code>SM_BostonFern_01</code>, <code>SM_EuropeanHornbeam_Forest_02</code>, <code>SM_KikuyuGrass_01</code>, <code>SM_KikuyuGrass_07</code>, <code>SM_KikuyuGrass_09</code>, <code>SM_MossyForestBoulder_03</code>, <code>SM_RockyForestPath_01</code>)가 빠짐없이 참조됨을 확인했습니다.</li>
+  </ul>
+
+  <div class="note wr">
+    <strong>⚠️ 5E 대형 요소 확장 결과의 해석 경계:</strong> <code>05E</code> 단계는 주변의 빈 배경을 바위·절벽·나무로 채우는 레벨 디자인 구성을 목적으로 만든 것이지, 오픈월드 성능 개선 기법이나 드로우콜 최적화 벤치마크가 아닙니다. 대상 PC 사양별 GPU/CPU 프레임타임이나 Nanite Foliage 활성 여부에 따른 렌더링 부하 실측은 이번 작업에서 수행하지 않았으므로 성능 수치로 과장해 인용하지 않습니다.
+  </div>
+
+  <h2 id="pcg-remaining-checks-and-next">5. 남은 확인 항목과 다음 편 예고</h2>
+
+  <p>단순 풀 포인트 생성(5B)과 레벨 세트 데이터 추출 확장(5C·5D), 주변 대형 요소(5E)까지 분리해 가르치는 자연환경 트랙은 입문자가 PCG 그래프의 확장 원리를 이해하기에 적합한 실습 구조를 갖추었습니다. 후속 검증 과제로는 다음 세 가지를 정리해 두었습니다.</p>
+
+  <ul>
+    <li>최종 <code>Maps/</code> 직하위 통합 이후의 <code>L_Env_05B_PCG</code>~<code>08_Complete</code> 전체 맵에 대해 중간 버전 때 수행했던 결정적 재생성(<code>digest</code> 비교) 재측정</li>
+    <li>강의장 실습 대상 PC 사양에서 PCG 및 Nanite Foliage 구동 시 실시간 프레임타임 실측</li>
+    <li><code>Electric Dreams</code> 기반 Fab 에셋을 외부 블로그나 강의 자료로 공개 배포할 때의 스크린샷·재배포 라이선스 범위 점검</li>
+  </ul>
+
+  <p>오전 시간대에 광활한 실외 협곡을 완성한 수강생은 점심 식사 이후 전혀 다른 공간 스케일과 조작 감각을 요구하는 오후 트랙으로 넘어가게 됩니다. 다음 5편에서는 넓은 <code>Cozy Cartoon</code> 스튜디오 대신 <code>Detective Office</code> 에셋으로 방 크기를 <code>4×3.6m</code>까지 줄여 밀도를 끌어올리고, 월드 좌표 기반 벽지 UV 정렬과 물리 발광체 대응 조명, 그리고 접근 자동문에서 명시적 <code>F</code>키 토글 방식으로 전환한 실내 작업실 구축기를 살펴보겠습니다.</p>
+
+  <p>PCG를 활용해 자연환경을 구성하실 때, 여러분은 바닥 단위의 개별 식생 필터링과 <code>Create PCG Asset from Level</code> 같은 세트 재사용 방식 중 어느 지점에서 그래프 분리를 결정하고 계신가요?</p>
+
+  <!-- 시리즈 네비게이션 컨테이너 (시리즈 글인 경우에만 삽입, JS로 동적 렌더링) -->
+  <nav class="series-nav"></nav>
+</article>

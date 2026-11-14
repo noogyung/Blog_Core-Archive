@@ -4,17 +4,18 @@ title_kr: "실제 Unreal Editor 5.8 화면과 단계별 체크포인트 맵 기�
 category: Workflow
 sub_category: Curriculum-And-Documentation-Design
 version: "5.8"
-status: Experimental
+status: Verified (Partial)
 created_date: 2026-11-12
 last_modified: 2026-11-14
 language: KR+EN
 tags: [UnrealEngine, UE5.8, CurriculumDesign, PPTX, StepByStepMaps, LevelDesign, TechnicalDocumentation]
 sources_count: 7
-blog_draft_path: null
-blog_draft_date: null
+blog_draft_path: "Blog_Posts/2026-11/ue58-curriculum-maps-ppt.html"
+blog_draft_date: 2026-11-14
 blog_id: core-archive
 blog_published: false
 series_id: ue58-bootcamp
+blogger_post_id: "8067650772327832436"
 ---
 
 ===== KNOWLEDGE PACKAGE START =====
@@ -26,7 +27,7 @@ series_id: ue58-bootcamp
 * **Category:** Workflow
 * **Sub-Category:** Curriculum-And-Documentation-Design
 * **Version:** 5.8
-* **Status:** Experimental
+* **Status:** Verified (Partial)
 * **Date:** 2026-11-12
 * **Language:** KR+EN
 

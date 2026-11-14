@@ -4,17 +4,18 @@ title_kr: "Unreal Engine 5.8 공식 Unreal MCP 도입 절차와 Python 클라이
 category: Configuration
 sub_category: Model-Context-Protocol-Editor-Automation
 version: "5.8"
-status: Experimental
+status: Verified (Partial)
 created_date: 2026-11-12
 last_modified: 2026-11-14
 language: KR+EN
 tags: [UnrealEngine, UE5.8, UnrealMCP, ModelContextProtocol, AllToolsets, Automation, Python]
 sources_count: 5
-blog_draft_path: null
-blog_draft_date: null
+blog_draft_path: "Blog_Posts/2026-11/ue58-mcp-setup-python.html"
+blog_draft_date: 2026-11-14
 blog_id: core-archive
 blog_published: false
 series_id: ue58-bootcamp
+blogger_post_id: "9155683111555616803"
 ---
 
 ===== KNOWLEDGE PACKAGE START =====
@@ -26,7 +27,7 @@ series_id: ue58-bootcamp
 * **Category:** Configuration
 * **Sub-Category:** Model-Context-Protocol-Editor-Automation
 * **Version:** 5.8
-* **Status:** Experimental
+* **Status:** Verified (Partial)
 * **Date:** 2026-11-12
 * **Language:** KR+EN
 

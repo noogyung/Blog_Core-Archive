@@ -4,17 +4,18 @@ title_kr: "Unreal Engine 5.8 맵 경로 통합·참조 복구, 단일 프로젝�
 category: Troubleshooting
 sub_category: Asset-References-Packaging-Windows-Security
 version: "5.8"
-status: Experimental
+status: Verified (Partial)
 created_date: 2026-11-12
 last_modified: 2026-11-14
 language: KR+EN
 tags: [UnrealEngine, UE5.8, AssetRedirectors, Sequencer, ProjectPackaging, SmartAppControl, Windows11]
 sources_count: 7
-blog_draft_path: null
-blog_draft_date: null
+blog_draft_path: "Blog_Posts/2026-11/ue58-map-merge-packaging.html"
+blog_draft_date: 2026-11-14
 blog_id: core-archive
 blog_published: false
 series_id: ue58-bootcamp
+blogger_post_id: "6788152559954243812"
 ---
 
 ===== KNOWLEDGE PACKAGE START =====
@@ -26,7 +27,7 @@ series_id: ue58-bootcamp
 * **Category:** Troubleshooting
 * **Sub-Category:** Asset-References-Packaging-Windows-Security
 * **Version:** 5.8
-* **Status:** Experimental
+* **Status:** Verified (Partial)
 * **Date:** 2026-11-12
 * **Language:** KR+EN
 

@@ -1,0 +1,168 @@
+<!-- ============================================================
+  [BLOG POST METADATA - Blogspot 설정창 복사용]
+  Title: [UE 5.8 입문 부트캠프 구축기 #5] 4×3.6m 소형 작업실의 공간 밀도, 물리 광원·월드 좌표 UV 정렬 및 F키 토글 설계
+  Labels (Tags): Unreal, LevelDesign, Blueprint
+  Meta Description: Detective Office 에셋으로 4×3.6m 고밀도 작업실(295개 액터)을 구축하고, 월드 좌표 기반 벽지 UV 정렬과 물리 발광체 조명 매칭, BP_WorkDoor·BP_WorkLamp의 F키 토글을 구현했습니다.
+  Slug: ue58-workspace-lighting-uv
+  ---
+  Primary Keyword: 언리얼 엔진 5.8 실내 레벨 디자인 월드 좌표 UV F키 토글
+  Secondary Keywords: Unreal Engine 5.8, Detective Office, WorldAlignedTexture, M_Wallpaper_World_XZ, BP_WorkDoor, BP_WorkLamp
+  Knowledge Source: Knowledge/ue58-workspace-lighting-uv/Configuration/ue58-workspace-lighting-uv.md
+  Generated Date: 2026-11-14
+  Estimated Read Time: 13분
+  Series ID: ue58-bootcamp
+  ============================================================ -->
+
+<article>
+  <!-- 이미지 슬롯 1 (대표 이미지 - 필수) -->
+  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-11/ue58-workspace-lighting-uv-img1_v1.jpg?v=20261114_2010" alt="Unreal Engine 5.8 4×3.6m 소형 작업실 공간 밀도, 월드 좌표 UV 및 F키 토글 블루프린트 아키텍처 대표 이미지">
+
+  <p>오전 시간대 실외 자연환경(<code>01_Environment</code>) 트랙을 마친 뒤 오후 5~7교시에 이어지는 두 번째 결과물은 실내 작업실과 인터랙션(<code>02_Workspace</code>) 트랙입니다. 작업실을 처음 기획할 때는 <code>Cozy Cartoon Pack</code> 기반의 넓은 스튜디오를 후보로 검토하기도 했으나, 오전 트랙의 실사풍 Megascans 자연환경과 시각적 톤이 어긋나는 데다 넓은 공간 안에 소품이 듬성듬성 놓여 썰렁해 보이는 문제가 곧바로 드러났습니다.</p>
+
+  <p>실제 피드백 과정에서 가장 중요하게 요구된 기준은 분명했습니다. 입문용 실습 공간이라 하더라도 텅 빈 상자 방을 넓게 벌려놓기보다, 작고 아담한 면적 안에 가구와 서류·소품이 꽉 들어차 생활감이 느껴지면서도 캐릭터가 직접 문을 열고 걸어 들어갈 수 있는 공간이어야 했습니다. 이번 글에서는 <code>Detective Office</code> 에셋을 활용해 초기 약 <code>6.3×4.9m</code>에서 최종 약 <code>4×3.6m</code> 크기로 방을 줄이며 밀도를 높인 과정, 창문 주변 벽지 UV 왜곡을 월드 좌표 재질 그래프로 바로잡은 방법, 그리고 접근 자동문에서 명시적 <code>F</code>키 토글 방식으로 인터랙션을 재설계한 과정을 정리해보고자 합니다.</p>
+
+  <h2 id="compact-high-density-workspace">1. 4×3.6m 소형 작업실의 9단계 체크포인트와 공간 밀도 전략</h2>
+
+  <p>동일한 개수의 가구와 소품을 배치하더라도 바닥 면적이 넓으면 공간이 비어 보입니다. 반면 방 크기를 과감하게 좁히면 책상, 회전의자, 책장, 증거판, 종이 뭉치, 택배 상자, 시계, 스탠드 램프, 러그 같은 소품들이 서로 겹쳐 보이지 않으면서도 풍부한 밀도를 만들어낼 수 있습니다.</p>
+
+  <p>이에 따라 초기 67장 단계에서 약 <code>6.3×4.9m</code>였던 방 규모를 최종 개정에서 약 <code>4×3.6m</code>로 축소하고, <code>Content/_Bootcamp/02_Workspace/Maps/</code> 아래에 빈 방(0개 액터)부터 완성(번호 부여 배치 액터 295개 기록)까지 9개의 단계별 체크포인트 맵을 구성했습니다.</p>
+
+  <div class="table w100 withBg">
+    <table>
+      <thead>
+        <tr>
+          <th>체크포인트 단계</th>
+          <th>주요 구축 작업</th>
+          <th>비고 및 설계 기준</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>L_Work_00_Empty</code></td>
+          <td>사용자 배치 액터 0개인 초기 빈 레벨</td>
+          <td>1교시 시작선 역할</td>
+        </tr>
+        <tr>
+          <td><code>L_Work_01_Shell</code></td>
+          <td>약 <code>4×3.6m</code> 바닥·외벽·창문 개구부·출입구 뼈대 배치</td>
+          <td>사람 보행이 가능한 문폭과 비례 확보</td>
+        </tr>
+        <tr>
+          <td><code>L_Work_02_Furniture</code></td>
+          <td>메인 책상, 의자, 서랍장, 책장 등 대형 가구 배치</td>
+          <td>실내 동선 확보 기준 잡기</td>
+        </tr>
+        <tr>
+          <td><code>L_Work_03_WallDetails</code></td>
+          <td>블라인드(<code>SM_Blinds</code>), 코르크 증거판, 벽시계, 창틀 정렬</td>
+          <td>차폐 및 벽면 정보량 보강</td>
+        </tr>
+        <tr>
+          <td><code>L_Work_04_Props</code></td>
+          <td>서류 더미, 책, 종이 상자, 탁상 스탠드 등 소형 소품 배치</td>
+          <td>작업실 특유의 생활감 형성</td>
+        </tr>
+        <tr>
+          <td><code>L_Work_05_Materials</code></td>
+          <td>월드 좌표 기반 벽지 재질 적용 및 문 비례 유지</td>
+          <td>창문 주변 UV 틀어짐 교정</td>
+        </tr>
+        <tr>
+          <td><code>L_Work_06_Lighting</code></td>
+          <td>실제 램프 발광 연동 및 창 외부 광원 그림자·차폐 조정</td>
+          <td>허공 광원 배제</td>
+        </tr>
+        <tr>
+          <td><code>L_Work_07_Interaction</code></td>
+          <td><code>BP_WorkDoor</code>, <code>BP_WorkLamp</code> <code>F</code>키 토글 연결</td>
+          <td>근접 판정 및 상태 유지</td>
+        </tr>
+        <tr>
+          <td><code>L_Work_08_Complete</code></td>
+          <td>최종 완성 작업실 (번호 부여 배치 액터 295개 기록)</td>
+          <td>충돌 trace 및 PIE 연동</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-11/ue58-workspace-lighting-uv-img2.png?v=20261114_2010" alt="Unreal Engine 5.8 작업실 빈 레벨(L_Work_00_Empty) 0개 액터 상태 화면">
+
+  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-11/ue58-workspace-lighting-uv-img3.png?v=20261114_2010" alt="Unreal Engine 5.8 L_Work_08_Complete 완성 작업실 뷰포트 및 아웃라이너 화면">
+
+  <h2 id="physical-lighting-and-occlusion">2. 물리 발광체 대응 광원과 창·블라인드 차폐 정렬</h2>
+
+  <p>실내 씬을 급하게 밝히다 보면 가장 흔히 저지르는 실수가 천장 한가운데 근거 없는 포인트 라이트를 크게 띄워 방 전체를 균일하게 날려버리는 것입니다. 이 경우 어두운 구석은 없어지지만, 빛이 어디에서 시작되어 어디에서 막히는지 물리적 설득력이 사라집니다.</p>
+
+  <p>작업실 개편 과정에서는 <strong>'허공에 근거 없이 떠 있는 광원'을 제거</strong>하고 실제 빛을 내는 사물(책상 위 스탠드 램프, 천장 등기구, 창문 바깥 태양광/하늘광)과 조명 액터를 1:1로 대응시켰습니다. 특히 창문과 블라인드(<code>SM_Blinds</code>) 위치가 미세하게 어긋나 있어 빛이 창틀을 뚫고 새거나 그림자가 부자연스럽게 잘리던 부분도 정렬을 바로잡아, 바깥 광원이 벽과 창틀, 블라인드 날에 정상적으로 차폐되며 책상과 바닥 위로 줄무늬 그림자를 드리우도록 수정했습니다.</p>
+
+  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-11/ue58-workspace-lighting-uv-img4.png?v=20261114_2010" alt="Unreal Engine 5.8 작업실 창문 블라인드 차폐 그림자와 책상 스탠드 물리 조명 구도">
+
+  <h2 id="world-aligned-wallpaper-uv-and-door-ratio">3. 창문 주변 벽지 UV 어긋남과 문 메쉬 비례 보정</h2>
+
+  <p>작업실 크기를 줄이고 창문 개구부를 다듬으면서 두 가지 시각적 왜곡 이슈가 나타났습니다. 첫 번째는 창문 위·아래·좌우를 구성하는 벽체 조각마다 스케일이 달라지면서 초록색 무늬 벽지의 타일링 크기가 제각각 늘어나거나 이음매가 어긋나는 문제였고, 두 번째는 출입구 프레임에 맞추려다 문 메쉬(<code>SM_door_Baked_0021</code>)에 비균일 스케일 확대가 들어가 문의 형태 비례가 찌그러지는 문제였습니다.</p>
+
+  <h3 id="troubleshooting-wallpaper-uv">월드 좌표 기반 벽지 UV 투영(M_Wallpaper_World_XZ / YZ)</h3>
+
+  <p><strong>증상:</strong> 창문 주변의 서로 다른 크기 벽체 모듈에 일반 로컬 UV 기반 벽지 머티리얼을 입히자, 좁은 상하단 벽체에서는 문양이 눌리거나 좌우 벽과 패턴 크기가 어긋나 이음새가 두드러졌습니다.</p>
+
+  <p><strong>원인 파악:</strong> 기본 머티리얼이 개별 스태틱 메시의 로컬 UV 좌표(<code>TexCoord</code>)에 의존하기 때문에, 벽 길이와 높이를 스케일로 조절할 때마다 텍스처가 함께 늘어나거나 축소되었기 때문입니다.</p>
+
+  <p><strong>해결 과정 및 결과:</strong> Epic Games 공식 문서의 <code>WorldAlignedTexture</code>(Triplanar 투영) 원리에 착안해, 벽이 바라보는 법선 축에 맞춰 월드 공간 좌표(<code>Absolute World Position</code>)의 XZ 평면과 YZ 평면을 추출하는 전용 머티리얼 <code>M_Wallpaper_World_XZ</code>와 <code>M_Wallpaper_World_YZ</code>를 구성했습니다. 실제 머티리얼 그래프에서 월드 좌표를 <code>Mask (RB)</code> 등으로 평면 성분을 걸러낸 뒤 <code>0.008333</code>(약 <code>1 / 120</code>cm 단위 스케일 환산) 값을 곱해 <code>Texture Sample</code>의 UV 입력으로 연결하자, 벽체 조각 크기가 달라도 방 전체 벽지 문양이 일정한 밀도로 매끄럽게 이어지는 결과를 얻었습니다.</p>
+
+  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-11/ue58-workspace-lighting-uv-img5.png?v=20261114_2010" alt="Unreal Engine 5.8 M_Wallpaper_World_XZ 머티리얼 그래프의 절대 월드 포지션 기반 UV 타일링 구조">
+
+  <div class="note wr">
+    <strong>⚠️ 월드 좌표 투영 머티리얼 사용 시 주의:</strong> Epic Games 공식 문서에서 안내하듯, <code>WorldPosition</code>에 의존하는 텍스처 투영은 액터가 월드 공간에서 이동하거나 회전할 때 표면에 텍스처가 고정되지 않고 미끄러지는 <strong>텍스처 스위밍(Texture Swimming)</strong> 현상을 유발합니다. 따라서 이 그래프는 작업실 외벽 같은 정적(Static) 환경 구조물에만 적용해야 하며, 회전하는 문(<code>BP_WorkDoor</code>)이나 움직이는 소품에는 사용하지 않도록 분리했습니다.
+  </div>
+
+  <p>함께 문제가 되었던 출입문 메쉬(<code>SM_door_Baked_0021</code>)는 비균일 스케일 확대를 모두 제거해 원래의 건축물 문 비례를 복원하고, 캐릭터가 통과할 수 있는 최소 출입구 폭은 이후 6편에서 다룰 캐릭터 캡슐 반지름 축소 조정으로 맞물려 해결했습니다.</p>
+
+  <h2 id="f-key-toggle-interaction">4. 접근 자동문에서 명시적 F키 토글 방식으로의 인터랙션 재설계</h2>
+
+  <p>작업실 7단계(<code>L_Work_07_Interaction</code>)의 인터랙션 역시 초기 버전과 최종 버전 사이에 뚜렷한 설계 변경이 존재합니다.</p>
+
+  <ul>
+    <li><strong>초기 버전 (67장 단계):</strong> 플레이어나 시점이 문에 일정 거리 안으로 접근하면 자동으로 <code>90°</code> 열리면서 조명이 켜지고 짧은 효과음 재생 노드까지 연결되며, 멀어지면 다시 닫히는 방식이었습니다. (당시 효과음 노드는 연결 여부까지만 확인했고 실제 스피커 청취 테스트는 수행하지 않았습니다.)</li>
+    <li><strong>최종 버전 (작업실·MCP 개정 이후):</strong> 사용자가 문 앞에서 잠시 멈춰 실내를 관찰하거나 책상 주변에서 실습할 때마다 문이 제멋대로 닫히고 켜지는 불편을 없애기 위해, 근접 거리 내에서 플레이어가 <strong><code>F</code>키를 명시적으로 눌러 상태를 유지·전환하는 토글 구조</strong>로 전면 재설계했습니다.</li>
+  </ul>
+
+  <div class="pre mermaid" data-text="Mermaid">
+    <button aria-label="Copy code">Copy</button>
+    <pre class="mermaid">
+flowchart LR
+    InputF["플레이어 F키 입력"] --&gt;|"Get Distance To &lt;= 170.0"| Check["근접 거리 Branch 판정"]
+    Check --&gt;|"True (이내)"| Flip["FlipFlop 상태 전환"]
+    Flip --&gt;|"BP_WorkDoor"| DoorRot["IsOpen 토글 및 FInterpTo 회전 (0도 ↔ 100도)"]
+    Flip --&gt;|"BP_WorkLamp"| LampVis["Set Visibility 토글 (False ↔ True)"]
+    </pre>
+  </div>
+
+  <h3 id="blueprint-door-and-lamp">BP_WorkDoor 및 BP_WorkLamp 블루프린트 구현 상세</h3>
+
+  <p>먼저 <code>BP_WorkDoor</code>는 <code>DefaultSceneRoot</code> 아래에 회전축 기준점이 되는 <code>Hinge</code> 컴포넌트와 <code>DoorMesh</code>를 계층화해 문 한쪽 경첩을 기준으로 자연스럽게 열리도록 구성했습니다. 이벤트 그래프 상단에서는 <code>F</code>키 <code>Pressed</code> 이벤트 발생 시 <code>Get Player Character</code>와의 거리(<code>Get Distance To</code>)가 <code>170.0</code> 이하인지 <code>Branch</code> 노드로 판정하고, 조건이 참이면 <code>Flip Flop</code> 노드를 통해 불리언 변수 <code>IsOpen</code>을 교대로 설정합니다. 하단에서는 <code>Event Tick</code>에서 <code>IsOpen</code> 값에 따라 목표 각도를 <code>Select Float</code>(<code>100.0</code> 또는 <code>0.0</code>)로 고른 뒤, <code>FInterp To</code>(<code>Interp Speed = 4.0</code>)로 <code>DoorYaw</code> 변수를 부드럽게 보간하여 <code>Hinge</code>의 상대 회전(<code>Make Rotator</code> Z축 Yaw)을 갱신합니다. 실제 테스트에서도 <code>F</code> 입력 시 <code>IsOpen: true, DoorYaw: 100</code> 상태로 열린 채 유지되고, 다시 <code>F</code>를 누르면 <code>0°</code>로 닫힘을 확인했습니다.</p>
+
+  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-11/ue58-workspace-lighting-uv-img6.png?v=20261114_2010" alt="Unreal Engine 5.8 BP_WorkDoor 이벤트 그래프의 F키 거리 판정(170.0), FlipFlop 및 FInterpTo 회전 제어 구조">
+
+  <p>책상 위 스탠드 램프인 <code>BP_WorkLamp</code> 역시 동일한 근접 거리 판정(<code>Get Distance To &lt;= 170.0</code>)과 <code>Flip Flop</code> 구조를 공유합니다. 초기 상태가 켜진 상태이므로 첫 번째 <code>F</code>키 입력(<code>A</code> 출력)에서는 <code>LampLight</code> 컴포넌트의 <code>Set Visibility</code>(<code>New Visibility</code> 체크 해제 = <code>False</code>)를 호출해 조명을 끄고, 두 번째 <code>F</code>키 입력(<code>B</code> 출력)에서는 <code>New Visibility</code>를 다시 체크(<code>True</code>)해 조명을 켜도록 구성해 상태 전환을 확인했습니다.</p>
+
+  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-11/ue58-workspace-lighting-uv-img7.png?v=20261114_2010" alt="Unreal Engine 5.8 BP_WorkLamp 이벤트 그래프의 F키 근접 토글 및 Set Visibility 제어 화면">
+
+  <p>아울러 MCP trace 검사를 통해 닫힌 문, 실내 및 입구 바닥, 책상 서랍 등 주요 오브젝트의 충돌(Collision) 설정을 점검해 1인칭 캐릭터 보행 준비를 마쳤습니다.</p>
+
+  <h2 id="workspace-verification-boundaries-and-next">5. 작업실 검증 경계와 다음 편 예고</h2>
+
+  <p>작은 작업실의 공간 밀도 확보, 월드 좌표 벽지 UV 보정, 물리 광원·블라인드 정렬, <code>F</code>키 토글 블루프린트까지 구축한 뒤에는 항상 어느 선까지가 검증된 사실이고 어디까지가 미확인 영역인지 선을 그어야 합니다.</p>
+
+  <ul>
+    <li><strong>초기 효과음 실제 청취 미검증:</strong> 67장 초기 버전에서 접근 시 효과음 노드를 연결했던 이력과 달리, 최종 <code>L_Work_08_Complete</code>에서 오디오·사운드가 실제 스피커를 통해 정상 청취되는지 여부는 별도로 검증하지 않았습니다.</li>
+    <li><strong>내부 전 동선 및 최종 디자인 승인 분리:</strong> MCP trace와 후속 문 통과 검증만으로 책상·의자·코트걸이·소품 사이 작업실 구석구석의 모든 보행 동선에 끼임이 없다고 일반화할 수는 없으며, 6편에서 사용자가 확인한 "문 안으로 정상적으로 들어감" 응답 역시 출입구 통과 성공 확인일 뿐 방 전체 디자인 만족도에 대한 포괄적 승인으로 확대 해석해서는 안 됩니다.</li>
+  </ul>
+
+  <p>이렇게 공들여 작업실과 <code>F</code>키 문을 완성한 직후, 실제 1인칭 캐릭터(<code>BP_WorkCharacter</code>)를 플레이 모드(PIE)에 올려 직접 걸어 들어가려 하자 예상치 못한 복합 버그가 한꺼번에 드러났습니다. 바로 WASD 키 입력이 전혀 먹지 않고, 마우스 상하 시점이 반대로 뒤집히며, 캐릭터가 좁은 문틀에 걸려 들어가지 못하는 현상이었습니다. 다음 6편에서는 이 입력 및 충돌 오류의 원인을 찾고, 단발 자동 입력 테스트와 임시 연속 전진 테스트, 실제 사용자 조작 확인까지 4단계로 분리 검증하며 해결한 기록을 상세히 다루겠습니다.</p>
+
+  <p>실내 레벨 디자인에서 작은 방에 많은 소품을 채워 넣을 때, 여러분은 벽체 스케일 변경에 따른 UV 왜곡과 문/가구 통과 여백 사이의 균형을 주로 어떤 기준으로 조율하고 계신가요?</p>
+
+  <!-- 시리즈 네비게이션 컨테이너 (시리즈 글인 경우에만 삽입, JS로 동적 렌더링) -->
+  <nav class="series-nav"></nav>
+</article>

@@ -5,14 +5,14 @@ Last Updated: 2026-11-14
 
 | Topic | Category | Created Date | Last Modified | Status | File Path |
 |-------|----------|:------------:|:-------------:|:------:|-----------|
-| ue58-curriculum-planning | Workflow | 2026-11-14 | 2026-11-14 | Experimental | ue58-curriculum-planning/Workflow/ue58-curriculum-planning.md |
-| ue58-curriculum-maps-ppt | Workflow | 2026-11-12 | 2026-11-14 | Experimental | ue58-curriculum-maps-ppt/Workflow/ue58-curriculum-maps-ppt.md |
-| ue58-mcp-setup-python | Configuration | 2026-11-12 | 2026-11-14 | Experimental | ue58-mcp-setup-python/Configuration/ue58-mcp-setup-python.md |
-| ue58-pcg-scatter | Workflow | 2026-11-12 | 2026-11-14 | Experimental | ue58-pcg-scatter/Workflow/ue58-pcg-scatter.md |
-| ue58-workspace-lighting-uv | Configuration | 2026-11-12 | 2026-11-14 | Experimental | ue58-workspace-lighting-uv/Configuration/ue58-workspace-lighting-uv.md |
-| ue58-character-input-door | Troubleshooting | 2026-11-12 | 2026-11-14 | Experimental | ue58-character-input-door/Troubleshooting/ue58-character-input-door.md |
-| ue58-motion-cloner-wave | Concept | 2026-11-12 | 2026-11-14 | Experimental | ue58-motion-cloner-wave/Concept/ue58-motion-cloner-wave.md |
-| ue58-map-merge-packaging | Troubleshooting | 2026-11-12 | 2026-11-14 | Experimental | ue58-map-merge-packaging/Troubleshooting/ue58-map-merge-packaging.md |
+| ue58-curriculum-planning | Workflow | 2026-11-14 | 2026-11-14 | Verified (Partial) | ue58-curriculum-planning/Workflow/ue58-curriculum-planning.md |
+| ue58-curriculum-maps-ppt | Workflow | 2026-11-12 | 2026-11-14 | Verified (Partial) | ue58-curriculum-maps-ppt/Workflow/ue58-curriculum-maps-ppt.md |
+| ue58-mcp-setup-python | Configuration | 2026-11-12 | 2026-11-14 | Verified (Partial) | ue58-mcp-setup-python/Configuration/ue58-mcp-setup-python.md |
+| ue58-pcg-scatter | Workflow | 2026-11-12 | 2026-11-14 | Verified (Partial) | ue58-pcg-scatter/Workflow/ue58-pcg-scatter.md |
+| ue58-workspace-lighting-uv | Configuration | 2026-11-12 | 2026-11-14 | Verified (Partial) | ue58-workspace-lighting-uv/Configuration/ue58-workspace-lighting-uv.md |
+| ue58-character-input-door | Troubleshooting | 2026-11-12 | 2026-11-14 | Verified (Partial) | ue58-character-input-door/Troubleshooting/ue58-character-input-door.md |
+| ue58-motion-cloner-wave | Concept | 2026-11-12 | 2026-11-14 | Verified (Partial) | ue58-motion-cloner-wave/Concept/ue58-motion-cloner-wave.md |
+| ue58-map-merge-packaging | Troubleshooting | 2026-11-12 | 2026-11-14 | Verified (Partial) | ue58-map-merge-packaging/Troubleshooting/ue58-map-merge-packaging.md |
 | bazzite-deck-emudeck-retro-os | Workflow | 2026-11-12 | 2026-11-14 | Verified (Partial) | bazzite-deck-emudeck-retro-os/Workflow/bazzite-deck-emudeck-retro-os-2026-11-12.md |
 | ai-agent-git-branch-strategy | Workflow | 2026-11-01 | 2026-11-02 | Verified | ai-agent-git-branch-strategy/Workflow/ai-agent-git-branch-strategy-2026-11-01.md |
 | moonlight-artemis-sunshine-google-tv | Review | 2026-10-03 | 2026-10-04 | Verified | moonlight-artemis-sunshine-google-tv/Review/moonlight-artemis-sunshine-google-tv-2026-10-03.md |

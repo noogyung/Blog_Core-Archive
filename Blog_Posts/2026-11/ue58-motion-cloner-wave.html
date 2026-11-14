@@ -1,0 +1,232 @@
+<!-- ============================================================
+  [BLOG POST METADATA - Blogspot 설정창 복사용]
+  Title: [UE 5.8 입문 부트캠프 구축기 #7] Motion Design Cloner·Effector 기반 1,200개 타일 360° 파동 구현과 프레임 궤적 검증
+  Labels (Tags): Unreal, MotionDesign, Sequencer
+  Meta Description: UE 5.8 Motion Design의 Cloner(40×30=1,200개 타일)와 Effector, Sequencer 구체 이동을 연동해 상하 파동 및 누적 360° 회전 후 원위치 복귀를 240프레임 궤적으로 검증했습니다.
+  Slug: ue58-motion-cloner-wave
+  ---
+  Primary Keyword: 언리얼 엔진 5.8 Motion Design Cloner Effector 파동
+  Secondary Keywords: Unreal Engine 5.8, Cloner Actor, Linked Effector, Sequencer, 오일러 각 래핑, 쿼터니언 궤적 검증
+  Knowledge Source: Knowledge/ue58-motion-cloner-wave/Concept/ue58-motion-cloner-wave.md
+  Generated Date: 2026-11-14
+  Estimated Read Time: 12분
+  Series ID: ue58-bootcamp
+  ============================================================ -->
+
+<article>
+  <!-- 이미지 슬롯 1 (대표 이미지 - 필수) -->
+  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-11/ue58-motion-cloner-wave-img1_v1.jpg?v=20261114_2010" alt="Unreal Engine 5.8 Motion Design Cloner·Effector 1,200개 타일 360° 파동 및 240프레임 궤적 검증 대표 이미지">
+
+  <p>8시간 부트캠프의 대미를 장식하는 8교시 모션 그래픽(<code>03_MotionDesign</code>) 트랙은 1인칭 보행이나 야외 씬과 달리, 3D 모델링 지식이 적은 입문자도 규칙적인 배열과 키프레임 애니메이션만으로 극적인 시각 변화를 만들어낼 수 있도록 설계한 파트입니다. Unreal Engine 5.4 이상부터 도입되어 UE 5.8까지 고도화된 Motion Design 툴셋의 핵심 컴포넌트인 Cloner와 Effector는 내부적으로 Niagara 파티클 시스템을 기반으로 대량의 메시 인스턴스를 부드럽게 변형할 수 있습니다.</p>
+
+  <p>그러나 이 8교시 씬 역시 처음부터 현재의 형태였던 것은 아닙니다. 초기의 너무 단순한 구체 이동안에서 출발해, 글자 획이 뒤집히는 <code>SignalGrid</code> 중간판을 거쳐, 최종적으로 <code>40×30 = 1,200개</code> 타일이 공의 움직임을 따라 상하 파동과 누적 약 <code>360°</code> 회전을 일으킨 뒤 원래 위치·자세로 되돌아오는 <code>L_Motion_05_Complete</code>로 완성되었습니다. 이번 글에서는 모션 트랙의 3단계 진화 과정과 함께, 오일러(Euler) 각 래핑의 함정을 피해 240프레임 전체 궤적으로 <code>360°</code> 회전 및 복귀를 정량 검증한 기록을 정리하고자 합니다.</p>
+
+  <h2 id="motion-design-three-revisions">1. Niagara 기반 Motion Design 구조와 3단계 개정 이력</h2>
+
+  <p>Motion Design 모드에서 대량 오브젝트 모션의 핵심은 <strong>Cloner Actor</strong>와 <strong>Linked Effector</strong>의 역할 분담에 있습니다. Cloner가 Grid, Circle, Spline 등의 레이아웃 규칙으로 메시를 복제해 배치하면, Cloner에 연결된 Effector가 자신의 영향 범위(Falloff/Area) 안에 들어온 타일 인스턴스들의 위치 오프셋(Offset), 회전(Rotation), 스케일(Scale)을 절차적으로 변형합니다.</p>
+
+  <p>교재 개발 과정에서는 입문 수업에 걸맞은 시각적 밀도와 조작 재미를 찾기 위해 다음과 같이 모션 주제를 세 차례 교체·발전시켰습니다.</p>
+
+  <div class="table w100 withBg">
+    <table>
+      <thead>
+        <tr>
+          <th>모션 개정 단계</th>
+          <th>씬 구성 및 애니메이션 동작</th>
+          <th>교체 사유 및 평가</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>초기안</strong></td>
+          <td>짙은 남색 스튜디오, 정지된 3D 타이틀 + 구체 1개가 0초·2.5초·5초 키로 상하 이동</td>
+          <td>Cloner·Effector 활용법을 보여주기엔 교육 밀도가 크게 부족해 폐기</td>
+        </tr>
+        <tr>
+          <td><strong>중간판 (SignalGrid 플립)</strong></td>
+          <td>타일이 제자리에서 180° 뒤집히며 파동 생성, 글자 획 168개 타일이 밝은 뒷면으로 <code>SignalGrid</code> 문자 표시</td>
+          <td>기초 배열 원리는 보여줬으나 연속 공 추적 파동·복귀 요구로 추가 개정</td>
+        </tr>
+        <tr>
+          <td><strong>최종판 (1,200개 타일 360° 파동)</strong></td>
+          <td><code>40 × 30 = 1,200개</code> 타일(<code>SM_SignalTile</code>) 위로 구체(<code>MI_WaveBall</code>)가 지나가며 상하 파동 + 누적 약 360° 회전 후 원위치·자세 복귀</td>
+          <td>최종 채택 (<code>L_Motion_00_Empty</code> ~ <code>L_Motion_05_Complete</code> 6개 맵 편성)</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="note">
+    <strong>💡 동영상 대신 스틸컷 중심 교재 제작 원칙:</strong> 시퀀스나 Effector 수치를 수정할 때마다 매번 무거운 렌더링 영상을 생성해 검증하면 교재 제작 사이클이 끝없이 늘어집니다. 따라서 주요 파라미터 UI 캡처와 핵심 프레임 뷰포트 스틸컷(<code>motion-frame117.png</code>, <code>motion-frame239.png</code> 등)을 대조해 시각적 결과를 확인하는 방식으로 작업 효율을 지켰습니다.
+  </div>
+
+  <h2 id="cloner-effector-sequencer-steps">2. 6개 단계별 맵 구축과 Cloner·Effector·Sequencer 연동</h2>
+
+  <p>수강생이 빈 레벨에서 1,200개 타일 모션을 무리 없이 따라 만들 수 있도록, <code>Content/_Bootcamp/03_MotionDesign/Maps/</code> 아래에 다음 6단계 체크포인트를 배치했습니다.</p>
+
+  <ol class="step">
+    <li><strong><code>L_Motion_00_Empty</code> → <code>L_Motion_01_Studio</code>:</strong> 빈 씬에서 스튜디오 배경 구조물과 금속·그라파이트 계열 재질(<code>M_GridCase</code>, <code>M_AnodizedGraphite</code>, <code>M_ChampagneAlloy</code>)을 세팅합니다.</li>
+    <li><strong><code>L_Motion_02_OneTile</code>:</strong> 파동의 기본 단위가 될 단일 타일 메시 <code>SM_SignalTile</code> 1개를 배치해 비율과 모서리 하이라이트를 확인합니다.</li>
+    <li><strong><code>L_Motion_03_Grid</code>:</strong> Cloner 액터(<code>03_Cloner_40x30</code>)를 배치하고 Layout을 <code>Grid</code>로 지정한 뒤, X 수 <code>40</code>, Y 수 <code>30</code>, Z 수 <code>1</code>, 간격 X/Y <code>24.0</code>, 간격 Z <code>105.0</code>으로 설정해 1,200개 타일 판을 생성합니다.</li>
+    <li><strong><code>L_Motion_04_Effector</code>:</strong> 타일을 위로 들어 올리는 리프트 Effector(<code>04_Lift</code>)와 180°씩 X축 회전을 주는 Effector(<code>04_Rotate180_1</code>, <code>04_Rotate180_2</code>)를 Cloner에 링크하고 영향 영역과 Offset/Rotation 값을 구성합니다.</li>
+    <li><strong><code>L_Motion_05_Complete</code>:</strong> 8초 분량(30fps 기준 240프레임) 시퀀스 <code>LS_SignalWave_08s</code>에서 붉은 구체 액터(<code>04_Ball</code>, 재질 <code>MI_WaveBall</code>)와 Effector 위치를 <code>X: -800.0 → +800.0</code> 구간으로 키프레임 이동시켜 파동과 회전을 완성합니다.</li>
+  </ol>
+
+  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-11/ue58-motion-cloner-wave-img2.png?v=20261114_2010" alt="Unreal Engine 5.8 L_Motion_05_Complete에서 03_Cloner_40x30 그리드 X 40, Y 30 배열 및 간격 설정 화면">
+
+  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-11/ue58-motion-cloner-wave-img3.png?v=20261114_2010" alt="Unreal Engine 5.8 04_Rotate180_1 Effector의 Mode Offset 및 회전 180.0도 설정 화면">
+
+  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-11/ue58-motion-cloner-wave-img4.png?v=20261114_2010" alt="Unreal Engine 5.8 LS_SignalWave_08s 시퀀서에서 프레임 0117 시점의 04_Ball 및 Effector 트랙 구성 화면">
+
+  <p>참고로 배포 프로젝트 내부에는 <code>Content/Python/init_unreal.py</code>와 함께 <code>bootcamp_cloner.py</code>가 포함되어 있습니다. 이 스크립트의 역할을 오해하면 안 되는데, <code>bootcamp_cloner.py</code>는 수강생 대신 모션 씬 전체를 처음부터 자동 생성·완성해 주는 마법 스크립트가 아닙니다. 에디터가 Cloner 액터를 로드할 때 활성 상태가 꺼지지 않도록 초기화해 주는 보조 코드일 뿐이며, 타일 배열과 Effector·시퀀서 연동 구성은 모두 교재 절차대로 에디터에서 구축한 것입니다.</p>
+
+  <h2 id="euler-wrapping-and-frame-trajectory">3. 오일러 각 래핑의 함정과 240프레임 정량 궤적 검증</h2>
+
+  <p>타일이 공을 따라 한 바퀴(<code>360°</code>) 깔끔하게 회전하고 원래 자세로 돌아왔음을 수치로 검증할 때, 많은 실무자가 한 가지 함정에 빠지기 쉽습니다. 바로 <strong>단일 프레임의 오일러(Euler) 회전각 값만 보고 회전 완료 여부를 단정하는 오류</strong>입니다.</p>
+
+  <p>Unreal Engine을 포함한 대부분의 3D 엔진에서 오일러 각도는 <code>-180° ~ +180°</code> 범위 안에서 래핑(Wrapping)됩니다. 따라서 타일이 180° 지점을 넘어 계속 도는 순간 각도 수치는 갑자기 부호가 뒤집히며 <code>-151.84°</code>에서 <code>+147.65°</code>로 건너뛰고, <code>360°</code> 회전을 끝낸 마지막 프레임에서는 다시 <code>0.0°</code>로 표시됩니다. <code>0.0°</code>라는 숫자 하나만 보고서는 한 번도 안 돈 것인지, 한 바퀴를 정확히 돌고 복귀한 것인지 판별할 수 없습니다.</p>
+
+  <div class="pre mermaid" data-text="Mermaid">
+    <button aria-label="Copy code">Copy</button>
+    <pre class="mermaid">
+flowchart LR
+    F0["프레임 0~96 (정지 구간: z=24.0, rot=0도)"] --&gt;|"구체 접근"| F108["프레임 108~117 (Roll -14.23도 → -151.84도 / z_max=109)"]
+    F108 --&gt;|"-180/+180 래핑 통과"| F120["프레임 120~138 (Roll +147.65도 → +0.14도 → 0.0도)"]
+    F120 --&gt;|"파동 지나감"| F239["프레임 210~239 (1,200개 전원 z=24.0, rot=0도 원복)"]
+    </pre>
+  </div>
+
+  <p>이를 해결하기 위해 <code>motion-revision_motion-verification.json</code>에서는 프레임 <code>0</code>부터 마지막 프레임 <code>239</code>까지 전체 구간의 인스턴스 개수, <code>z_min</code>·<code>z_max</code> 높이 범위, 구체 위치(<code>ball_x</code>), 그리고 대표 샘플 타일의 위치(<code>sample_position</code>), 쿼터니언(<code>sample_quat</code>), 오일러 회전(<code>sample_rotator</code>) 궤적을 연속으로 샘플링하여 교차 검증했습니다.</p>
+
+  <div class="table w100 withBg">
+    <table>
+      <thead>
+        <tr>
+          <th>프레임 번호</th>
+          <th>인스턴스 수</th>
+          <th><code>ball_x</code> 위치</th>
+          <th>전체 타일 <code>Z</code> 범위</th>
+          <th>샘플 타일 <code>Z</code> 위치</th>
+          <th>샘플 타일 오일러 <code>(Roll, Pitch, Yaw)</code></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>0</code></td>
+          <td><code>1200</code></td>
+          <td><code>-800.00</code></td>
+          <td><code>24.00 .. 24.00</code></td>
+          <td><code>24.00</code></td>
+          <td><code>(0.00°, 0.00°, 0.00°)</code></td>
+        </tr>
+        <tr>
+          <td><code>96</code></td>
+          <td><code>1200</code></td>
+          <td><code>-180.65</code></td>
+          <td><code>24.00 .. 24.00</code></td>
+          <td><code>24.00</code></td>
+          <td><code>(0.00°, 0.00°, 0.00°)</code></td>
+        </tr>
+        <tr>
+          <td><code>102</code></td>
+          <td><code>1200</code></td>
+          <td><code>-129.03</code></td>
+          <td><code>16.08 .. 109.00</code></td>
+          <td><code>24.81</code></td>
+          <td><code>(0.00°, 0.00°, 0.00°)</code></td>
+        </tr>
+        <tr>
+          <td><code>108</code></td>
+          <td><code>1200</code></td>
+          <td><code>-77.42</code></td>
+          <td><code>16.04 .. 108.98</code></td>
+          <td><code>55.67</code></td>
+          <td><code>(-14.23°, 0.00°, 0.00°)</code></td>
+        </tr>
+        <tr>
+          <td><code>114</code></td>
+          <td><code>1200</code></td>
+          <td><code>-25.81</code></td>
+          <td><code>16.00 .. 108.73</code></td>
+          <td><code>98.72</code></td>
+          <td><code>(-94.51°, 0.00°, 0.00°)</code></td>
+        </tr>
+        <tr>
+          <td><code>117</code></td>
+          <td><code>1200</code></td>
+          <td><code>0.00</code></td>
+          <td><code>16.00 .. 108.51</code></td>
+          <td><code>108.51</code></td>
+          <td><code>(-151.84°, 0.00°, 0.00°)</code></td>
+        </tr>
+        <tr>
+          <td><code>120</code></td>
+          <td><code>1200</code></td>
+          <td><code>+25.81</code></td>
+          <td><code>16.00 .. 108.73</code></td>
+          <td><code>108.23</code></td>
+          <td><code>(+147.65°, 0.00°, 0.00°)</code></td>
+        </tr>
+        <tr>
+          <td><code>126</code></td>
+          <td><code>1200</code></td>
+          <td><code>+77.42</code></td>
+          <td><code>16.00 .. 108.98</code></td>
+          <td><code>77.45</code></td>
+          <td><code>(+44.02°, 0.00°, 0.00°)</code></td>
+        </tr>
+        <tr>
+          <td><code>132</code></td>
+          <td><code>1200</code></td>
+          <td><code>+129.03</code></td>
+          <td><code>16.00 .. 109.00</code></td>
+          <td><code>29.17</code></td>
+          <td><code>(+0.14°, 0.00°, 0.00°)</code></td>
+        </tr>
+        <tr>
+          <td><code>138</code></td>
+          <td><code>1200</code></td>
+          <td><code>+180.65</code></td>
+          <td><code>16.03 .. 109.00</code></td>
+          <td><code>16.03</code></td>
+          <td><code>(0.00°, 0.00°, 0.00°)</code></td>
+        </tr>
+        <tr>
+          <td><code>210</code></td>
+          <td><code>1200</code></td>
+          <td><code>+800.00</code></td>
+          <td><code>24.00 .. 24.00</code></td>
+          <td><code>24.00</code></td>
+          <td><code>(0.00°, 0.00°, 0.00°)</code></td>
+        </tr>
+        <tr>
+          <td><code>239</code></td>
+          <td><code>1200</code></td>
+          <td><code>+800.00</code></td>
+          <td><code>24.00 .. 24.00</code></td>
+          <td><code>24.00</code></td>
+          <td><code>(0.00°, 0.00°, 0.00°)</code></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>연속 데이터를 보면 구체가 그리드 중앙(<code>ball_x = 0.00</code>)을 통과하는 프레임 117~120 사이에서 샘플 타일의 Roll 값이 <code>-151.84°</code>에서 반 바퀴 래핑 경계를 넘어 <code>+147.65°</code>로 이어지고, 이후 <code>+44.02° → +0.14° → 0.00°</code>로 수렴하며 누적 약 <code>360°</code> 회전을 통과한 뒤 프레임 210과 239에서 1,200개 타일 전체가 <code>z = 24.00</code> 초기 평면으로 복귀했음을 정확히 확인할 수 있습니다.</p>
+
+  <h2 id="motion-boundaries-and-next">4. 프레임 검증 경계, 남은 과제 및 마지막 편 예고</h2>
+
+  <p>여기서도 검증 데이터의 해석 범위를 분명히 선 그어 두었습니다. <code>motion-revision_motion-verification.json</code>은 어디까지나 1,200개 타일 인스턴스 개수 유지와 좌표·자세(쿼터니언·오일러)의 기하학적 복귀 정확성을 검증하는 수치이지, 실시간 FPS나 GPU 렌더링 부하를 측정한 성능 벤치마크가 아닙니다. 추가로 점검이 필요한 영역은 다음과 같습니다.</p>
+
+  <ul>
+    <li>해당 JSON 기록은 모션 개정 중간 시점에 추출된 데이터이므로, 8편에서 다룰 최종 <code>Maps/</code> 직하위 통합 이후의 <code>L_Motion_05_Complete</code>에서 동일 수준의 프레임 궤적 재검증 여부 확인</li>
+    <li>실제 교육장 PC 사양에서 1,200개 타일 Niagara Cloner를 에디터 뷰포트로 실시간 재생할 때의 프레임레이트 실측</li>
+    <li><code>Content/Python/bootcamp_cloner.py</code>가 수강생의 빈 레벨 제작 실습에도 필수인지, 완성 맵 재오픈 시 상태 초기화 용도인지 교재 안내 문구 정교화</li>
+  </ul>
+
+  <p>이제 3대 결과물(자연환경·작업실·모션 그래픽)이 모두 각자의 트랙에서 완성되었습니다. 하지만 이 세 트랙의 맵들이 기존 <code>Guided</code>와 <code>Lessons</code>라는 중복 폴더에 흩어져 있던 구조를 하나로 통합 정리하는 마지막 단계에서 생각지도 못한 에셋 참조 끊김 문제와 Windows 보안(Smart App Control) 이슈가 기다리고 있었습니다. 시리즈 마지막 글인 8편에서는 28개 맵 경로 통합 후 <code>DA_ForestPatchSet</code> 및 <code>LS_Environment_15s</code> 참조를 복구해 289개 의존 패키지 누락 0건을 확인한 절차와 336파일 단일 프로젝트 ZIP 패키징, 그리고 <code>ElectricDreamsSample</code> DLL 차단 원인을 정리하며 부트캠프 구축기를 마무리하겠습니다.</p>
+
+  <p>Motion Design이나 Niagara 파티클 기반 인스턴스 애니메이션을 검증할 때, 여러분은 오일러 각 래핑으로 인한 착시를 피하기 위해 쿼터니언이나 누적 궤적 로그를 어떤 방식으로 점검하고 계신가요?</p>
+
+  <!-- 시리즈 네비게이션 컨테이너 (시리즈 글인 경우에만 삽입, JS로 동적 렌더링) -->
+  <nav class="series-nav"></nav>
+</article>

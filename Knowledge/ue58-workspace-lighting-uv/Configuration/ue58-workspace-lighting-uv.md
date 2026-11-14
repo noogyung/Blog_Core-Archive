@@ -4,17 +4,18 @@ title_kr: "Unreal Engine 5.8 작은 작업실의 공간 밀도, 물리 광원·U
 category: Configuration
 sub_category: Level-Design-Material-Blueprint
 version: "5.8"
-status: Experimental
+status: Verified (Partial)
 created_date: 2026-11-12
 last_modified: 2026-11-14
 language: KR+EN
 tags: [UnrealEngine, UE5.8, LevelDesign, Lighting, WorldAlignedTexture, Blueprint, Interaction]
 sources_count: 4
-blog_draft_path: null
-blog_draft_date: null
+blog_draft_path: "Blog_Posts/2026-11/ue58-workspace-lighting-uv.html"
+blog_draft_date: 2026-11-14
 blog_id: core-archive
 blog_published: false
 series_id: ue58-bootcamp
+blogger_post_id: "4881084100523077245"
 ---
 
 ===== KNOWLEDGE PACKAGE START =====
@@ -26,7 +27,7 @@ series_id: ue58-bootcamp
 * **Category:** Configuration
 * **Sub-Category:** Level-Design-Material-Blueprint
 * **Version:** 5.8
-* **Status:** Experimental
+* **Status:** Verified (Partial)
 * **Date:** 2026-11-12
 * **Language:** KR+EN
 

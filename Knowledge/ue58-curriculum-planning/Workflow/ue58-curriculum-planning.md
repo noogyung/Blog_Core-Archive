@@ -4,17 +4,18 @@ title_kr: "Unreal Engine 5.8 8시간 입문 부트캠프 커리큘럼 기획과 
 category: Workflow
 sub_category: Curriculum-And-Operation-Planning
 version: "5.8"
-status: Experimental
+status: Verified (Partial)
 created_date: 2026-11-14
 last_modified: 2026-11-14
 language: KR+EN
 tags: [UnrealEngine, UE5.8, CurriculumDesign, Bootcamp, Checkpoint, Sandbox, PythonPPTX]
 sources_count: 6
-blog_draft_path: null
-blog_draft_date: null
+blog_draft_path: "Blog_Posts/2026-11/ue58-curriculum-planning.html"
+blog_draft_date: 2026-11-14
 blog_id: core-archive
 blog_published: false
 series_id: ue58-bootcamp
+blogger_post_id: "7898696813372398598"
 ---
 
 ===== KNOWLEDGE PACKAGE START =====
@@ -26,7 +27,7 @@ series_id: ue58-bootcamp
 * **Category:** Workflow
 * **Sub-Category:** Curriculum-And-Operation-Planning
 * **Version:** 5.8
-* **Status:** Experimental
+* **Status:** Verified (Partial)
 * **Date:** 2026-11-14
 * **Language:** KR+EN
 

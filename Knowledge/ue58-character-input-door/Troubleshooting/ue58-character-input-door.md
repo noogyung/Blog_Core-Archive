@@ -4,17 +4,18 @@ title_kr: "Unreal Engine 5.8 Character WASD·MouseY 입력 오류, 캡슐 축소
 category: Troubleshooting
 sub_category: Character-Input-Collision
 version: "5.8"
-status: Experimental
+status: Verified (Partial)
 created_date: 2026-11-12
 last_modified: 2026-11-14
 language: KR+EN
 tags: [UnrealEngine, UE5.8, CharacterMovement, InputMapping, CapsuleCollision, PIE, Troubleshooting]
 sources_count: 5
-blog_draft_path: null
-blog_draft_date: null
+blog_draft_path: "Blog_Posts/2026-11/ue58-character-input-door.html"
+blog_draft_date: 2026-11-14
 blog_id: core-archive
 blog_published: false
 series_id: ue58-bootcamp
+blogger_post_id: "6760100955816798760"
 ---
 
 ===== KNOWLEDGE PACKAGE START =====
@@ -26,7 +27,7 @@ series_id: ue58-bootcamp
 * **Category:** Troubleshooting
 * **Sub-Category:** Character-Input-Collision
 * **Version:** 5.8
-* **Status:** Experimental
+* **Status:** Verified (Partial)
 * **Date:** 2026-11-12
 * **Language:** KR+EN
 

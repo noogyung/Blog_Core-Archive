@@ -1,0 +1,224 @@
+<!-- ============================================================
+  [BLOG POST METADATA - Blogspot 설정창 복사용]
+  Title: [UE 5.8 입문 부트캠프 구축기 #2] 실제 에디터 UI 번호 매핑과 28개 단계별 체크포인트 맵·181장 교재 재구성
+  Labels (Tags): Unreal, UE5.8, LevelDesign
+  Meta Description: 텍스트 초안 PPT의 한계를 넘어 UE 5.8 실제 화면 번호 매핑과 00_Empty부터 Complete까지 이어지는 28개 체크포인트 맵, 181장 PPTX 교재를 재구성하고 레이아웃·의존성을 검증한 기록입니다.
+  Slug: ue58-curriculum-maps-ppt
+  ---
+  Primary Keyword: 언리얼 엔진 5.8 단계별 실습 맵 교재 제작
+  Secondary Keywords: Unreal Engine 5.8, 181장 PPTX, 28개 체크포인트 맵, Bootcamp_BaseProject, PPT 레이아웃 검증, UI 번호 매핑
+  Knowledge Source: Knowledge/ue58-curriculum-maps-ppt/Workflow/ue58-curriculum-maps-ppt.md
+  Generated Date: 2026-11-14
+  Estimated Read Time: 13분
+  Series ID: ue58-bootcamp
+  ============================================================ -->
+
+<article>
+  <!-- 이미지 슬롯 1 (대표 이미지 - 필수) -->
+  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-11/ue58-curriculum-maps-ppt-img1_v1.jpg?v=20261114_2005" alt="Unreal Engine 5.8 실제 에디터 UI 번호 매핑과 28개 체크포인트 맵 및 181장 교재 재구성 대표 이미지">
+
+  <p>앞선 1편에서 다루었듯, 파이썬으로 자동 생성한 텍스트 위주 기본 템플릿 PPT 초안만으로는 비전공 입문자가 Unreal Engine 5.8 에디터의 수많은 패널과 메뉴 사이에서 길을 잃지 않고 3대 결과물을 따라 만들 수 없었습니다. 실제로 초기 샘플 구성을 검토해 본 결과, 구매하거나 무료로 배포되는 에셋 샘플 레벨을 그대로 열어 촬영하는 방식 역시 교육 재현성이 크게 떨어진다는 문제점이 확인되었습니다.</p>
+
+  <p>초보자가 원하는 것은 이미 화려하게 완성된 데모 월드를 구경하는 일이 아니라, 아무것도 없는 빈 레벨(<code>00_Empty</code>)을 연 뒤 어느 메뉴의 몇 번 버튼을 눌러 어떤 에셋과 수치를 넣으면 눈앞의 장면이 만들어지는지 하나씩 따라 할 수 있는 실물 안내서입니다. 이번 글에서는 초기 61장·67장 뼈대에서 출발해 중간 버전들을 거치며 최종 181장 PPTX와 28개 단계별 체크포인트 맵, 289개 의존 패키지로 교재와 프로젝트를 전면 재구성하고 정량 검증한 과정을 정리해보고자 합니다.</p>
+
+  <h2 id="forward-checkpoint-architecture">1. 구매 샘플 의존 배제와 정방향(0 → 완성) 체크포인트 원칙</h2>
+
+  <p>초기 씬 개발 단계에서는 Fab에서 내려받은 Electric Dreams 샘플이나 기존 데모 프로젝트 복사본 위주로 구도를 잡으려는 시도도 있었습니다. 그러나 실제 교재 피드백을 거치며 구매 샘플 원본 촬영 방식의 한계가 분명히 드러났습니다. 샘플 맵은 이미 수천 개의 액터와 복잡한 서브시스템이 얽혀 있어, 입문자가 빈 레벨에서 동일한 구도를 직접 재현하려 할 때 어떤 단계로 쌓아 올려야 하는지 구조가 보이지 않았기 때문입니다.</p>
+
+  <p>이에 따라 제작 방향을 근본적으로 전환하여 다음과 같은 두 가지 설계 원칙을 세웠습니다.</p>
+
+  <ol class="step">
+    <li><strong>강의 프로젝트 내부 독립 재구축:</strong> 외부 샘플 프로젝트 채로 촬영하지 않고, 선별한 핵심 에셋만을 단일 강의 프로젝트(<code>Bootcamp_BaseProject</code>)의 <code>Content/_Bootcamp/90_Library/</code> 경로로 가져와 빈 레벨에서부터 직접 배치하고 수치로 재현할 수 있게 구성했습니다.</li>
+    <li><strong>완성 구도 선검토 후 정방향 단계 분해:</strong> 제작자 입장에서는 먼저 최종 완성 구도(<code>Complete</code>)를 만들어 조명·밀도·카메라 구도 품질을 검토하고, 이후 교육용으로 단계별 요소를 분리해 나가는 방식(필요 시 완성 씬에서 역으로 요소를 덜어내며 체크포인트 검증)을 적용했습니다. 반면 수강생이 실제로 따라가는 진행 방향은 반드시 <code>00_Empty</code>(0개 액터)에서 시작해 완성 레벨로 나아가는 정방향으로 구성했습니다.</li>
+  </ol>
+
+  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-11/ue58-curriculum-maps-ppt-img2.png?v=20261114_2005" alt="Unreal Engine 5.8 Bootcamp_BaseProject 빈 레벨(L_Env_00_Empty) 초기화면 및 에디터 UI 구성">
+
+  <div class="note">
+    <strong>💡 캡처 시점 경로 안내:</strong> 위 초기 화면 스틸컷의 콘텐츠 브라우저 하단 경로에는 작업 중간 시점 폴더 구조인 <code>_Bootcamp &gt; 01_Environment &gt; Maps &gt; Lessons</code>가 표시되어 있습니다. 최종 배포 버전에서는 <code>Guided</code>/<code>Lessons</code> 중복 하위 폴더를 제거하고 모든 맵을 각 트랙의 <code>Maps</code> 폴더 직하위로 통합했습니다.
+  </div>
+
+  <h2 id="version-history-separation">2. 초기·중간·최종 버전 변천사 (61장 → 182장 → 181장)</h2>
+
+  <p>이번 부트캠프 구축기는 처음부터 단번에 정해진 목차대로 뽑아낸 결과물이 아닙니다. 실제 에디터 조작 재현성, 공간 밀도, 입력 버그, 경로 정합성에 대한 피드백이 들어올 때마다 프로젝트와 PPTX를 수차례 전면 개정했습니다. 특히 작업 중간 단계에는 최종본(181장)보다 슬라이드 장수가 더 많았던 182장 버전도 존재했기 때문에, 장수 증가 자체를 곧 품질이나 최신 버전으로 혼동하지 않도록 단계별 수치를 엄격하게 분리해 기록할 필요가 있습니다.</p>
+
+  <div class="table w100 withBg">
+    <table>
+      <thead>
+        <tr>
+          <th>개정 단계</th>
+          <th>핵심 변경 내용</th>
+          <th>PPT 장수</th>
+          <th>맵 수</th>
+          <th>패키지 수</th>
+          <th>버전 구분</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>최초 교재 정리</td>
+          <td>구교재 분석, 불필요 방송 스펙 제외 (프로젝트·체크포인트 별도 준비 상태)</td>
+          <td>61장</td>
+          <td>-</td>
+          <td>-</td>
+          <td>초기본</td>
+        </tr>
+        <tr>
+          <td>첫 씬 개정</td>
+          <td>Electric Dreams 협곡, Detective Office 방(약 6.3×4.9m), SignalGrid 플립</td>
+          <td>67장</td>
+          <td>16개</td>
+          <td>-</td>
+          <td>초기 개정판</td>
+        </tr>
+        <tr>
+          <td>단계별 재구성</td>
+          <td>빈 레벨부터 단계별 추가, 에셋 선별, 배치 CSV 값 및 가이드 작성</td>
+          <td>71장</td>
+          <td>25개</td>
+          <td>266개</td>
+          <td>중간판</td>
+        </tr>
+        <tr>
+          <td>UI 상세 교육</td>
+          <td>실제 UE 5.8 화면 위 번호·설명, 버튼·노드·입력칸 확대 수록</td>
+          <td>145장</td>
+          <td>-</td>
+          <td>-</td>
+          <td>중간판</td>
+        </tr>
+        <tr>
+          <td>식생 PCG 확장</td>
+          <td>바닥 중심 잔디·고사리, 바위 표면 노출, 세트 추출(5C)·확장(5D)</td>
+          <td>165장</td>
+          <td>-</td>
+          <td>-</td>
+          <td>중간판</td>
+        </tr>
+        <tr>
+          <td>모션·MCP 개정</td>
+          <td>1,200개 타일 360° 파동, 공식 Unreal MCP 등록·호출 가이드 반영</td>
+          <td>182장</td>
+          <td>-</td>
+          <td>-</td>
+          <td>중간판 (최종보다 많음)</td>
+        </tr>
+        <tr>
+          <td>환경·작업실 재배치</td>
+          <td>대형 요소 PCG(5E), 방 축소(4×3.6m), 광원·UV 정렬·F키 토글</td>
+          <td>179장</td>
+          <td>-</td>
+          <td>-</td>
+          <td>직전 중간판</td>
+        </tr>
+        <tr>
+          <td><strong>입력·경로 최종판</strong></td>
+          <td><strong>WASD·MouseY·캡슐 수정, 실제 보행, Maps 통합 및 참조 복구</strong></td>
+          <td><strong>181장</strong></td>
+          <td><strong>28개</strong></td>
+          <td><strong>289개</strong></td>
+          <td><strong>최종본</strong></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>초기 67장이나 71장 완료 시점의 기록을 최종 사용성 검증 결과로 오인해 인용하면, 뒤이어 발견되어 수정된 캐릭터 보행 입력 오류나 맵 경로 참조 오류와 정면으로 모순됩니다. 각 단계의 수치(16맵/25맵/28맵, 266패키지/289패키지, 67~182장)는 해당 개정이 진행되던 당시의 스냅샷으로만 구별하여 해석해야 합니다.</p>
+
+  <h2 id="ui-numbering-and-four-parts">3. 실제 UI 번호 매핑, 입문 이론 복원 및 4파트 28맵 편성</h2>
+
+  <p>중간 71장 단계에서 145장 UI 상세 교육 단계로 분량이 크게 늘어난 이유는 장수를 늘리기 위해서가 아니었습니다. 슬라이드 수를 줄이겠다고 클릭할 버튼 위치나 입력할 숫자, 연결할 블루프린트 핀을 생략하면 비전공 입문자가 혼자 따라 할 수 없었기 때문입니다. 따라서 슬라이드가 늘어나더라도 실제 Unreal Editor 화면 위에 번호(1, 2, 3...)를 매기고, 패널 명칭·클릭 위치·배치할 에셋 이름·입력 수치·실행 결과를 1:1로 대응시키는 원칙을 끝까지 지켰습니다.</p>
+
+  <p>아울러 기존 126장 참고 교재에서 빠져 있던 엔진 정의, 활용 사례, 템플릿·샘플 개념, Blueprint 개요, Fab 및 Launcher 구조, 물리 기반 렌더링(PBR) 등 필수 입문 이론을 앞단에 다시 복원해 전체 흐름을 다음 4개 파트로 정렬했습니다.</p>
+
+  <div class="pre mermaid" data-text="Mermaid">
+    <button aria-label="Copy code">Copy</button>
+    <pre class="mermaid">
+flowchart LR
+    P1["1파트: 언리얼 입문 (UI·뷰포트·View Mode·PBR·Fab)"] --&gt;|"기초 개념 습득"| P2["2파트: 자연환경 (01_Environment / 13개 맵)"]
+    P2 --&gt;|"협곡·PCG 완료"| P3["3파트: 작업실과 인터랙션 (02_Workspace / 9개 맵)"]
+    P3 --&gt;|"블루프린트·보행 완료"| P4["4파트: 모션 그래픽·MCP (03_MotionDesign / 6개 맵)"]
+    </pre>
+  </div>
+
+  <ul>
+    <li><strong>언리얼 입문 파트:</strong> <code>File &gt; New Level / Save</code>, 뷰포트 카메라 조작과 <code>View Mode</code>, <code>Content Browser</code> 탐색, 레벨·액터·에셋 구조, PBR 재질 기초</li>
+    <li><strong>자연환경 트랙 (<code>01_Environment/Maps/</code>, 13개 맵):</strong> <code>L_Env_00_Empty</code> ~ <code>L_Env_05_Foliage</code>, 지면 식생·세트 추출·확장·대형 보강을 다루는 <code>L_Env_05B_PCG</code>~<code>05E_Surroundings</code>, <code>L_Env_06_Lighting</code> ~ <code>L_Env_08_Complete</code>까지 Landscape·Foliage·PCG 샘플링·Spawner·Generate 과정을 다룹니다.</li>
+    <li><strong>작업실 트랙 (<code>02_Workspace/Maps/</code>, 9개 맵):</strong> <code>L_Work_00_Empty</code> ~ <code>L_Work_08_Complete</code>까지 공간 구축, <code>M_Wallpaper_World_XZ/YZ</code> 그래프, 광원·노출, Blueprint Components·Timeline/보간·Collision, <code>BP_WorkCharacter</code> 입력, 문·램프 <code>F</code>키 토글을 다룹니다.</li>
+    <li><strong>모션 그래픽 트랙 (<code>03_MotionDesign/Maps/</code>, 6개 맵) 및 MCP 연동:</strong> <code>L_Motion_00_Empty</code> ~ <code>L_Motion_05_Complete</code>까지 <code>Cloner</code>/<code>Effector</code>, <code>Sequencer</code>·<code>Camera Cuts</code>·<code>Render Queue</code>, 그리고 공식 Unreal MCP 플러그인·서버 콘솔·JSON 요청/응답 실습을 다룹니다.</li>
+  </ul>
+
+  <div class="note">
+    <strong>💡 시퀀스 검증과 부속 보조 자료 패키징:</strong> 새로운 시퀀스나 모션 설정이 바뀔 때마다 매번 무거운 동영상을 렌더링하지 않고, 주요 프레임의 실제 뷰포트 스틸컷을 캡처해 교재에 반영했습니다. 또한 강의 현장에서 바로 활용할 수 있도록 PPTX 외에도 <code>강사_진행표.md</code>, <code>단계별_제작_가이드.html</code>, <code>검증_기록.md</code>, <code>Asset_Catalog.csv</code>, <code>Placements_AllStages.csv</code>, <code>Placements_Foliage.csv</code>, <code>Materials_Assignments.csv</code>, MCP 요청·응답 JSON 예시, <code>README.md</code>를 함께 묶어 패키징했습니다.
+  </div>
+
+  <h2 id="ppt-validation-and-boundaries">4. 최종 181장 PPTX 자동 검증 결과와 미검증 경계</h2>
+
+  <p>개정 작업 도중 로컬 PPTX 파일명이 여러 차례 바뀌었고, <code>evidence/교재_검증_기록.md</code> 상단에는 직전 버전인 179장 시점의 문구 일부가 남아 있는 상태였습니다. 최종본 판별 시 파일명 문자열에만 의존하면 구버전을 배포할 위험이 있었기 때문에, 최종 산출물은 파일 바이트 크기(<code>52,447,202</code>바이트)와 SHA-256 해시(<code>c6246e414224ab25c21f9c28432a56ff69548360ac2a33a28ffa866f90e56873</code>, ZIP 내부 파일명 <code>Unreal_Engine_기초와_핵심_콘텐츠_제작_입력_맵정리개정판_최종.pptx</code>)로 고정하여 대조했습니다.</p>
+
+  <h3 id="automated-ppt-checks">구조·레이아웃·글꼴·재입력 자동 검증 수치</h3>
+
+  <p>최종 181장 PPTX에 대해서는 자동 검증 파이프라인(<code>input-fix_ppt-final-validation.json</code> 및 <code>ui-course_import-verification.json</code>)을 실행해 다음 항목을 정량적으로 확인했습니다.</p>
+
+  <div class="table w100 withBg">
+    <table>
+      <thead>
+        <tr>
+          <th>검증 항목</th>
+          <th>검사 대상 및 범위</th>
+          <th>검증 결과</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>패키지 구조 검사 (<code>packageIntegrity</code>)</td>
+          <td>181장 슬라이드(13.3333 × 7.5인치, 16:9), 관계 파트 378개</td>
+          <td><code>status: pass</code>, finding 0건</td>
+        </tr>
+        <tr>
+          <td>재입력 배치 검사 (<code>ui-course_import-verification.json</code>)</td>
+          <td>6장씩 30배치 + 1장 (총 31배치 = 181장 전체)</td>
+          <td>전 배치 <code>ok: true</code></td>
+        </tr>
+        <tr>
+          <td>글꼴 정책 (<code>fontSelection</code>)</td>
+          <td>승인 글꼴 <code>맑은 고딕</code> 텍스트 스크립트 3,378개</td>
+          <td><code>passed: true</code> (위반 0건)</td>
+        </tr>
+        <tr>
+          <td>네이티브 표 산술 (<code>nativeTableArithmetic</code>)</td>
+          <td>PPTX 내부 네이티브 표 22개 구조 검사</td>
+          <td><code>passed: true</code>, finding 0건</td>
+        </tr>
+        <tr>
+          <td>레이아웃 겹침 검사 (<code>presentationLayout</code>)</td>
+          <td>181장 전체 텍스트 프레임 및 헤딩·불릿 기하 배치</td>
+          <td>finding 0건, <strong>경고 1건</strong> (슬라이드 138)</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>레이아웃 검사 과정에서 <strong>슬라이드 138</strong>의 객체 ID <code>6</code>과 <code>12</code> 사이에 너비 <code>0.2357in</code>, 높이 <code>0.1279in</code> 크기의 텍스트 프레임 겹침 경고(<code>substantial_text_frame_overlap</code>) 1건이 포착되었습니다. 이 항목을 억지로 무시하거나 누락하지 않고 검증 로그에 명시적으로 남겨두어, 실제 PowerPoint 화면 검수 시 우선 육안 확인할 대상으로 분리했습니다.</p>
+
+  <h3 id="verification-boundaries">자동 검사가 보장하지 않는 미검증 경계</h3>
+
+  <p>자동 검증 JSON의 <code>claim_boundary</code>와 <code>native_powerpoint_verified: false</code> 항목이 분명히 명시하듯, 위 통과 결과는 PPTX XML 패키지 구조와 스크립트 기준 레이아웃 좌표 검사를 뜻할 뿐 다음 세 영역까지 대변하지는 않습니다.</p>
+
+  <ul>
+    <li><strong>PowerPoint 데스크톱 앱 네이티브 실행:</strong> 실제 Microsoft PowerPoint 애플리케이션을 열어 181장 전체 슬라이드쇼 전환과 <code>맑은 고딕</code> 시스템 렌더링을 육안으로 전수 확인하는 과정은 미검증 상태입니다.</li>
+    <li><strong>발표자 노트 181개 전수 검토:</strong> 패키지 검사에서 <code>notes_parts_skipped: 181</code>로 기록된 것처럼, 슬라이드 하단 발표자 노트의 문맥 정확성은 자동 검사의 검증 범위 밖입니다.</li>
+    <li><strong>슬라이드 138 경고 실물 확인:</strong> <code>0.2357 × 0.1279in</code> 겹침 경고가 실제 발표 화면에서 글자 가림을 유발하는지 여부는 PowerPoint 앱에서 직접 확인해야 합니다.</li>
+  </ul>
+
+  <h2 id="maps-ppt-summary-and-next">5. 정리 및 다음 편 예고</h2>
+
+  <p>기획 단계의 추상적인 8개 교시 설계를 실제 에디터 화면 번호와 <code>00_Empty</code>~<code>Complete</code> 체크포인트 28개 맵, 289개 의존 패키지, 181장 UI 상세 교재로 구체화하면서, '초보자도 따라 할 수 있는 재현성'과 '버전별 검증 경계의 분리'라는 두 가지 기준을 확립했습니다.</p>
+
+  <p>한편, 이렇게 수백 개의 에셋과 28개 맵, 181장 교재를 구축하고 수정하는 과정이 순수 수작업이나 초기 스크립트로만 진행된 것은 아닙니다. 작업 후반부에는 Unreal Engine 5.8에 공식 도입된 Unreal MCP 서버를 열어 AI 도구를 에디터와 직접 연동하게 되었습니다. 다음 글에서는 <code>ModelContextProtocol</code> 및 <code>AllToolsets</code> 플러그인 활성화부터 포트 <code>8000</code> 서버 기동, 그리고 초기 <code>Unreal Python</code> 직접 제어와 외부 Python HTTP MCP 클라이언트를 혼동하지 않고 구별해 운용한 아키텍처 전환 과정을 살펴보겠습니다.</p>
+
+  <p>실습 중심의 기술 교재를 만들 때, 여러분은 버전이 여러 번 바뀌는 과정에서 구버전 스크린샷과 최신 프로젝트 수치 사이의 불일치를 어떤 검증 기준이나 해시 체계로 통제하고 계신지 궁금합니다.</p>
+
+  <!-- 시리즈 네비게이션 컨테이너 (시리즈 글인 경우에만 삽입, JS로 동적 렌더링) -->
+  <nav class="series-nav"></nav>
+</article>

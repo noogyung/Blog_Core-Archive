@@ -4,17 +4,18 @@ title_kr: "Unreal Engine 5.8 Electric Dreams 기반 지면 식생 PCG와 세트 
 category: Workflow
 sub_category: Procedural-Content-Generation
 version: "5.8"
-status: Experimental
+status: Verified (Partial)
 created_date: 2026-11-12
 last_modified: 2026-11-14
 language: KR+EN
 tags: [UnrealEngine, UE5.8, PCG, ElectricDreams, ProceduralGeneration, Foliage, Megascans]
 sources_count: 6
-blog_draft_path: null
-blog_draft_date: null
+blog_draft_path: "Blog_Posts/2026-11/ue58-pcg-scatter.html"
+blog_draft_date: 2026-11-14
 blog_id: core-archive
 blog_published: false
 series_id: ue58-bootcamp
+blogger_post_id: "2491154217835264349"
 ---
 
 ===== KNOWLEDGE PACKAGE START =====
@@ -26,7 +27,7 @@ series_id: ue58-bootcamp
 * **Category:** Workflow
 * **Sub-Category:** Procedural-Content-Generation
 * **Version:** 5.8
-* **Status:** Experimental
+* **Status:** Verified (Partial)
 * **Date:** 2026-11-12
 * **Language:** KR+EN
 

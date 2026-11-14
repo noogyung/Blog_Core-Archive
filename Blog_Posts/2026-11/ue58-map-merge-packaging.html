@@ -1,0 +1,135 @@
+<!-- ============================================================
+  [BLOG POST METADATA - Blogspot 설정창 복사용]
+  Title: [UE 5.8 입문 부트캠프 구축기 #8] 28개 맵 경로 통합·참조 복구, 단일 프로젝트 ZIP 패키징 및 Smart App Control 차단 기록
+  Labels (Tags): Unreal, Packaging, Troubleshooting
+  Meta Description: Guided·Lessons 하위 맵을 Maps 직하위로 통합하며 발생한 PCG·Sequencer 구경로 참조를 복구(289개 패키지 누락 0)하고, 336파일 ZIP 패키징 및 Smart App Control 차단(Event 3077)을 정리합니다.
+  Slug: ue58-map-merge-packaging
+  ---
+  Primary Keyword: 언리얼 엔진 5.8 맵 경로 통합 에셋 참조 복구 배포
+  Secondary Keywords: Unreal Engine 5.8, Asset Redirectors, Sequencer Object Binding, 프로젝트 ZIP 배포, Smart App Control Event 3077
+  Knowledge Source: Knowledge/ue58-map-merge-packaging/Troubleshooting/ue58-map-merge-packaging.md
+  Generated Date: 2026-11-14
+  Estimated Read Time: 13분
+  Series ID: ue58-bootcamp
+  ============================================================ -->
+
+<article>
+  <!-- 이미지 슬롯 1 (대표 이미지 - 필수) -->
+  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-11/ue58-map-merge-packaging-img1_v1.jpg?v=20261114_2010" alt="Unreal Engine 5.8 28개 맵 경로 통합, 참조 복구 및 336파일 ZIP 배포·Smart App Control 분석 대표 이미지">
+
+  <p>자연환경(13개), 작업실(9개), 모션 그래픽(6개)까지 세 개의 부트캠프 트랙을 모두 완성한 뒤, 마지막으로 남은 작업은 수강생과 강사가 헷갈리지 않고 파일을 열 수 있도록 프로젝트 폴더 구조를 단일화하고 깨끗한 배포용 ZIP 아카이브로 묶어내는 일이었습니다. 작업 도중 자연환경과 작업실 폴더 내부에는 <code>Guided</code>와 <code>Lessons</code>라는 중복된 하위 폴더 구조가 섞여 있었고, 개정 단계마다 백업 복사본 프로젝트가 여러 경로에 남아 있는 상태였습니다.</p>
+
+  <p>단순히 에디터나 파일 이동 도구로 <code>.umap</code> 파일들을 각 트랙의 <code>Maps/</code> 폴더 직하위로 옮기면 끝날 것처럼 보였지만, Unreal Engine의 경로 기반(Path-based) 참조 특성 때문에 단순 이동만으로는 Data Asset과 Sequencer 바인딩이 구경로를 가리키는 문제가 바로 드러났습니다. 시리즈의 마지막 글인 이번 편에서는 28개 맵 통합 과정에서 겪은 참조 복구 4단계, 재생성 폴더를 제외한 336개 파일(2.86GB) 단일 프로젝트 ZIP 패키징, 그리고 초기 샘플 열기 과정에서 마주쳤던 Windows 11 Smart App Control(Event 3077) 차단 이슈의 사실 관계를 정리하며 대장정을 마무리하고자 합니다.</p>
+
+  <h2 id="map-consolidation-and-path-references">1. 28개 맵 Maps 직하위 통합과 경로 기반 참조의 함정</h2>
+
+  <p>Unreal Engine은 GUID만으로 에셋을 추적하지 않고 <strong>패키지 경로 문자열(Path-based reference)</strong>을 함께 직렬화해 저장합니다. 따라서 콘텐츠 브라우저에서 맵이나 에셋을 다른 폴더로 옮기면, 엔진은 구경로 자리에 작은 Redirector(리디렉터) 파일을 남겨 연결을 유지하려 합니다. 이때 미처 로드되지 않았던 Data Asset이나 Sequencer 시퀀스가 남아 있거나 Redirector를 정리(<code>Fix Up Redirectors in Folder</code>)하지 않은 채 구폴더를 지우면 참조가 끊어지는 현상이 발생합니다.</p>
+
+  <p>최종 배포 구조에서는 <code>Guided</code>와 <code>Lessons</code> 중복 하위 폴더를 모두 없애고 다음 세 경로의 <code>Maps/</code> 폴더 직하위로 28개 맵을 통합했습니다.</p>
+
+  <ul>
+    <li><code>Content/_Bootcamp/01_Environment/Maps/</code> (13개): <code>L_Env_00_Empty</code> ~ <code>L_Env_08_Complete</code> + <code>05B_PCG</code> ~ <code>05E_Surroundings</code></li>
+    <li><code>Content/_Bootcamp/02_Workspace/Maps/</code> (9개): <code>L_Work_00_Empty</code> ~ <code>L_Work_08_Complete</code></li>
+    <li><code>Content/_Bootcamp/03_MotionDesign/Maps/</code> (6개): <code>L_Motion_00_Empty</code> ~ <code>L_Motion_05_Complete</code></li>
+  </ul>
+
+  <div class="pre mermaid" data-text="Mermaid">
+    <button aria-label="Copy code">Copy</button>
+    <pre class="mermaid">
+flowchart LR
+    Step1["1. Maps 직하위 복제·이동 및 디스크 구파일 정리"] --&gt;|"문자열 잔존 확인"| Step2["2. 바이너리 구경로 스캔 (Guided/Lessons 0건)"]
+    Step2 --&gt;|"수동 재추출·바인딩"| Step3["3. DA_ForestPatchSet 및 LS_Environment_15s 참조 복구"]
+    Step3 --&gt;|"에디터 재오픈"| Step4["4. 28개 맵·289개 의존 패키지 (missing: 0) 확정"]
+    </pre>
+  </div>
+
+  <h3 id="troubleshooting-stale-pcg-and-sequencer">MCP 이동 성공 응답 뒤 숨어 있던 PCG·Sequencer 구경로 잔존</h3>
+
+  <p><strong>증상:</strong> <code>Guided</code>/<code>Lessons</code> 하위 22개 맵(Env/Work)을 각 <code>Maps/</code> 직하위로 이동하면서 MCP 이동 도구가 성공 응답을 반환했으나, 이후 참조와 동작을 교차 점검하자 PCG 세트 데이터 <code>DA_ForestPatchSet</code>이 여전히 옛 <code>Lessons/05B</code> 경로를 가리키고 있었고, 자연환경 시퀀서 <code>LS_Environment_15s</code>의 카메라 바인딩 역시 이전 경로의 맵 액터를 참조한 채 남아 있었습니다.</p>
+
+  <p><strong>원인 파악:</strong> 파일 이동 API가 성공했더라도 ① 디스크에 미정리 구파일이 물리적으로 잔존하거나, ② 레벨 내부 오브젝트 경로를 문자열/소프트 레퍼런스로 물고 있는 PCG Data Asset과 Sequencer Object Binding은 자동으로 새 맵 액터 ID로 재할당되지 않았기 때문입니다.</p>
+
+  <p><strong>해결 과정 및 결과:</strong> 다음과 같은 4단계 복구 및 검증 절차를 밟았습니다.</p>
+
+  <ol class="step">
+    <li><strong>디스크 잔여 구파일 제거 및 바이너리 문자열 스캔:</strong> 에디터에서 구경로 자산을 삭제한 뒤 디스크 파일시스템에 남은 <code>.umap</code> 찌꺼기를 직접 확인하고, <code>input-fix_binary-old-paths.json</code> 스캔을 돌려 검사 대상 내 <code>Guided</code>/<code>Lessons</code> 구경로 잔존 문자열이 <code>[]</code>(0건)임을 확인했습니다.</li>
+    <li><strong><code>DA_ForestPatchSet</code> 재추출 및 <code>05D</code> 재생성:</strong> 끊긴 구참조에 의존하지 않고 새 경로 <code>Maps/L_Env_05C_SetSource</code>에서 PCG Data Asset을 다시 추출한 뒤, 새 <code>L_Env_05D_SetScatter</code>를 열어 <code>Generate</code>를 실행하고 7종 ISM 메쉬 참조(<code>input-fix_pcg_result.json</code>)를 확인했습니다.</li>
+    <li><strong><code>LS_Environment_15s</code> 카메라 바인딩 교체·저장:</strong> 시퀀서 내 카메라 컷 바인딩을 새 경로의 <code>L_Env_08_Complete</code> 레벨에 배치된 <code>CineCameraActor</code>로 다시 할당한 뒤 시퀀스 애셋을 명시적으로 저장했습니다.</li>
+    <li><strong>전체 28개 맵 의존성 스캔:</strong> 프로젝트를 다시 연 상태에서 <code>input-fix_final-dependencies.json</code> 검사를 실행해 <strong>총 28개 맵(및 <code>BP_WorkGameMode</code> 루트 포함 29개 루트), 의존 패키지 289개, 누락(<code>missing</code>) 0개</strong>를 최종 확인했습니다.</li>
+  </ol>
+
+  <h2 id="single-project-and-clean-zip">2. 단일 원본 유지와 캐시 제외 336개 파일(2.86GB) ZIP 패키징</h2>
+
+  <p>맵 참조 정리가 끝난 뒤에는 작업 중 여러 폴더에 흩어졌던 백업 및 중간 개정용 프로젝트 복사본들을 정리했습니다. <code>input-fix_project-location.json</code> 검증을 거쳐 파일 일치 여부를 대조한 뒤 중복 복사본 8곳을 정리하고, 최종 원본 프로젝트 <code>Bootcamp_Docs/Bootcamp_BaseProject/Bootcamp_BaseProject.uproject</code> 단 1개만 유지하도록 단일화했습니다.</p>
+
+  <p>이어 교육생 배포용 아카이브(<code>Unreal_Bootcamp_최종배포.zip</code>)를 생성하면서 가장 신경 쓴 부분은 무엇을 넣고 무엇을 뺄 것인가였습니다. <code>input-fix_archive-validation.json</code> 기준으로 정리된 배포 구성과 용량 특성은 다음과 같습니다.</p>
+
+  <div class="table w100 withBg">
+    <table>
+      <thead>
+        <tr>
+          <th>패키징 검증 항목</th>
+          <th>측정 수치 및 설정</th>
+          <th>설계 근거 및 해석</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>포함 파일 구성 (<code>file_count</code>)</td>
+          <td>총 <code>336</code>개 파일 (단일 최상위 폴더 아래 프로젝트 1개, 맵 28개, 181장 PPTX, CSV/가이드/JSON 자료)</td>
+          <td>수강생이 압축만 풀면 바로 실습 열람 가능 (실행 EXE 빌드가 아닌 에디터용 프로젝트)</td>
+        </tr>
+        <tr>
+          <td>제외 디렉터리 (<code>excluded</code>)</td>
+          <td><code>.git</code>, <code>.vs</code>, <code>Binaries</code>, <code>DerivedDataCache</code>, <code>Intermediate</code>, <code>Saved</code>, <code>__pycache__</code></td>
+          <td>엔진 자동 재생성 캐시 및 개발 도구 임시 디렉터리 제외</td>
+        </tr>
+        <tr>
+          <td>압축 전/후 용량</td>
+          <td>압축 전 <code>2,903,714,732</code>B(약 2.90GB) → ZIP <code>2,857,347,863</code>B(약 2.86GB)</td>
+          <td>실제 압축률 차이는 약 <strong>1.6%</strong>에 불과; 용량 절감 핵심은 ZIP 압축률이 아니라 캐시·중복 제거</td>
+        </tr>
+        <tr>
+          <td>아카이브 검증 (CRC / SHA-256)</td>
+          <td><code>crc_check: "pass"</code>, 복사본 SHA-256 일치 (<code>3c7ff8ed3300b2c63a13588241ac48687c4202025e7ecc95675efcb403a50cc2</code>)</td>
+          <td>압축 손상 및 목적지 복사 오류 방지</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="note wr">
+    <strong>⚠️ <code>Binaries</code> 폴더 제외에 대한 조건부 주의:</strong> <code>Saved</code>, <code>Intermediate</code>, <code>DerivedDataCache</code>와 달리 <code>Binaries</code> 폴더는 이번 <code>Bootcamp_BaseProject</code>에 별도의 사용자 C++ 모듈이나 커스텀 플러그인 바이너리가 전혀 없음을 확인했기 때문에 배포 용량 정리 차원에서 제외했습니다. 만약 C++ 클래스가 포함된 언리얼 프로젝트에서 <code>Binaries</code>를 무조건 빼고 배포하면, 수강생 PC에서 프로젝트를 열 때 Visual Studio 재컴파일을 요구해 실패할 수 있으므로 모든 프로젝트에 대한 일반론으로 쓰면 안 됩니다.
+  </div>
+
+  <p>또한 공개 블로그나 GitHub 저장소(<code>BlogDocs</code> / <code>Blog_Core-Archive</code>)에는 저작권과 대용량 저장소 규율을 지키기 위해 2.86GB 배포 ZIP, 52.4MB PPTX, <code>.uproject</code>/<code>.uasset</code> 원본 및 구매·Fab 에셋 파일 일체를 업로드하지 않고, 재구성 기술 지식과 검증 메타데이터만 분리해 관리했습니다.</p>
+
+  <h2 id="smart-app-control-event-3077">3. 초기 샘플에서 겪은 Windows Smart App Control 차단(Event 3077) 분석</h2>
+
+  <p>이 프로젝트가 왜 2편에서 언급한 것처럼 Epic Games의 <code>Electric Dreams</code> 샘플 프로젝트 자체를 수정해서 쓰지 않고, 선별한 메쉬·머티리얼만 새 강의 프로젝트(<code>Bootcamp_BaseProject</code>)로 가져오는 독립 재구축 구조를 택했는지를 설명할 때 빼놓을 수 없는 기술 이슈가 하나 있습니다. 바로 작업 초기 샘플 열기 과정에서 겪었던 <strong>Windows 11 Smart App Control(SAC) DLL 차단</strong> 사례입니다.</p>
+
+  <h3 id="sac-local-vs-ms-policy">로컬 관찰 로그와 Microsoft 공식 정책의 엄격한 분리</h3>
+
+  <ul>
+    <li><strong>증상 (당시 로컬 관찰):</strong> 초기 <code>Electric Dreams</code> 샘플 프로젝트를 에디터로 열려고 하자 <code>UnrealEditor-ElectricDreamsSample.dll</code> 로드에 실패하며 실행이 거부되었고, Windows 이벤트 뷰어의 <code>CodeIntegrity &gt; Operational</code> 로그에 차단 이벤트 ID <strong>3077</strong>이 기록되었습니다.</li>
+    <li><strong>원인 파악:</strong> 혹시 파일 변조나 검토용 스크립트 간섭 때문인지 확인해 본 결과, 문제가 된 DLL 파일은 Epic Games Launcher가 배포한 원본 파일과 SHA-256 해시가 정확히 일치했고, 두 파일 모두 <strong>디지털 서명 수가 0(Unsigned)</strong>이었습니다. 검토용 Python 스크립트를 프로젝트 밖으로 치우고 <code>.uproject</code> 파일을 원본과 똑같이 맞춰도 DLL 차단 자체는 그대로 남았으며, 그렇다고 해당 DLL을 삭제하면 필수 모듈 누락으로 샘플 프로젝트를 열 수 없었습니다.</li>
+    <li><strong>Microsoft 공식 문서 정책:</strong> Microsoft Smart App Control FAQ 및 App Control 디버깅 공식 문서에 따르면, SAC 강제(Enforcement) 모드에서 서명되지 않거나 신뢰 평가가 불충분한 바이너리가 <code>Event 3077</code>로 차단될 때 <strong>개별 파일·폴더 단위 예외 추가나 Windows Defender 바이러스 백신 제외 목록으로 우회하는 기능을 지원하지 않습니다.</strong> 개발자 측 근본 해법은 Microsoft Trusted Root Program에 연결되는 유효한 코드 서명 인증서로 모든 바이너리에 디지털 서명하는 것이며, 사용자 측 Windows 보안 설정(앱 및 브라우저 컨트롤 &gt; 스마트 앱 컨트롤 설정 &gt; 끄기)은 PC 전체에 적용될 뿐만 아니라 한 번 끄면 Windows 초기화나 클린 설치 없이는 다시 켤 수 없는 비가역적 설정입니다.</li>
+    <li><strong>해결 구조 및 사실 경계:</strong> 작업 기록상 당시 Windows 보안 설정을 꺼서 샘플을 강제로 우회했다고 처리하지 않습니다. 대신 강의용 <code>Bootcamp_BaseProject</code> 자체가 샘플의 미서명 C++ DLL 모듈(<code>ElectricDreamsSample.dll</code>)을 포함하지 않고 선별된 에셋(메쉬·머티리얼·텍스처)과 순수 블루프린트로만 구성되도록 독립 재구축함으로써, 수강생 배포 프로젝트에서는 해당 미서명 DLL 로드 의존성 문제 자체를 원천 배제한 구조를 완성했습니다.</li>
+  </ul>
+
+  <h2 id="series-retrospective-and-remaining-verification">4. 8편 시리즈 총정리 및 최종 미검증 과제</h2>
+
+  <p>1편의 무조교 8시간 커리큘럼 기획부터 2편의 28개 맵·181장 UI 교재 재구성, 3편의 공식 Unreal MCP 도입, 4편의 PCG 식생·세트 확장, 5편의 4×3.6m 작업실 밀도·UV·F키 토글, 6편의 WASD·MouseY·캡슐 문 통과 검증, 7편의 1,200개 타일 360° 파동 궤적 검증, 그리고 마지막 8편의 경로 통합·336파일 ZIP 패키징과 SAC 차단 분석까지 전체 구축기를 모두 살펴보았습니다.</p>
+
+  <p>이번 시리즈 전반에 걸쳐 일관되게 지킨 원칙은 측정하지 않은 성능 향상이나 검증하지 않은 보장을 결과인 것처럼 부풀리지 않는 정직함이었습니다. 최종 배포 아카이브 생성까지 완료된 시점에서 추후 현장 실행을 위해 남아 있는 검증 과제는 다음과 같습니다.</p>
+
+  <ul>
+    <li><strong>타 PC 클린 환경 단독 실행 검증:</strong> 개발 PC가 아닌 별도의 깨끗한 Windows PC에 <code>Unreal_Bootcamp_최종배포.zip</code>(336개 파일)만 압축 해제해 UE 5.8로 최초 실행했을 때, 캐시(DDC/Intermediate) 재생성과 엔진 플러그인(PCG, Motion Design, ModelContextProtocol, AllToolsets 등) 자동 로드, 그리고 28개 맵 오픈이 추가 수동 조치 없이 진행되는지 실전 테스트가 필요합니다.</li>
+    <li><strong>기타 미검증 경계 재확인:</strong> Microsoft PowerPoint 데스크톱 앱에서의 181장 전체 슬라이드쇼·발표자 노트·슬라이드 138 겹침 경고 육안 검수, 작업실 내부 모든 가구 사이 전수 보행 테스트, 초기 효과음 실제 스피커 청취, 에셋 외부 배포 라이선스 최종 검토 역시 별도 확인 대상입니다.</li>
+  </ul>
+
+  <p>언리얼 엔진 프로젝트를 여러 단계로 나누어 강의나 팀 배포용 패키지로 묶을 때, 여러분은 에셋 이동 후 남는 구경로 참조 문제나 C++/플러그인 DLL 유무에 따른 패키징·Windows 보안 정책 충돌을 어떤 사전 점검 목록으로 걸러내고 계신가요?</p>
+
+  <!-- 시리즈 네비게이션 컨테이너 (시리즈 글인 경우에만 삽입, JS로 동적 렌더링) -->
+  <nav class="series-nav"></nav>
+</article>
