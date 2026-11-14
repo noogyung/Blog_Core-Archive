@@ -13,7 +13,7 @@ sources_count: 6
 blog_draft_path: Blog_Posts/2026-11/bazzite-deck-emudeck-retro-os.html
 blog_draft_date: 2026-11-14
 blog_id: core-archive
-blog_published: false
+blog_published: true
 series_id: null
 ---
 
