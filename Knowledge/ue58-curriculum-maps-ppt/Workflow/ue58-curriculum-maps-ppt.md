@@ -6,7 +6,7 @@ sub_category: Curriculum-And-Documentation-Design
 version: "5.8"
 status: Verified (Partial)
 created_date: 2026-11-12
-last_modified: 2026-11-14
+last_modified: 2026-11-15
 language: KR+EN
 tags: [UnrealEngine, UE5.8, CurriculumDesign, PPTX, StepByStepMaps, LevelDesign, TechnicalDocumentation]
 sources_count: 7
@@ -106,7 +106,7 @@ blogger_post_id: "8067650772327832436"
 #### 💬 Experiences & Tips (경험 및 팁)
   * [OPINION] 사용자는 초기 67장/71장 단계의 단순 설명에 만족하지 않고, UI 버튼·입력칸·노드 핀까지 번호로 짚어주는 145장 이후의 상세 구성을 요구했다. 장수 자체가 목적이 아니라, 실제 에디터 조작 재현 가능 여부가 기준이었다. — 출처: 사용자 피드백 취합 (`00_전달자료.md`)
   * [OPINION] 초기 완료 보고(67장, 71장, 179장)를 최종 사용성 검증으로 인용하면 후속으로 발견된 입력 오류·참조 문제와 충돌하므로, 단계별 이력은 개정 맥락으로만 구분해 기록하는 편이 정확하다. — 출처: 작업 취합 기록 (`00_전달자료.md`)
-  * [FACT] 최종 ZIP 내부 파일명은 `Unreal_Engine_기초와_핵심_콘텐츠_제작_입력_맵정리개정판_최종.pptx`이며 `slide_size_in`은 `13.3333 × 7.5`(16:9)이다. — 출처: `input-fix_archive-validation.json`, `input-fix_ppt-final-validation.json`
+  * [FACT] 최종 ZIP 내부 최종 배포용 PPTX 파일의 `slide_size_in`은 `13.3333 × 7.5`(16:9)이다. — 출처: `input-fix_archive-validation.json`, `input-fix_ppt-final-validation.json`
 
 ---
 
@@ -120,5 +120,15 @@ blogger_post_id: "8067650772327832436"
 
 #### 🏷️ Tags
 UnrealEngine, UE5.8, CurriculumDesign, PPTX, StepByStepMaps, LevelDesign, TechnicalDocumentation
+
+---
+## 📝 Feedback History
+
+### 2026-11-15 — Test Result: PARTIAL
+* **환경:** Knowledge Base 및 HTML 초안 검수 (`Blog_Core-Archive`)
+* **검증된 단계:** 2편 PPT 검증 기록 및 3편 연결 브리지 검수 완료
+* **실패/보완 항목:** 특정 과정명이 포함된 내부 PPTX 파일명 표기 제거 및 2편→3편 흐름 연결 보강
+* **새 오류/팁:** `Experiences & Tips`에서 특정 과정명이 포함된 내부 PPTX 파일명 표기를 `최종 배포용 PPTX 파일`로 일반화함(바이트 크기 및 SHA-256 기준은 유지)
+* **Status 변경:** Verified (Partial) → Verified (Partial)
 
 ===== KNOWLEDGE PACKAGE END =====

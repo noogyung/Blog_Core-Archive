@@ -1,12 +1,12 @@
 # Knowledge Base Index
-Last Updated: 2026-11-14
+Last Updated: 2026-11-15
 
 > 📚 **Series Catalog:** [`_series.yaml`](file:///d:/Noogs/NextCloud/Projects/Blog_Core-Archive/Knowledge/_series.yaml)
 
 | Topic | Category | Created Date | Last Modified | Status | File Path |
 |-------|----------|:------------:|:-------------:|:------:|-----------|
-| ue58-curriculum-planning | Workflow | 2026-11-14 | 2026-11-14 | Verified (Partial) | ue58-curriculum-planning/Workflow/ue58-curriculum-planning.md |
-| ue58-curriculum-maps-ppt | Workflow | 2026-11-12 | 2026-11-14 | Verified (Partial) | ue58-curriculum-maps-ppt/Workflow/ue58-curriculum-maps-ppt.md |
+| ue58-curriculum-planning | Workflow | 2026-11-14 | 2026-11-15 | Verified (Partial) | ue58-curriculum-planning/Workflow/ue58-curriculum-planning.md |
+| ue58-curriculum-maps-ppt | Workflow | 2026-11-12 | 2026-11-15 | Verified (Partial) | ue58-curriculum-maps-ppt/Workflow/ue58-curriculum-maps-ppt.md |
 | ue58-mcp-setup-python | Configuration | 2026-11-12 | 2026-11-14 | Verified (Partial) | ue58-mcp-setup-python/Configuration/ue58-mcp-setup-python.md |
 | ue58-pcg-scatter | Workflow | 2026-11-12 | 2026-11-14 | Verified (Partial) | ue58-pcg-scatter/Workflow/ue58-pcg-scatter.md |
 | ue58-workspace-lighting-uv | Configuration | 2026-11-12 | 2026-11-14 | Verified (Partial) | ue58-workspace-lighting-uv/Configuration/ue58-workspace-lighting-uv.md |
