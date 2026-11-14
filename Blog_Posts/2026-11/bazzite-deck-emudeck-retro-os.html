@@ -66,6 +66,8 @@
     </table>
   </div>
 
+  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-11/bazzite-deck-emudeck-retro-os-img6.jpg?v=20261114_1133" alt="선반 위에 거치된 4K 빔프로젝터와 ASRock DeskMini 초소형 콘솔 본체 실물">
+
   <p>OS를 설치하기 전 BIOS 화면에 진입하여 몇 가지 필수 항목을 선별 조정했습니다. 가장 먼저 확인해야 할 부분은 <strong>Secure Boot(보안 부팅) 비활성화</strong>입니다. Bazzite는 Fedora Atomic 기반으로 서명 키를 지원하지만, 초기 부팅 미디어 인식과 서드파티 커널 모듈의 원활한 로딩을 위해 보안 부팅을 해제하는 편이 트러블슈팅 단계에서 훨씬 안전합니다. 아울러 스토리지 모드가 AHCI로 정상 설정되어 있는지 점검했습니다.</p>
 
   <p>내장 그래픽(APU) 환경에서 특히 중요한 설정은 바로 <strong>UMA Frame Buffer Size(내장 GPU 메모리 할당량)</strong>입니다. 기본 Auto 설정 상태에서는 시스템 부하에 따라 VRAM이 유동적으로 할당되는데, 일부 에뮬레이터 코어나 Vulkan 렌더러 기반 게임에서는 초기 VRAM 부족으로 인식하여 텍스처 깨짐이나 크래시를 유발할 수 있습니다. 32GB의 넉넉한 시스템 메모리를 확보해 둔 상태였으므로, BIOS 고급 칩셋 설정에서 UMA Frame Buffer를 <strong>8GB</strong>로 넉넉하게 고정 할당했습니다.</p>

@@ -178,9 +178,10 @@ Bazzite, Bazzite-Deck, EmuDeck, ES-DE, RetroArch, SwanStation, DeskMini, WinSCP,
 * **Status 변경:** Experimental → Verified (Partial)
 
 ### 2026-11-14 — Blog Visual Assets Update
-* **추가된 이미지 자료 (4종):**
+* **추가된 이미지 자료 (5종):**
   - `bazzite-deck-emudeck-retro-os-img2.png`: Bazzite 공식 다운로드 페이지 (Desktop, Home Theater PC, Handheld 선택 UI)
   - `bazzite-deck-emudeck-retro-os-img3.jpg`: 부팅 후 진입하는 Steam Gaming Mode(게임 모드) 콘솔 UI
   - `bazzite-deck-emudeck-retro-os-img4.png`: Bazzite Portal 제어판 화면
   - `bazzite-deck-emudeck-retro-os-img5.jpg`: ES-DE 프론트엔드 실구동 화면 (한글 설명 및 박스아트 매핑)
-* **동기화 대상:** `Blog_Posts/2026-11/bazzite-deck-emudeck-retro-os.html` 본문 맥락에 맞춰 `<img>` 태그 4종 매핑 완료.
+  - `bazzite-deck-emudeck-retro-os-img6.jpg`: 선반 위 거치된 4K 빔프로젝터 및 ASRock DeskMini 초소형 본체 실물 사진
+* **동기화 대상:** `Blog_Posts/2026-11/bazzite-deck-emudeck-retro-os.html` 본문 맥락에 맞춰 `<img>` 태그 5종 매핑 완료.
