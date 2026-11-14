@@ -6,7 +6,7 @@ sub_category: Model-Context-Protocol-Editor-Automation
 version: "5.8"
 status: Experimental
 created_date: 2026-11-12
-last_modified: 2026-11-12
+last_modified: 2026-11-14
 language: KR+EN
 tags: [UnrealEngine, UE5.8, UnrealMCP, ModelContextProtocol, AllToolsets, Automation, Python]
 sources_count: 5
@@ -14,7 +14,7 @@ blog_draft_path: null
 blog_draft_date: null
 blog_id: core-archive
 blog_published: false
-series_id: null
+series_id: ue58-bootcamp
 ---
 
 ===== KNOWLEDGE PACKAGE START =====

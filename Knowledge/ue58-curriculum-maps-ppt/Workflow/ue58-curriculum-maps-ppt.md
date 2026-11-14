@@ -6,7 +6,7 @@ sub_category: Curriculum-And-Documentation-Design
 version: "5.8"
 status: Experimental
 created_date: 2026-11-12
-last_modified: 2026-11-12
+last_modified: 2026-11-14
 language: KR+EN
 tags: [UnrealEngine, UE5.8, CurriculumDesign, PPTX, StepByStepMaps, LevelDesign, TechnicalDocumentation]
 sources_count: 7
@@ -14,7 +14,7 @@ blog_draft_path: null
 blog_draft_date: null
 blog_id: core-archive
 blog_published: false
-series_id: null
+series_id: ue58-bootcamp
 ---
 
 ===== KNOWLEDGE PACKAGE START =====
@@ -48,7 +48,7 @@ series_id: null
     * 완성된 구매 샘플을 촬영하는 방식만으로는 입문자가 빈 레벨에서 결과를 재현할 수 없다.
     * 제작 시에는 먼저 완성 구도를 만들어 품질을 검토한 뒤 교육용 단계별 요소를 분리하지만, 수강생의 진행 방향은 반드시 `00_Empty`(빈 레벨)에서 출발해 `Complete`(완성)로 나아가는 정방향으로 구성한다.
   * **초기·중간·최종 버전 수치 엄격 분리 원칙 [FACT - 로컬 실행 및 검증 기록]:**
-    * 교재와 프로젝트는 사용자 피드백에 따라 여러 차례 내용을 교체·통합했으며, 최종 장수인 181장보다 많은 182장 중간판도 존재한다. 슬라이드 장수 증가 자체가 품질 향상을 뜻하지 않으므로 단계별 수치를 섞지 않는다.
+    * 초기 기획(`ue58-curriculum-planning`) 단계의 `python-pptx` 텍스트 초안과 8교시 개념 설계에서 출발해, 교재와 프로젝트는 사용자 피드백에 따라 여러 차례 내용을 교체·통합했으며 최종 장수인 181장보다 많은 182장 중간판도 존재한다. 슬라이드 장수 증가 자체가 품질 향상을 뜻하지 않으므로 단계별 수치를 섞지 않는다.
 
 | 개정 단계 | 핵심 변경 내용 | PPT 장수 | 맵 수 | 패키지 수 | 상태 구분 |
 |---|---|---:|---:|---:|---|

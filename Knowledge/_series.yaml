@@ -3,6 +3,26 @@
 # ============================================================
 
 series:
+  ue58-bootcamp:
+    series_name: "Unreal Engine 5.8 입문 부트캠프 구축기"
+    chapters:
+      - chapter: "1장. 커리큘럼 기획 및 에디터 자동화 기반"
+        topics:
+          - ue58-curriculum-planning
+          - ue58-curriculum-maps-ppt
+          - ue58-mcp-setup-python
+      - chapter: "2장. 자연환경(Environment)과 PCG 트랙"
+        topics:
+          - ue58-pcg-scatter
+      - chapter: "3장. 실내 작업실(Workspace) 구축 및 인터랙션 디버깅"
+        topics:
+          - ue58-workspace-lighting-uv
+          - ue58-character-input-door
+      - chapter: "4장. 모션 그래픽(Motion Design) 검증 및 배포 패키징"
+        topics:
+          - ue58-motion-cloner-wave
+          - ue58-map-merge-packaging
+
   antigravity-blog-automation:
     series_name: "Antigravity 블로그 포스팅 자동화 구축기"
     topics:
