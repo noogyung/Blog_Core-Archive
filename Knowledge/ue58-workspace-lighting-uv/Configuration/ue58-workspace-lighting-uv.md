@@ -6,9 +6,9 @@ sub_category: Level-Design-Material-Blueprint
 version: "5.8"
 status: Verified (Partial)
 created_date: 2026-11-12
-last_modified: 2026-11-14
+last_modified: 2026-11-15
 language: KR+EN
-tags: [UnrealEngine, UE5.8, LevelDesign, Lighting, WorldAlignedTexture, Blueprint, Interaction]
+tags: [Unreal, Curriculum, Blueprint, UnrealEngine, UE5.8, LevelDesign, Lighting, WorldAlignedTexture, Interaction]
 sources_count: 4
 blog_draft_path: "Blog_Posts/2026-11/ue58-workspace-lighting-uv.html"
 blog_draft_date: 2026-11-14
@@ -103,6 +103,15 @@ blogger_post_id: "4881084100523077245"
 ---
 
 #### 🏷️ Tags
-UnrealEngine, UE5.8, LevelDesign, Lighting, WorldAlignedTexture, Blueprint, Interaction
+Unreal, Curriculum, Blueprint, UnrealEngine, UE5.8, LevelDesign, Lighting, WorldAlignedTexture, Interaction
+
+---
+## 📝 Feedback History
+
+### 2026-11-15 — Test Result: PARTIAL
+* **환경:** 시리즈 메타데이터 및 Blogger 초안 라벨 검수 (`Blog_Core-Archive`)
+* **검증된 단계:** HTML `Labels (Tags)` 및 Knowledge `tags` 동기화 완료 (`Unreal, Curriculum, Blueprint`)
+* **수정된 내용:** 시리즈 공통 라벨 `Unreal`, `Curriculum` 적용 및 대표 라벨 `Blueprint` 통일
+* **Status 변경:** Verified (Partial) → Verified (Partial)
 
 ===== KNOWLEDGE PACKAGE END =====

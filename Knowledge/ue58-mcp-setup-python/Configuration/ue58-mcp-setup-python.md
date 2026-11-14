@@ -6,9 +6,9 @@ sub_category: Model-Context-Protocol-Editor-Automation
 version: "5.8"
 status: Verified (Partial)
 created_date: 2026-11-12
-last_modified: 2026-11-14
+last_modified: 2026-11-15
 language: KR+EN
-tags: [UnrealEngine, UE5.8, UnrealMCP, ModelContextProtocol, AllToolsets, Automation, Python]
+tags: [Unreal, Curriculum, UnrealMCP, UnrealEngine, UE5.8, ModelContextProtocol, AllToolsets, Automation, Python]
 sources_count: 5
 blog_draft_path: "Blog_Posts/2026-11/ue58-mcp-setup-python.html"
 blog_draft_date: 2026-11-14
@@ -105,6 +105,15 @@ blogger_post_id: "9155683111555616803"
 ---
 
 #### 🏷️ Tags
-UnrealEngine, UE5.8, UnrealMCP, ModelContextProtocol, AllToolsets, Automation, Python
+Unreal, Curriculum, UnrealMCP, UnrealEngine, UE5.8, ModelContextProtocol, AllToolsets, Automation, Python
+
+---
+## 📝 Feedback History
+
+### 2026-11-15 — Test Result: PARTIAL
+* **환경:** 시리즈 메타데이터 및 Blogger 초안 라벨 검수 (`Blog_Core-Archive`)
+* **검증된 단계:** HTML `Labels (Tags)` 및 Knowledge `tags` 동기화 완료 (`Unreal, Curriculum, UnrealMCP`)
+* **수정된 내용:** 시리즈 공통 라벨 `Unreal`, `Curriculum` 적용 및 대표 라벨 `UnrealMCP` 통일
+* **Status 변경:** Verified (Partial) → Verified (Partial)
 
 ===== KNOWLEDGE PACKAGE END =====

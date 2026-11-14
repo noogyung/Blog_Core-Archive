@@ -6,9 +6,9 @@ sub_category: Asset-References-Packaging-Windows-Security
 version: "5.8"
 status: Verified (Partial)
 created_date: 2026-11-12
-last_modified: 2026-11-14
+last_modified: 2026-11-15
 language: KR+EN
-tags: [UnrealEngine, UE5.8, AssetRedirectors, Sequencer, ProjectPackaging, SmartAppControl, Windows11]
+tags: [Unreal, Curriculum, Packaging, UnrealEngine, UE5.8, AssetRedirectors, Sequencer, ProjectPackaging, SmartAppControl, Windows11]
 sources_count: 7
 blog_draft_path: "Blog_Posts/2026-11/ue58-map-merge-packaging.html"
 blog_draft_date: 2026-11-14
@@ -110,6 +110,15 @@ blogger_post_id: "6788152559954243812"
 ---
 
 #### 🏷️ Tags
-UnrealEngine, UE5.8, AssetRedirectors, Sequencer, ProjectPackaging, SmartAppControl, Windows11
+Unreal, Curriculum, Packaging, UnrealEngine, UE5.8, AssetRedirectors, Sequencer, ProjectPackaging, SmartAppControl, Windows11
+
+---
+## 📝 Feedback History
+
+### 2026-11-15 — Test Result: PARTIAL
+* **환경:** 시리즈 메타데이터 및 Blogger 초안 라벨 검수 (`Blog_Core-Archive`)
+* **검증된 단계:** HTML `Labels (Tags)` 및 Knowledge `tags` 동기화 완료 (`Unreal, Curriculum, Packaging`)
+* **수정된 내용:** 시리즈 공통 라벨 `Unreal`, `Curriculum` 적용 및 대표 라벨 `Packaging` 통일
+* **Status 변경:** Verified (Partial) → Verified (Partial)
 
 ===== KNOWLEDGE PACKAGE END =====

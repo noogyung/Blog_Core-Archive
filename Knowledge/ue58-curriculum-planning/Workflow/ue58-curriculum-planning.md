@@ -8,7 +8,7 @@ status: Verified (Partial)
 created_date: 2026-11-14
 last_modified: 2026-11-15
 language: KR+EN
-tags: [UnrealEngine, UE5.8, CurriculumDesign, Bootcamp, Checkpoint, Sandbox, PythonPPTX]
+tags: [Unreal, Curriculum, Planning, UnrealEngine, UE5.8, CurriculumDesign, Bootcamp, Checkpoint, Sandbox, PythonPPTX]
 sources_count: 6
 blog_draft_path: "Blog_Posts/2026-11/ue58-curriculum-planning.html"
 blog_draft_date: 2026-11-14
@@ -105,10 +105,16 @@ blogger_post_id: "7898696813372398598"
 ---
 
 #### 🏷️ Tags
-UnrealEngine, UE5.8, CurriculumDesign, Bootcamp, Checkpoint, Sandbox, PythonPPTX
+Unreal, Curriculum, Planning, UnrealEngine, UE5.8, CurriculumDesign, Bootcamp, Checkpoint, Sandbox, PythonPPTX
 
 ---
 ## 📝 Feedback History
+
+### 2026-11-15 (라벨 통일) — Test Result: PARTIAL
+* **환경:** 시리즈 메타데이터 및 Blogger 초안 라벨 검수 (`Blog_Core-Archive`)
+* **검증된 단계:** HTML `Labels (Tags)` 및 Knowledge `tags` 동기화 완료 (`Unreal, Curriculum, Planning`)
+* **수정된 내용:** 시리즈 공통 라벨 `Unreal`, `Curriculum` 적용 및 대표 라벨 `Planning` 통일
+* **Status 변경:** Verified (Partial) → Verified (Partial)
 
 ### 2026-11-15 — Test Result: PARTIAL
 * **환경:** Knowledge Base 및 HTML 초안 검수 (`Blog_Core-Archive`)
