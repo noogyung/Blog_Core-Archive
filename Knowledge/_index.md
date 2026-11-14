@@ -5,7 +5,7 @@ Last Updated: 2026-11-12
 
 | Topic | Category | Created Date | Last Modified | Status | File Path |
 |-------|----------|:------------:|:-------------:|:------:|-----------|
-| bazzite-deck-emudeck-retro-os | Workflow | 2026-11-12 | 2026-11-12 | Experimental | bazzite-deck-emudeck-retro-os/Workflow/bazzite-deck-emudeck-retro-os-2026-11-12.md |
+| bazzite-deck-emudeck-retro-os | Workflow | 2026-11-12 | 2026-11-14 | Verified (Partial) | bazzite-deck-emudeck-retro-os/Workflow/bazzite-deck-emudeck-retro-os-2026-11-12.md |
 | ue58-map-merge-packaging | Troubleshooting | 2026-11-12 | 2026-11-12 | Experimental | ue58-map-merge-packaging/Troubleshooting/ue58-map-merge-packaging.md |
 | ue58-mcp-setup-python | Configuration | 2026-11-12 | 2026-11-12 | Experimental | ue58-mcp-setup-python/Configuration/ue58-mcp-setup-python.md |
 | ue58-motion-cloner-wave | Concept | 2026-11-12 | 2026-11-12 | Experimental | ue58-motion-cloner-wave/Concept/ue58-motion-cloner-wave.md |
