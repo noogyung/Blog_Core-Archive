@@ -78,7 +78,11 @@
 
   <p>만약 Desktop 모드 이미지(예: bazzite:stable)를 설치하게 되면 일반적인 리눅스 데스크톱 환경(KDE Plasma 등)으로 부팅되며, 부팅 즉시 패드 조작이 가능한 Steam Gaming Mode(Gamescope) 전용 UI가 나타나지 않습니다. 불변 OS 특성상 터미널에서 rpm-ostree rebase 명령을 통해 이미지 스트림을 전환하는 방법도 존재하지만, 잔여 설정 충돌을 방지하고 깔끔한 시스템 상태를 확보하기 위해 <code>bazzite-deck-stable-amd64.iso</code> 미디어로 클린 재설치를 진행했습니다.</p>
 
+  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-11/bazzite-deck-emudeck-retro-os-img2.png?v=20261114_1130" alt="Bazzite 공식 다운로드 페이지 - Desktop or Laptop, Home Theater PC, Handheld 디바이스 선택 화면">
+
   <p>설치가 완료되면 기기는 부팅과 동시에 Steam Big Picture 형태의 게임 모드로 진입합니다. 전원 메뉴에서 '데스크톱으로 전환(Switch to Desktop)'을 선택하면 리눅스 데스크톱 모드로 넘어가며, 바탕화면에 생성된 'Return to Gaming Mode' 단축 아이콘을 통해 언제든 손쉽게 콘솔 모드로 복귀할 수 있습니다.</p>
+
+  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-11/bazzite-deck-emudeck-retro-os-img3.jpg?v=20261114_1130" alt="Bazzite-Deck 부팅 후 실행되는 Steam Gaming Mode(게임 모드) 대시보드 화면">
 
   <p>데스크톱 모드에 진입한 뒤 가장 먼저 실행해야 하는 도구는 <strong>Bazzite Portal</strong>입니다. 이는 시스템 유지보수와 주요 게이밍 컴포넌트를 체크박스 형태로 활성화할 수 있는 종합 제어판입니다. 불필요한 백그라운드 상주 프로세스를 줄이기 위해 Sunshine, Waydroid, OpenRGB, Resilio Sync 등은 체크를 해제하고, 콘솔 경험에 핵심적인 다음 유틸리티 위주로 선별 설치했습니다:</p>
 
@@ -87,6 +91,8 @@
     <li><strong>Bazzite Buddy:</strong> 시스템 하드웨어 프로파일 및 최적화 도구</li>
     <li><strong>Decky Framegen &amp; Lossless Scaling:</strong> 저사양 APU 환경에서 프레임 보간 및 업스케일링을 지원하는 편의 플러그인</li>
   </ul>
+
+  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-11/bazzite-deck-emudeck-retro-os-img4.png?v=20261114_1130" alt="Bazzite Portal 제어판 인터페이스 화면">
 
   <h2 id="emudeck-and-es-de-configuration">3. EmuDeck 및 ES-DE 프론트엔드 연동과 트러블슈팅</h2>
 
@@ -178,6 +184,8 @@ flowchart LR
   <h3 id="art-scraping-limits">ScreenScraper API 한도 대응</h3>
 
   <p>게임 커버 아트워크와 스크린샷 수집은 ES-DE에 내장된 ScreenScraper 기능을 활용했습니다. 대규모 라이브러리를 한 번에 스크래핑하다 보면 무료 계정 일일 API 요청 한도에 도달하여 프로세스가 중단됩니다. 이를 무리하게 우회하려 하지 않고, 일일 쿼터가 갱신되는 시점에 맞추어 분할 스크래핑을 진행했습니다. 영문 공식 데이터베이스 기준인 만큼 일본어 음차나 한글 단독 명칭으로 등록된 일부 타이틀을 제외하고는 고화질 박스 아트와 타이틀 로고를 성공적으로 매핑했습니다.</p>
+
+  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-11/bazzite-deck-emudeck-retro-os-img5.jpg?v=20261114_1130" alt="ES-DE(EmulationStation Desktop Edition) 프론트엔드 실구동 화면 - 게임 설명 한글화 및 박스아트/인게임 스크린샷 매핑">
 
   <h2 id="current-status-and-future-tasks">7. 현재 시스템 상태 및 하드웨어 과제</h2>
 
