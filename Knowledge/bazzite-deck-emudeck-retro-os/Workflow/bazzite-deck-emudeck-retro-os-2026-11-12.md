@@ -10,8 +10,8 @@ last_modified: 2026-11-14
 language: KR+EN
 tags: [Bazzite, Bazzite-Deck, EmuDeck, ES-DE, RetroArch, DeskMini, WinSCP, Linux]
 sources_count: 6
-blog_draft_path: null
-blog_draft_date: null
+blog_draft_path: Blog_Posts/2026-11/bazzite-deck-emudeck-retro-os.html
+blog_draft_date: 2026-11-14
 blog_id: core-archive
 blog_published: false
 series_id: null

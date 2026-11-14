@@ -1,0 +1,195 @@
+<!-- ============================================================
+  [BLOG POST METADATA - Blogspot 설정창 복사용]
+  Title: DeskMini에 구축하는 Bazzite-Deck과 EmuDeck 기반 스팀·레트로 통합 콘솔 가이드
+  Labels (Tags): Review, Bazzite, EmuDeck
+  Meta Description: ASRock DeskMini에 Bazzite-Deck과 EmuDeck/ES-DE를 구성하여 스팀과 레트로 게임을 통합한 콘솔 구축기입니다. ujust 명령어 해결, noload.txt 다중 디스크 정리, SFTP 전송 등 실전 노하우를 정리했습니다.
+  Slug: bazzite-deck-emudeck-retro-os
+  ---
+  Primary Keyword: Bazzite-Deck
+  Secondary Keywords: EmuDeck, ES-DE, RetroArch, DeskMini, 스팀 콘솔
+  Knowledge Source: Knowledge/bazzite-deck-emudeck-retro-os/Workflow/bazzite-deck-emudeck-retro-os-2026-11-12.md
+  Generated Date: 2026-11-14
+  Estimated Read Time: 12분
+  Series ID: null
+  ============================================================ -->
+
+<article>
+  <!-- 이미지 슬롯 1 (대표 이미지 - 필수) -->
+  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-11/bazzite-deck-emudeck-retro-os-img1.jpg?v=20261114_1115" alt="ASRock DeskMini 기반 Bazzite-Deck 및 EmuDeck 통합 콘솔 환경 대표 이미지">
+
+  <p>사용하지 않고 책상 한구석에 보관해 두었던 소형 미니 PC(ASRock DeskMini)를 거실 TV나 모니터에 연결하여 가볍게 즐길 수 있는 전용 게임 콘솔로 탈바꿈시키는 작업을 진행했습니다. 최근 UMPC와 핸드헬드 게이밍 PC 시장의 성장에 힘입어 리눅스 기반 게이밍 OS의 편의성이 비약적으로 발전했습니다. 이번 작업에서는 단순한 레트로 전용 머신을 넘어, 스팀 게이밍 모드(Steam Gaming Mode)의 세련된 콘솔 UI와 방대한 레트로 에뮬레이터 환경을 매끄럽게 아우르는 시스템을 구성하고자 했습니다.</p>
+
+  <p>OS 선택지로는 레트로 에뮬레이션 전용으로 널리 쓰이는 Batocera와 스팀 OS 경험을 PC 하드웨어로 확장한 Bazzite-Deck을 비교 검토했습니다. 가벼운 인디 스팀 게임 라이브러리와 고전 콘솔 타이틀을 단 하나의 컨트롤러 조작만으로 전환하며 즐기기에는 Bazzite-Deck이 훨씬 적합하다고 판단했습니다. 본 글에서는 하드웨어 바이오스 튜닝부터 OS 설치, EmuDeck과 ES-DE(EmulationStation Desktop Edition) 프론트엔드 연동, 다중 디스크 경로 정리 및 네트워크 전송 과정에서 겪은 기술적 쟁점들을 정리해 보고자 합니다.</p>
+
+  <div class="note"><strong>💡 법적 안내 및 전제:</strong> 본 글은 오픈소스 OS 및 에뮬레이션 프론트엔드 소프트웨어의 시스템 엔지니어링 구축 가이드입니다. 저작권 보호 대상인 게임 롬(ROM) 파일 및 콘솔 바이오스의 다운로드 링크나 바이너리는 일절 제공하지 않으며, 개인이 정당하게 소장한 패키지에서 직접 덤프한 매체를 기준으로 다룹니다.</div>
+
+  <h2 id="hardware-and-bios-setup">1. 하드웨어 구성 및 BIOS 설정</h2>
+
+  <p>콘솔 머신의 기반이 된 기기는 가로세로 약 15cm 크기의 콤팩트한 폼팩터를 자랑하는 ASRock DeskMini 베어본 시스템입니다. APU 기반 내장 그래픽 시스템인 만큼, 에뮬레이터 구동과 720p~1080p 해상도 타깃 렌더링에 필요한 메모리 대역폭과 용량을 사전에 확보해 주는 과정이 중요했습니다.</p>
+
+  <div class="table w100 withBg">
+    <table>
+      <thead>
+        <tr>
+          <th>구분</th>
+          <th>세부 하드웨어 사양</th>
+          <th>설정 및 역할</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>베어본 섀시</td>
+          <td>ASRock DeskMini A300 / X300</td>
+          <td>초소형 폼팩터 콘솔 본체</td>
+        </tr>
+        <tr>
+          <td>프로세서 (APU)</td>
+          <td>AMD Ryzen 5 2400G (4코어 8스레드)</td>
+          <td>Radeon Vega 11 내장 그래픽 포함</td>
+        </tr>
+        <tr>
+          <td>메모리 (RAM)</td>
+          <td>DDR4 32GB (16GB x 2, 듀얼 채널)</td>
+          <td>XMP 프로파일 적용으로 대역폭 확보</td>
+        </tr>
+        <tr>
+          <td>스토리지 (SSD)</td>
+          <td>500GB NVMe M.2 SSD</td>
+          <td>Bazzite OS 및 에뮬레이션 라이브러리 저장</td>
+        </tr>
+        <tr>
+          <td>컨트롤러</td>
+          <td>IINE 블루투스 무선 게임패드</td>
+          <td>무선 조작 인터페이스</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>OS를 설치하기 전 BIOS 화면에 진입하여 몇 가지 필수 항목을 선별 조정했습니다. 가장 먼저 확인해야 할 부분은 <strong>Secure Boot(보안 부팅) 비활성화</strong>입니다. Bazzite는 Fedora Atomic 기반으로 서명 키를 지원하지만, 초기 부팅 미디어 인식과 서드파티 커널 모듈의 원활한 로딩을 위해 보안 부팅을 해제하는 편이 트러블슈팅 단계에서 훨씬 안전합니다. 아울러 스토리지 모드가 AHCI로 정상 설정되어 있는지 점검했습니다.</p>
+
+  <p>내장 그래픽(APU) 환경에서 특히 중요한 설정은 바로 <strong>UMA Frame Buffer Size(내장 GPU 메모리 할당량)</strong>입니다. 기본 Auto 설정 상태에서는 시스템 부하에 따라 VRAM이 유동적으로 할당되는데, 일부 에뮬레이터 코어나 Vulkan 렌더러 기반 게임에서는 초기 VRAM 부족으로 인식하여 텍스처 깨짐이나 크래시를 유발할 수 있습니다. 32GB의 넉넉한 시스템 메모리를 확보해 둔 상태였으므로, BIOS 고급 칩셋 설정에서 UMA Frame Buffer를 <strong>8GB</strong>로 넉넉하게 고정 할당했습니다.</p>
+
+  <h2 id="bazzite-deck-installation">2. Bazzite-Deck OS 설치와 핵심 주의점</h2>
+
+  <p>Bazzite는 불변(Immutable) 컨테이너 아키텍처를 채택한 게이밍 특화 배포판입니다. 시스템 루트 영역이 읽기 전용으로 보호되어 시스템 업데이트나 패키지 설치 시 발생할 수 있는 의존성 충돌 위험을 원천적으로 차단합니다. 그러나 공식 사이트에서 설치 이미지를 내려받을 때 가장 많이 혼선을 겪는 부분이 바로 이미지의 종류입니다.</p>
+
+  <div class="note wr"><strong>⚠️ 주의:</strong> Bazzite 공식 웹사이트 다운로드 항목은 Desktop, Home Theater, Handheld의 세 가지 분류로 제공됩니다. PC를 스팀 덱과 동일한 콘솔 환경으로 부팅시키려면 반드시 <strong>Home Theater</strong>(또는 Handheld) 계열을 선택해야 합니다. 내려받는 ISO 파일명이 <strong>bazzite-deck</strong>으로 시작하는지 반드시 확인하시기 바랍니다.</div>
+
+  <p>만약 Desktop 모드 이미지(예: bazzite:stable)를 설치하게 되면 일반적인 리눅스 데스크톱 환경(KDE Plasma 등)으로 부팅되며, 부팅 즉시 패드 조작이 가능한 Steam Gaming Mode(Gamescope) 전용 UI가 나타나지 않습니다. 불변 OS 특성상 터미널에서 rpm-ostree rebase 명령을 통해 이미지 스트림을 전환하는 방법도 존재하지만, 잔여 설정 충돌을 방지하고 깔끔한 시스템 상태를 확보하기 위해 <code>bazzite-deck-stable-amd64.iso</code> 미디어로 클린 재설치를 진행했습니다.</p>
+
+  <p>설치가 완료되면 기기는 부팅과 동시에 Steam Big Picture 형태의 게임 모드로 진입합니다. 전원 메뉴에서 '데스크톱으로 전환(Switch to Desktop)'을 선택하면 리눅스 데스크톱 모드로 넘어가며, 바탕화면에 생성된 'Return to Gaming Mode' 단축 아이콘을 통해 언제든 손쉽게 콘솔 모드로 복귀할 수 있습니다.</p>
+
+  <p>데스크톱 모드에 진입한 뒤 가장 먼저 실행해야 하는 도구는 <strong>Bazzite Portal</strong>입니다. 이는 시스템 유지보수와 주요 게이밍 컴포넌트를 체크박스 형태로 활성화할 수 있는 종합 제어판입니다. 불필요한 백그라운드 상주 프로세스를 줄이기 위해 Sunshine, Waydroid, OpenRGB, Resilio Sync 등은 체크를 해제하고, 콘솔 경험에 핵심적인 다음 유틸리티 위주로 선별 설치했습니다:</p>
+
+  <ul>
+    <li><strong>Decky Loader:</strong> 스팀 게이밍 모드 오버레이 플러그인 로더</li>
+    <li><strong>Bazzite Buddy:</strong> 시스템 하드웨어 프로파일 및 최적화 도구</li>
+    <li><strong>Decky Framegen &amp; Lossless Scaling:</strong> 저사양 APU 환경에서 프레임 보간 및 업스케일링을 지원하는 편의 플러그인</li>
+  </ul>
+
+  <h2 id="emudeck-and-es-de-configuration">3. EmuDeck 및 ES-DE 프론트엔드 연동과 트러블슈팅</h2>
+
+  <p>스팀 라이브러리 외에 고전 명작 타이틀들을 통합 관리하기 위한 에뮬레이션 환경으로는 <strong>EmuDeck</strong>과 <strong>ES-DE(EmulationStation Desktop Edition)</strong>를 조합했습니다. EmuDeck은 수십 가지의 에뮬레이터 코어, BIOS 디렉터리, 컨트롤러 키 매핑을 한 번에 자동으로 묶어주는 툴체인입니다.</p>
+
+  <h3 id="ujust-command-issue">Bazzite ujust 명령어와 수동 설치 분기점</h3>
+
+  <p>이 과정에서 가장 먼저 마주한 난관은 설치 명령어였습니다. 흔히 AI 에이전트나 인터넷 문서에서는 터미널 명령어로 <code>ujust install-emudeck</code>을 안내하는 경우가 많습니다. 그러나 실제로 Bazzite 터미널에 해당 명령을 입력하면 레시피를 찾을 수 없거나 에러를 뿜어냅니다.</p>
+
+  <div class="note"><strong>💡 핵심 트러블슈팅:</strong> Bazzite 시스템에 실제 내장된 EmuDeck 설치 태스크 러너 명령어는 <strong>ujust get-emudeck</strong>입니다. AI가 잘못된 명령어를 고집할 경우 시스템 터미널에서 <code>ujust</code>를 단독 실행하여 출력되는 실제 사용 가능 명령어 목록을 직접 확인해야 합니다.</div>
+
+  <p>만약 내장 ujust 스크립트 실행 과정에서 AppImage 다운로드 실패나 버전 파싱 에러(<code>_install_appimage_file</code> 오류 등)가 발생한다면, 공식 EmuDeck 설치 스크립트를 터미널에서 직접 파이프로 전달하여 안전하게 우회 설치할 수 있습니다:</p>
+
+  <div class="pre custom" data-text="Bash">
+    <button aria-label="Copy code">Copy</button>
+    <pre>curl -L https://raw.githubusercontent.com/dragoonDorise/EmuDeck/main/install.sh | bash</pre>
+  </div>
+
+  <p>여기서 한 가지 주의할 점은, EmuDeck 공식 수동 설치 스크립트를 사용할 경우 생성되는 기본 에뮬레이션 홈 경로가 Bazzite의 ujust 기본 세팅과 미세하게 달라질 수 있다는 점입니다. 일반적으로 홈 디렉터리 하위에 <code>~/Emulation/roms/</code> 또는 <code>~/emudeck/roms/</code> 구조가 생성되므로, 롬과 BIOS를 전송하기 전에 실제 터미널에서 생성된 폴더 트리를 먼저 확인해야 합니다.</p>
+
+  <p>설치 마법사에서는 <strong>Easy Mode</strong>와 <strong>Internal Storage</strong>를 선택했으며, 프론트엔드로는 정갈하고 미려한 디자인으로 정평이 난 <strong>ES-DE</strong> 및 <strong>Epic Noir</strong> 테마를 채택했습니다. 아울러 ES-DE 메인 화면에서 지저분하게 노출되는 독립 에뮬레이터 설정 항목들을 가리기 위해 <code>Emulators</code> 폴더 경로에 빈 <code>noload.txt</code> 파일을 배치하여 메뉴를 깔끔하게 정리했습니다.</p>
+
+  <h2 id="network-architecture-and-data-transfer">4. 대용량 라이브러리 전송과 유선 직결 네트워크 아키텍처</h2>
+
+  <p>하드웨어와 OS, 에뮬레이터 엔진 구성이 완료된 후, 메인 작업용 PC에 보관되어 있던 약 300GB 규모의 영문 통합 롬셋 및 BIOS 팩을 DeskMini 머신으로 이관해야 했습니다. 수만 개에 달하는 자잘한 파일과 대용량 디스크 이미지를 일반적인 2.4GHz 무선 Wi-Fi 환경으로 전송할 경우 전송 속도 저하와 패킷 손실이 발생할 수밖에 없습니다.</p>
+
+  <p>이를 해결하기 위해 공유기를 거치지 않고 메인 PC와 DeskMini를 기가비트 이더넷 케이블로 <strong>1:1 유선 직결</strong>하는 네트워크 구성을 적용했습니다.</p>
+
+  <div class="pre mermaid" data-text="Mermaid">
+    <button aria-label="Copy code">Copy</button>
+    <pre class="mermaid">
+flowchart LR
+    PC["작업용 메인 PC (Windows)&lt;br/&gt;WinSCP SFTP 클라이언트"] &lt;--&gt;|기가비트 유선 직결 LAN| DeskMini["ASRock DeskMini (Bazzite-Deck)&lt;br/&gt;NetworkManager 공유 (10.42.0.1)"]
+    DeskMini --&gt;|Internal Storage| SSD["500GB NVMe SSD&lt;br/&gt;~/Emulation/roms/"]
+    DeskMini -.-&gt;|2.4GHz 무선 (일상 유지보수용)| Router["가정용 무선 공유기"]
+    </pre>
+  </div>
+
+  <ol class="step">
+    <li><strong>Bazzite 유선 공유 모드 활성화:</strong> DeskMini의 네트워크 설정에서 유선 이더넷(Wired Connection)의 IPv4 설정을 <strong>Shared to other computers</strong>로 지정합니다. 이 설정을 적용하면 리눅스 NetworkManager가 자체 DHCP 데몬을 구동하여 호스트 IP를 <code>10.42.0.1</code>로 고정 할당합니다.</li>
+    <li><strong>SFTP 연결 수립:</strong> 메인 PC의 랜선을 DeskMini 후면 이더넷 포트에 직결한 뒤, WinSCP에서 호스트 주소를 <code>10.42.0.1</code>, 포트를 <code>22</code>(SFTP)로 지정하여 로그인 세션을 엽니다.</li>
+    <li><strong>고속 1차 벌크 전송:</strong> 병목 현상 없이 기가비트 최대 대역폭으로 300GB 규모의 롬셋과 BIOS(<code>~/Emulation/bios/</code> 루트)를 안전하게 일괄 복사했습니다.</li>
+  </ol>
+
+  <div class="note"><strong>💡 전송 전략 분리:</strong> 초기 수백 기가바이트 단위의 벌크 데이터는 유선 직결로 안정적으로 끝마쳤으며, 시스템 구축 완료 후 소소한 타이틀 추가나 메타데이터 수정은 가정 내 Wi-Fi 네트워크를 통한 무선 SFTP 전송 방식을 사용하기로 결정했습니다.</div>
+
+  <h2 id="multi-disc-and-filesystem-troubleshooting">5. 다중 디스크(.m3u / .chd) 중복 해결과 파일시스템 규칙</h2>
+
+  <p>롬셋을 전송한 후 ES-DE를 실행했을 때 가장 크게 눈에 들어온 문제는 PlayStation 1(PS1) 등의 다중 디스크 게임들이 디스크 장수마다 중복으로 목록에 표시되는 현상이었습니다. 예를 들어 파이널 판타지 7의 경우 디스크 1, 디스크 2, 디스크 3 압축 파일(<code>.chd</code>)과 플레이리스트(<code>.m3u</code>)가 모두 개별 게임으로 인식되어 화면을 어지럽혔습니다.</p>
+
+  <h3 id="noload-txt-mechanism">단순 숨김 폴더(.hidden)의 한계와 noload.txt의 역할</h3>
+
+  <p>처음에는 단순하게 <code>.chd</code> 파일들을 리눅스 관례에 따라 점(<code>.</code>)으로 시작하는 숨김 폴더(예: <code>.hidden/</code>)로 이동시키면 해결될 것이라 생각했습니다. 그러나 실제로 테스트해 보니 <strong>ES-DE는 롬 디렉터리 하위의 숨김 폴더까지 전부 탐색하여 폴더 자체를 게임 목록에 노출</strong>시키는 특성이 있었습니다.</p>
+
+  <div class="note wr"><strong>⚠️ 주의:</strong> 리눅스 파일시스템 상에서 숨김 폴더(<code>.hidden</code>)로 만들어도 ES-DE 프론트엔드에서는 그대로 노출됩니다. 다중 디스크 압축본을 온전히 숨기려면 분리 폴더 내부에 반드시 빈 텍스트 파일인 <strong>noload.txt</strong>를 생성해 넣어야 합니다.</div>
+
+  <p>ES-DE는 하위 폴더 내에 <code>noload.txt</code> 파일이 존재하면 해당 디렉터리의 내부 파일 파싱을 즉시 건너뜁니다. 따라서 다음과 같이 구조를 재배치했습니다:</p>
+
+  <ol class="step">
+    <li><strong>디스크 이미지 이동:</strong> 개별 <code>.chd</code> 파일들을 분리 폴더(예: <code>chd/</code> 또는 <code>.hidden/</code>)로 이동합니다. (리눅스 파일 브라우저에서 보이지 않는 <code>.hidden</code>보다는 가독성과 파일 관리를 위해 일반 폴더명인 <code>chd/</code> 사용을 권장합니다.)</li>
+    <li><strong>스캔 차단 파일 배치:</strong> 해당 분리 폴더 안에 내용이 없는 빈 텍스트 파일 <code>noload.txt</code>를 생성합니다.</li>
+    <li><strong>플레이리스트 경로 수정:</strong> 루트 롬 폴더에 남겨둔 <code>.m3u</code> 파일의 내용을 열어 이동된 하위 경로를 상대 경로로 수정합니다.</li>
+  </ol>
+
+  <p>RetroArch의 SwanStation 코어 등에서 플레이리스트를 정상적으로 읽어 들이기 위해서는 <code>.m3u</code> 작성 시 몇 가지 규칙을 엄격히 지켜야 합니다. 윈도우 환경에서 흔히 쓰는 역슬래시(<code>\</code>) 대신 반드시 <strong>슬래시(<code>/</code>)</strong>를 사용해야 하며, 텍스트 파일 인코딩은 <strong>BOM이 없는 UTF-8</strong>이어야 합니다. 실제 테스트 결과, 수정된 <code>.m3u</code> 단일 타이틀로 정상 부팅되었으며 에뮬레이터 퀵 메뉴(Quick Menu -> Disc Control)를 통한 인게임 가상 디스크 교체 기능도 매끄럽게 동작함을 확인했습니다.</p>
+
+  <h3 id="rom-extension-and-core-matching">확장자 대소문자 규칙과 MAME 코어 교체</h3>
+
+  <p>또 다른 관심사는 리눅스의 대소문자 구분 특성이었습니다. 예를 들어 <code>.GBA</code>와 같은 대문자 확장자가 인식되지 않을 것이라는 우려가 있었으나, 실제 테스트 결과 genesis, gba 등 다수의 폴더에서 대문자 확장자 파일도 문제없이 목록에 인식되었습니다. 이는 리눅스 커널의 문제가 아니라, ES-DE의 <code>es_systems.xml</code> 명세와 에뮬레이터 코어가 지원 확장자 목록에 대소문자를 모두 포괄적으로 정의해 두었기 때문입니다.</p>
+
+  <p>아케이드 게임 구동 시 기본 지정된 MAME 2003-Plus 코어에서 롬셋 버전 불일치로 실행에 실패하는 게임들이 일부 발견되었습니다. 이 경우 에뮬레이터 전체 설정을 바꿀 필요 없이, ES-DE 목록에서 해당 타이틀에 커서를 두고 패드의 Select 버튼(Edit Game Metadata)을 눌러 <strong>Alternative Emulator</strong> 항목에서 호환 가능한 다른 MAME 코어나 FBNeo 코어로 개별 변경하여 깔끔하게 구동을 완료했습니다.</p>
+
+  <h2 id="korean-metadata-and-scraping">6. 메타데이터 한글화 및 스크래핑 최적화</h2>
+
+  <p>가족이나 지인들과 함께 콘솔을 즐기기 위해서는 게임 목록의 시각적 완성도와 설명의 한글화가 필수적이었습니다. 게임 내 텍스트 번역과 프론트엔드 메타데이터 구축 과정에서 마주한 실전 경험은 다음과 같습니다.</p>
+
+  <h3 id="translation-strategy">실시간 OCR 번역의 한계와 사전 패치 전략</h3>
+
+  <p>초기에는 레트로아크의 AI 번역(ztranslate 등 외부 OCR API 연동) 기능을 도입하는 방안을 검토했습니다. 그러나 실제 테스트를 고려해 보았을 때 화면을 캡처하여 클라우드로 전송하고 텍스트를 인식해 반환하는 과정에서 <strong>최소 1초 이상의 입력 및 렌더링 지연</strong>이 발생할 수밖에 없었습니다. 액션이나 RPG 장르를 불문하고 게임 진행 중 1초 단위의 멈춤은 체감 플레이 경험을 현저히 저해하므로 실시간 OCR 방식은 보류했습니다. 대신 검증된 사전 한글 패치 롬셋을 선별 적용하고, 프론트엔드 상의 게임 설명(Description)을 한글화하는 방향으로 가닥을 잡았습니다.</p>
+
+  <h3 id="script-automation-pitfall">와일드카드 스크립트 삭제의 함정과 현지 에이전트 도입</h3>
+
+  <p>PC에서 한글 롬셋을 DeskMini로 업로드하면서 기존 중복 영문 롬을 일괄 제거하기 위해 와일드카드(<code>*</code>) 기반의 WinSCP 배치 스크립트를 작성하여 원격 실행했습니다. 그러나 여기서 예상치 못한 오삭제와 미삭제 문제가 발생했습니다.</p>
+
+  <p>고전 롬 파일명은 제작자나 덤프 그룹에 따라 표기 방식이 제각각입니다. 동일한 타이틀이라도 영문명, 일본어 발음의 영어 음차, 한글 직역명이 혼재되어 있고, 부제목 표기나 대괄호(<code>[!]</code>, <code>(USA)</code>, <code>(Rev 1)</code>) 태그의 순서가 조금씩 달랐기 때문입니다. 이로 인해 삭제 대상이 누락되거나, 한글 롬과 제목이 완전히 일치하지 않는 영문 롬 3종(Contra - Hard Corps, Landstalker, Pokemon Sapphire)이 오삭제되는 오류를 겪었습니다.</p>
+
+  <p>다행히 PC에 보관해 둔 영문 원본 백업을 통해 오삭제된 타이틀을 즉시 복원할 수 있었습니다. 이를 계기로 원격 스크립트의 불확실한 일괄 처리를 중단하고, <strong>DeskMini 현지에 Antigravity 에이전트를 직접 설치</strong>하여 기기 로컬 파일시스템 상에서 대조 검증을 수행했습니다. 에이전트가 로컬 환경에서 직접 파일 목록을 대조하고 <code>.m3u</code> 링크를 수정하며 <code>gamelist.xml</code>의 설명부를 한글화함으로써 안전하고 정밀하게 라이브러리 정리를 마칠 수 있었습니다.</p>
+
+  <h3 id="art-scraping-limits">ScreenScraper API 한도 대응</h3>
+
+  <p>게임 커버 아트워크와 스크린샷 수집은 ES-DE에 내장된 ScreenScraper 기능을 활용했습니다. 대규모 라이브러리를 한 번에 스크래핑하다 보면 무료 계정 일일 API 요청 한도에 도달하여 프로세스가 중단됩니다. 이를 무리하게 우회하려 하지 않고, 일일 쿼터가 갱신되는 시점에 맞추어 분할 스크래핑을 진행했습니다. 영문 공식 데이터베이스 기준인 만큼 일본어 음차나 한글 단독 명칭으로 등록된 일부 타이틀을 제외하고는 고화질 박스 아트와 타이틀 로고를 성공적으로 매핑했습니다.</p>
+
+  <h2 id="current-status-and-future-tasks">7. 현재 시스템 상태 및 하드웨어 과제</h2>
+
+  <p>소프트웨어적 구성과 에뮬레이션 프론트엔드 최적화는 매우 안정적인 수준에 도달했습니다. 부팅 후 즉시 조작 가능한 스팀 게이밍 모드의 편리함과, 패드 단축키 하나로 호출되는 레트로아크의 반응성은 소형 미니 PC라는 플랫폼에 최적의 시너지를 보여주었습니다.</p>
+
+  <p>다만 하드웨어 무선 인프라 측면에서 한 가지 과제가 남아있습니다. DeskMini 본체에 내장되어 있던 구형 M.2 무선 모듈을 아직 최신 규격으로 교체하지 않아 2.4GHz Wi-Fi 대역으로 연결되어 있으며, Bluetooth 신호 간섭으로 인해 IINE 무선 컨트롤러 사용 시 아주 드물게 입력이 튀거나 일시적인 연결 끊김이 발생하는 현상을 마주하고 있습니다.</p>
+
+  <p>이를 개선하기 위해 향후 단자함 내부 유선 배선 작업과 함께, 본체의 무선 랜 카드를 Intel AX210 등 Wi-Fi 6E 및 Bluetooth 5.3을 지원하는 최신 M.2 모듈로 교체하여 무선 컨트롤러 통신의 안정성을 보강할 계획입니다.</p>
+
+  <h2 id="conclusion">마무리하며</h2>
+
+  <p>이번 프로젝트는 ASRock DeskMini라는 유휴 소형 PC 하드웨어에 Bazzite-Deck 불변 OS와 EmuDeck/ES-DE 도구군을 결합하여 완성도 높은 홈 콘솔 시스템을 구축해 본 실전 엔지니어링 사례였습니다. AI 에이전트의 잘못된 명령어 안내를 맹신하지 않고 공식 레시피를 직접 검증한 경험, 리눅스 프론트엔드의 파일 스캔 알고리즘 특성을 고려한 <code>noload.txt</code> 다중 디스크 격리, 비표준 롬 파일명에 대응하기 위한 로컬 에이전트 현지 제어 등은 유사한 소형 게이밍 머신을 구축하고자 하는 분들에게 실질적인 참고가 되리라 생각합니다.</p>
+
+  <p>혹시 유사한 미니 PC나 HTPC 환경에서 Bazzite를 콘솔 머신으로 운용 중이시라면, 컨트롤러 무선 지연을 최소화하기 위해 어떤 블루투스 동글이나 무선 모듈 조합을 사용하고 계시는지 댓글로 경험을 나누어 주시면 감사하겠습니다.</p>
+</article>
