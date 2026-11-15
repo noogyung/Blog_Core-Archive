@@ -8,7 +8,7 @@ status: Verified (Partial)
 created_date: 2026-11-12
 last_modified: 2026-11-15
 language: KR+EN
-tags: [Unreal, Curriculum, LevelDesign, UnrealEngine, UE5.8, CurriculumDesign, PPTX, StepByStepMaps, TechnicalDocumentation]
+tags: [Unreal, Curriculum, Workflow, UnrealEngine, UE5.8, CurriculumDesign, PPTX, StepByStepMaps, TechnicalDocumentation]
 sources_count: 7
 blog_draft_path: "Blog_Posts/2026-11/ue58-curriculum-maps-ppt.html"
 blog_draft_date: 2026-11-14
@@ -119,10 +119,16 @@ blogger_post_id: "8067650772327832436"
 ---
 
 #### 🏷️ Tags
-Unreal, Curriculum, LevelDesign, UnrealEngine, UE5.8, CurriculumDesign, PPTX, StepByStepMaps, TechnicalDocumentation
+Unreal, Curriculum, Workflow, UnrealEngine, UE5.8, CurriculumDesign, PPTX, StepByStepMaps, TechnicalDocumentation
 
 ---
 ## 📝 Feedback History
+
+### 2026-11-15 (2편 대표 라벨 수정) — Test Result: PARTIAL
+* **환경:** 시리즈 라벨 검토 및 Blogger 초안 검수 (`Blog_Core-Archive`)
+* **검증된 단계:** HTML `Labels (Tags)` 및 Knowledge `tags` 동기화 완료 (`Unreal, Curriculum, Workflow`)
+* **수정된 내용:** 2편 성격(UI 매핑·체크포인트 아키텍처·181장 PPTX 재구성/검증)에 맞지 않던 대표 라벨 `LevelDesign`을 `Workflow`로 변경 (5편은 기존 `Blueprint` 유지)
+* **Status 변경:** Verified (Partial) → Verified (Partial)
 
 ### 2026-11-15 (라벨 통일) — Test Result: PARTIAL
 * **환경:** 시리즈 메타데이터 및 Blogger 초안 라벨 검수 (`Blog_Core-Archive`)
