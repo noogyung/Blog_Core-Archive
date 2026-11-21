@@ -3,6 +3,26 @@
 # ============================================================
 
 series:
+  unitysense:
+    series_name: "UnitySense 개발기: VS Code용 Rider 대체제 개발하기"
+    chapters:
+      - chapter: "1장. 아키텍처 설계와 AI 자율 개발 기반"
+        topics:
+          - unitysense-01-architecture-and-ai-playbook
+          - unitysense-02-virtual-vfs-and-api-extractor
+      - chapter: "2장. ShaderLab / HLSL 전용 LSP와 셰이더 도구"
+        topics:
+          - unitysense-03-shaderlab-hlsl-lsp-and-include-graph
+          - unitysense-04-omni-shader-tools-and-variants
+      - chapter: "3장. C# 도메인 자동완성, Roslyn 분석기와 YAML 인덱서 데몬"
+        topics:
+          - unitysense-05-csharp-completion-and-roslyn-analyzers
+          - unitysense-06-yaml-indexer-daemon-and-codelens
+      - chapter: "4장. Unity 생태계 통합과 VS Code Marketplace 정식 출시"
+        topics:
+          - unitysense-07-meta-sync-asmdef-and-ecosystem
+          - unitysense-08-release-hardening-and-marketplace
+
   ue58-bootcamp:
     series_name: "Unreal Engine 5.8 입문 부트캠프 구축기"
     chapters:
