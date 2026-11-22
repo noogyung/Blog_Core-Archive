@@ -4,7 +4,7 @@ title_kr: "VS Code용 Unity Rider 대체제 설계: 역할 경계와 AI 무중�
 category: Workflow
 sub_category: Architecture
 version: 1.0.1
-status: Experimental
+status: Verified
 created_date: 2026-11-22
 last_modified: 2026-11-22
 language: KR+EN
@@ -27,7 +27,7 @@ series_id: unitysense
 * **Category:** Workflow
 * **Sub-Category:** Architecture
 * **Version:** 1.0.1
-* **Status:** Experimental
+* **Status:** Verified
 * **Date:** 2026-11-22
 * **Language:** KR+EN
 
@@ -79,13 +79,16 @@ series_id: unitysense
 
 #### 💬 Experiences & Tips (경험 및 팁)
   * [OPINION] 이 시리즈는 "VS Code에서 Rider 수준 달성"을 내세우기보다, 실제 Unity 개발 환경에서 Rider를 대체하기 위해 비어 있는 공백을 하나씩 구현하고 검증한 개발 기록으로 서술한다. — 출처: 사용자 방향성 지침
+  * [OPINION] 개발 계기: 한동안 Rider를 사용하다가 다시 VS Code로 작업하게 되었을 때 불편함을 해소할 도구가 필요했다. 라이선스 비용이 가장 큰 이유였고, VS Code에 Claude를 붙여 작업하며 Claude가 작성한 코드를 직접 수정·관리하다 보니 하나로 통합된 환경에서 Rider처럼 편리한 기능을 쓰고 싶었다. — 출처: 사용자 피드백 (2026-11-22)
+  * [OPINION] AI 모델 사용 이력: 여러 AI 조합은 사용하지 않고 Gemini만 사용했으며, Hydrogen으로 시작해 Neon 출시 이후 Neon으로 마무리했다. — 출처: 사용자 피드백 (2026-11-22)
+  * [OPINION] 리브랜딩 배경: 초기 이름 `UnityBrain`은 `JetBrains`에서 따왔지만 실제 기능 대상은 `Rider`였기 때문에 명칭이 애매하다고 판단해 `UnitySense`로 변경했다. — 출처: 사용자 피드백 (2026-11-22)
 
 ---
 
 #### ❓ Missing Info (검증 필요 항목)
-  * [ ] Rider 대신 VS Code용 대체제를 직접 개발하기로 결심한 구체적인 계기(예: 라이선스 비용, 메모리 점유율, AI 코딩 도구/에디터 통합 워크플로우 등) 확인 필요
-  * [ ] `PROGRESS.json`과 `AGENTS.md` 기반으로 실제 개발을 진행할 때 어떤 AI 모델 조합(Claude, Codex, Gemini 등)을 사용했고, Rate Limit 중단 후 이어하기가 실제로 몇 회 정도 동작했는지 경험 확인 필요
-  * [ ] 최초 코드명 `UnityBrain`으로 시작해 프로젝트 마지막에 `UnitySense`로 브랜딩을 바꾼 배경 확인 필요 (1편 도입부 또는 8편에서 다룰 포인트)
+  * [x] Rider 대신 VS Code용 대체제를 직접 개발하기로 결심한 구체적인 계기 확인 — Verified 2026-11-22 (라이선스 비용 + VS Code에서 Claude와 함께 코드를 수정·관리하는 통합 환경 필요성)
+  * [x] `PROGRESS.json`과 `AGENTS.md` 기반으로 실제 개발을 진행할 때 사용한 AI 모델 조합 확인 — Verified 2026-11-22 (Gemini 단일 사용: Hydrogen 시작 → Neon 마무리)
+  * [x] 최초 코드명 `UnityBrain`에서 `UnitySense`로 브랜딩을 바꾼 배경 확인 — Verified 2026-11-22 (`JetBrains`에서 딴 이름이 실제 대상인 `Rider`와 어긋나서 변경)
 
 ---
 
@@ -93,3 +96,13 @@ series_id: unitysense
 Unity, VSCode, UnitySense, Rider, Architecture, AI-Workflow, Monorepo
 
 ===== KNOWLEDGE PACKAGE END =====
+
+---
+## 📝 Feedback History
+
+### 2026-11-22 — Test Result: PASS
+* **환경:** 로컬 VS Code + Gemini (Hydrogen → Neon)
+* **검증된 단계:** 기획 계기, AI 모델 사용 이력, 리브랜딩 배경 전체 확인 완료
+* **실패한 단계:** 없음
+* **새 오류/팁:** Rider 라이선스 비용과 VS Code + Claude 통합 워크플로우가 핵심 동기였음
+* **Status 변경:** Experimental → Verified

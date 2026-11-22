@@ -4,7 +4,7 @@ title_kr: "UnitySense 릴리스 감사, 리브랜딩, 범용 CI 구축과 VS Cod
 category: Troubleshooting
 sub_category: Release-CI
 version: 1.0.1
-status: Experimental
+status: Verified
 created_date: 2026-11-22
 last_modified: 2026-11-22
 language: KR+EN
@@ -27,7 +27,7 @@ series_id: unitysense
 * **Category:** Troubleshooting
 * **Sub-Category:** Release-CI
 * **Version:** 1.0.1
-* **Status:** Experimental
+* **Status:** Verified
 * **Date:** 2026-11-22
 * **Language:** KR+EN
 
@@ -78,12 +78,15 @@ series_id: unitysense
 
 #### 💬 Experiences & Tips (경험 및 팁)
   * [FACT] VS Code Marketplace는 `package.json`의 `keywords` 개수를 최대 5개로 제한하므로 패키징 전에 5개 이내로 정렬해야 게시 오류가 나지 않는다.
+  * [OPINION] `v1.0.1` 태그 푸시 후 GitHub Actions 빌드와 VS Code Marketplace 자동 배포, 그리고 VS Code 확장 검색창에서의 설치 테스트까지 정상적으로 완료되었다. — 출처: 사용자 피드백 (2026-11-22)
+  * [OPINION] `UnityBrain`은 `JetBrains`에서 따온 이름이지만 실제 동작 대상은 `Rider`여서 명칭이 애매했고, 무난하게 쓸 만한 이름으로 `UnitySense`를 선택했다. — 출처: 사용자 피드백 (2026-11-22)
+  * [OPINION] Rider를 쓰다가 쓰지 못하게 된 환경에서 불편함을 느껴 시작한 프로젝트이므로, 출근 후 실무 프로젝트에서 돌려보며 확인할 문제가 아직 많다고 본다. 향후 계획은 신규 기능 추가보다 실제 사용 중 나오는 불편사항을 개선하는 유지보수 중심이다. — 출처: 사용자 피드백 (2026-11-22)
 
 ---
 
 #### ❓ Missing Info (검증 필요 항목)
-  * [ ] `v1.0.1` 태그 푸시 후 VS Code Marketplace에 실제 게시된 마켓플레이스 링크 및 VS Code 확장 검색창에서 설치 테스트한 결과 확인 필요
-  * [ ] `UnityBrain`에서 `UnitySense`로 리브랜딩을 결정한 이유와, 마켓플레이스 출시 후 향후 로드맵(다음 버전 계획) 확인 필요
+  * [x] `v1.0.1` 태그 푸시 후 VS Code Marketplace 자동 배포 및 확장 검색창 설치 테스트 결과 확인 — Verified 2026-11-22 (빌드, 자동 배포, 검색창 설치 정상 완료)
+  * [x] `UnityBrain` → `UnitySense` 리브랜딩 이유 및 향후 로드맵 확인 — Verified 2026-11-22 (명칭 정리 + 향후 신규 기능보다 실무 사용 중 불편사항 개선·유지보수 중심)
 
 ---
 
@@ -91,3 +94,13 @@ series_id: unitysense
 VSCode-Marketplace, GitHub-Actions, VSIX, DotNet, Release, UnitySense
 
 ===== KNOWLEDGE PACKAGE END =====
+
+---
+## 📝 Feedback History
+
+### 2026-11-22 — Test Result: PASS
+* **환경:** GitHub Actions + VS Code Marketplace (`noogkim.unitysense` `v1.0.1`)
+* **검증된 단계:** 태그 푸시 빌드, Marketplace 자동 배포, VS Code 확장 검색창 설치 테스트 완료
+* **실패한 단계:** 없음
+* **새 오류/팁:** 향후 로드맵은 새 기능 추가가 아니라 실무 프로젝트 사용 중 발생하는 불편사항 개선(유지보수) 중심
+* **Status 변경:** Experimental → Verified

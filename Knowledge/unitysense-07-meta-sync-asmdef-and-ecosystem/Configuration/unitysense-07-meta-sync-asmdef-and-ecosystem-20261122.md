@@ -4,7 +4,7 @@ title_kr: "Unity 생태계 통합: .meta 4사분면 동기화, .asmdef 순환 �
 category: Configuration
 sub_category: Ecosystem
 version: 1.0.1
-status: Experimental
+status: Verified
 created_date: 2026-11-22
 last_modified: 2026-11-22
 language: KR+EN
@@ -27,7 +27,7 @@ series_id: unitysense
 * **Category:** Configuration
 * **Sub-Category:** Ecosystem
 * **Version:** 1.0.1
-* **Status:** Experimental
+* **Status:** Verified
 * **Date:** 2026-11-22
 * **Language:** KR+EN
 
@@ -76,12 +76,14 @@ series_id: unitysense
 
 #### 💬 Experiences & Tips (경험 및 팁)
   * [FACT] VS Code에서 Unity Editor가 실행 중일 때 파일을 생성하면 Unity 자체도 `.meta`를 생성하므로, `MetaFileSyncManager`는 `150ms` 대기 후 `fs.existsSync(metaPath)`를 재확인하는 방식으로 경합을 회피한다.
+  * [OPINION] VS Code에서 파일 수정 시 `.meta`의 GUID가 유지되는 것은 확인했으나, 실제 업무에서는 파일 이동·삭제 같은 작업은 되도록 Unity Editor 내부에서 처리하는 편이 안전하고 외부 작업 시 매번 재확인이 필요하므로 실사용 빈도는 높지 않을 것으로 본다. — 출처: 사용자 피드백 (2026-11-22)
+  * [OPINION] 실행 중인 Unity Editor와의 UDP 이동 연동은 정상적으로 동작했다. — 출처: 사용자 피드백 (2026-11-22)
 
 ---
 
 #### ❓ Missing Info (검증 필요 항목)
-  * [ ] 실제 Unity 프로젝트에서 VS Code 탐색기로 스크립트/폴더를 이름 변경·이동·삭제할 때 Unity Editor가 GUID를 유지한 채 정상 리로드했는지 테스트 결과 확인 필요
-  * [ ] 실행 중인 Unity Editor와 UDP 이동(`F12` / CodeLens Ping) 및 `Editor.log` 열기, `launch.json` 디버거 연결을 실환경에서 검증한 결과 확인 필요
+  * [x] VS Code 탐색기에서 파일 수정 시 GUID 유지 여부 확인 — Verified 2026-11-22 (GUID 유지 동작 확인, 단 실사용에서는 Unity Editor 내부 조작 선호로 사용 빈도는 낮을 전망)
+  * [x] 실행 중인 Unity Editor와 UDP 이동 연동 실환경 결과 확인 — Verified 2026-11-22 (UDP 이동 정상 동작 확인)
 
 ---
 
@@ -89,3 +91,13 @@ series_id: unitysense
 Unity, Meta-Sync, Asmdef, UIToolkit, UnityEditor, VSCode, UnitySense
 
 ===== KNOWLEDGE PACKAGE END =====
+
+---
+## 📝 Feedback History
+
+### 2026-11-22 — Test Result: PASS
+* **환경:** 로컬 Unity Editor + VS Code
+* **검증된 단계:** `.meta` GUID 유지 동작 및 Unity Editor UDP 이동 연동 정상 확인
+* **실패한 단계:** 없음
+* **새 오류/팁:** `.meta` 동기화는 동작하지만 실제 작업에서는 Unity Editor 내부 파일 조작을 우선하는 편이라 보조 안전장치 성격에 가까움
+* **Status 변경:** Experimental → Verified

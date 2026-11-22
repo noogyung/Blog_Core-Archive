@@ -4,7 +4,7 @@ title_kr: "C# Unity 도메인 자동완성과 비침습적 Roslyn 정적 분석�
 category: Concept
 sub_category: Roslyn-CSharp
 version: 1.0.1
-status: Experimental
+status: Verified (Partial)
 created_date: 2026-11-22
 last_modified: 2026-11-22
 language: KR+EN
@@ -27,7 +27,7 @@ series_id: unitysense
 * **Category:** Concept
 * **Sub-Category:** Roslyn-CSharp
 * **Version:** 1.0.1
-* **Status:** Experimental
+* **Status:** Verified (Partial)
 * **Date:** 2026-11-22
 * **Language:** KR+EN
 
@@ -80,12 +80,13 @@ series_id: unitysense
 
 #### 💬 Experiences & Tips (경험 및 팁)
   * [FACT] `Camera.main`(`UB1001`)에 대해서도 `v1.1.5`부터 `GetComponent<T>()`와 동일하게 `Awake()` 자동 캐싱 Quick-Fix와 Roslyn CodeFix를 양쪽 모두 지원하도록 확장했다.
+  * [OPINION] `CS0649`/`CS0169`/`IDE0051` 경고 억제(`DiagnosticSuppressor`)는 정상적으로 동작했다. 전반적인 체감 속도도 나쁘지 않았으나, 복잡한 실무 프로젝트에 가져가서 사용해본 뒤에야 실제 부하와 안정성을 정확히 판단할 수 있다고 본다. — 출처: 사용자 피드백 (2026-11-22)
 
 ---
 
 #### ❓ Missing Info (검증 필요 항목)
-  * [ ] 실제 Unity 프로젝트에서 C# Dev Kit과 함께 `Directory.Build.props`를 통해 `UB1xxx`~`UB4xxx` 진단 및 `Ctrl+.` CodeFix를 실행했을 때의 동작 여부 및 체감 속도 확인 필요
-  * [ ] `CS0649`/`CS0169`/`IDE0051` 경고 억제(`DiagnosticSuppressor`)가 `[SerializeField]` 필드에서 의도대로 동작했는지 확인 필요
+  * [ ] 복잡한 실무 Unity 프로젝트에서 C# Dev Kit과 함께 `UB1xxx`~`UB4xxx` 진단 및 `Ctrl+.` CodeFix 장기 사용 시 체감 속도·안정성 검증 필요 (기본 체감 속도는 무난함 확인 — 2026-11-22)
+  * [x] `CS0649`/`CS0169`/`IDE0051` 경고 억제(`DiagnosticSuppressor`) 동작 확인 — Verified 2026-11-22 (정상 동작 확인)
 
 ---
 
@@ -93,3 +94,13 @@ series_id: unitysense
 Unity, CSharp, Roslyn, CodeFix, BurstCompile, MSBuild, UnitySense
 
 ===== KNOWLEDGE PACKAGE END =====
+
+---
+## 📝 Feedback History
+
+### 2026-11-22 — Test Result: PARTIAL
+* **환경:** 로컬 Unity 프로젝트 + VS Code + C# Dev Kit
+* **검증된 단계:** `DiagnosticSuppressor` 경고 억제 정상 동작 및 기본 체감 속도 확인
+* **실패한 단계:** 없음 (복잡한 실무 프로젝트 환경에서의 추가 검증 필요)
+* **새 오류/팁:** 경고 억제는 정상 동작하며, 대규모 코드베이스에서의 체감 속도는 실무 적용 후 확인 예정
+* **Status 변경:** Experimental → Verified (Partial)

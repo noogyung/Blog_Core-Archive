@@ -4,7 +4,7 @@ title_kr: "ShaderLab/HLSL 전용 LSP 구축: 오프셋 보존 가상 문서와 �
 category: Concept
 sub_category: Shader-LSP
 version: 1.0.1
-status: Experimental
+status: Verified
 created_date: 2026-11-22
 last_modified: 2026-11-22
 language: KR+EN
@@ -27,7 +27,7 @@ series_id: unitysense
 * **Category:** Concept
 * **Sub-Category:** Shader-LSP
 * **Version:** 1.0.1
-* **Status:** Experimental
+* **Status:** Verified
 * **Date:** 2026-11-22
 * **Language:** KR+EN
 
@@ -80,12 +80,14 @@ series_id: unitysense
 
 #### 💬 Experiences & Tips (경험 및 팁)
   * [FACT] `Library/PackageCache` 전체를 미리 파싱하지 않고, 열려 있는 파일과 `Assets/` 내부 `.shader`/`.hlsl`에서 실제로 `#include`로 참조되는 그래프만 온디맨드로 추적·캐싱해 메모리와 초기 지연을 줄였다.
+  * [OPINION] 직업 특성상 셰이더 파일을 자주 오가며 작업하는데, HLSL 추적 기능이 정상 동작하며 유용하게 사용하고 있다. — 출처: 사용자 피드백 (2026-11-22)
+  * [OPINION] `Step8Attributes.texcoord`와 `Step8Varyings.texcoord`처럼 Vertex Shader와 Fragment Shader에서 같은 이름의 필드를 쓰더라도 서로 목적이 다를 수 있고, 시맨틱을 다르게 쓰며 목적이 변경되면 개별적으로 수정해야 하는 경우가 있어 구조체별 구별이 필수적이었다. — 출처: 사용자 피드백 (2026-11-22)
 
 ---
 
 #### ❓ Missing Info (검증 필요 항목)
-  * [ ] 실제 URP/HDRP 실무 프로젝트 셰이더에서 `F12` 정의 이동을 실행했을 때 체감 응답 속도와 가장 유용했던 시나리오(예: `Core.hlsl` → `Lighting.hlsl` → `BRDF.hlsl` 추적) 확인 필요
-  * [ ] `v1.1.5`의 `Step8Attributes.texcoord` vs `Step8Varyings.texcoord` 충돌이 어떤 실제 셰이더 테스트 중에 발견되었는지 맥락 확인 필요
+  * [x] 실제 셰이더 작업에서 HLSL 추적(`F12`) 동작 및 활용도 확인 — Verified 2026-11-22 (셰이더 간 추적 정상 동작 및 실사용 중)
+  * [x] `v1.1.5`의 `Step8Attributes.texcoord` vs `Step8Varyings.texcoord` 충돌 맥락 확인 — Verified 2026-11-22 (Vertex/Fragment Shader 간 동일 필드명이라도 시맨틱·목적에 따라 개별 수정 필요)
 
 ---
 
@@ -93,3 +95,13 @@ series_id: unitysense
 Unity, ShaderLab, HLSL, LSP, Tree-sitter, Include-Graph, UnitySense
 
 ===== KNOWLEDGE PACKAGE END =====
+
+---
+## 📝 Feedback History
+
+### 2026-11-22 — Test Result: PASS
+* **환경:** 로컬 Unity 셰이더 작업 환경 + VS Code
+* **검증된 단계:** 다단계 HLSL 추적 및 구조체별 동일 필드명 분리 맥락 확인 완료
+* **실패한 단계:** 없음
+* **새 오류/팁:** Vertex/Fragment Shader의 동일 필드명(`texcoord` 등)은 목적과 시맨틱이 달라 개별 수정이 필요함
+* **Status 변경:** Experimental → Verified

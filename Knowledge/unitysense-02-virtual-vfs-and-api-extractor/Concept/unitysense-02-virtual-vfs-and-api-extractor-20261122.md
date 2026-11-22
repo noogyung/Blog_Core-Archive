@@ -4,7 +4,7 @@ title_kr: "Unity 가상 경로 해석기(VFS)와 resharper-unity API 추출기 �
 category: Concept
 sub_category: Core
 version: 1.0.1
-status: Experimental
+status: Verified (Partial)
 created_date: 2026-11-22
 last_modified: 2026-11-22
 language: KR+EN
@@ -27,7 +27,7 @@ series_id: unitysense
 * **Category:** Concept
 * **Sub-Category:** Core
 * **Version:** 1.0.1
-* **Status:** Experimental
+* **Status:** Verified (Partial)
 * **Date:** 2026-11-22
 * **Language:** KR+EN
 
@@ -73,12 +73,13 @@ series_id: unitysense
 
 #### 💬 Experiences & Tips (경험 및 팁)
   * [FACT] `UnityVirtualPathResolver`는 Extension Host와 독립 프로세스인 `shader-lsp` 양쪽에서 동일한 해석 결과를 보장해야 하므로 공유 계약과 동일 로직을 유지한다.
+  * [OPINION] 현재까지 VFS 경로 해석에서 특수 경로 예외 사례는 발생하지 않았다. Unity 6 `Awaitable` 이벤트는 기본 동작을 확인했으나, 직접 사용해본 적 없는 이벤트여서 정확한 실전 동작 여부는 실제 사용 사례를 통해 추가 확인이 필요한 상태다. — 출처: 사용자 피드백 (2026-11-22)
 
 ---
 
 #### ❓ Missing Info (검증 필요 항목)
-  * [ ] 실제 사용 중인 Unity 프로젝트(Unity 2022 / Unity 6)에서 `Packages/manifest.json` 및 `Library/PackageCache` 경로 해석을 테스트했을 때 추가로 마주친 특수 경로 사례(심볼릭 링크, 커스텀 로컬 패키지 등)가 있는지 확인 필요
-  * [ ] `unity-api.json` 추출 시 사용한 `resharper-unity` 버전/커밋 및 Unity 6 `Awaitable` 이벤트 보강 여부 확인 필요
+  * [x] 실제 Unity 프로젝트에서 `Packages/manifest.json` 및 `Library/PackageCache` 경로 해석 시 특수 경로 사례 확인 — Verified 2026-11-22 (현재까지 특수 경로 사례 없음)
+  * [ ] `Awaitable` 이벤트의 기본 동작은 확인했으나 실제 사용 사례 기준 정확도 검증 필요
 
 ---
 
@@ -86,3 +87,13 @@ series_id: unitysense
 Unity, VFS, UnityVirtualPathResolver, API-Extractor, Unity6, UnitySense
 
 ===== KNOWLEDGE PACKAGE END =====
+
+---
+## 📝 Feedback History
+
+### 2026-11-22 — Test Result: PARTIAL
+* **환경:** 로컬 Unity 프로젝트 + VS Code
+* **검증된 단계:** 기본 VFS 경로 해석 및 `Awaitable` 이벤트 기본 동작 확인
+* **실패한 단계:** 없음 (`Awaitable` 이벤트 실사용 사례는 추후 검증 필요)
+* **새 오류/팁:** 현재까지 특수 경로 사례 없음
+* **Status 변경:** Experimental → Verified (Partial)

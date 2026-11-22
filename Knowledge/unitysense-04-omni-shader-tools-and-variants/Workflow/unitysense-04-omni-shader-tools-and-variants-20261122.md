@@ -4,7 +4,7 @@ title_kr: "Omni Shader 도구 통합: 배리언트 추적, 키워드 Dimming, �
 category: Workflow
 sub_category: Shader-Tools
 version: 1.0.1
-status: Experimental
+status: Verified (Partial)
 created_date: 2026-11-22
 last_modified: 2026-11-22
 language: KR+EN
@@ -27,7 +27,7 @@ series_id: unitysense
 * **Category:** Workflow
 * **Sub-Category:** Shader-Tools
 * **Version:** 1.0.1
-* **Status:** Experimental
+* **Status:** Verified (Partial)
 * **Date:** 2026-11-22
 * **Language:** KR+EN
 
@@ -71,12 +71,13 @@ series_id: unitysense
 
 #### 💬 Experiences & Tips (경험 및 팁)
   * [FACT] 외부 셰이더 확장(Omni Shader Tools, Shader languages support 등)을 별도로 여러 개 설치하면 언어 ID(`shaderlab`, `hlsl`)와 문법/포매터가 서로 충돌하기 쉬워, 핵심 생산성 기능을 단일 확장에 통합하는 방향을 택했다.
+  * [OPINION] ShaderLab+HLSL 혼합 포매터의 들여쓰기 결과는 나쁘지 않았다. 다만 실제 프로젝트에서의 128 배리언트 초과 경고나 Shader Live Profiler는 현재 테스트가 필요한 상태이며, 실제 사용하면서 점차 검증해 나갈 항목으로 두고 있다. — 출처: 사용자 피드백 (2026-11-22)
 
 ---
 
 #### ❓ Missing Info (검증 필요 항목)
-  * [ ] 실제 프로젝트에서 Shader Explorer의 128 배리언트 초과 경고나 Shader Live Profiler(`unitySense.testCurrentShader`)를 실행해 본 결과 및 유용성 피드백 필요
-  * [ ] ShaderLab+HLSL 혼합 포매터를 실제 복잡한 URP 커스텀 셰이더에 적용했을 때 들여쓰기 결과에 어색한 부분이 없었는지 확인 필요
+  * [ ] 실제 프로젝트에서 Shader Explorer의 128 배리언트 초과 경고 및 Shader Live Profiler(`unitySense.testCurrentShader`) 실전 테스트 필요 (추후 실사용 검증 예정)
+  * [x] ShaderLab+HLSL 혼합 포매터 들여쓰기 결과 확인 — Verified 2026-11-22 (들여쓰기 결과 무난함 확인)
 
 ---
 
@@ -84,3 +85,13 @@ series_id: unitysense
 Unity, ShaderLab, HLSL, Shader-Variants, Formatter, Shader-Explorer, UnitySense
 
 ===== KNOWLEDGE PACKAGE END =====
+
+---
+## 📝 Feedback History
+
+### 2026-11-22 — Test Result: PARTIAL
+* **환경:** 로컬 Unity 셰이더 작업 환경 + VS Code
+* **검증된 단계:** ShaderLab+HLSL 혼합 포매터 들여쓰기 동작 확인
+* **실패한 단계:** 없음 (128 배리언트 초과 경고 및 Live Profiler는 실프로젝트 테스트 대기 중)
+* **새 오류/팁:** 포매터 들여쓰기 결과는 무난하며, 미검증 기능은 실사용 과정에서 보완 예정
+* **Status 변경:** Experimental → Verified (Partial)

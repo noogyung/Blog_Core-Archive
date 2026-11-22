@@ -5,14 +5,14 @@ Last Updated: 2026-11-22
 
 | Topic | Category | Created Date | Last Modified | Status | File Path |
 |-------|----------|:------------:|:-------------:|:------:|-----------|
-| unitysense-08-release-hardening-and-marketplace | Troubleshooting | 2026-11-22 | 2026-11-22 | Experimental | unitysense-08-release-hardening-and-marketplace/Troubleshooting/unitysense-08-release-hardening-and-marketplace-20261122.md |
-| unitysense-07-meta-sync-asmdef-and-ecosystem | Configuration | 2026-11-22 | 2026-11-22 | Experimental | unitysense-07-meta-sync-asmdef-and-ecosystem/Configuration/unitysense-07-meta-sync-asmdef-and-ecosystem-20261122.md |
-| unitysense-06-yaml-indexer-daemon-and-codelens | Concept | 2026-11-22 | 2026-11-22 | Experimental | unitysense-06-yaml-indexer-daemon-and-codelens/Concept/unitysense-06-yaml-indexer-daemon-and-codelens-20261122.md |
-| unitysense-05-csharp-completion-and-roslyn-analyzers | Concept | 2026-11-22 | 2026-11-22 | Experimental | unitysense-05-csharp-completion-and-roslyn-analyzers/Concept/unitysense-05-csharp-completion-and-roslyn-analyzers-20261122.md |
-| unitysense-04-omni-shader-tools-and-variants | Workflow | 2026-11-22 | 2026-11-22 | Experimental | unitysense-04-omni-shader-tools-and-variants/Workflow/unitysense-04-omni-shader-tools-and-variants-20261122.md |
-| unitysense-03-shaderlab-hlsl-lsp-and-include-graph | Concept | 2026-11-22 | 2026-11-22 | Experimental | unitysense-03-shaderlab-hlsl-lsp-and-include-graph/Concept/unitysense-03-shaderlab-hlsl-lsp-and-include-graph-20261122.md |
-| unitysense-02-virtual-vfs-and-api-extractor | Concept | 2026-11-22 | 2026-11-22 | Experimental | unitysense-02-virtual-vfs-and-api-extractor/Concept/unitysense-02-virtual-vfs-and-api-extractor-20261122.md |
-| unitysense-01-architecture-and-ai-playbook | Workflow | 2026-11-22 | 2026-11-22 | Experimental | unitysense-01-architecture-and-ai-playbook/Workflow/unitysense-01-architecture-and-ai-playbook-20261122.md |
+| unitysense-08-release-hardening-and-marketplace | Troubleshooting | 2026-11-22 | 2026-11-22 | Verified | unitysense-08-release-hardening-and-marketplace/Troubleshooting/unitysense-08-release-hardening-and-marketplace-20261122.md |
+| unitysense-07-meta-sync-asmdef-and-ecosystem | Configuration | 2026-11-22 | 2026-11-22 | Verified | unitysense-07-meta-sync-asmdef-and-ecosystem/Configuration/unitysense-07-meta-sync-asmdef-and-ecosystem-20261122.md |
+| unitysense-06-yaml-indexer-daemon-and-codelens | Concept | 2026-11-22 | 2026-11-22 | Verified (Partial) | unitysense-06-yaml-indexer-daemon-and-codelens/Concept/unitysense-06-yaml-indexer-daemon-and-codelens-20261122.md |
+| unitysense-05-csharp-completion-and-roslyn-analyzers | Concept | 2026-11-22 | 2026-11-22 | Verified (Partial) | unitysense-05-csharp-completion-and-roslyn-analyzers/Concept/unitysense-05-csharp-completion-and-roslyn-analyzers-20261122.md |
+| unitysense-04-omni-shader-tools-and-variants | Workflow | 2026-11-22 | 2026-11-22 | Verified (Partial) | unitysense-04-omni-shader-tools-and-variants/Workflow/unitysense-04-omni-shader-tools-and-variants-20261122.md |
+| unitysense-03-shaderlab-hlsl-lsp-and-include-graph | Concept | 2026-11-22 | 2026-11-22 | Verified | unitysense-03-shaderlab-hlsl-lsp-and-include-graph/Concept/unitysense-03-shaderlab-hlsl-lsp-and-include-graph-20261122.md |
+| unitysense-02-virtual-vfs-and-api-extractor | Concept | 2026-11-22 | 2026-11-22 | Verified (Partial) | unitysense-02-virtual-vfs-and-api-extractor/Concept/unitysense-02-virtual-vfs-and-api-extractor-20261122.md |
+| unitysense-01-architecture-and-ai-playbook | Workflow | 2026-11-22 | 2026-11-22 | Verified | unitysense-01-architecture-and-ai-playbook/Workflow/unitysense-01-architecture-and-ai-playbook-20261122.md |
 | ue58-curriculum-planning | Workflow | 2026-11-14 | 2026-11-15 | Verified (Partial) | ue58-curriculum-planning/Workflow/ue58-curriculum-planning.md |
 | ue58-curriculum-maps-ppt | Workflow | 2026-11-12 | 2026-11-15 | Verified (Partial) | ue58-curriculum-maps-ppt/Workflow/ue58-curriculum-maps-ppt.md |
 | ue58-mcp-setup-python | Configuration | 2026-11-12 | 2026-11-15 | Verified (Partial) | ue58-mcp-setup-python/Configuration/ue58-mcp-setup-python.md |

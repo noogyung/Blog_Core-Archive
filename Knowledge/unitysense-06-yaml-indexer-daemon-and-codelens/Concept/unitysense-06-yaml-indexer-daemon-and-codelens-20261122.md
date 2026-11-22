@@ -4,7 +4,7 @@ title_kr: ".NET 8 무할당 YAML 에셋 인덱서 데몬과 C# CodeLens 사용�
 category: Concept
 sub_category: YAML-Daemon
 version: 1.0.1
-status: Experimental
+status: Verified (Partial)
 created_date: 2026-11-22
 last_modified: 2026-11-22
 language: KR+EN
@@ -27,7 +27,7 @@ series_id: unitysense
 * **Category:** Concept
 * **Sub-Category:** YAML-Daemon
 * **Version:** 1.0.1
-* **Status:** Experimental
+* **Status:** Verified (Partial)
 * **Date:** 2026-11-22
 * **Language:** KR+EN
 
@@ -77,12 +77,13 @@ series_id: unitysense
 
 #### 💬 Experiences & Tips (경험 및 팁)
   * [FACT] `.NET 8`으로 빌드할 때 `UseNet8Release=true`와 `rollForward: Major` 설정을 적용해, `.NET 8`, `.NET 9`, `.NET 10` 런타임이 설치된 PC 어디서나 동일한 `UnityBrain.Daemon.dll`이 실행되도록 구성했다.
+  * [OPINION] 합성 1,000개 에셋 벤치마크와 단위 테스트는 통과했으나, 실제 거대한 프로젝트에서 초기 인덱싱이 어느 정도 걸리는지와 Nested Prefab / Prefab Variant 오버라이드 값 표시 정확도는 실무 사용 사례에서 추가 테스트가 필요한 상태다. — 출처: 사용자 피드백 (2026-11-22)
 
 ---
 
 #### ❓ Missing Info (검증 필요 항목)
-  * [ ] 실제 운영 중인 Unity 프로젝트(씬/프리팹 수량 및 용량)에서 `UnityBrain.Daemon` 초기 인덱싱 및 웜 스타트 실측 시간 확인 필요
-  * [ ] Nested Prefab / Prefab Variant 오버라이드 값과 `UnityEvent` 콜백 CodeLens가 실제 프로젝트에서 정확히 표시되었는지 확인 필요
+  * [ ] 거대한 실무 Unity 프로젝트(대용량 씬/프리팹)에서 `UnityBrain.Daemon` 초기 인덱싱 및 웜 스타트 실측 시간 검증 필요 (추후 실무 적용 시 확인 예정)
+  * [ ] Nested Prefab / Prefab Variant 오버라이드 값과 `UnityEvent` 콜백 CodeLens의 실제 사용 사례 검증 필요 (추후 실무 적용 시 확인 예정)
 
 ---
 
@@ -90,3 +91,13 @@ series_id: unitysense
 Unity, YAML, DotNet8, JSON-RPC, CodeLens, Streaming-Parser, UnitySense
 
 ===== KNOWLEDGE PACKAGE END =====
+
+---
+## 📝 Feedback History
+
+### 2026-11-22 — Test Result: PARTIAL
+* **환경:** 로컬 단위 테스트 및 벤치마크 환경 (실무 대규모 프로젝트 미검증)
+* **검증된 단계:** 합성 1,000개 에셋 벤치마크 및 JSON-RPC 프로토콜 단위 테스트 통과
+* **실패한 단계:** 없음 (대규모 프로젝트 초기 인덱싱 실측 및 Nested Prefab / Prefab Variant 실사용 사례 검증 대기 중)
+* **새 오류/팁:** 포스팅 작성 시 대규모 실환경 성능과 Nested Prefab 오버라이드는 미검증 범위로 명시할 것
+* **Status 변경:** Experimental → Verified (Partial)
