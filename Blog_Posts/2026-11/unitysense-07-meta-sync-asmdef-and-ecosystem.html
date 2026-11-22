@@ -1,0 +1,70 @@
+<!-- ============================================================
+  [BLOG POST METADATA - Blogspot 설정창 복사용]
+  Title: [UnitySense 개발기 #7] Unity 생태계 통합: .meta 4사분면 동기화, .asmdef 순환 진단, UI Toolkit과 에디터 연동
+  Labels (Tags): Unity, VSCode, UnitySense
+  Meta Description: VS Code에서 Unity 파일 이동 시 GUID를 유지하는 .meta 4사분면 동기화, .asmdef O(V+E) 순환 참조 진단, UI Toolkit 및 Unity Editor UDP 연동을 정리합니다.
+  Slug: unitysense-07-meta-sync-asmdef-and-ecosystem
+  ---
+  Primary Keyword: VS Code Unity meta 동기화 asmdef 순환 참조
+  Secondary Keywords: MetaFileSyncManager, asmdef InlayHint, UI Toolkit UXML USS, EditorInstance.json, Unity UDP 이동, UnitySense
+  Knowledge Source: Knowledge/unitysense-07-meta-sync-asmdef-and-ecosystem/Configuration/unitysense-07-meta-sync-asmdef-and-ecosystem-20261122.md
+  Generated Date: 2026-11-23
+  Estimated Read Time: 8분
+  Series ID: unitysense
+  ============================================================ -->
+
+<article>
+  <!-- 이미지 슬롯 1 (대표 이미지 - 필수) -->
+  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-11/unitysense-07-meta-sync-asmdef-and-ecosystem-img1.jpg?v=20261123_0045" alt="Unity 생태계 통합 .meta 동기화, .asmdef 진단, UI Toolkit 및 Editor UDP 연동 대표 이미지">
+
+  <p>셰이더, C# 분석기, YAML 인덱서라는 세 개의 큰 기둥을 세운 뒤에는 Unity 프로젝트 전반의 자잘한 마찰을 줄여주는 생태계 연동 기능들을 정리했습니다. <code>.meta</code> 파일 관리, <code>.asmdef</code> 어셈블리 참조, UI Toolkit(<code>.uxml</code>/<code>.uss</code>), 그리고 실행 중인 Unity Editor와의 연결이 여기에 해당합니다.</p>
+
+  <p>이번 글에서는 각 생태계 모듈의 구현 방식과 함께, 실제 Unity 개발 습관 관점에서 어떤 기능이 자주 쓰이고 어떤 기능은 보조 안전장치에 머무는지 솔직한 검증 결과를 공유하고자 합니다.</p>
+
+  <h2 id="meta-4-quadrant-sync">1. .meta / GUID 4사분면 생명주기 동기화와 실사용 관점</h2>
+
+  <p>VS Code 탐색기에서 Unity 스크립트나 폴더의 이름을 바꾸거나 옮길 때 짝이 되는 <code>.meta</code> 파일을 놓치면 씬과 프리팹의 GUID 참조가 끊어집니다. <code>MetaFileSyncManager</code>는 VS Code의 <code>onWillRenameFiles</code>, <code>onWillDeleteFiles</code>, <code>onDidCreateFiles</code> 훅을 가로채 추적 영역(<code>Assets/</code>, 로컬 <code>Packages/</code>) 기준 4가지 이동 조합(내부↔내부, 내부→외부, 외부→내부, 외부↔외부)을 분기 처리합니다.</p>
+
+  <ul>
+    <li><strong>이동·이름 변경:</strong> 기존 <code>.meta</code> 내부의 <code>guid:</code> 값을 건드리지 않고 파일명과 위치만 함께 이동합니다.</li>
+    <li><strong>신규 생성 경합 방지:</strong> Unity Editor가 실행 중일 때 파일을 생성하면 Unity 자체도 <code>.meta</code>를 생성합니다. 경합을 피하기 위해 <code>150ms</code> 대기 후 <code>fs.existsSync(metaPath)</code>를 재확인하고 없을 때만 32자리 hex GUID를 가진 표준 템플릿(<code>MonoImporter</code>, <code>ShaderImporter</code>, <code>DefaultImporter</code>)을 기록합니다.</li>
+    <li><strong>고아 <code>.meta</code> 정리:</strong> 원본 파일 없이 남은 <code>.meta</code>를 스캔해 일괄 정리하는 <code>unitySense.cleanOrphanMetaFiles</code> 커맨드를 제공합니다.</li>
+  </ul>
+
+  <div class="note"><strong>💡 팁:</strong> 실제 테스트에서 VS Code로 파일을 수정·이동했을 때 GUID가 유지되는 동작은 정상 확인했습니다. 다만 실제 Unity 업무에서는 에셋 이동이나 삭제를 되도록 Unity Editor 내부에서 처리하는 편이 안전하고, 외부에서 작업하면 항상 여러 번 재확인하게 되므로 실사용 빈도는 높지 않을 것으로 보고 보조 안전장치 정도로 두고 있습니다.</div>
+
+  <h2 id="asmdef-and-uitoolkit">2. .asmdef O(V+E) 순환 참조 진단과 UI Toolkit 지원</h2>
+
+  <p>프로젝트가 커져 어셈블리 정의(<code>.asmdef</code>, <code>.asmref</code>)가 많아지면 <code>GUID:xxxx</code> 형태로 적힌 참조 목록만 봐서는 어떤 어셈블리를 가리키는지 한눈에 알기 어렵습니다. <code>unityAsmdefProvider.ts</code>는 프로젝트 내 모든 어셈블리와 <code>.meta</code> GUID를 스캔해 참조 옆에 실제 어셈블리명을 InlayHint로 표시하고 <code>F12</code> 정의 이동을 지원합니다.</p>
+
+  <p>특히 편집 중인 미저장(dirty) 문서의 메모리 오버레이를 반영해 O(V+E) DFS로 순환 참조와 자기 참조를 실시간 진단합니다. 디렉터리 탐색 시 <code>visitedRealDirs</code>로 심볼릭 링크 무한 루프를 차단했고, <code>v1.1.4</code>에서는 자기 참조 감지 시 정확한 참조 문자열 토큰에만 밑줄이 그어지도록 진단 범위를 수정했습니다.</p>
+
+  <p>UI Toolkit 영역(<code>unityUiToolkitProvider.ts</code>)에서는 <code>-unity-font-definition</code>, <code>-unity-slice-*</code> 같은 Unity 전용 USS 속성과 Unity 6 Flexbox·트랜지션 속성, 의사 상태(<code>:hover</code>, <code>:focus</code>, <code>:checked</code> 등), <code>@import</code> 처리, 그리고 C# <code>.Q&lt;T&gt;("...")</code>와의 정의 이동 연동을 묶었습니다.</p>
+
+  <h2 id="unity-editor-udp-and-launch-json">3. Unity Editor UDP 이동 연동과 launch.json JSONC 안전 병합</h2>
+
+  <p><code>unityEditorIntegration.ts</code>는 프로젝트의 <code>Library/EditorInstance.json</code>에서 실행 중인 Unity Editor의 <code>process_id</code>를 읽어 프로세스 생존 여부를 확인한 뒤, 로컬 <code>127.0.0.1</code> UDP 소켓으로 Ping/ShowUsage 패킷을 전송합니다. 실제 Unity Editor를 띄워둔 환경에서 테스트했을 때 UDP 이동 연동은 정상적으로 동작했습니다.</p>
+
+  <div class="pre mermaid" data-text="Mermaid">
+    <button aria-label="Copy code">Copy</button>
+    <pre class="mermaid">
+flowchart LR
+    VSC["VS Code (F12 / CodeLens 클릭)"] --&gt;|"Library/EditorInstance.json 조회"| PID["Unity Editor PID 생존 확인"]
+    PID --&gt;|"UDP Ping (127.0.0.1)"| Editor["실행 중인 Unity Editor"]
+    Editor --&gt;|"Pong 응답 (type=2)"| VSC
+    VSC --&gt;|"ShowUsage 패킷 전송"| Editor
+    PID -.-&gt;|"에디터 미실행 또는 300ms 타임아웃"| Fallback["로컬 .unity/.prefab 파일 열기"]
+    </pre>
+  </div>
+
+  <p>함께 구현한 <code>.vscode/launch.json</code> 자동 생성 기능에서는 기존 파일의 UTF-8 BOM과 JSONC 주석, 사용자 설정 키를 손상시키지 않는 것이 핵심이었습니다. 문자열 내부의 <code>//</code>나 <code>/*</code>를 건드리지 않는 JSONC 스트리퍼를 적용하고, 파싱에 실패하면 기존 파일을 덮어쓰지 않고 즉시 중단하도록 방어 로직을 넣었습니다. <code>processId</code> 역시 고정하지 않아 에디터를 재실행한 뒤에도 디버거 연결이 꼬이지 않게 처리했습니다.</p>
+
+  <h2 id="section-last">마무리하며</h2>
+
+  <p>생태계 연동 기능들을 구현하면서 체감한 점은, 기술적으로 동작하는 것과 실제 작업 습관에서 자주 손이 가는 것은 다를 수 있다는 사실이었습니다. <code>.meta</code> 동기화는 혹시 모를 실수를 막아주는 안전망 역할을 하고, 반대로 Unity Editor UDP 이동이나 <code>.asmdef</code> InlayHint는 코드 탐색 흐름에서 직접적인 편의를 제공합니다.</p>
+
+  <p>혹시 VS Code와 Unity Editor를 함께 띄워두고 작업하실 때 가장 자주 사용하시는 에디터 연동 단축키나 디버거 설정 팁이 있다면 댓글로 남겨주시면 감사하겠습니다. 마지막 8편에서는 릴리스 감사, 리브랜딩, 범용 CI 구축과 VS Code Marketplace 정식 출시 과정을 정리하겠습니다.</p>
+
+  <!-- 시리즈 네비게이션 컨테이너 -->
+  <nav class="series-nav"></nav>
+</article>

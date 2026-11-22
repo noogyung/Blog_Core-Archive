@@ -10,9 +10,9 @@ last_modified: 2026-11-22
 language: KR+EN
 tags: [Shader, HLSL, UnitySense]
 sources_count: 3
-blog_draft_path: null
-blog_draft_date: null
-blog_id: null
+blog_draft_path: Blog_Posts/2026-11/unitysense-03-shaderlab-hlsl-lsp-and-include-graph.html
+blog_draft_date: 2026-11-23
+blog_id: core-archive
 blog_published: false
 blogger_post_id: null
 series_id: unitysense

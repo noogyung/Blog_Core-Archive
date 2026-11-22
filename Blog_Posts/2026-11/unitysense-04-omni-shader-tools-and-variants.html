@@ -1,0 +1,89 @@
+<!-- ============================================================
+  [BLOG POST METADATA - Blogspot 설정창 복사용]
+  Title: [UnitySense 개발기 #4] Omni Shader 도구 통합: 배리언트 추적, 키워드 Dimming, 혼합 포매터와 Explorer
+  Labels (Tags): Shader, VSCode, UnitySense
+  Meta Description: ShaderLab+HLSL 혼합 포매터, #pragma 배리언트 수 CodeLens, 전처리기 키워드 Dimming, Shader Explorer 뷰와 Live Profiler 통합 과정을 정리합니다.
+  Slug: unitysense-04-omni-shader-tools-and-variants
+  ---
+  Primary Keyword: Unity 셰이더 배리언트 추적 VS Code 포매터
+  Secondary Keywords: ShaderLab 포매터, multi_compile 배리언트, 키워드 Dimming, Shader Explorer, Shader Live Profiler, UnitySense
+  Knowledge Source: Knowledge/unitysense-04-omni-shader-tools-and-variants/Workflow/unitysense-04-omni-shader-tools-and-variants-20261122.md
+  Generated Date: 2026-11-23
+  Estimated Read Time: 7분
+  Series ID: unitysense
+  ============================================================ -->
+
+<article>
+  <!-- 이미지 슬롯 1 (대표 이미지 - 필수) -->
+  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-11/unitysense-04-omni-shader-tools-and-variants-img1.jpg?v=20261123_0045" alt="UnitySense Omni Shader 도구와 배리언트 탐색기 아키텍처 대표 이미지">
+
+  <p>3편에서 ShaderLab/HLSL 전용 LSP를 구축해 <code>F12</code> 정의 이동과 다단계 <code>#include</code> 추적을 확보한 뒤, 실제 셰이더 편집 편의성을 한 단계 더 끌어올리기 위해 필요한 기능들을 점검했습니다. VS Code 마켓플레이스에는 Omni Shader Tools나 Shader languages support 같은 개별 셰이더 확장들이 존재하지만, 여러 셰이더 확장을 동시에 설치하면 언어 ID(<code>shaderlab</code>, <code>hlsl</code>)와 TextMate 문법, 포매터가 서로 충돌하는 경우가 잦습니다.</p>
+
+  <p>이번 글에서는 이미 구현된 LSP 기능과 겹치지 않는 영역만 선별해 UnitySense 내부로 통합한 배리언트 추적, 전처리기 키워드 Dimming, ShaderLab+HLSL 혼합 포매터, 그리고 Shader Explorer 뷰 구현 내용을 살펴보겠습니다.</p>
+
+  <h2 id="gap-analysis-and-formats">1. 중복 배제 Gap Analysis와 확장 포맷 지원</h2>
+
+  <p>통합에 앞서 기존 <code>shader-lsp</code>와 <code>shaderEditorProviders.ts</code>에 이미 구현된 기능(Semantic Tokens, Folding, DocumentSymbol, Color Picker, Definition, References, Rename)을 목록화하고, 순수하게 비어 있는 기능만 <code>docs/plans/07-omni-shader-integration.md</code>로 정의했습니다.</p>
+
+  <div class="table w100 withBg">
+    <table>
+      <thead>
+        <tr>
+          <th>기능 영역</th>
+          <th>통합 내용</th>
+          <th>현재 검증 상태</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>확장 셰이더 포맷 &amp; 문법</td>
+          <td><code>.urtshader</code>, <code>.hlsli</code>, <code>.cg</code>, <code>.hlslinc</code>, <code>.raytrace</code>, <code>.fx</code>, <code>.fxh</code> 및 Unity 6 <code>#pragma dynamic_branch</code> 지원</td>
+          <td>문법 및 단위 테스트 통과</td>
+        </tr>
+        <tr>
+          <td>ShaderLab + HLSL 혼합 포매터</td>
+          <td>ShaderLab 블록과 HLSL 블록을 구분해 문서/범위/On-Type 들여쓰기 적용</td>
+          <td>들여쓰기 결과 무난함 확인</td>
+        </tr>
+        <tr>
+          <td>배리언트 CodeLens &amp; 키워드 Dimming</td>
+          <td><code>#pragma multi_compile</code>/<code>shader_feature</code> 조합 수 계산 및 상태바 키워드 토글</td>
+          <td>전처리기 엣지케이스 수정 및 단위 테스트 통과</td>
+        </tr>
+        <tr>
+          <td>Shader Explorer &amp; Live Profiler</td>
+          <td><code>unitySense.shaderExplorer</code> 트리 뷰(128개 초과 경고) 및 TMU/ALU 부하 추정 Diagnostic</td>
+          <td>실제 프로젝트 테스트 대기 중</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2 id="variants-and-preprocessor-dimming">2. 배리언트 수 CodeLens와 전처리기 Dimming 정교화</h2>
+
+  <p>Unity 셰이더에서 <code>#pragma multi_compile</code>이나 <code>#pragma shader_feature</code>가 쌓이다 보면 의도치 않게 배리언트 수가 급격히 불어납니다. <code>ShaderVariantCodeLensProvider</code>는 각 <code>Pass</code>와 <code>HLSLPROGRAM</code> 블록의 키워드 그룹을 파싱해 전체 조합 수(각 그룹 길이의 곱)를 상단 CodeLens로 표시합니다. 또한 하단 상태바(<code>Shader Keywords</code>)에서 활성 키워드를 체크박스로 토글하면 <code>shader-lsp</code>로 <code>unityBrain/setShaderKeywords</code> 알림을 보내 비활성 <code>#if</code> 분기를 흐리게(Dimming) 표시합니다.</p>
+
+  <p>이 과정에서 <code>eval</code> 없이 동작하는 안전한 전처리기 조건 파서를 구현했는데, 테스트 중 두 가지 오작동이 발견되어 <code>v1.1.4</code>와 <code>v1.1.6</code>에서 수정했습니다.</p>
+
+  <ul>
+    <li><strong>Include-guard 자기 자신 Dimming 오류:</strong> 헤더 파일 최상단에 흔히 쓰는 <code>#ifndef MY_HEADER_INCLUDED</code> 직후 <code>#define MY_HEADER_INCLUDED</code>가 나오면, 평가 순서가 꼬여 헤더 본문 전체가 비활성 블록으로 흐려지는 증상이 있었습니다. Include-guard 패턴을 예외 처리해 정상 활성화되도록 수정했습니다.</li>
+    <li><strong><code>#if 0</code> 및 <code>#define FOO 0</code> 구분 오류:</strong> 매크로가 정의되어 있는지 여부(<code>defined(FOO)</code>)와 값 평가(<code>#if FOO</code>)를 분리하지 않아 <code>#define FOO 0</code>이 참으로 평가되는 문제가 있었습니다. 정의 여부와 수치 평가를 분리하고 멀티라인 <code>#elif</code> 활성 줄 처리까지 보완했습니다.</li>
+  </ul>
+
+  <h2 id="mixed-formatter-and-explorer">3. 혼합 포매터, DSL 자동완성 및 미검증 항목 안내</h2>
+
+  <p><code>shaderFormatter.ts</code>는 <code>Properties</code>, <code>SubShader</code>, <code>Pass</code>, <code>Tags</code>, <code>Stencil</code> 같은 ShaderLab 영역과 <code>HLSLPROGRAM</code>...<code>ENDHLSL</code> 내부를 구분해 들여쓰기를 정리합니다. 구현 도중 <code>Stencil { Pass Replace }</code> 내부의 <code>Pass</code> 키워드가 <code>SubShader</code>의 <code>Pass</code> 블록 시작으로 오인되거나 블록 주석(<code>/* ... */</code>) 종료 줄에서 들여쓰기가 틀어지는 이슈를 발견해, 주석·문자열·<code>Stencil</code> 내부 마스킹을 적용하고 2회 연속 실행 시 변경점이 없는 멱등성 테스트를 통과시켰습니다. 실제 셰이더 파일에 적용해 본 들여쓰기 결과도 무난했습니다.</p>
+
+  <p>함께 추가한 기능으로는 <code>Properties</code> 어트리뷰트(<code>[HDR]</code>, <code>[MainTexture]</code> 등)·<code>Tags</code>·<code>Blend</code>·<code>Stencil</code> DSL 자동완성, URP/HDRP/Compute 스니펫, <code>Properties</code>와 <code>CBUFFER_START(UnityPerMaterial)</code> 간 SRP Batcher 정합성 진단, 그리고 <code>unitySense.shaderExplorer</code> 트리 뷰와 Shader Live Profiler(<code>unitySense.testCurrentShader</code>)가 있습니다.</p>
+
+  <div class="note wr"><strong>⚠️ 주의:</strong> 실제 프로젝트 환경에서의 128 배리언트 초과 경고 동작과 Shader Live Profiler의 TMU/ALU 추정 부하 등급 분석은 현재 실전 테스트가 필요한 상태입니다. 이 항목들은 앞으로 실제 프로젝트에 적용해 사용하면서 점차 검증하고 보완해 나갈 예정입니다.</div>
+
+  <h2 id="section-last">마무리하며</h2>
+
+  <p>셰이더 관련 부가 기능들을 하나의 확장에 통합하면서 언어 ID 충돌 없이 포매팅과 키워드 분기 확인을 이어갈 수 있는 기반을 마련했습니다. 다만 Explorer 경고 임계치나 Live Profiler의 추정 정확도는 실제 복잡한 셰이더를 돌려봐야 체감할 수 있는 영역이므로, 실사용 피드백을 통해 다듬어 갈 계획입니다.</p>
+
+  <p>혹시 Unity 셰이더 작업 시 배리언트 폭발을 사전에 점검하기 위해 사용 중인 에디터 도구나 팁이 있다면 댓글로 공유해 주시면 감사하겠습니다. 다음 글에서는 C# Unity 도메인 자동완성과 <code>Directory.Build.props</code> 기반 비침습적 Roslyn 정적 분석기 구축 과정을 다루겠습니다.</p>
+
+  <!-- 시리즈 네비게이션 컨테이너 -->
+  <nav class="series-nav"></nav>
+</article>

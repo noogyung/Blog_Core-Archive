@@ -1,0 +1,83 @@
+<!-- ============================================================
+  [BLOG POST METADATA - Blogspot 설정창 복사용]
+  Title: [UnitySense 개발기 #8] 릴리스 감사, 리브랜딩, 범용 CI 구축과 VS Code Marketplace 출시
+  Labels (Tags): VSCode, CI-CD, UnitySense
+  Meta Description: UnitySense의 v1.1.2~v1.1.6 릴리스 감사, UnityBrain에서 UnitySense로의 리브랜딩, netstandard2.0·.NET 8 범용 GitHub Actions CI와 VS Code Marketplace 출시 과정을 정리합니다.
+  Slug: unitysense-08-release-hardening-and-marketplace
+  ---
+  Primary Keyword: VS Code Marketplace 확장 자동 배포 CI
+  Secondary Keywords: UnitySense 출시, VSIX 패키징, GitHub Actions vsce publish, netstandard2.0, Publisher ID, UnityBrain 리브랜딩
+  Knowledge Source: Knowledge/unitysense-08-release-hardening-and-marketplace/Troubleshooting/unitysense-08-release-hardening-and-marketplace-20261122.md
+  Generated Date: 2026-11-23
+  Estimated Read Time: 8분
+  Series ID: unitysense
+  ============================================================ -->
+
+<article>
+  <!-- 이미지 슬롯 1 (대표 이미지 - 필수) -->
+  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-11/unitysense-08-release-hardening-and-marketplace-img1.jpg?v=20261123_0045" alt="UnitySense 릴리스 감사, 범용 CI 파이프라인 및 VS Code Marketplace 자동 출시 대표 이미지">
+
+  <p>기능 구현을 마치고 로컬에서 VSIX 패키지가 만들어진 시점부터가 배포 관점에서는 또 다른 시작이었습니다. 로컬 PC에서 잘 돌아가는 확장이라도 번들러 치환 오류, .NET 런타임 버전 차이, GitHub Actions 환경 변수 문법, 그리고 마켓플레이스 Publisher ID 대소문자 규칙 같은 세부 지점에서 배포 파이프라인이 멈추기 쉽습니다.</p>
+
+  <p>시리즈의 마지막 글인 이번 편에서는 <code>v1.1.2</code>~<code>v1.1.6</code> 릴리스 감사 과정에서 잡은 치명적 번들 버그, <code>UnityBrain</code>에서 <code>UnitySense</code>로의 리브랜딩, 범용 CI 파이프라인 트러블슈팅, 그리고 VS Code Marketplace <code>v1.0.1</code> 자동 출시 및 향후 유지보수 방향을 정리합니다.</p>
+
+  <h2 id="release-audit-and-rebranding">1. 릴리스 감사와 UnityBrain에서 UnitySense로의 리브랜딩</h2>
+
+  <p>초기 <code>v1.0.0</code> 이후 실전 배포를 앞두고 회귀 테스트(<code>releaseRegression.test.ts</code>, <code>releaseArtifact.test.ts</code>)를 대폭 늘리며 <code>v1.1.2</code>~<code>v1.1.6</code> 감사를 진행했습니다. 이 과정에서 가장 아찔했던 버그는 <code>v1.1.3</code>에서 발견한 번들러 치환 오류였습니다.</p>
+
+  <ul>
+    <li><strong>증상:</strong> 빌드된 확장 번들을 VS Code에 설치했을 때 확장 활성화 단계에서 치명적 오류가 발생했습니다.</li>
+    <li><strong>원인:</strong> <code>tools/cli.mjs</code>의 <code>rewriteVscodeImportsSync()</code> 멀티라인 정규식이 <code>import * as vscode from 'vscode'</code>를 치환하면서 바로 인접한 Node 내장 모듈 import 구문까지 함께 손상시키고 있었습니다.</li>
+    <li><strong>해결:</strong> 정규식 치환 범위를 안전하게 수정하고, 실제 빌드 산출물(<code>dist/extension.js</code>)에서 Node import가 보존되었는지 검사하는 아티팩트 테스트를 추가해 재발을 막았습니다.</li>
+  </ul>
+
+  <p>배포 직전에는 이름도 정리했습니다. 초기에 붙인 <code>UnityBrain</code>은 <code>JetBrains</code>에서 따온 이름이었지만 실제 대체 대상은 <code>Rider</code>였기 때문에 명칭이 애매하다고 느껴졌습니다. 무난하게 쓸 만한 이름으로 <code>UnitySense</code>를 선택하고 커맨드 접두사(<code>unitySense.*</code>), 설정 키, 탐색기 뷰 ID, GitHub 저장소(<code>noogyung/unitysence</code>), 그리고 VS Code Marketplace의 <code>keywords</code> 최대 5개 제한에 맞춰 매니페스트를 일괄 정비했습니다.</p>
+
+  <h2 id="universal-ci-and-troubleshooting">2. 범용 .NET 빌드 프로파일과 GitHub Actions 트러블슈팅</h2>
+
+  <p>로컬 작업 PC가 오프라인 .NET 10 SDK 환경이어서 기본 빌드는 .NET 10 타깃으로 컴파일됩니다. 하지만 동료나 외부 사용자 PC(.NET 8 / .NET 9 및 구형 Roslyn C# Dev Kit)에서도 동일한 VSIX가 동작하려면 CI에서 범용 타깃을 강제해야 했습니다.</p>
+
+  <div class="pre mermaid" data-text="Mermaid">
+    <button aria-label="Copy code">Copy</button>
+    <pre class="mermaid">
+flowchart LR
+    Tag["git tag v1.0.1 푸시"] --&gt;|"GitHub Actions (Ubuntu)"| Build["범용 Release 빌드 (netstandard2.0 + net8.0)"]
+    Build --&gt;|"Fixture-Free TS + .NET 테스트"| Test["자동화 검증 통과"]
+    Test --&gt;|"node tools/cli.mjs package:vsix"| Vsix["unitysense-1.0.1.vsix"]
+    Vsix --&gt;|"softprops/action-gh-release"| GH["GitHub Releases 첨부"]
+    Vsix --&gt;|"VSCE_PAT 인증"| Market["VS Code Marketplace 자동 게시"]
+    </pre>
+  </div>
+
+  <p><code>.github/workflows/release-vsix.yml</code>을 구성하고 첫 태그를 푸시하는 과정에서 세 가지 CI/배포 이슈를 순차적으로 해결했습니다.</p>
+
+  <ol class="step">
+    <li><strong><code>step if</code> 내 <code>secrets</code> 참조 오류 및 픽스처 의존 테스트 실패 (<code>ee7fda7</code>):</strong> 워크플로 단계의 <code>if:</code> 조건식 안에 <code>secrets.VSCE_PAT</code>를 직접 참조해 문법 오류가 발생했고, 로컬 픽스처에 의존하는 테스트가 클린 CI 러너에서 실패했습니다. <code>VSCE_PAT</code>를 <code>env:</code>로 전달한 뒤 셸 내부에서 비어 있는지 검사하도록 바꾸고, CI에서는 픽스처 비의존 단위·회귀·아티팩트 테스트 스위트만 명시 실행하도록 분리했습니다.</li>
+    <li><strong>.NET 테스트 프로젝트 <code>project.assets.json</code> 누락 (<code>59b2ac6</code>):</strong> 오프라인 빌드용 속성이 남아 있어 GitHub Actions의 <code>dotnet test</code> 단계에서 <code>project.assets.json</code> 복원이 실패했습니다. <code>UnityBrain.Analyzers.csproj</code>, 테스트 프로젝트, 데몬 프로젝트 설정을 정비해 온라인 CI 환경에서 정상 복원·통과되도록 수정했습니다.</li>
+    <li><strong>Marketplace Publisher ID 대소문자 불일치 (<code>v1.0.1</code>, <code>0841bf4</code>):</strong> <code>package.json</code>에 <code>"publisher": "NoogKim"</code>으로 적었지만 실제 Marketplace에 등록된 Publisher ID가 소문자 <code>noogkim</code>이어서 자동 게시가 거부되었습니다. <code>publisher</code> 값을 <code>noogkim</code>으로 일치시키고 <code>v1.0.1</code> 태그를 푸시해 자동 게시를 연동했습니다.</li>
+  </ol>
+
+  <div class="pre custom" data-text="YAML">
+    <button aria-label="Copy code">Copy</button>
+    <pre>- name: Build universal Release (.NET Standard 2.0 Analyzers + .NET 8 Daemon + LSP + Extension)
+  env:
+    UseNuGetNetStandard: 'true'
+    UseNet8Release: 'true'
+  run: node tools/cli.mjs build</pre>
+  </div>
+
+  <h2 id="marketplace-verification-and-roadmap">3. 마켓플레이스 설치 확인과 향후 유지보수 방향</h2>
+
+  <p><code>v1.0.1</code> 태그 푸시 이후 GitHub Actions 빌드와 VS Code Marketplace 자동 배포가 정상 완료되었고, VS Code 확장 검색창에서 <code>UnitySense</code>를 검색해 설치하는 테스트까지 문제없이 확인했습니다.</p>
+
+  <p>이 프로젝트는 Rider를 쓰다가 쓰지 못하게 된 환경에서 불편함을 해소하기 위해 시작한 도구입니다. 지금 시점에서는 기본 기능과 배포 파이프라인을 갖춘 상태이지만, 출근해서 실제 업무 프로젝트에 올려 돌려보며 확인해야 할 항목들이 아직 남아 있습니다. 앞으로의 로드맵 역시 거창한 신규 기능을 계속 덧붙이기보다는, 실제 프로젝트에서 사용하며 마주치는 불편사항과 엣지케이스를 하나씩 다듬는 유지보수 중심으로 가져갈 계획입니다.</p>
+
+  <h2 id="section-last">마무리하며</h2>
+
+  <p>8편에 걸쳐 VS Code용 Unity Rider 대체제 <strong>UnitySense</strong>의 설계부터 VFS, ShaderLab/HLSL LSP, Roslyn 분석기, .NET 8 YAML 데몬, 생태계 연동, 그리고 마켓플레이스 출시까지 정리해 보았습니다. 직접 필요한 도구를 만들어 배포까지 마무리하고 나니, 이제는 실무 코드베이스에서 부딪히며 다듬는 단계만 남았습니다.</p>
+
+  <p>VS Code에서 Unity 프로젝트를 작업하시며 UnitySense를 직접 설치해 보셨거나, 사용 중 불편한 점·버그를 발견하셨다면 댓글이나 GitHub 이슈로 남겨주시면 감사하겠습니다.</p>
+
+  <!-- 시리즈 네비게이션 컨테이너 -->
+  <nav class="series-nav"></nav>
+</article>

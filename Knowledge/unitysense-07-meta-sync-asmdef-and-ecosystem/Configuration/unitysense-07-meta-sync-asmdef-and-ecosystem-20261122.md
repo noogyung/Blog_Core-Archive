@@ -10,9 +10,9 @@ last_modified: 2026-11-22
 language: KR+EN
 tags: [Unity, VSCode, UnitySense]
 sources_count: 5
-blog_draft_path: null
-blog_draft_date: null
-blog_id: null
+blog_draft_path: Blog_Posts/2026-11/unitysense-07-meta-sync-asmdef-and-ecosystem.html
+blog_draft_date: 2026-11-23
+blog_id: core-archive
 blog_published: false
 blogger_post_id: null
 series_id: unitysense

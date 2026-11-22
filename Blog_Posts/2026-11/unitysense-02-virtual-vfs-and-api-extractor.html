@@ -1,0 +1,85 @@
+<!-- ============================================================
+  [BLOG POST METADATA - Blogspot 설정창 복사용]
+  Title: [UnitySense 개발기 #2] Unity 가상 경로 해석기(VFS)와 resharper-unity API 추출기 구현
+  Labels (Tags): Unity, VFS, UnitySense
+  Meta Description: Unity 셰이더의 Packages 가상 경로와 Unity 6 PackageCache 해시 폴더를 물리 경로로 해석하는 UnityVirtualPathResolver와 api.xml 추출기 구현을 정리합니다.
+  Slug: unitysense-02-virtual-vfs-and-api-extractor
+  ---
+  Primary Keyword: Unity 가상 경로 해석기 PackageCache VFS
+  Secondary Keywords: UnityVirtualPathResolver, packages-lock.json, CGIncludes, Unity 6 PackageCache, resharper-unity api.xml, UnitySense
+  Knowledge Source: Knowledge/unitysense-02-virtual-vfs-and-api-extractor/Concept/unitysense-02-virtual-vfs-and-api-extractor-20261122.md
+  Generated Date: 2026-11-23
+  Estimated Read Time: 7분
+  Series ID: unitysense
+  ============================================================ -->
+
+<article>
+  <!-- 이미지 슬롯 1 (대표 이미지 - 필수) -->
+  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-11/unitysense-02-virtual-vfs-and-api-extractor-img1.jpg?v=20261123_0045" alt="Unity 가상 경로 해석기 VFS와 resharper-unity API 추출기 아키텍처 대표 이미지">
+
+  <p>앞서 1편에서 UnitySense의 전체 모듈 구조와 역할 경계를 살펴보았습니다. 본격적으로 ShaderLab/HLSL LSP, C# 도메인 자동완성, Roslyn 분석기를 구현하기 전에 가장 먼저 해결해야 할 기반 과제는 두 가지였습니다. 첫 번째로는 Unity 고유의 가상 패키지 경로(<code>Packages/com.unity.render-pipelines.universal/...</code>)를 실제 디스크 경로로 정확하게 매핑하는 일이고, 두 번째로는 Unity 이벤트 함수 메타데이터를 Extension과 Roslyn 분석기가 함께 소비할 수 있는 단일 JSON으로 추출하는 일입니다.</p>
+
+  <p>이번 글에서는 <code>UnityProjectContextManager</code>, <code>UnityVirtualPathResolver</code>, 그리고 <code>tools/api-extractor</code>의 구현 구조와 Unity 6 대응 포인트를 정리하고자 합니다.</p>
+
+  <h2 id="project-context-manager">1. Unity 프로젝트 감지와 에디터 설치 경로 탐색</h2>
+
+  <p>VS Code에서 일반 웹이나 백엔드 프로젝트를 열었을 때 Unity 확장이 불필요하게 활성화되면 리소스만 낭비됩니다. <code>UnityProjectContextManager</code>는 워크스페이스 루트(및 1단계 하위 폴더)에 <code>Assets/</code> 디렉터리와 <code>ProjectSettings/ProjectVersion.txt</code>가 동시에 존재하는지 확인해 유효한 Unity 프로젝트인지 판별합니다.</p>
+
+  <p>이후 <code>ProjectVersion.txt</code>에서 <code>m_EditorVersion</code> 정규식으로 Unity 버전(예: <code>2022.3.45f1</code>, <code>6000.0.23f1</code>)을 읽고, 아래 우선순위에 따라 빌트인 셰이더 헤더(<code>Data/CGIncludes</code>)와 내장 패키지(<code>BuiltInPackages</code>) 위치를 탐색합니다.</p>
+
+  <ol class="step">
+    <li><strong>사용자 수동 지정 경로:</strong> VS Code 설정의 <code>unitySense.unityEditorPath</code>가 비어 있지 않다면 최우선으로 사용합니다.</li>
+    <li><strong>OS별 Unity Hub 기본 설치 경로:</strong> Windows(<code>C:\Program Files\Unity\Hub\Editor\{ver}\Editor</code>), macOS(<code>/Applications/Unity/Hub/Editor/{ver}/Unity.app/Contents</code>), Linux(<code>~/Unity/Hub/Editor/{ver}/Editor</code>)와 Unity Hub의 <code>secondaryInstallPath.json</code>을 순차 탐색합니다.</li>
+    <li><strong>변경 감지 및 전파:</strong> <code>ProjectVersion.txt</code>, <code>Packages/manifest.json</code>, <code>Packages/packages-lock.json</code> 변경 시 <code>onDidChangeContext</code> 이벤트를 발행해 독립 프로세스인 <code>shader-lsp</code>와 <code>unity-daemon</code>에 최신 컨텍스트를 동기화합니다.</li>
+  </ol>
+
+  <h2 id="virtual-path-resolver">2. UnityVirtualPathResolver와 5가지 패키지 소스 해석</h2>
+
+  <p>Unity 셰이더 파일에서는 <code>#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"</code>처럼 가상 경로를 일상적으로 사용합니다. 하지만 실제 디스크 상에는 <code>Packages/</code> 폴더 아래에 해당 파일이 존재하지 않고 <code>Library/PackageCache/</code>나 Unity 설치 디렉터리 내부에 위치하는 경우가 대부분입니다. <code>UnityVirtualPathResolver</code>는 Extension Host와 <code>shader-lsp</code> 양쪽에서 동일한 해석 결과를 보장하도록 다음 우선순위 알고리즘을 적용했습니다.</p>
+
+  <div class="pre mermaid" data-text="Mermaid">
+    <button aria-label="Copy code">Copy</button>
+    <pre class="mermaid">
+flowchart TD
+    Input["입력 경로 (#include 가상 경로)"] --&gt; CheckType{"경로 접두사 판별"}
+    CheckType --&gt;|"Packages/&lt;pkg&gt;/&lt;sub&gt;"| LockCheck["packages-lock.json 소스 조회"]
+    LockCheck --&gt;|"embedded"| Emb["Packages/&lt;pkg&gt; 또는 package.json name 스캔"]
+    LockCheck --&gt;|"local"| Loc["file: 상대/절대 경로 해석"]
+    LockCheck --&gt;|"registry / git"| Reg["Library/PackageCache/&lt;pkg&gt;@&lt;ver&gt; 및 SemVer 폴백"]
+    LockCheck --&gt;|"builtin"| Built["BuiltInPackages/&lt;pkg&gt;"]
+    CheckType --&gt;|"Assets/&lt;sub&gt;"| Assets["projectRoot/Assets/&lt;sub&gt;"]
+    CheckType --&gt;|"상대/일반 파일명"| Rel["현재 파일 디렉터리 -&gt; 프로젝트 루트 -&gt; CGIncludes"]
+    </pre>
+  </div>
+
+  <p>구현 과정에서 주의 깊게 다룬 예외 케이스는 두 가지였습니다.</p>
+
+  <ul>
+    <li><strong>Unity 6 <code>Library/PackageCache</code> 해시 폴더명 대응:</strong> Unity 2022에서는 <code>&lt;packageName&gt;@14.0.11</code>처럼 버전명이 붙지만, Unity 6에서는 <code>&lt;packageName&gt;@&lt;hash&gt;</code> 형태로 폴더가 생성되는 경우가 있습니다. 정확한 버전 경로가 디스크에 없으면 <code>Library/PackageCache</code>에서 <code>{packageName}@*</code> 프리픽스를 스캔하고 SemVer 정렬 폴백을 수행하도록 보완했습니다.</li>
+    <li><strong>Embedded 패키지의 폴더명 불일치:</strong> <code>Packages/</code> 아래에 임베디드 패키지를 둘 때 디렉터리명이 실제 패키지 ID(<code>com.company.pkg</code>)와 다를 수 있습니다. 이 경우 <code>Packages/</code> 하위 디렉터리들의 <code>package.json</code> 내부 <code>name</code> 필드를 스캔해 물리 루트를 연결했습니다.</li>
+  </ul>
+
+  <p>추가로 <code>listVirtualDirectory(virtualPrefix)</code> API를 함께 제공해, 셰이더 에디터에서 <code>#include "Packages/</code>까지 입력했을 때 설치된 패키지 목록과 하위 <code>.hlsl</code>/<code>.cginc</code> 파일 자동완성을 바로 띄울 수 있게 했습니다. 현재까지 실제 테스트 환경에서는 이 5가지 소스와 폴백 규칙 외에 별도의 특수 경로 예외 사례는 발생하지 않았습니다.</p>
+
+  <h2 id="api-extractor">3. resharper-unity api.xml 추출기와 Awaitable 검증 범위</h2>
+
+  <p>C# 이벤트 함수 생성기와 Roslyn 성능 분석기(<code>UB1xxx</code>)는 어떤 메서드가 Unity 메시지인지, 코루틴(<code>IEnumerator</code>) 반환을 지원하는지, 매 프레임 호출되는 성능 민감 메서드(<code>Update</code>, <code>FixedUpdate</code>, <code>LateUpdate</code>, <code>OnGUI</code> 등)인지에 대한 기준 데이터가 필요합니다. 이를 수동으로 하드코딩하는 대신, Apache 2.0 라이선스인 <code>JetBrains/resharper-unity</code>의 <code>api.xml</code>을 파싱하는 <code>tools/api-extractor</code> CLI를 작성했습니다.</p>
+
+  <div class="pre custom" data-text="PowerShell">
+    <button aria-label="Copy code">Copy</button>
+    <pre>node tools/cli.mjs extract:api</pre>
+  </div>
+
+  <p><code>fast-xml-parser</code>로 <code>&lt;type&gt;</code>과 <code>&lt;message&gt;</code> 노드를 정규화해 <code>packages/extension/resources/unity-api.json</code>으로 출력하며, <code>isPerformanceCritical</code>과 <code>supportsCoroutine</code> 플래그를 함께 부여합니다. 이후 Unity 6의 <code>async Awaitable</code> 이벤트 생성도 지원하도록 확장했습니다.</p>
+
+  <div class="note wr"><strong>⚠️ 주의:</strong> Unity 6 <code>Awaitable</code> 이벤트의 경우 기본적인 코드 생성과 동작 자체는 확인했으나, 실제 프로젝트에서 <code>Awaitable</code> 이벤트를 직접 사용해 본 경험이 아직 없어 실전 시나리오 기준의 정확도는 추가 검증이 필요한 상태입니다.</div>
+
+  <h2 id="section-last">마무리하며</h2>
+
+  <p>가상 경로 해석기와 <code>unity-api.json</code> 추출기는 겉으로 바로 드러나는 기능은 아니지만, 뒤이어 붙는 Shader LSP, C# 자동완성, Roslyn 분석기가 모두 이 두 모듈의 출력에 의존합니다. 특히 Extension Host와 <code>shader-lsp</code>가 동일한 VFS 규칙을 공유하도록 설계한 덕분에 패키지 경로 해석이 어긋나는 문제를 초기에 차단할 수 있었습니다.</p>
+
+  <p>혹시 Unity 6 프로젝트에서 심볼릭 링크 기반 로컬 패키지나 커스텀 UPM 캐시 경로를 사용하면서 경로 해석 문제를 겪어보신 적이 있다면 댓글로 경험을 나눠주시면 감사하겠습니다. 다음 글에서는 이 VFS 위에서 동작하는 ShaderLab/HLSL 전용 Language Server와 다단계 <code>#include</code> 그래프 구현을 살펴보겠습니다.</p>
+
+  <!-- 시리즈 네비게이션 컨테이너 -->
+  <nav class="series-nav"></nav>
+</article>

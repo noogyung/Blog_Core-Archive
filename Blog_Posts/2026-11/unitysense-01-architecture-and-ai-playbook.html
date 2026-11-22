@@ -1,0 +1,128 @@
+<!-- ============================================================
+  [BLOG POST METADATA - Blogspot 설정창 복사용]
+  Title: [UnitySense 개발기 #1] VS Code용 Unity Rider 대체제 설계: 역할 경계와 AI 무중단 개발 구조
+  Labels (Tags): Unity, VSCode, UnitySense
+  Meta Description: Rider 라이선스 비용과 VS Code·Claude 통합 작업 환경의 필요성에서 출발한 UnitySense의 멀티 프로세스 아키텍처와 AGENTS.md·PROGRESS.json 기반 개발 구조를 정리합니다.
+  Slug: unitysense-01-architecture-and-ai-playbook
+  ---
+  Primary Keyword: VS Code Unity Rider 대체제 UnitySense
+  Secondary Keywords: UnitySense, VS Code Unity 확장, Rider 대체제, 멀티 프로세스 아키텍처, AGENTS.md, PROGRESS.json
+  Knowledge Source: Knowledge/unitysense-01-architecture-and-ai-playbook/Workflow/unitysense-01-architecture-and-ai-playbook-20261122.md
+  Generated Date: 2026-11-23
+  Estimated Read Time: 8분
+  Series ID: unitysense
+  ============================================================ -->
+
+<article>
+  <!-- 이미지 슬롯 1 (대표 이미지 - 필수) -->
+  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-11/unitysense-01-architecture-and-ai-playbook-img1.jpg?v=20261123_0045" alt="VS Code용 Unity Rider 대체제 UnitySense의 멀티 프로세스 아키텍처 대표 이미지">
+
+  <p>한동안 JetBrains Rider로 Unity 프로젝트를 작업하다가 다시 VS Code로 돌아왔을 때, 가장 먼저 눈에 들어온 부분은 에디터의 편의성 격차였습니다. Rider를 떠난 가장 큰 이유는 라이선스 비용이었고, 여기에 AI 코딩 도구가 일상화되면서 VS Code에 Claude를 붙여 사용하는 빈도가 높아진 점도 크게 작용했습니다. Claude가 작성한 코드를 직접 수정하고 관리하다 보니 에디터를 오가지 않고 하나의 통합된 환경에서 Rider처럼 편리한 Unity 지원 기능을 쓰고 싶다는 요구가 자연스럽게 생겼습니다.</p>
+
+  <p>이번 글에서는 VS Code에서 Rider를 대체하기 위해 직접 개발한 확장 프로그램 <strong>UnitySense</strong>(v1.0.1)의 전체 아키텍처 설계와 Microsoft 공식 확장과의 역할 경계, 그리고 Gemini 단일 모델 환경에서 무중단 개발을 유지하기 위해 적용한 체크포인트 구조를 살펴보고자 합니다.</p>
+
+  <h2 id="naming-and-scope-boundary">1. 기존 Microsoft 공식 확장과의 역할 경계</h2>
+
+  <p>처음 프로젝트 코드를 열었을 때 붙였던 가칭은 <code>UnityBrain</code>이었습니다. JetBrains에서 이름을 따왔지만, 실제 대체하고자 하는 대상이 Rider였기 때문에 중간에 이름이 애매하다는 생각이 들어 최종 배포 단계에서는 무난하게 쓸 만한 <code>UnitySense</code>로 브랜딩을 정리했습니다. 확장 기능을 처음부터 바닥까지 전부 만들려 했다면 유지보수 부담이 지나치게 커졌을 것입니다. 따라서 VS Code 마켓플레이스의 공식 Microsoft 확장 두 가지가 설치되어 있음을 전제로 <code>extensionDependencies</code>를 선언하고 역할 경계를 명확히 그었습니다.</p>
+
+  <div class="table w100 withBg">
+    <table>
+      <thead>
+        <tr>
+          <th>기능 영역</th>
+          <th>기존 공식 확장 (csharp + vstuc)</th>
+          <th>UnitySense 신규 구현 범위</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>C# 기본 LSP &amp; 디버깅</td>
+          <td>구문 강조, 기본 IntelliSense, 중단점 및 Unity 디버거 연결</td>
+          <td>재구현하지 않음 (기존 LSP 위에서 동작)</td>
+        </tr>
+        <tr>
+          <td>기본 Unity 정적 진단</td>
+          <td><code>Microsoft.Unity.Analyzers</code> (<code>UNT0001</code>~<code>UNT0038</code>, <code>USPxxxx</code>)</td>
+          <td>동일 규칙 제외, 콜그래프 기반 성능 경고·자동 캐싱·Burst·문자열 검증(<code>UB1xxx</code>~<code>UB4xxx</code>)만 구현</td>
+        </tr>
+        <tr>
+          <td>ShaderLab &amp; HLSL</td>
+          <td>기본 TextMate 구문 강조 위주</td>
+          <td>가상 패키지 경로 해석, 가상 HLSL 추출, 다단계 <code>#include</code> 그래프, F12·Hover·자동완성·배리언트 추적</td>
+        </tr>
+        <tr>
+          <td>도메인 자동완성</td>
+          <td>기본 C# API 및 일부 Unity 메시지 이름</td>
+          <td><code>api.xml</code> 기반 이벤트·코루틴·Awaitable 스니펫, Tag/Layer/Scene/Shader/Animator 문자열 컨텍스트 완성</td>
+        </tr>
+        <tr>
+          <td>에셋(YAML) &amp; <code>.meta</code></td>
+          <td>미지원</td>
+          <td>.NET 8 백그라운드 데몬 기반 <code>.unity</code>/<code>.prefab</code> 스트리밍 인덱싱, CodeLens, <code>.meta</code> 동기화</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="note"><strong>💡 팁:</strong> 기존 공식 확장과 진단 ID나 자동완성 영역이 겹치면 IDE 경고창이 중복으로 어지러워집니다. <code>UNTxxxx</code>와 겹치지 않도록 고유 대역(<code>UB1xxx</code>~<code>UB4xxx</code>)을 분리한 것이 이후 Roslyn 분석기 통합 시 충돌을 막는 핵심 기준이 되었습니다.</div>
+
+  <h2 id="multi-process-monorepo">2. 단일 스레드 블로킹을 피하는 멀티 프로세스 아키텍처</h2>
+
+  <p>VS Code의 Extension Host는 단일 스레드 Node.js 프로세스로 동작합니다. 만약 이 스레드 위에서 수백 개의 <code>.unity</code> 씬 파일이나 깊게 중첩된 URP HLSL 헤더 트리를 동기 파싱하면 에디터 입력 자체가 버벅거리게 됩니다. 이를 방지하기 위해 전체 시스템을 4개의 독립 모듈로 나누고, 각 모듈이 공통으로 참조하는 데이터 계약을 <code>schemas/</code> 디렉터리에 먼저 고정했습니다.</p>
+
+  <div class="pre mermaid" data-text="Mermaid">
+    <button aria-label="Copy code">Copy</button>
+    <pre class="mermaid">
+flowchart LR
+    Host["packages/extension (VS Code Extension Host)"] --&gt;|"LSP / Custom RPC"| ShaderLSP["packages/shader-lsp (Tree-sitter HLSL Server)"]
+    Host --&gt;|"JSON-RPC 2.0 over stdio"| Daemon["packages/unity-daemon (.NET 8 YAML Indexer)"]
+    Host --&gt;|"Directory.Build.props 주입"| Roslyn["analyzers/UnityBrain.Analyzers (Roslyn UB1-4)"]
+    Schemas["schemas/ (Contract-First JSON/TS)"] -.-&gt;|"공유 데이터 계약"| Host
+    Schemas -.-&gt;|"ShaderSymbolIndex"| ShaderLSP
+    Schemas -.-&gt;|"DaemonRpcMethods"| Daemon
+    Schemas -.-&gt;|"AdditionalFiles"| Roslyn
+    </pre>
+  </div>
+
+  <p>모노레포는 TypeScript 영역(<code>pnpm-workspace.yaml</code>)과 C# 영역(<code>UnityBrain.sln</code>)을 루트에서 함께 묶어 관리했습니다. 특히 <code>UnityProjectContext</code>, <code>UnityApiDatabase</code>, <code>ProjectSettingsCache</code>, <code>ShaderSymbolIndex</code>, <code>DaemonRpcMethods</code> 다섯 가지 스키마를 단일 진실 공급원으로 고정해 두었기 때문에, 각 모듈을 단계별로 나눠 구현하면서도 필드명 불일치로 인한 결합 오류를 크게 줄일 수 있었습니다.</p>
+
+  <p>로직과 Unity API 메타데이터 참조에는 Apache 2.0 라이선스인 <code>JetBrains/resharper-unity</code>를 기준으로 삼았으며, 비공개 어셈블리 확인이 필요한 경우에도 사유 코드를 복사하지 않고 매크로명이나 시그니처 수준의 Clean-Room 스펙 경계를 유지했습니다.</p>
+
+  <h2 id="ai-checkpoint-workflow">3. Gemini 단일 모델과 체크포인트 기반 무중단 개발 구조</h2>
+
+  <p>이 프로젝트는 여러 AI 모델을 섞어 쓰지 않고 Gemini만 사용해 구현했습니다. 초기 설계와 기반 모듈은 Hydrogen으로 시작했고, 작업 도중 Neon이 출시되면서 후반부 구현과 릴리스 정리는 Neon으로 마무리했습니다. TypeScript, Roslyn C#, .NET 8 데몬이 섞인 모노레포를 긴 호흡으로 구현할 때 가장 까다로운 문제는 사용량 제한(Rate Limit)으로 세션이 끊겼을 때의 컨텍스트 유실과, 터미널 복합 명령어로 인한 반복 승인 중단이었습니다.</p>
+
+  <ol class="step">
+    <li><strong>세부 기획서 분할 (<code>docs/plans/01~07</code>):</strong> 전체 마스터 문서(<code>PLAN.md</code>) 아래에 모듈별 파일 경로, export 심볼, 알고리즘, 자동화 테스트 완료 기준(Definition of Done)을 7개의 독립 기획서로 분리했습니다.</li>
+    <li><strong>마이크로 체크포인트 (<code>PROGRESS.json</code>):</strong> 각 Step마다 <code>targetFiles</code>, <code>completedFiles</code>, <code>status</code>, <code>resumeNote</code>를 기록했습니다. 파일 1개를 작성할 때마다 <code>completedFiles</code>를 갱신하므로, 세션이 중단되어도 다음 턴에 이미 작성된 파일을 건너뛰고 남은 파일부터 바로 이어갈 수 있었습니다.</li>
+    <li><strong>단일 접두사 터미널 규칙 (<code>AGENTS.md</code>):</strong> <code>&amp;&amp;</code>, <code>;</code>, 셸 변수 확장(<code>$VAR</code>)이 섞인 복합 명령어는 IDE의 자동 승인 접두사 매칭을 깨뜨립니다. 이를 막기 위해 <code>pnpm</code>, <code>dotnet</code>, <code>git</code>, <code>node</code> 단일 접두사 명령을 개별 호출로 분리하도록 강제했습니다.</li>
+    <li><strong>Step 단위 자가 복구 및 로컬 커밋:</strong> 테스트나 빌드가 실패하면 중간에 멈추지 않고 로그를 읽어 수정한 뒤, 해당 Step 검증이 통과한 시점에 <code>chore(checkpoint): complete Step X</code> 커밋을 남겨 손실을 방지했습니다.</li>
+  </ol>
+
+  <div class="pre custom" data-text="JSON">
+    <button aria-label="Copy code">Copy</button>
+    <pre>{
+  "overallStatus": "in_progress",
+  "currentStepId": "2-3",
+  "steps": [
+    {
+      "id": "2-3",
+      "status": "in_progress",
+      "completedFiles": [
+        "packages/shader-lsp/src/indexer/hlslIncludeGraph.ts"
+      ],
+      "resumeNote": "hlslSymbolTable.ts 구현 및 vitest 실행 필요"
+    }
+  ]
+}</pre>
+  </div>
+
+  <h2 id="section-last">마무리하며</h2>
+
+  <p>기존 Microsoft 공식 확장이 이미 잘 다루는 영역을 과감히 내려놓고, 실제 Rider를 쓰다 VS Code로 넘어왔을 때 불편한 공백만 4개의 독립 모듈로 분리해 설계한 덕분에 프로젝트 전체가 지나치게 비대해지지 않았습니다. 또한 <code>PLAN.md</code>와 <code>PROGRESS.json</code> 기반의 체크포인트 구조는 긴 개발 호흡에서도 설계 일관성을 지키는 데 유용하게 작동했습니다.</p>
+
+  <p>혹시 VS Code와 AI 코딩 도구를 함께 쓰면서 Rider의 어떤 기능이 가장 아쉬우셨는지, 혹은 대규모 개인 프로젝트에서 세션 단절을 막기 위해 활용 중인 체크포인트 방식이 있다면 댓글로 공유해 주시면 감사하겠습니다. 다음 글에서는 모든 후속 모듈의 토대가 되는 Unity 가상 경로 해석기(VFS)와 <code>resharper-unity</code> API 추출기 구현 과정을 다루겠습니다.</p>
+
+  <!-- 시리즈 네비게이션 컨테이너 -->
+  <nav class="series-nav"></nav>
+</article>

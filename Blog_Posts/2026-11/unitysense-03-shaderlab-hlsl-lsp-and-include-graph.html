@@ -1,0 +1,72 @@
+<!-- ============================================================
+  [BLOG POST METADATA - Blogspot 설정창 복사용]
+  Title: [UnitySense 개발기 #3] ShaderLab/HLSL 전용 LSP 구축: 오프셋 보존 가상 문서와 다단계 Include 그래프
+  Labels (Tags): Shader, HLSL, UnitySense
+  Meta Description: 1:1 UTF-16 오프셋 보존 가상 HLSL 추출, URP/HDRP 매크로 프리패스, 다단계 #include 그래프와 구조체 동일 필드명 충돌 해결 과정을 정리합니다.
+  Slug: unitysense-03-shaderlab-hlsl-lsp-and-include-graph
+  ---
+  Primary Keyword: Unity ShaderLab HLSL LSP 구현
+  Secondary Keywords: HLSL F12 정의 이동, ShaderLab 가상 문서, URP 매크로 프리패스, Include 그래프, Tree-sitter HLSL, UnitySense
+  Knowledge Source: Knowledge/unitysense-03-shaderlab-hlsl-lsp-and-include-graph/Concept/unitysense-03-shaderlab-hlsl-lsp-and-include-graph-20261122.md
+  Generated Date: 2026-11-23
+  Estimated Read Time: 9분
+  Series ID: unitysense
+  ============================================================ -->
+
+<article>
+  <!-- 이미지 슬롯 1 (대표 이미지 - 필수) -->
+  <img src="https://cdn.jsdelivr.net/gh/noogyung/Blog_Core-Archive@main/images/2026-11/unitysense-03-shaderlab-hlsl-lsp-and-include-graph-img1.jpg?v=20261123_0045" alt="ShaderLab 및 HLSL 전용 LSP와 다단계 Include 그래프 아키텍처 대표 이미지">
+
+  <p>직업 특성상 Unity 프로젝트에서 셰이더 파일을 자주 오가며 작업하게 됩니다. 그런데 VS Code의 공식 C#/Unity 확장은 <code>.shader</code> 파일에 대해 기본적인 구문 강조 정도만 제공할 뿐, <code>Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl</code> 같은 중첩 <code>#include</code> 추적이나 함수·구조체 <code>F12</code> 정의 이동을 지원하지 않습니다. Rider를 대체할 때 가장 체감이 컸던 공백이 바로 이 지점이었습니다.</p>
+
+  <p>이번 글에서는 <code>packages/shader-lsp</code>를 독립 Language Server로 구축하면서 적용한 1:1 오프셋 보존 가상 문서 추출, URP/HDRP 매크로 프리패스, 다단계 <code>#include</code> 그래프, 그리고 실전 테스트에서 마주한 구조체 동일 필드명 충돌 및 UTF-16 컬럼 밀림 해결 과정을 정리합니다.</p>
+
+  <h2 id="virtual-hlsl-offset-preservation">1. 1:1 UTF-16 오프셋 보존 가상 HLSL 문서 추출</h2>
+
+  <p>Unity <code>.shader</code> 파일은 <code>Shader</code>, <code>Properties</code>, <code>SubShader</code>, <code>Pass</code> 같은 ShaderLab DSL 안에 <code>HLSLPROGRAM</code>...<code>ENDHLSL</code> 또는 <code>CGPROGRAM</code>...<code>ENDCG</code> 코드 블록이 끼어 있는 혼합 포맷입니다. 이 파일을 표준 HLSL 파서에 그대로 넘기면 구문 오류가 쏟아집니다.</p>
+
+  <p>복잡한 Source Map 역변환 테이블을 유지하는 대신, <code>extractVirtualHlslDocument</code>에서는 Space Padding 방식을 선택했습니다. 코드 블록 바깥에 있는 모든 ShaderLab 문자를 줄바꿈(<code>\n</code>, <code>\r</code>)만 남기고 전부 공백(<code>' '</code>)으로 치환하는 방식입니다. 이렇게 생성된 가상 HLSL 문자열은 원본 <code>.shader</code> 파일과 라인 번호 및 컬럼 오프셋이 1:1로 일치하므로, 파서가 계산한 <code>Position</code>과 <code>Range</code>를 별도 변환 없이 LSP 응답으로 바로 반환할 수 있습니다.</p>
+
+  <div class="pre mermaid" data-text="Mermaid">
+    <button aria-label="Copy code">Copy</button>
+    <pre class="mermaid">
+flowchart LR
+    Shader[".shader 원본 파일"] --&gt;|"Space Padding (1:1 오프셋 보존)"| VDoc["가상 HLSL 문서"]
+    Shader --&gt;|"Properties / #pragma 추출"| Meta["ShaderLab 전역 심볼"]
+    VDoc --&gt;|"URP/HDRP 매크로 정규화"| Prepass["UnityHlslMacroPrepass"]
+    Prepass --&gt;|"심볼 파싱"| Table["HlslSymbolTable"]
+    Table --&gt;|"재귀 #include 탐색 (VFS)"| Graph["IncludeDependencyGraph"]
+    Meta --&gt; Table
+    </pre>
+  </div>
+
+  <p>여기에 <code>SubShader</code> 내부의 <code>HLSLINCLUDE</code>/<code>CGINCLUDE</code> 블록은 하위 각 <code>Pass</code>의 <code>HLSLPROGRAM</code>에 암묵적 <code>#include</code> 스코프로 연결하고, <code>Properties { ... }</code>에 선언된 <code>_BaseMap</code> 같은 프로퍼티도 전역 심볼로 등록해 HLSL 본문에서 <code>F12</code>를 눌렀을 때 프로퍼티 선언부로 바로 이동할 수 있게 했습니다.</p>
+
+  <h2 id="macro-prepass-and-include-dag">2. URP/HDRP 매크로 프리패스와 다단계 Include 그래프</h2>
+
+  <p>URP와 HDRP 셰이더 헤더는 <code>TEXTURE2D(_BaseMap);</code>, <code>TEXTURE2D_X_*</code>, <code>RW_TEXTURE2D</code>, <code>SAMPLER(sampler_BaseMap);</code>, <code>CBUFFER_START(UnityPerMaterial)</code>처럼 표준 HLSL 파서가 변수 선언으로 인식하지 못하는 매크로를 대량 사용합니다. <code>UnityHlslMacroPrepass</code>는 이 매크로들을 파서가 이해할 수 있는 표준 선언(<code>Texture2D _BaseMap</code>, <code>cbuffer UnityPerMaterial {</code> 등)으로 정규화하되, 심볼의 위치 정보(<code>Range</code>)는 원본 텍스트 오프셋 기준으로 보존합니다.</p>
+
+  <p><code>IncludeDependencyGraph</code>는 2편에서 구현한 <code>UnityVirtualPathResolver</code>를 호출해 <code>#include "..."</code>, <code>#include &lt;...&gt;</code>, 그리고 Unity 6의 <code>#include_with_pragmas</code>를 재귀적으로 탐색합니다. <code>Library/PackageCache</code> 전체를 무작정 미리 인덱싱하지 않고 열려 있는 파일과 <code>Assets/</code> 내부 셰이더가 실제로 참조하는 그래프만 온디맨드로 추적해 캐싱하며, 방문 집합(<code>visited</code>)으로 순환 참조를 차단합니다. 실제로 셰이더 파일을 자주 오가는 업무 환경에서 이 HLSL 추적 기능은 정상 동작하며 유용하게 활용하고 있습니다.</p>
+
+  <h2 id="struct-field-collision-and-bugs">3. 실전 테스트에서 해결한 4가지 정밀도 버그</h2>
+
+  <p>초기 버전이 동작한 뒤 실제 복잡한 셰이더 파일에 적용하면서 네 가지 까다로운 엣지케이스가 드러났고, <code>v1.1.4</code>~<code>v1.1.6</code> 과정에서 집중적으로 수정했습니다.</p>
+
+  <ul>
+    <li><strong>서로 다른 구조체의 동일 필드명 충돌 (v1.1.5):</strong> Vertex Shader의 입력 구조체(<code>Step8Attributes.texcoord</code>)와 Fragment Shader로 넘기는 출력 구조체(<code>Step8Varyings.texcoord</code>)는 이름이 같더라도 서로 목적이 다를 수 있고, 시맨틱을 다르게 쓰며 목적이 바뀌면 개별적으로 수정해야 하는 경우가 많습니다. 기존에는 단순 필드명 매칭 때문에 Hover, Definition, References, Rename이 엉뚱한 구조체를 함께 잡는 문제가 있었습니다. 이를 해결하기 위해 심볼에 소유 구조체(<code>containerName</code>)를 기록하고 표현식 체인 타입 추론 및 함수 파라미터 스코프(<code>Vert</code>의 <code>input</code> vs <code>Frag</code>의 <code>input</code>)를 분리했습니다.</li>
+    <li><strong><code>.uv</code>/<code>.r</code>/<code>.x</code> 구조체 필드 Rename 차단 (v1.1.6):</strong> <code>ShaderRenameProvider</code>가 구조체 멤버인 <code>.uv</code>나 <code>.x</code>를 벡터 스위즐(swizzle)로 오인해 이름 변경을 막는 증상이 있었습니다. <code>isVectorSwizzleToken</code>을 표현식 체인 해석 기반으로 고치고 <code>uv</code>를 스위즐 오탐 대상에서 제외했습니다.</li>
+    <li><strong>이모지·비-BMP 문자 뒤 UTF-16 컬럼 밀림 (v1.1.4, v1.1.6):</strong> 주석이나 문자열에 이모지 같은 비-BMP 문자가 들어 있을 때 <code>Array.from()</code>(유니코드 코드 포인트 기준)으로 마스킹하면 VS Code LSP의 UTF-16 코드 유닛 오프셋과 어긋났습니다. 관련 마스킹과 심볼 프로바이더를 모두 UTF-16 기준(<code>split('')</code>)으로 통일해 컬럼 밀림을 제거했습니다.</li>
+    <li><strong>형제 <code>.shader</code> 파일 누락 (v1.1.6):</strong> 공통 <code>.hlsl</code> 헤더의 심볼을 Rename하거나 References를 찾을 때, 같은 헤더를 <code>#include</code>하는 다른 <code>.shader</code> 파일까지 함께 탐색·수정하도록 확장하고 멀티패스 셰이더에서 타 Pass 구조체보다 헤더의 구조체를 우선 해석하도록 보완했습니다.</li>
+  </ul>
+
+  <div class="note"><strong>💡 팁:</strong> C/HLSL 전처리기는 위에서 아래로 <code>#include</code>를 평가하므로, 심볼 검색 시 현재 파일의 커서 위쪽을 먼저 보고 이후 DFS Include 순서대로 탐색해야 매크로 재정의나 오버로드가 실제 컴파일러 동작과 일치합니다.</div>
+
+  <h2 id="section-last">마무리하며</h2>
+
+  <p>가상 HLSL 문서 추출과 다단계 Include 그래프, 그리고 구조체별 멤버 구별까지 정리되고 나니 VS Code에서도 복잡한 URP/커스텀 셰이더 코드를 따라가는 흐름이 한결 수월해졌습니다. 특히 Vertex/Fragment 구조체의 동일 필드명을 개별적으로 수정할 수 있게 된 부분이 실무 체감상 가장 컸습니다.</p>
+
+  <p>혹시 Unity 커스텀 셰이더를 작성하실 때 가장 자주 막히는 HLSL 매크로나 전처리기 패턴이 있으신가요? 댓글로 남겨주시면 유지보수 항목으로 참고하겠습니다. 다음 글에서는 이 LSP 위에 배리언트 추적, 키워드 Dimming, 혼합 포매터, Shader Explorer를 통합한 과정을 다루겠습니다.</p>
+
+  <!-- 시리즈 네비게이션 컨테이너 -->
+  <nav class="series-nav"></nav>
+</article>

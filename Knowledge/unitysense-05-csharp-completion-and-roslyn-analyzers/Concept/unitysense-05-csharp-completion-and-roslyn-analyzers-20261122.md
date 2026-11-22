@@ -10,9 +10,9 @@ last_modified: 2026-11-22
 language: KR+EN
 tags: [Unity, Roslyn, UnitySense]
 sources_count: 4
-blog_draft_path: null
-blog_draft_date: null
-blog_id: null
+blog_draft_path: Blog_Posts/2026-11/unitysense-05-csharp-completion-and-roslyn-analyzers.html
+blog_draft_date: 2026-11-23
+blog_id: core-archive
 blog_published: false
 blogger_post_id: null
 series_id: unitysense
