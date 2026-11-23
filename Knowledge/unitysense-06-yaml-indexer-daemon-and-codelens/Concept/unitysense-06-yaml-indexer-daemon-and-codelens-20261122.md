@@ -14,7 +14,7 @@ blog_draft_path: Blog_Posts/2026-11/unitysense-06-yaml-indexer-daemon-and-codele
 blog_draft_date: 2026-11-23
 blog_id: core-archive
 blog_published: false
-blogger_post_id: null
+blogger_post_id: "1648928308342572803"
 series_id: unitysense
 ---
 

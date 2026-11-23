@@ -14,7 +14,7 @@ blog_draft_path: Blog_Posts/2026-11/unitysense-04-omni-shader-tools-and-variants
 blog_draft_date: 2026-11-23
 blog_id: core-archive
 blog_published: false
-blogger_post_id: null
+blogger_post_id: "3261544921279118539"
 series_id: unitysense
 ---
 

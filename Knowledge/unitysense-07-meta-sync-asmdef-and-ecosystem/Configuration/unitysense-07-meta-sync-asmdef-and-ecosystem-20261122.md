@@ -14,7 +14,7 @@ blog_draft_path: Blog_Posts/2026-11/unitysense-07-meta-sync-asmdef-and-ecosystem
 blog_draft_date: 2026-11-23
 blog_id: core-archive
 blog_published: false
-blogger_post_id: null
+blogger_post_id: "9184028821790663419"
 series_id: unitysense
 ---
 

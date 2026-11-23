@@ -14,7 +14,7 @@ blog_draft_path: Blog_Posts/2026-11/unitysense-02-virtual-vfs-and-api-extractor.
 blog_draft_date: 2026-11-23
 blog_id: core-archive
 blog_published: false
-blogger_post_id: null
+blogger_post_id: "3842281890396660136"
 series_id: unitysense
 ---
 
